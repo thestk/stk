@@ -1,0 +1,116 @@
+Need to iron out the differences between RawWvIn, NIWave1S, NIFileIn, etc.
+Need to make DrumSyn1 vs. DrumSyn2
+	One real-time large memory, one non real-time small memory
+*****************************************************
+Legend: 
+
+x = done   <1 - 9> = How Good?   : = by Inheritance   N = Not Applicable
+Ex = Exists
+Cm = Compiles
+On = Note On
+Of = Note Off
+Pt = Pitch (5 octave range)
+Vl = Velocity (0-128)
+Bn = Pitch Bend
+Md = Mod Wheel
+C1 = Controller 1, Algorithm Specific
+C2 = Controller 2, Algorithm Specific
+Lg = Long/Int/Double verification
+Op = Optimization pass 1
+Com. = Comments
+
+FILE/CLASS   Ex Cm On Of Pt Vl Bn Md C1 C2 C3 Lg Op Com
+
+README.TXT    x  N  N  N  N  N  N  N  N  N  N  N  N
+
+OBJECT.H      x  x  N  N  N  N  N  N  N  N  N  x  N
+
+FILTER.H      x  x  N  N  N  N  N  N  N  N  N  x  N
+                                                 
+ONEPOLE.H     x  x  N  N  N  N  N  N  N  N  N  x
+ONEZERO.H     x  x  N  N  N  N  N  N  N  N  N  x
+DCBLOCK.H     x  x  N  N  N  N  N  N  N  N  N  x
+BIQUAD.H      x  x  N  N  N  N  N  N  N  N  N  x
+TWOZERO.H     x  x  N  N  N  N  N  N  N  N  N  x
+TWOPOLE.H     x  x  N  N  N  N  N  N  N  N  N  x
+ALLPASS1.H
+
+FORMSWEP.H    x  x  N  N  N  N  N  N  N  N  N  x
+
+DLINEA.H      x  x  N  N  N  N  N  N  N  N  N  x
+DLINEL.H      x  x  N  N  N  N  N  N  N  N  N  x
+DLINEN.H      x  x  N  N  N  N  N  N  N  N  N  x
+                  
+RAWWAVE.H     x  x  N  N  N  N  N  N  N  N  N  x
+RAWLOOP.H     x  x  N  N  N  N  N  N  N  N  N  x
+NIWAVE1S.H    
+SINGWAVE.H    x  x  N  N  N  N  N  N  N  N  N  x
+RAWWVOUT.H    x  x  N  N  N  N  N  N  N  N  N  x
+RAWWVIN.H     x  x  N  N  N  N  N  N  N  N  N  x
+
+REEDTABL.H    x  x  N  N  N  N  N  N  N  N  N  x
+JETTABL.H     x  x  N  N  N  N  N  N  N  N  N  x
+LIPFILT.H     x  x  N  N  N  N  N  N  N  N  N  x    Add Lip Tension Modulation?
+BOWTABL.H     x  x  N  N  N  N  N  N  N  N  N  x
+
+ENVELOPE.H    x  x  N  N  N  N  N  N  N  N  N  x
+ADSR.H        x  x  N  N  N  N  N  N  N  N  N  x
+NOISE.H       x  x  N  N  N  N  N  N  N  N  N  x
+SUBNOISE.H    x  x  N  N  N  N  N  N  N  N  N  x    Noise each n samples
+
+FILE/CLASS   Ex Cm On Of Pt Vl Bn Md C1 C2 C3 Lg Op Com
+
+PLUCKED.H     x  x  x  x  7  8     N  N  N  N  x    tuning funny, allpass approx.
+CLARINET.H    x  x  x  x  7  5     7  7  7  7  x
+FLUTE.H       x  x  x  x  7  5     7  7  7  7  x
+BRASS.H       x  x  x  x  7  5     7  7  7  7  x                      
+BOWED.H       x  x  x  x  7  5     7  7  7  7  x    Need Better Body Filter
+
+PLUCKED2.H    x  x  N  x  N  N     N  N  N  N  x
+MANDOLIN.H    x  x  x  :  8  8     9  9  9  9  x    tuning funny, allpass approx.      
+
+MODAL4.H      x  x  N  x  N  N     7  N  N  N  x    
+MARIMBA.H     x  x  x  :  7  x     :  7  7  7  x    Check 4 Clipping Mid Range
+VIBRAPHN.H    x  x  x  :  x  x     :  7  7  7  x    AMDept StickHard Pos AMFreq
+AGOGOBEL.H    x  x  x  :  x  x     :  7  7  7  x    StickHard Position
+
+FM4OP.H       x  x  N  x  N  N     N  N  N  x  9  x
+                        
+FM4ALG8.H     x  x  N  :  N  N     N  9  9  |  x
+BEETHREE.H    x  x  x  :  x  x     9  :  :  :  x
+
+FM4ALG5.H     x  x  N  :  N  N     N  9  9  :  x
+RHODEY.H      x  x  x  :  8  x     9  :  :  :  x    Minor Aliasing High Range
+WURLEY.H      x  x  x  :  8  x     9  :  :  :  x      "      "      "    "
+TUBEBELL.H    x  x  x  :  x  x     9  :  :  :  x
+
+FM4ALG4.H     x  x  N  :  N  N     N  9  9  :  x
+PERCFLUT.H    x  x  x  :  8  x     9  :  :  :  x    Minor Aliasing High Range
+
+FM4ALG3.H     x  x  N  :  N  N     N  9  9  :  x
+HEAVYMTL.H    x  x  x  :  x  x     9  :  :  :  x    Minor Aliasing High Range
+
+SAMPLER.H     x  x  N  x  N
+SAMPLFLT.H    x  x  N  :  N
+MOOG1.H       x  x  x  :  x        x        
+
+VOICFORM.H    x  x  ?  ?  ?  ?  ?  ?  ?  ?  ?  x    Need much phoneme!!
+
+DRUMSYNT.H    x  x  x     N  x  N  N  N  N  N  x    Need New Drum Samples
+
+FILE/CLASS   Ex Cm On Of Pt Vl Bn Md C1 C2 C3 Lg Op Com
+
+Legend: 
+Es = Exists
+Cm = Compiles
+On = Note On
+Of = Note Off
+Pt = Pitch (5 octave range)
+Vl = Velocity (0-128)
+Bn = Pitch Bend
+Md = Mod Wheel
+C1 = Controller 1, Algorithm Specific
+C2 = Controller 2, Algorithm Specific
+Lg = Long/Int/Double verification
+Op = Optimization pass 1
+Com. = Comments

@@ -1,0 +1,65 @@
+testMono Plucked scores/duelingb.ski
+sndplay test.snd
+mv test.snd Plucked.snd
+
+testMono Mandolin scores/mandtune.ski
+sndplay test.snd
+mv test.snd MandTune.snd
+testMono Mandolin scores/funicula.ski
+sndplay test.snd
+mv test.snd MandSolo.snd
+
+
+testMono Clarinet scores/simplgft.ski
+sndplay test.snd
+mv test.snd Clarinet.snd
+testMono Flute scores/simplgft.ski
+sndplay test.snd
+mv test.snd Flute.snd
+testMono Brass scores/pictures.ski
+sndplay test.snd
+mv test.snd Brass.snd
+testMono Bowed scores/fiddle.ski
+sndplay test.snd
+mv test.snd Bowed.snd
+
+testMono Marimba scores/spain.ski
+sndplay test.snd
+mv test.snd Marimba.snd
+testMono Vibraphn scores/spain.ski
+sndplay test.snd
+mv test.snd Vibraphn.snd
+testMono AgogoBel scores/morazbel.ski
+sndplay test.snd
+mv test.snd AgogoBel.snd
+
+testMono Rhodey scores/doogie.ski
+sndplay test.snd
+mv test.snd Rhodey.snd
+testMono Wurley scores/riderson.ski
+sndplay test.snd
+mv test.snd Wurley.snd
+testMono TubeBell scores/tubebell.ski
+sndplay test.snd
+mv test.snd TubeBell.snd
+testMono PercFlut scores/misacrio.ski
+sndplay test.snd
+mv test.snd PercFlut.snd
+testMono HeavyMtl scores/streetsf.ski
+sndplay test.snd
+mv test.snd HeavyMtl.snd
+testMult 0.33 BeeThree scores/organs.ski
+sndplay test.snd
+mv test.snd BeeThree.snd
+
+testMono Moog1 scores/thecars.ski
+sndplay test.snd
+mv test.snd Moog1.snd
+
+Lacrymosa 
+mv test.snd Vocaliz.snd
+
+DrumSynt
+sndplay test.snd
+mv test.snd DrumSynt.snd
+

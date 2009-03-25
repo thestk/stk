@@ -1,0 +1,2 @@
+cd ..
+wish < TCLSpecs/TCLVoice.tcl | testTextIn FMVoices

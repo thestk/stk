@@ -1,0 +1,2 @@
+cd ..
+wish < TCLSpecs/TCLPhys.tcl | testTextIn Clarinet
