@@ -1,6 +1,20 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2002.
+By Perry R. Cook and Gary P. Scavone, 1995-2004.
+
+v4.1.2: (15 March 2004)
+- added Linux JACK support to RtAudio
+- added optional doNormalize argument to WvIn to allow specification of data normalization or not
+- added volume control to demo program and various tcl scripts
+- added support for dynamic rawwavePath() setting
+- WaveLoop bug fix
+- fixed bug in ADSR::setReleaseTime() method
+- fixed missing initialization of apInput in non-default constructor of DelayA class
+- added time seeding of random number generator to Noise constructor
+- update to the contentsAt() method of Delay class
+- WAV file fixes (8-bit) in WvIn and WvOut classes
+- configure changes
+- updated <iostream> include statements and appended "std::" as necessary throughout for compatibility with gcc 3
 
 v4.1.1: (24 October 2002)
 - bug fix in RtAudio for Macintosh OS X and Windows ASIO duplex operation

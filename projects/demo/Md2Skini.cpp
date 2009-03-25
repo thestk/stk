@@ -157,6 +157,12 @@ int main(int argc,char *argv[])
       case __SK_ControlChange_:
         j = (int) byte2;
         switch(j) {
+        case __SK_PitchChange_:
+          sprintf(s,"PitchChange\t%.3f  %d  %.1f\n",0.0,channel,byte3);
+          if (writeFile) {
+            fprintf(file,"PitchChange\t%.3f  %d  %.1f\n",dt,channel,byte3);
+          } 	 
+          break;
         case __SK_Volume_:
           sprintf(s,"Volume\t%.3f  %d  %.1f\n",0.0,channel,byte3);
           if (writeFile) {

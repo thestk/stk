@@ -30,14 +30,11 @@
 #include "SKINI.msg"
 
 #include <math.h>
-#include <string.h>
 
 VoicForm :: VoicForm() : Instrmnt()
 {
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-	voiced = new SingWave( strcat(file,"impuls20.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+	voiced = new SingWave( (Stk::rawwavePath() + "impuls20.raw").c_str(), TRUE );
 	voiced->setGainRate( 0.001 );
 	voiced->setGainTarget( 0.0 );
 
@@ -86,7 +83,7 @@ void VoicForm :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "VoicForm: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "VoicForm: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -107,14 +104,14 @@ bool VoicForm :: setPhoneme(const char *phoneme )
       setVoiced( Phonemes::voiceGain( i ) );
       setUnVoiced( Phonemes::noiseGain( i ) );
 #if defined(_STK_DEBUG_)
-			cout << "VoicForm: found formant " << phoneme << " (number " << i << ")" << endl;
+			cout << "VoicForm: found formant " << phoneme << " (number " << i << ")" << std::endl;
 #endif
 		}
 		i++;
 	}
 
 	if ( !found )
-    cerr << "VoicForm: phoneme " << phoneme << " not found!" << endl;
+    std::cerr << "VoicForm: phoneme " << phoneme << " not found!" << std::endl;
 
 	return found;
 }
@@ -132,7 +129,7 @@ void VoicForm :: setUnVoiced(MY_FLOAT nGain)
 void VoicForm :: setFilterSweepRate(int whichOne, MY_FLOAT rate)
 {
   if ( whichOne < 0 || whichOne > 3 ) {
-    cerr << "VoicForm: setFilterSweepRate filter argument outside range 0-3!" << endl;
+    std::cerr << "VoicForm: setFilterSweepRate filter argument outside range 0-3!" << std::endl;
     return;
   }
 
@@ -191,11 +188,11 @@ void VoicForm :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "VoicForm: Control value less than zero!" << endl;
+    std::cerr << "VoicForm: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "VoicForm: Control value greater than 128.0!" << endl;
+    std::cerr << "VoicForm: Control value greater than 128.0!" << std::endl;
   }
 
 	if (number == __SK_Breath_)	{ // 2
@@ -240,9 +237,9 @@ void VoicForm :: controlChange(int number, MY_FLOAT value)
 		onepole->setPole( 0.97 - ( norm * 0.2) );
 	}
   else
-    cerr << "VoicForm: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "VoicForm: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "VoicForm: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "VoicForm: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

@@ -22,7 +22,6 @@
 
 #include "Brass.h"
 #include "SKINI.msg"
-#include <string.h>
 #include <math.h>
 
 Brass :: Brass(MY_FLOAT lowestFrequency)
@@ -38,10 +37,8 @@ Brass :: Brass(MY_FLOAT lowestFrequency)
   adsr = new ADSR;
   adsr->setAllTimes( 0.005, 0.001, 1.0, 0.010);
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
   vibrato->setFrequency( 6.137 );
   vibratoGain = 0.0;
 
@@ -73,7 +70,7 @@ void Brass :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "Brass: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "Brass: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -89,7 +86,7 @@ void Brass :: setLip(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "Brass: setLip parameter is less than or equal to zero!" << endl;
+    std::cerr << "Brass: setLip parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -115,7 +112,7 @@ void Brass :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   this->startBlowing(amplitude, amplitude * 0.001);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Brass: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Brass: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -124,7 +121,7 @@ void Brass :: noteOff(MY_FLOAT amplitude)
   this->stopBlowing(amplitude * 0.005);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Brass: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Brass: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -151,11 +148,11 @@ void Brass :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Brass: Control value less than zero!" << endl;
+    std::cerr << "Brass: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Brass: Control value greater than 128.0!" << endl;
+    std::cerr << "Brass: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_LipTension_)	{ // 2
@@ -171,9 +168,9 @@ void Brass :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_AfterTouch_Cont_) // 128
     adsr->setTarget( norm );
   else
-    cerr << "Brass: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Brass: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Brass: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Brass: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

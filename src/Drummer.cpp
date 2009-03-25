@@ -16,7 +16,6 @@
 /***************************************************/
 
 #include "Drummer.h"
-#include <string.h>
 #include <math.h>
 
 // Not really General MIDI yet.  Coming soon.
@@ -75,16 +74,16 @@ Drummer :: ~Drummer()
 void Drummer :: noteOn(MY_FLOAT instrument, MY_FLOAT amplitude)
 {
 #if defined(_STK_DEBUG_)
-  cerr << "Drummer: NoteOn instrument = " << instrument << ", amplitude = " << amplitude << endl;
+  std::cerr << "Drummer: NoteOn instrument = " << instrument << ", amplitude = " << amplitude << std::endl;
 #endif
 
   MY_FLOAT gain = amplitude;
   if ( amplitude > 1.0 ) {
-    cerr << "Drummer: noteOn amplitude parameter is greater than 1.0!" << endl;
+    std::cerr << "Drummer: noteOn amplitude parameter is greater than 1.0!" << std::endl;
     gain = 1.0;
   }
   else if ( amplitude < 0.0 ) {
-    cerr << "Drummer: noteOn amplitude parameter is less than 0.0!" << endl;
+    std::cerr << "Drummer: noteOn amplitude parameter is less than 0.0!" << std::endl;
     return;
   }
 
@@ -122,11 +121,8 @@ void Drummer :: noteOn(MY_FLOAT instrument, MY_FLOAT amplitude)
       nSounding += 1;
 
     sounding[nSounding-1] = noteNum;
-    // Concatenate the STK RAWWAVE_PATH to the rawwave file
-    char path[128];
-    strcpy(path, RAWWAVE_PATH);
-    strcat(path, waveNames[genMIDIMap[noteNum]]);
-    waves[nSounding-1] = new WvIn(path, TRUE);
+    // Concatenate the STK rawwave path to the rawwave file
+    waves[nSounding-1] = new WvIn( (Stk::rawwavePath() + waveNames[genMIDIMap[noteNum]]).c_str(), TRUE );
     if (Stk::sampleRate() != 22050.0)
       waves[nSounding-1]->setRate( 22050.0 / Stk::sampleRate() );
     filters[nSounding-1]->setPole((MY_FLOAT) 0.999 - (gain * 0.6) );
@@ -134,9 +130,9 @@ void Drummer :: noteOn(MY_FLOAT instrument, MY_FLOAT amplitude)
   }
 
 #if defined(_STK_DEBUG_)
-  cerr << "Number Sounding = " << nSounding << endl;
-  for (i=0; i<nSounding; i++) cerr << sounding[i] << "  ";
-  cerr << "\n";
+  std::cerr << "Number Sounding = " << nSounding << std::endl;
+  for (i=0; i<nSounding; i++) std::cerr << sounding[i] << "  ";
+  std::cerr << "\n";
 #endif
 }
 

@@ -56,7 +56,7 @@ void Sitar :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "Sitar: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "Sitar: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -79,7 +79,7 @@ void Sitar :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   amGain = 0.1 * amplitude;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Sitar: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Sitar: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -87,16 +87,16 @@ void Sitar :: noteOff(MY_FLOAT amplitude)
 {
   loopGain = (MY_FLOAT) 1.0 - amplitude;
   if ( loopGain < 0.0 ) {
-    cerr << "Plucked: noteOff amplitude greater than 1.0!" << endl;
+    std::cerr << "Plucked: noteOff amplitude greater than 1.0!" << std::endl;
     loopGain = 0.0;
   }
   else if ( loopGain > 1.0 ) {
-    cerr << "Plucked: noteOff amplitude less than or zero!" << endl;
+    std::cerr << "Plucked: noteOff amplitude less than or zero!" << std::endl;
     loopGain = (MY_FLOAT) 0.99999;
   }
 
 #if defined(_STK_DEBUG_)
-  cerr << "Plucked: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Plucked: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 

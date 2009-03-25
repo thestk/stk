@@ -23,7 +23,6 @@
 
 #include "Bowed.h"
 #include "SKINI.msg"
-#include <string.h>
 
 Bowed :: Bowed(MY_FLOAT lowestFrequency)
 {
@@ -36,10 +35,8 @@ Bowed :: Bowed(MY_FLOAT lowestFrequency)
   bowTable = new BowTabl;
   bowTable->setSlope((MY_FLOAT) 3.0);
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
   vibrato->setFrequency((MY_FLOAT) 6.12723);
   vibratoGain = (MY_FLOAT) 0.0;
 
@@ -81,7 +78,7 @@ void Bowed :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "Bowed: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "Bowed: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -111,7 +108,7 @@ void Bowed :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   this->setFrequency(frequency);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Bowed: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Bowed: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -120,7 +117,7 @@ void Bowed :: noteOff(MY_FLOAT amplitude)
   this->stopBowing(((MY_FLOAT) 1.0 - amplitude) * (MY_FLOAT) 0.005);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Bowed: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Bowed: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -163,11 +160,11 @@ void Bowed :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Bowed: Control value less than zero!" << endl;
+    std::cerr << "Bowed: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Bowed: Control value greater than 128.0!" << endl;
+    std::cerr << "Bowed: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_BowPressure_) // 2
@@ -184,9 +181,9 @@ void Bowed :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_AfterTouch_Cont_) // 128
     adsr->setTarget(norm);
   else
-    cerr << "Bowed: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Bowed: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Bowed: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Bowed: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

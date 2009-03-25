@@ -8,8 +8,9 @@
 
 int main()
 {
-  // Set the global sample rate before creating class instances.
+  // Set the global sample rate and rawwave path before creating class instances.
   Stk::setSampleRate( 44100.0 );
+  Stk::setRawwavePath( "../../rawwaves/" );
 
   int i;
   RtWvOut *output = 0;

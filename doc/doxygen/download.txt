@@ -1,25 +1,40 @@
 /*! \page download Download and Release Notes
 
-<B>Version 4.1.1, 24 October 2002</B><P>
+<B>Version 4.1.2, 15 March 2004</B><P>
 <UL>
-<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.1.tar.gz">Source distribution</A> (1.2 MB tar/gzipped)</LI>
-<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.1.binaries.tar.gz">Source with precompiled Windows binaries</A> (2.0 MB tar/gzipped)</LI>
-<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.1-1.i386.rpm">Linux RPM</A> (1.2 MB) <B>Note: Library and Makefiles built for ALSA, though the rpm can be rebuilt to use OSS</B></LI>
-<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stkmanual.pdf">STK Manual (PDF)</A> (1.62 MB) <B>Note: HTML version already in /doc/html/ directory of distribution</B></LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.2.tar.gz">Source distribution</A></LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.2.binaries.tar.gz">Source with precompiled Windows binaries</A></LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/planetccrma/software/">Linux RPMs from Planet CCRMA</A></LI>
 </UL>
 
 
 \section notes Release Notes:
 
-\subsection v4dot1dot3 Version 4.1.1
+\subsection v4dot1dot2 Version 4.1.2
 
 <UL>
-<LI>Bug fix in RtAudio for Macintosh OS X and Windows ASIO duplex operation.</LI>
-<LI>Windows ASIO fix in Stk.h.</LI>
-<LI>Documentation updates.</LI>
-<LI>Expanded tutorial.</LI>
-<LI>Fixed RtDuplex omission in src Makefile.</LI>
+<li>Added Linux JACK support to RtAudio.</li>
+<li>Added optional doNormalize argument to WvIn to allow specification of data normalization or not.</li>
+<li>Added volume control to demo program and various tcl scripts.</li>
+<li>Added support for dynamic rawwavePath() setting.</li>
+<li>WaveLoop bug fix.</li>
+<li>Fixed bug in ADSR::setReleaseTime() method.</li>
+<li>Fixed missing initialization of apInput in non-default constructor of DelayA class.</li>
+<li>Added time seeding of random number generator to Noise constructor.</li>
+<li>Update to the contentsAt() method of Delay class.</li>
+<li>WAV file fixes (8-bit) in WvIn and WvOut classes.</li>
+<li>Configure script changes.</li>
+<li>Updated <iostream> include statements and appended "std::" as necessary throughout for compatibility with gcc 3.</li>
 </UL>
+
+\subsection v4dot1dot1 Version 4.1.1
+<ul>
+<li>Bug fix in RtAudio for Macintosh OS X and Windows ASIO duplex operation.</li>
+<li>Windows ASIO fix in Stk.h.</li>
+<li>Documentation updates.</li>
+<li>Expanded tutorial.</li>
+<li>Fixed RtDuplex omission in src Makefile.</li>
+</ul>
 
 \subsection v4dot1 Version 4.1
 

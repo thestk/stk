@@ -1,16 +1,12 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(STK, 4.1, gary@ccrma.stanford.edu, stk)
+AC_INIT(STK, 4.1.2, gary@ccrma.stanford.edu, stk)
 AC_CONFIG_SRCDIR(src/Stk.cpp)
 AC_CONFIG_FILES(src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile)
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_CXX(CC g++ c++ cxx)
+AC_PROG_CXX(g++ CC c++ cxx)
 AC_PROG_CXX
-AC_PROG_RANLIB
-
-# Checks for libraries.
-AC_CHECK_LIB(stdc++, printf, , AC_MSG_ERROR(Stk requires the C++ library!) )
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -40,6 +36,9 @@ AC_MSG_CHECKING(whether to compile realtime support)
 AC_ARG_ENABLE(realtime, [  --disable-realtime = only compile generic non-realtime classes], [AC_SUBST( realtime, [no] ) AC_SUBST( sound_api, [] )], [AC_SUBST( realtime, [yes] ) ] )
 AC_MSG_RESULT($realtime)
 
+# Check for math library
+AC_CHECK_LIB(m, cos, , AC_MSG_ERROR(math library is needed!))
+
 if test $realtime = yes; then
   AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR(realtime support requires the pthread library!))
   AC_CHECK_FUNCS(gettimeofday select socket)
@@ -54,7 +53,7 @@ AC_ARG_ENABLE(debug,
 
 # Check compiler and use -Wall if gnu.
 if test $GXX = "yes" ; then
-  AC_SUBST( warn, [-Wall] )
+  AC_SUBST( warn, ["-Wall -g"] )
 fi
 
 if test $realtime = yes; then
@@ -63,16 +62,43 @@ if test $realtime = yes; then
   AC_MSG_CHECKING(for audio API)
   case $host in
     *-*-linux*)
-    AC_ARG_WITH(alsa, [  --with-alsa = choose native ALSA API support (linux only)], [AC_SUBST( sound_api, [-D__LINUX_ALSA__] ) AC_MSG_RESULT(using ALSA) ], [AC_SUBST( sound_api, [-D__LINUX_OSS__] ) AC_MSG_RESULT(using OSS)])
+    AC_SUBST( sound_api, [_NO_API_] )
 
+    # Look for Jack flag
+    AC_ARG_WITH(jack, [  --with-jack = choose JACK server support (linux only)], [AC_SUBST( sound_api, [-D__LINUX_JACK__] ) AC_MSG_RESULT(using JACK)] , )
+    if [test $sound_api = -D__LINUX_JACK__;] then
+      TEMP_LIBS=$LIBS
+      AC_CHECK_LIB(jack, jack_client_new, , AC_MSG_ERROR(JACK support requires the jack library!))
+      AC_CHECK_LIB(asound, snd_pcm_open, , AC_MSG_ERROR(ALSA support requires the asound library!))
+      LIBS="`pkg-config --cflags --libs jack` $TEMP_LIBS -lasound"
+      audio_apis="-D__LINUX_JACK__"
+    fi
+
+    # Look for Alsa flag
+    AC_ARG_WITH(alsa, [  --with-alsa = choose native ALSA API support (linux only)], [AC_SUBST( sound_api, [-D__LINUX_ALSA__] ) AC_MSG_RESULT(using ALSA)], )
     if test $sound_api = -D__LINUX_ALSA__; then
       AC_CHECK_LIB(asound, snd_pcm_open, , AC_MSG_ERROR(ALSA support requires the asound library!))
+      audio_apis="-D__LINUX_ALSA__ $audio_apis"
     fi
+
+    # Look for OSS flag
+    AC_ARG_WITH(oss, [  --with-oss = choose OSS API support (linux only)], [AC_SUBST( sound_api, [-D__LINUX_OSS__] ) AC_MSG_RESULT(using OSS)], )
+    if test $sound_api = -D__LINUX_OSS__; then
+      audio_apis="-D__LINUX_OSS__ $audio_apis"
+    fi
+
+    # If no audio api flags specified, use OSS
+    if [test $sound_api = _NO_API_;] then
+      AC_SUBST( sound_api, [-D__LINUX_OSS__] )
+      AC_MSG_RESULT(using OSS)
+      AC_SUBST( audio_apis, [-D__LINUX_OSS__] )
+    fi
+
     AC_ARG_ENABLE(midiator, [  --enable-midiator = enable native MS-124W MIDI support (linux only)], [AC_SUBST( midiator, [-D__MIDIATOR__] )], [AC_SUBST( midiator, [] )])
     ;;
 
     *-sgi*)
-    AC_SUBST( sound_api, [-D__IRIX_AL__] )
+    AC_SUBST( audio_apis, ["-D__IRIX_AL__ -LANG:std -w"] )
     AC_MSG_RESULT(using IRIX AL)
     AC_CHECK_LIB(audio, alOpenPort, , AC_MSG_ERROR(IRIX audio support requires the audio library!) )
     AC_CHECK_LIB(md, mdOpenInPort, , AC_MSG_ERROR(IRIX MIDI support requires the md library!) )
@@ -81,9 +107,11 @@ if test $realtime = yes; then
     *-apple*)
     # Check for CoreAudio and CoreMIDI framework
     AC_CHECK_HEADERS(CoreAudio/CoreAudio.h CoreMIDI/CoreMIDI.h CoreServices/CoreServices.h,
-      [AC_SUBST( sound_api, [-D__MACOSX_CORE__] )],
+      [AC_SUBST( audio_apis, [-D__MACOSX_CORE__] )],
       [AC_MSG_ERROR(CoreAudio and/or CoreMIDI header files not found!)] )
     AC_SUBST( frameworks, ["-framework CoreAudio -framework CoreMIDI -framework CoreFoundation"] )
+    # Explicitly link with c++ library.
+    AC_CHECK_LIB(stdc++, printf, , AC_MSG_ERROR(Stk requires the C++ library!) )
     ;;
 
     *)

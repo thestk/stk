@@ -49,7 +49,7 @@ void Plucked :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "Plucked: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "Plucked: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -66,11 +66,11 @@ void Plucked :: pluck(MY_FLOAT amplitude)
 {
   MY_FLOAT gain = amplitude;
   if ( gain > 1.0 ) {
-    cerr << "Plucked: pluck amplitude greater than 1.0!" << endl;
+    std::cerr << "Plucked: pluck amplitude greater than 1.0!" << std::endl;
     gain = 1.0;
   }
   else if ( gain < 0.0 ) {
-    cerr << "Plucked: pluck amplitude less than zero!" << endl;
+    std::cerr << "Plucked: pluck amplitude less than zero!" << std::endl;
     gain = 0.0;
   }
 
@@ -87,7 +87,7 @@ void Plucked :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   this->pluck(amplitude);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Plucked: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Plucked: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -95,16 +95,16 @@ void Plucked :: noteOff(MY_FLOAT amplitude)
 {
   loopGain = (MY_FLOAT) 1.0 - amplitude;
   if ( loopGain < 0.0 ) {
-    cerr << "Plucked: noteOff amplitude greater than 1.0!" << endl;
+    std::cerr << "Plucked: noteOff amplitude greater than 1.0!" << std::endl;
     loopGain = 0.0;
   }
   else if ( loopGain > 1.0 ) {
-    cerr << "Plucked: noteOff amplitude less than or zero!" << endl;
+    std::cerr << "Plucked: noteOff amplitude less than or zero!" << std::endl;
     loopGain = (MY_FLOAT) 0.99999;
   }
 
 #if defined(_STK_DEBUG_)
-  cerr << "Plucked: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Plucked: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 

@@ -21,12 +21,23 @@ Instrmnt :: ~Instrmnt()
 
 void Instrmnt :: setFrequency(MY_FLOAT frequency)
 {
-  cerr << "Instrmnt: virtual setFrequency function call!" << endl;
+  std::cerr << "Instrmnt: virtual setFrequency function call!" << std::endl;
 }
 
 MY_FLOAT Instrmnt :: lastOut() const
 {
   return lastOutput;
+}
+
+// Support for stereo output:
+MY_FLOAT Instrmnt :: lastOutLeft(void) const
+{
+  return 0.5 * lastOutput;
+}
+                                                                                
+MY_FLOAT Instrmnt :: lastOutRight(void) const
+{
+  return 0.5 * lastOutput;
 }
 
 MY_FLOAT *Instrmnt :: tick(MY_FLOAT *vector, unsigned int vectorSize)

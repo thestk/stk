@@ -90,10 +90,9 @@ public:
 
 protected:
 
-	RtAudio *audio;
-  bool stopped;
-  int stream;
-  long counter;
+	RtAudio *audio_;
+  bool stopped_;
+  long counter_;
 
 };
 

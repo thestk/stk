@@ -22,7 +22,7 @@ LIBRARY += @frameworks@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
-	DEFS    += @sound_api@
+	DEFS    += @audio_apis@
 	DEFS    += @midiator@
 endif
 

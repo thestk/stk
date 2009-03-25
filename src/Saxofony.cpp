@@ -36,7 +36,6 @@
 /***************************************************/
 
 #include "Saxofony.h"
-#include <string.h>
 #include "SKINI.msg"
 
 Saxofony :: Saxofony(MY_FLOAT lowestFrequency)
@@ -54,10 +53,8 @@ Saxofony :: Saxofony(MY_FLOAT lowestFrequency)
   envelope = new Envelope;
   noise = new Noise;
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char path[128];
-  strcpy(path, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(path,"sinewave.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
   vibrato->setFrequency((MY_FLOAT) 5.735);
 
   outputGain = (MY_FLOAT) 0.3;
@@ -87,7 +84,7 @@ void Saxofony :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "Saxofony: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "Saxofony: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -133,7 +130,7 @@ void Saxofony :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   outputGain = amplitude + 0.001;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Saxofony: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Saxofony: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -142,7 +139,7 @@ void Saxofony :: noteOff(MY_FLOAT amplitude)
   this->stopBlowing(amplitude * 0.01);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Saxofony: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Saxofony: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -172,11 +169,11 @@ void Saxofony :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Saxofony: Control value less than zero!" << endl;
+    std::cerr << "Saxofony: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Saxofony: Control value greater than 128.0!" << endl;
+    std::cerr << "Saxofony: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_ReedStiffness_) // 2
@@ -194,10 +191,10 @@ void Saxofony :: controlChange(int number, MY_FLOAT value)
   else if (number == 26) // reed table offset
     reedTable->setOffset(0.4 + ( norm * 0.6));
   else
-    cerr << "Saxofony: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Saxofony: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Saxofony: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Saxofony: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 
 }

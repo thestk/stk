@@ -1,5 +1,5 @@
 /***************************************************/
-/*! \class Fluate
+/*! \class Flute
     \brief STK flute physical model class.
 
     This class implements a simple flute
@@ -24,7 +24,6 @@
 
 #include "Flute.h"
 #include "SKINI.msg"
-#include <string.h>
 
 Flute :: Flute(MY_FLOAT lowestFrequency)
 {
@@ -39,10 +38,8 @@ Flute :: Flute(MY_FLOAT lowestFrequency)
   noise = new Noise();
   adsr = new ADSR();
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
   vibrato->setFrequency( 5.925 );
 
   this->clear();
@@ -84,7 +81,7 @@ void Flute :: setFrequency(MY_FLOAT frequency)
 {
   lastFrequency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "Flute: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "Flute: setFrequency parameter is less than or equal to zero!" << std::endl;
     lastFrequency = 220.0;
   }
 
@@ -119,7 +116,7 @@ void Flute :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   outputGain = amplitude + 0.001;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Flute: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Flute: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -128,7 +125,7 @@ void Flute :: noteOff(MY_FLOAT amplitude)
   this->stopBlowing(amplitude * 0.02);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Flute: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Flute: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -177,11 +174,11 @@ void Flute :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Flute: Control value less than zero!" << endl;
+    std::cerr << "Flute: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Flute: Control value greater than 128.0!" << endl;
+    std::cerr << "Flute: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_JetDelay_) // 2
@@ -195,9 +192,9 @@ void Flute :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_AfterTouch_Cont_) // 128
     adsr->setTarget( norm );
   else
-    cerr << "Flute: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Flute: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Flute: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Flute: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

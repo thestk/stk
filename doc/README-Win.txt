@@ -1,6 +1,6 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2002.
+By Perry R. Cook and Gary P. Scavone, 1995-2004.
 
 Please read the file README for more general STK information.
 

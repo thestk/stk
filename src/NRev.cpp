@@ -34,7 +34,7 @@ NRev :: NRev(MY_FLOAT T60)
 
   for (i=0; i<6; i++) {
     combDelays[i] = new Delay( lengths[i], lengths[i]);
-    combCoefficient[i] = pow(10, (-3 * lengths[i] / (T60 * Stk::sampleRate())));
+    combCoefficient[i] = pow(10.0, (-3 * lengths[i] / (T60 * Stk::sampleRate())));
   }
 
   for (i=0; i<8; i++)

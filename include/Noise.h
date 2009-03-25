@@ -19,11 +19,25 @@ class Noise : public Stk
 {
 public:
 
-  //! Default constructor.
+  //! Default constructor which seeds the random number generator with the system time.
   Noise();
+
+  //! Constructor which seeds the random number generator with a given seed.
+  /*!
+    If the seed value is zero, the random number generator is
+    seeded with the system time.
+  */
+  Noise( unsigned int seed );
 
   //! Class destructor.
   virtual ~Noise();
+
+  //! Seed the random number generator with a specific seed value.
+  /*!
+    If no seed is provided or the seed value is zero, the random
+    number generator is seeded with the current system time.
+  */
+  void setSeed( unsigned int seed = 0 );
 
   //! Return a random number between -1.0 and 1.0 using rand().
   virtual MY_FLOAT tick();

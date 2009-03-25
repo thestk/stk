@@ -108,7 +108,7 @@ int main()
 }
 \endcode
 
-Assuming the program is compiled as <TT>threebees</TT>, the three-voice SKINI scorefile <A HREF="tutorial/bachfugue.ski"><TT>bachfugue.ski</TT></A> could be redirected to the program as:
+Assuming the program is compiled as <TT>threebees</TT>, the three-voice SKINI scorefile <A HREF="tutorial/bachfugue.ski"><TT>bachfugue.ski</TT></A> (also located in the <tt>scores</tt> directory with the examples) could be redirected to the program as:
 
 \code
 threebees < bachfugue.ski

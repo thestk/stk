@@ -25,84 +25,94 @@
 
 RtDuplex :: RtDuplex(int nChannels, MY_FLOAT sampleRate, int device, int bufferFrames, int nBuffers )
 {
-  channels = nChannels;
-  bufferSize = bufferFrames;
-  RtAudio::RTAUDIO_FORMAT format = ( sizeof(MY_FLOAT) == 8 ) ? RtAudio::RTAUDIO_FLOAT64 : RtAudio::RTAUDIO_FLOAT32;
+  channels_ = nChannels;
+  bufferSize_ = bufferFrames;
+  RtAudioFormat format = ( sizeof(MY_FLOAT) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
+
+  audio_ = 0;
   try {
-    audio = new RtAudio(&stream, device, channels, device, channels, format,
-                        (int)sampleRate, &bufferSize, nBuffers);
-    data = (MY_FLOAT *) audio->getStreamBuffer(stream);
+    audio_ = new RtAudio();
   }
   catch (RtError &error) {
-    handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+    handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
   }
 
-  lastOutput = (MY_FLOAT *) new MY_FLOAT[channels];
-  for (unsigned int i=0; i<channels; i++) lastOutput[i] = 0.0;
-  counter = 0;
-  stopped = true;
+  // Now open a stream and get the buffer pointer.
+  try {
+    audio_->openStream(device, channels_, device, channels_, format,
+                      (int)sampleRate, &bufferSize_, nBuffers);
+    data_ = (MY_FLOAT *) audio_->getStreamBuffer();
+  }
+  catch (RtError &error) {
+    handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
+  }
+
+  lastOutput_ = (MY_FLOAT *) new MY_FLOAT[channels_];
+  for (unsigned int i=0; i<channels_; i++) lastOutput_[i] = 0.0;
+  counter_ = 0;
+  stopped_ = true;
 }
 
 RtDuplex :: ~RtDuplex()
 {
-  if ( !stopped )
-    audio->stopStream(stream);
-  delete audio;
-  delete [] lastOutput;
-  data = 0; // RtAudio deletes the buffer itself.
+  if ( !stopped_ )
+    audio_->stopStream();
+  delete audio_;
+  delete [] lastOutput_;
+  data_ = 0; // RtAudio deletes the buffer itself.
 }
 
 void RtDuplex :: start()
 {
-  if ( stopped ) {
-    audio->startStream(stream);
-    stopped = false;
+  if ( stopped_ ) {
+    audio_->startStream();
+    stopped_ = false;
   }
 }
 
 void RtDuplex :: stop()
 {
-  if ( !stopped ) {
-    audio->stopStream(stream);
-    stopped = true;
+  if ( !stopped_ ) {
+    audio_->stopStream();
+    stopped_ = true;
   }
 }
 
 MY_FLOAT RtDuplex :: lastOut(void) const
 {
-  if ( channels == 1 )
-    return *lastOutput;
+  if ( channels_ == 1 )
+    return *lastOutput_;
 
   MY_FLOAT output = 0.0;
-  for (unsigned int i=0; i<channels; i++ ) {
-    output += lastOutput[i];
+  for (unsigned int i=0; i<channels_; i++ ) {
+    output += lastOutput_[i];
   }
-  return output / channels;
+  return output / channels_;
 }
 
 MY_FLOAT RtDuplex :: tick(const MY_FLOAT sample)
 {
-  if ( stopped )
+  if ( stopped_ )
     start();
 
-  if (counter == 0) {
+  if (counter_ == 0) {
     try {
-      audio->tickStream(stream);
+      audio_->tickStream();
     }
     catch (RtError &error) {
-      handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+      handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
     }
   }
 
-  unsigned long temp = counter * channels;
-  for (unsigned int i=0; i<channels; i++) {
-    lastOutput[i] = data[temp];
-    data[temp++] = sample;
+  unsigned long temp = counter_ * channels_;
+  for (unsigned int i=0; i<channels_; i++) {
+    lastOutput_[i] = data_[temp];
+    data_[temp++] = sample;
   }
 
-  counter++;
-  if (counter >= (long) bufferSize)
-    counter = 0;
+  counter_++;
+  if (counter_ >= (long) bufferSize_)
+    counter_ = 0;
 
   return lastOut();
 }
@@ -117,36 +127,36 @@ MY_FLOAT *RtDuplex :: tick(MY_FLOAT *vector, unsigned int vectorSize)
 
 const MY_FLOAT *RtDuplex :: lastFrame() const
 {
-  return lastOutput;
+  return lastOutput_;
 }
 
 MY_FLOAT *RtDuplex :: tickFrame(MY_FLOAT *frameVector, unsigned int frames)
 {
-  if ( stopped )
+  if ( stopped_ )
     start();
 
   unsigned int i;
   unsigned long temp;
   for (unsigned int j=0; j<frames; j++ ) {
-    if (counter == 0) {
+    if (counter_ == 0) {
       try {
-        audio->tickStream(stream);
+        audio_->tickStream();
       }
       catch (RtError &error) {
-        handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+        handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
       }
     }
 
-    temp = counter * channels;
-    for (i=0; i<channels; i++) {
-      lastOutput[i] = data[temp];
-      data[temp++] = frameVector[j*channels+i];
-      frameVector[j*channels+i] = lastOutput[i];
+    temp = counter_ * channels_;
+    for (i=0; i<channels_; i++) {
+      lastOutput_[i] = data_[temp];
+      data_[temp++] = frameVector[j*channels_+i];
+      frameVector[j*channels_+i] = lastOutput_[i];
     }
 
-    counter++;
-    if (counter >= (long) bufferSize)
-      counter = 0;
+    counter_++;
+    if (counter_ >= (long) bufferSize_)
+      counter_ = 0;
   }
 
   return frameVector;

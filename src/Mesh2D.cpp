@@ -145,11 +145,11 @@ void Mesh2D :: setNX(short lenX)
 {
   NX = lenX;
   if ( lenX < 2 ) {
-    cerr << "Mesh2D::setNX(" << lenX << "): Minimum length is 2!" << endl;
+    std::cerr << "Mesh2D::setNX(" << lenX << "): Minimum length is 2!" << std::endl;
     NX = 2;
   }
   else if ( lenX > NXMAX ) {
-    cerr << "Mesh2D::setNX(" << lenX << "): Maximum length is " << NXMAX << "!" << endl;
+    std::cerr << "Mesh2D::setNX(" << lenX << "): Maximum length is " << NXMAX << "!" << std::endl;
     NX = NXMAX;
   }
 }
@@ -158,11 +158,11 @@ void Mesh2D :: setNY(short lenY)
 {
   NY = lenY;
   if ( lenY < 2 ) {
-    cerr << "Mesh2D::setNY(" << lenY << "): Minimum length is 2!" << endl;
+    std::cerr << "Mesh2D::setNY(" << lenY << "): Minimum length is 2!" << std::endl;
     NY = 2;
   }
   else if ( lenY > NYMAX ) {
-    cerr << "Mesh2D::setNY(" << lenY << "): Maximum length is " << NYMAX << "!" << endl;
+    std::cerr << "Mesh2D::setNY(" << lenY << "): Maximum length is " << NYMAX << "!" << std::endl;
     NY = NYMAX;
   }
 }
@@ -171,11 +171,11 @@ void Mesh2D :: setDecay(MY_FLOAT decayFactor)
 {
   MY_FLOAT gain = decayFactor;
   if ( decayFactor < 0.0 ) {
-    cerr << "Mesh2D::setDecay decayFactor value is less than 0.0!" << endl;
+    std::cerr << "Mesh2D::setDecay decayFactor value is less than 0.0!" << std::endl;
     gain = 0.0;
   }
   else if ( decayFactor > 1.0 ) {
-    cerr << "Mesh2D::setDecay decayFactor value is greater than 1.0!" << endl;
+    std::cerr << "Mesh2D::setDecay decayFactor value is greater than 1.0!" << std::endl;
     gain = 1.0;
   }
 
@@ -190,22 +190,22 @@ void Mesh2D :: setDecay(MY_FLOAT decayFactor)
 void Mesh2D :: setInputPosition(MY_FLOAT xFactor, MY_FLOAT yFactor)
 {
   if ( xFactor < 0.0 ) {
-    cerr << "Mesh2D::setInputPosition xFactor value is less than 0.0!" << endl;
+    std::cerr << "Mesh2D::setInputPosition xFactor value is less than 0.0!" << std::endl;
     xInput = 0;
   }
   else if ( xFactor > 1.0 ) {
-    cerr << "Mesh2D::setInputPosition xFactor value is greater than 1.0!" << endl;
+    std::cerr << "Mesh2D::setInputPosition xFactor value is greater than 1.0!" << std::endl;
     xInput = NX - 1;
   }
   else
     xInput = (short) (xFactor * (NX - 1));
 
   if ( yFactor < 0.0 ) {
-    cerr << "Mesh2D::setInputPosition yFactor value is less than 0.0!" << endl;
+    std::cerr << "Mesh2D::setInputPosition yFactor value is less than 0.0!" << std::endl;
     yInput = 0;
   }
   else if ( yFactor > 1.0 ) {
-    cerr << "Mesh2D::setInputPosition yFactor value is greater than 1.0!" << endl;
+    std::cerr << "Mesh2D::setInputPosition yFactor value is greater than 1.0!" << std::endl;
     yInput = NY - 1;
   }
   else
@@ -225,14 +225,14 @@ void Mesh2D :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   }
 
 #if defined(_STK_DEBUG_)
-  cerr << "Mesh2D: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Mesh2D: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
 void Mesh2D :: noteOff(MY_FLOAT amplitude)
 {
 #if defined(_STK_DEBUG_)
-  cerr << "Mesh2D: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Mesh2D: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -362,11 +362,11 @@ void Mesh2D :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Mesh2D: Control value less than zero!" << endl;
+    std::cerr << "Mesh2D: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Mesh2D: Control value greater than 128.0!" << endl;
+    std::cerr << "Mesh2D: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == 2) // 2
@@ -380,9 +380,9 @@ void Mesh2D :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_AfterTouch_Cont_) // 128
     ;
   else
-    cerr << "Mesh2D: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Mesh2D: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Mesh2D: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Mesh2D: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

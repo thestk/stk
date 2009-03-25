@@ -12,7 +12,6 @@
 /***************************************************/
 
 #include "Thread.h"
-#include<iostream.h>
 
 Thread :: Thread()
 {

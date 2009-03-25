@@ -9,8 +9,7 @@
 /***************************************************/
 
 #include "Chorus.h"
-#include <string.h>
-#include <iostream.h>
+#include <iostream>
 
 Chorus :: Chorus(MY_FLOAT baseDelay)
 {
@@ -18,12 +17,9 @@ Chorus :: Chorus(MY_FLOAT baseDelay)
   delayLine[1] = new DelayL((long) (baseDelay), (long) baseDelay + 2);
   baseLength = baseDelay;
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char path[128];
-  strcpy(path, RAWWAVE_PATH);
-  mods[0] = new WaveLoop( strcat(path,"sinewave.raw"), TRUE );
-  strcpy(path, RAWWAVE_PATH);
-  mods[1] = new WaveLoop( strcat(path,"sinewave.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  mods[0] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
+  mods[1] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
   mods[0]->setFrequency(0.2);
   mods[1]->setFrequency(0.222222);
   modDepth = 0.05;
@@ -51,11 +47,11 @@ void Chorus :: setEffectMix(MY_FLOAT mix)
 {
   effectMix = mix;
   if ( mix < 0.0 ) {
-    cerr << "Chorus: setEffectMix parameter is less than zero!" << endl;
+    std::cerr << "Chorus: setEffectMix parameter is less than zero!" << std::endl;
     effectMix = 0.0;
   }
   else if ( mix > 1.0 ) {
-    cerr << "Chorus: setEffectMix parameter is greater than 1.0!" << endl;
+    std::cerr << "Chorus: setEffectMix parameter is greater than 1.0!" << std::endl;
     effectMix = 1.0;
   }
 }

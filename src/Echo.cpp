@@ -9,7 +9,7 @@
 /***************************************************/
 
 #include "Echo.h"
-#include <iostream.h>
+#include <iostream>
 
 Echo :: Echo(MY_FLOAT longestDelay)
 {
@@ -34,11 +34,11 @@ void Echo :: setDelay(MY_FLOAT delay)
 {
   MY_FLOAT size = delay;
   if ( delay < 0.0 ) {
-    cerr << "Echo: setDelay parameter is less than zero!" << endl;
+    std::cerr << "Echo: setDelay parameter is less than zero!" << std::endl;
     size = 0.0;
   }
   else if ( delay > length ) {
-    cerr << "Echo: setDelay parameter is greater than delay length!" << endl;
+    std::cerr << "Echo: setDelay parameter is greater than delay length!" << std::endl;
     size = length;
   }
 
@@ -49,11 +49,11 @@ void Echo :: setEffectMix(MY_FLOAT mix)
 {
   effectMix = mix;
   if ( mix < 0.0 ) {
-    cerr << "Echo: setEffectMix parameter is less than zero!" << endl;
+    std::cerr << "Echo: setEffectMix parameter is less than zero!" << std::endl;
     effectMix = 0.0;
   }
   else if ( mix > 1.0 ) {
-    cerr << "Echo: setEffectMix parameter is greater than 1.0!" << endl;
+    std::cerr << "Echo: setEffectMix parameter is greater than 1.0!" << std::endl;
     effectMix = 1.0;
   }
 }

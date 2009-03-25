@@ -1,7 +1,7 @@
 ### libstk Makefile - for various flavors of unix
 
 LIBRARY = libstk.a
-AR = ar -qc
+AR = ar -rsc
 RM = /bin/rm
 OBJECT_PATH = @object_path@
 vpath %.o $(OBJECT_PATH)
@@ -43,7 +43,7 @@ CFLAGS  += @warn@ $(INCLUDE)
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
 	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o RtWvIn.o RtDuplex.o TcpWvOut.o TcpWvIn.o Thread.o Socket.o
-	DEFS    += @sound_api@
+	DEFS    += @audio_apis@
 	DEFS    += @midiator@
 endif
 
@@ -61,7 +61,6 @@ all : $(LIBRARY)
 $(LIBRARY) : $(OBJECTS)
 	/bin/rm -f $(LIBRARY)
 	$(AR) $(LIBRARY) $(OBJECT_PATH)/*.o
-	ranlib $(LIBRARY)
 
 $(OBJECTS) : Stk.h
 

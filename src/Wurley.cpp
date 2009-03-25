@@ -31,25 +31,14 @@
 /***************************************************/
 
 #include "Wurley.h"
-#include <string.h>
 
 Wurley :: Wurley()
   : FM()
 {
-  int i;
-  char files[4][128];
-
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file.
-  for ( i=0; i<4; i++ )
-    strcpy( files[i], RAWWAVE_PATH);
-
-  strcat(files[0], "sinewave.raw");
-  strcat(files[1], "sinewave.raw");
-  strcat(files[2], "sinewave.raw");
-  strcat(files[3], "fwavblnk.raw");
-
-  for ( i=0; i<4; i++ )
-    waves[i] = new WaveLoop( files[i], TRUE );
+  // Concatenate the STK rawwave path to the rawwave files
+  for ( int i=0; i<3; i++ )
+    waves[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
+  waves[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), TRUE );
 
   this->setRatio(0, 1.0);
   this->setRatio(1, 4.0);

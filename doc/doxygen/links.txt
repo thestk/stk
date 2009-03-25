@@ -4,8 +4,16 @@
 
 - <A HREF="http://kern.humdrum.net/">Kern Scores: A Library of Electronic Musical Scores</A> (with automatic conversion to SKINI format)
 
+- <A HREF="http://stk.sapp.org/midi2skini">MIDI to SKINI file converter</A> by Craig Sapp
+
+- <A HREF="http://stk.sapp.org/kern2skini">Kern Score to SKINI file converter</A> by Craig Sapp
+
+- <A HREF="http://www.artassault.org/software/software.html">Calico - A Polyphonic Score File Parser for STK</A> by Greg Kellum
+
 - <A HREF="http://www.music.columbia.edu/PeRColate/">PeRColate: A Port of STK for Max/MSP</A>
 
 - <A HREF="http://mathmorphs.swiki.net/32/">A Partial Port of STK to Squeak</A>
+
+- <a href="http://airy.andre.online.fr/AU/index.html">AUStk: a demo of integration of STK instruments into an AudioUnit</a> by Airy Andre
 
 */

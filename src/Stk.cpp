@@ -17,11 +17,12 @@
 #include <string.h>
 
 MY_FLOAT Stk :: srate = (MY_FLOAT) SRATE;
+std::string Stk :: rawwavepath = RAWWAVE_PATH;
 const Stk::STK_FORMAT Stk :: STK_SINT8 = 1;
 const Stk::STK_FORMAT Stk :: STK_SINT16 = 2;
 const Stk::STK_FORMAT Stk :: STK_SINT32 = 8;
-const Stk::STK_FORMAT Stk :: STK_FLOAT32 = 16;
-const Stk::STK_FORMAT Stk :: STK_FLOAT64 = 32;
+const Stk::STK_FORMAT Stk :: MY_FLOAT32 = 16;
+const Stk::STK_FORMAT Stk :: MY_FLOAT64 = 32;
 
 Stk :: Stk(void)
 {
@@ -40,6 +41,21 @@ void Stk :: setSampleRate(MY_FLOAT newRate)
 {
   if (newRate > 0)
     srate = newRate;
+}
+
+std::string Stk :: rawwavePath(void)
+{
+  return rawwavepath;
+}
+
+void Stk :: setRawwavePath(std::string newPath)
+{
+  if ( !newPath.empty() )
+    rawwavepath = newPath;
+
+  // Make sure the path includes a "/"
+  if ( rawwavepath[rawwavepath.length()-1] != '/' )
+    rawwavepath += "/";
 }
 
 void Stk :: swap16(unsigned char *ptr)

@@ -42,14 +42,14 @@
 #include <math.h>
 #include <string.h>
 
-#include <iostream.h>
+#include <iostream>
 
 WvIn :: WvIn()
 {
   init();
 }
 
-WvIn :: WvIn( const char *fileName, bool raw )
+WvIn :: WvIn( const char *fileName, bool raw, bool doNormalize )
 {
   init();
   openFile( fileName, raw );
@@ -86,7 +86,7 @@ void WvIn :: closeFile( void )
   finished = true;
 }
 
-void WvIn :: openFile( const char *fileName, bool raw )
+void WvIn :: openFile( const char *fileName, bool raw, bool doNormalize )
 {
   closeFile();
 
@@ -129,6 +129,11 @@ void WvIn :: openFile( const char *fileName, bool raw )
   if ( result == false )
     handleError(msg, StkError::FILE_ERROR);
 
+  if ( fileSize == 0 ) {
+    sprintf(msg, "WvIn: File (%s) data size is zero!", fileName);
+    handleError(msg, StkError::FILE_ERROR);
+  }
+
   // Allocate new memory if necessary.
   samples = (bufferSize+1)*channels;
   if ( lastSamples < samples ) {
@@ -144,7 +149,7 @@ void WvIn :: openFile( const char *fileName, bool raw )
   chunkPointer = 0;
   reset();
   readData( 0 );  // Load file data.
-  normalize();
+  if ( doNormalize ) normalize();
   finished = false;
   return;
 
@@ -204,10 +209,11 @@ bool WvIn :: getWavInfo( const char *fileName )
 
   // Check that the data is not compressed.
   SINT16 format_tag;
-  if ( fseek(fd, 4, SEEK_CUR) == -1 ) goto error; // Jump over chunkSize.
+  if ( fread(&chunkSize, 4, 1, fd) != 1 ) goto error; // Read fmt chunk size.
   if ( fread(&format_tag, 2, 1, fd) != 1 ) goto error;
 #ifndef __LITTLE_ENDIAN__
   swap16((unsigned char *)&format_tag);
+  swap32((unsigned char *)&chunkSize);
 #endif
   if (format_tag != 1 && format_tag != 3 ) { // PCM = 1, FLOAT = 3
     sprintf(msg, "WvIn: %s contains an unsupported data format type (%d).", fileName, format_tag);
@@ -250,17 +256,21 @@ bool WvIn :: getWavInfo( const char *fileName )
   }
   else if ( format_tag == 3 ) {
     if (temp == 32)
-      dataType = STK_FLOAT32;
+      dataType = MY_FLOAT32;
     else if (temp == 64)
-      dataType = STK_FLOAT64;
+      dataType = MY_FLOAT64;
   }
   if ( dataType == 0 ) {
     sprintf(msg, "WvIn: %d bits per sample with data format %d are not supported (%s).", temp, format_tag, fileName);
     return false;
   }
 
+  // Jump over any remaining part of the "fmt" chunk.
+  if ( fseek(fd, chunkSize-16, SEEK_CUR) == -1 ) goto error;
+
   // Find "data" chunk ... it must come after the "fmt" chunk.
   if ( fread(&id, 4, 1, fd) != 1 ) goto error;
+
   while ( strncmp(id, "data", 4) ) {
     if ( fread(&chunkSize, 4, 1, fd) != 1 ) goto error;
 #ifndef __LITTLE_ENDIAN__
@@ -308,8 +318,8 @@ bool WvIn :: getSndInfo( const char *fileName )
   if (format == 2) dataType = STK_SINT8;
   else if (format == 3) dataType = STK_SINT16;
   else if (format == 5) dataType = STK_SINT32;
-  else if (format == 6) dataType = STK_FLOAT32;
-  else if (format == 7) dataType = STK_FLOAT64;
+  else if (format == 6) dataType = MY_FLOAT32;
+  else if (format == 7) dataType = MY_FLOAT64;
   else {
     sprintf(msg, "WvIn: data format in file %s is not supported.", fileName);
     return false;
@@ -447,8 +457,8 @@ bool WvIn :: getAifInfo( const char *fileName )
   }
   else {
     if ( fread(&id, 4, 1, fd) != 1 ) goto error;
-    if ( (!strncmp(id, "fl32", 4) || !strncmp(id, "FL32", 4)) && temp == 32 ) dataType = STK_FLOAT32;
-    else if ( (!strncmp(id, "fl64", 4) || !strncmp(id, "FL64", 4)) && temp == 64 ) dataType = STK_FLOAT64;
+    if ( (!strncmp(id, "fl32", 4) || !strncmp(id, "FL32", 4)) && temp == 32 ) dataType = MY_FLOAT32;
+    else if ( (!strncmp(id, "fl64", 4) || !strncmp(id, "FL64", 4)) && temp == 64 ) dataType = MY_FLOAT64;
   }
   if ( dataType == 0 ) {
     sprintf(msg, "WvIn: %d bits per sample in file %s are not supported.", temp, fileName);
@@ -544,8 +554,8 @@ bool WvIn :: getMatInfo( const char *fileName )
   if ( tmp == 1 ) dataType = STK_SINT8;
   else if ( tmp == 3 ) dataType = STK_SINT16;
   else if ( tmp == 5 ) dataType = STK_SINT32;
-  else if ( tmp == 7 ) dataType = STK_FLOAT32;
-  else if ( tmp == 9 ) dataType = STK_FLOAT64;
+  else if ( tmp == 7 ) dataType = MY_FLOAT32;
+  else if ( tmp == 9 ) dataType = MY_FLOAT64;
   else {
     sprintf(msg, "WvIn: The MAT-file array data format (%d) is not supported.", tmp);
     return false;
@@ -649,7 +659,7 @@ void WvIn :: readData( unsigned long index )
     for (i=length*channels-1; i>=0; i--)
       data[i] = buf[i];
   }
-  else if ( dataType == STK_FLOAT32 ) {
+  else if ( dataType == MY_FLOAT32 ) {
     FLOAT32 *buf = (FLOAT32 *)data;
     if (fseek(fd, dataOffset+(long)(chunkPointer*channels*4), SEEK_SET) == -1) goto error;
     if (fread(buf, length*channels, 4, fd) != 4 ) goto error;
@@ -661,7 +671,7 @@ void WvIn :: readData( unsigned long index )
     for (i=length*channels-1; i>=0; i--)
       data[i] = buf[i];
   }
-  else if ( dataType == STK_FLOAT64 ) {
+  else if ( dataType == MY_FLOAT64 ) {
     FLOAT64 *buf = (FLOAT64 *)data;
     if (fseek(fd, dataOffset+(long)(chunkPointer*channels*8), SEEK_SET) == -1) goto error;
     if (fread(buf, length*channels, 8, fd) != 8 ) goto error;
@@ -674,11 +684,11 @@ void WvIn :: readData( unsigned long index )
       data[i] = buf[i];
   }
   else if ( dataType == STK_SINT8 ) {
-    char *buf = (char *)data;
+    unsigned char *buf = (unsigned char *)data;
     if (fseek(fd, dataOffset+(long)(chunkPointer*channels), SEEK_SET) == -1) goto error;
     if (fread(buf, length*channels, 1, fd) != 1 ) goto error;
     for (i=length*channels-1; i>=0; i--)
-      data[i] = buf[i];
+      data[i] = buf[i] - 128.0;  // 8-bit WAV data is unsigned!
   }
 
   // If at end of file, repeat last sample frame for interpolation.
@@ -719,7 +729,7 @@ void WvIn :: normalize(MY_FLOAT peak)
     if ( dataType == STK_SINT8 ) gain = peak / 128.0;
     else if ( dataType == STK_SINT16 ) gain = peak / 32768.0;
     else if ( dataType == STK_SINT32 ) gain = peak / 2147483648.0;
-    else if ( dataType == STK_FLOAT32 || dataType == STK_FLOAT64 ) gain = peak;
+    else if ( dataType == MY_FLOAT32 || dataType == MY_FLOAT64 ) gain = peak;
 
     return;
   }
@@ -731,6 +741,7 @@ void WvIn :: normalize(MY_FLOAT peak)
     if (fabs(data[i]) > max)
       max = (MY_FLOAT) fabs((double) data[i]);
   }
+
   if (max > 0.0) {
     max = (MY_FLOAT) 1.0 / max;
     max *= peak;
