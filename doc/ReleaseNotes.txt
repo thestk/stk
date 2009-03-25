@@ -2,6 +2,9 @@ The Synthesis ToolKit in C++ (STK)
 
 By Perry R. Cook and Gary P. Scavone, 1995-2004.
 
+v4.1.3: (22 March 2004)
+- bug fix in RtAudio for Windows DirectSound output only support
+
 v4.1.2: (15 March 2004)
 - added Linux JACK support to RtAudio
 - added optional doNormalize argument to WvIn to allow specification of data normalization or not
