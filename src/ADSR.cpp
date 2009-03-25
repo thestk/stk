@@ -11,7 +11,7 @@
     envelope value reaches 0.0 in the
     ADSR::RELEASE state.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -30,6 +30,15 @@ ADSR :: ADSR() : Envelope()
 
 ADSR :: ~ADSR()
 {
+}
+
+void ADSR :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
+{
+  if ( !ignoreSampleRateChange_ ) {
+    attackRate_ = oldRate * attackRate_ / newRate;
+    decayRate_ = oldRate * decayRate_ / newRate;
+    releaseRate_ = oldRate * releaseRate_ / newRate;
+  }
 }
 
 void ADSR :: keyOn()

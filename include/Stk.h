@@ -8,7 +8,31 @@
     this class provides error handling and
     byte-swapping functions.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    Any person wishing to distribute modifications to the Software is
+    asked to send the modifications to the original developer so that
+    they can be incorporated into the canonical version.  This is,
+    however, not a binding provision of this license.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+    ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+    CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 /***************************************************/
 
@@ -18,25 +42,13 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 // Most data in STK is passed and calculated with the
 // following user-definable floating-point type.  You
 // can change this to "float" if you prefer or perhaps
 // a "long double" in the future.
 typedef double StkFloat;
-
-// The "MY_FLOAT" type was deprecated in STK
-// versions higher than 4.1.3 and replaced with the variable
-// "StkFloat".  
-#if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__)
-  typedef StkFloat MY_FLOAT;
-  #pragma deprecated(MY_FLOAT)
-#elif defined(__GXX__) 
-  typedef StkFloat MY_FLOAT __attribute__ ((deprecated));
-#else
-  typedef StkFloat MY_FLOAT; // temporary
-#endif
-
 
 //! STK error handling class.
 /*!
@@ -104,36 +116,53 @@ public:
   static const StkFormat STK_FLOAT64; /*!< Normalized between plus/minus 1.0. */
 
   //! Static method which returns the current STK sample rate.
-  static StkFloat sampleRate(void) { return srate_; }
+  static StkFloat sampleRate( void ) { return srate_; }
 
-  //! Static method which sets the STK sample rate.
+  //! Static method that sets the STK sample rate.
   /*!
     The sample rate set using this method is queried by all STK
     classes which depend on its value.  It is initialized to the
     default SRATE set in Stk.h.  Many STK classes use the sample rate
     during instantiation.  Therefore, if you wish to use a rate which
     is different from the default rate, it is imperative that it be
-    set \e BEFORE STK objects are instantiated.
+    set \e BEFORE STK objects are instantiated.  A few classes that
+    make use of the global STK sample rate are automatically notified
+    when the rate changes so that internal class data can be
+    appropriately updated.  However, this has not been fully
+    implemented.  Specifically, classes that appropriately update
+    their own data when either a setFrequency() or noteOn() function
+    is called do not currently receive the automatic notification of
+    rate change.  If the user wants a specific class instance to
+    ignore such notifications, perhaps in a multi-rate context, the
+    function Stk::ignoreSampleRateChange() should be called.
   */
-  static void setSampleRate(StkFloat rate) { if (rate > 0.0) srate_ = rate; }
+  static void setSampleRate( StkFloat rate );
+
+  //! A function to enable/disable the automatic updating of class data when the STK sample rate changes.
+  /*!
+    This function allows the user to enable or disable class data
+    updates in response to global sample rate changes on a class by
+    class basis.
+  */
+  void ignoreSampleRateChange( bool ignore = true ) { ignoreSampleRateChange_ = ignore; };
 
   //! Static method which returns the current rawwave path.
   static std::string rawwavePath(void) { return rawwavepath_; }
 
   //! Static method which sets the STK rawwave path.
-  static void setRawwavePath(std::string path);
+  static void setRawwavePath( std::string path );
 
   //! Static method which byte-swaps a 16-bit data type.
-  static void swap16(unsigned char *ptr);
+  static void swap16( unsigned char *ptr );
 
   //! Static method which byte-swaps a 32-bit data type.
-  static void swap32(unsigned char *ptr);
+  static void swap32( unsigned char *ptr );
 
   //! Static method which byte-swaps a 64-bit data type.
-  static void swap64(unsigned char *ptr);
+  static void swap64( unsigned char *ptr );
 
   //! Static cross-platform method to sleep for a number of milliseconds.
-  static void sleep(unsigned long milliseconds);
+  static void sleep( unsigned long milliseconds );
 
   //! Static function for error reporting and handling using c-strings.
   static void handleError( const char *message, StkError::Type type );
@@ -152,16 +181,27 @@ private:
   static std::string rawwavepath_;
   static bool showWarnings_;
   static bool printErrors_;
+  static std::vector<Stk *> alertList_;
 
 protected:
 
   std::ostringstream errorString_;
+  bool ignoreSampleRateChange_;
 
   //! Default constructor.
-  Stk(void);
+  Stk( void );
 
   //! Class destructor.
-  virtual ~Stk(void);
+  virtual ~Stk( void );
+
+  //! This function should be implemented in subclasses that depend on the sample rate.
+  virtual void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
+
+  //! Add class pointer to list for sample rate change notification.
+  void addSampleRateAlert( Stk *ptr );
+
+  //! Remove class pointer from list for sample rate change notification.
+  void removeSampleRateAlert( Stk *ptr );
 
   //! Internal function for error reporting which assumes message in \c errorString_ variable.
   void handleError( StkError::Type type );
@@ -181,7 +221,7 @@ protected:
     to inter- or de-interleave the data and to convert to and return
     other data types.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -348,13 +388,12 @@ const StkFloat ONE_OVER_128 = 0.0078125;
 #if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__) || defined(__WINDOWS_MM__)
   #define __OS_WINDOWS__
   #define __STK_REALTIME__
-#elif defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) || defined(__LINUX_JACK__)
+#elif defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) || defined(__UNIX_JACK__)
   #define __OS_LINUX__
   #define __STK_REALTIME__
 #elif defined(__IRIX_AL__)
   #define __OS_IRIX__
-  #define __STK_REALTIME__
-#elif defined(__MACOSX_CORE__)
+#elif defined(__MACOSX_CORE__) || defined(__UNIX_JACK__)
   #define __OS_MACOSX__
   #define __STK_REALTIME__
 #endif

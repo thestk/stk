@@ -1,13 +1,13 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2005.
+By Perry R. Cook and Gary P. Scavone, 1995-2007.
 
 Please read the file README for more general STK information.
 
 DirectX and WindowsNT Issues:
 -----------------------------
 
-STK is currently distributed with Visual C++ 6.0 project and workspace files.  It has been tested using both Visual C++ 6.0 and Visual C++ .NET.
+STK is currently distributed with Visual C++ .NET project and workspace files.  It no longer compiles with Visual C++ 6.0.  I gave up attempting to fix all the problems created by such a bad compiler.  This version of STK has been tested using Visual C++ .NET.
 
 IMPORTANT VC++ NOTE: When compiling "release" versions of STK programs, link to the release multithreaded library.  When compiling "debug" versions, link to the debug multithreaded library.  Compiler errors will result otherwise.  Also, the Microsoft folk are up to their old habits of trying to change standards.  The .NET compiler will complain about cerr for some reason.
 
@@ -17,7 +17,7 @@ When using the DirectSound API for audio input, latency is typically pretty horr
 
 Realtime MIDI input/output is supported by RtMidi using the winmm.lib API and requires the __WINDOWS_MM__ preprocessor definition.
 
-Visual C++ 6.0 workspaces have been created for the various STK projects.  Everything has already been configured for you.  The intermediate .obj files will be written to either the "Release" or "Debug" directories, but the executable files will be written to the main project directories (where they need to be for proper execution).  If you should somehow lose or hose the VC++ workspace file for a project, then you will have to do a LOT of configuring to recreate it ... it's probably easier just to download the distribution again from our WWW sites.  Anyway, for your benefit and mine, here is a list of things that need to be added to the various "Project Settings":
+Visual C++ workspaces have been created for the various STK projects.  Everything has already been configured for you.  The intermediate .obj files will be written to either the "Release" or "Debug" directories, but the executable files will be written to the main project directories (where they need to be for proper execution).  If you should somehow lose or hose the VC++ workspace file for a project, then you will have to do a LOT of configuring to recreate it ... it's probably easier just to download the distribution again from our WWW sites.  Anyway, for your benefit and mine, here is a list of things that need to be added to the various "Project Settings" (this was for VC 6.0 ... things have changed with the newer versions of the VC compiler):
 
 1. Under General: Set "Output files:" to <blank> (this will put the executable in the main project directory.
 

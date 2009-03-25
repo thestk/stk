@@ -6,12 +6,13 @@
 // This tick() function handles sample computation only.  It will be
 // called automatically when the system needs a new buffer of audio
 // samples.
-int tick(char *buffer, int bufferSize, void *dataPointer)
+int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+         double streamTime, RtAudioStreamStatus status, void *dataPointer )
 {
   SineWave *sine = (SineWave *) dataPointer;
-  register StkFloat *samples = (StkFloat *) buffer;
+  register StkFloat *samples = (StkFloat *) outputBuffer;
 
-  for ( int i=0; i<bufferSize; i++ )
+  for ( unsigned int i=0; i<nBufferFrames; i++ )
     *samples++ = sine->tick();
 
   return 0;
@@ -23,26 +24,28 @@ int main()
   Stk::setSampleRate( 44100.0 );
 
   SineWave sine;
-  RtAudio *dac = 0;
+  RtAudio dac;
 
-  // Figure out how many bytes in an StkFloat and setup the RtAudio object.
+  // Figure out how many bytes in an StkFloat and setup the RtAudio stream.
+  RtAudio::StreamParameters parameters;
+  parameters.deviceId = dac.getDefaultOutputDevice();
+  parameters.nChannels = 1;
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
-  int bufferSize = RT_BUFFER_SIZE;
+  unsigned int bufferFrames = RT_BUFFER_SIZE;
   try {
-    dac = new RtAudio(0, 1, 0, 0, format, (int)Stk::sampleRate(), &bufferSize, 4);
+    dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&sine );
   }
-  catch (RtError& error) {
+  catch ( RtError &error ) {
     error.printMessage();
-    exit(0);
+    goto cleanup;
   }
 
   sine.setFrequency(440.0);
 
   try {
-    dac->setStreamCallback(&tick, (void *)&sine);
-    dac->startStream();
+    dac.startStream();
   }
-  catch (RtError &error) {
+  catch ( RtError &error ) {
     error.printMessage();
     goto cleanup;
   }
@@ -50,20 +53,17 @@ int main()
   // Block waiting here.
   char keyhit;
   std::cout << "\nPlaying ... press <enter> to quit.\n";
-  std::cin.get(keyhit);
+  std::cin.get( keyhit );
 
-  // Shut down the callback and output stream.
+  // Shut down the output stream.
   try {
-    dac->cancelStreamCallback();
-    dac->closeStream();
+    dac.closeStream();
   }
-  catch (RtError &error) {
+  catch ( RtError &error ) {
     error.printMessage();
   }
 
  cleanup:
-
-  delete dac;
 
   return 0;
 }

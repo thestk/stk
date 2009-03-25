@@ -1,6 +1,6 @@
 /*! \page compile Compiling
 
-The Synthesis ToolKit can be used in a variety of ways, depending on your particular needs.  Some people choose the classes they need for a particular project and copy those to their working directory.  Others create <TT>Makefiles</TT> which compile project-specific class objects from common <TT>src</TT> and <TT>include</TT> directories.  And still others like to compile and link to a common library of object files.  STK was not designed with one particular style of use in mind.
+The Synthesis ToolKit can be used in a variety of ways, depending on your particular needs.  Some people choose the classes they need for a particular project and copy those to their working directory.  Others create <TT>Makefiles</TT> that compile project-specific class objects from common <TT>src</TT> and <TT>include</TT> directories.  And still others like to compile and link to a common library of object files.  STK was not designed with one particular style of use in mind.
 
 
 \section rtvsnonrt "Realtime" vs. "Non-Realtime"
@@ -9,11 +9,11 @@ Most of the Synthesis ToolKit classes are platform independent.  That
 means that they should compile on any reasonably current C++ compiler.
 The functionality needed for realtime audio and MIDI input/output, as
 well as realtime control message acquistion, is inherently platform
-and operating-system (OS) <I>dependent</I>.  STK classes which require
+and operating-system (OS) <I>dependent</I>.  STK classes that require
 specific platform/OS support include RtAudio, RtWvOut, RtWvIn,
 RtDuplex, RtMidi, InetWvIn, InetWvOut, Socket, UdpSocket, TcpServer,
 TcpClient, Thread, and Mutex.  These classes currently can only be
-compiled on Linux, Irix, Macintosh OS X, and Windows systems.
+compiled on Linux, Macintosh OS X, and Windows systems.
 
 Without the "realtime" classes, it is still possible to read SKINI
 scorefiles for control input and to read and write to/from a variety
@@ -42,27 +42,21 @@ STK compiles with realtime support on the following flavors of the Unix operatin
 </TR>
 <TR>
   <TD>Linux</TD>
-  <TD>Jack (audio only, use ALSA for MIDI support)</TD>
-  <TD>__LINUX_JACK__, __LINUX_ALSASEQ__, __LITTLE_ENDIAN__</TD>
+  <TD>OSS (version 4.0 only, use ALSA for MIDI support)</TD>
+  <TD>__LINUX_OSS__, __LINUX_ALSASEQ__, __LITTLE_ENDIAN__</TD>
   <TD><TT>asound, pthread</TT></TD>
 </TR>
 <TR>
-  <TD>Linux</TD>
-  <TD>OSS (audio only, use ALSA for MIDI support)</TD>
-  <TD>__LINUX_OSS__, __LINUX_ALSASEQ__, __LITTLE_ENDIAN__</TD>
-  <TD><TT>asound, pthread</TT></TD>
+  <TD>Linux and Macintosh OS-X</TD>
+  <TD>Jack (audio only, use ALSA for MIDI support)</TD>
+  <TD>__UNIX_JACK__, __LINUX_ALSASEQ__, __LITTLE_ENDIAN__</TD>
+  <TD><TT>asound, pthread, jack</TT></TD>
 </TR>
 <TR>
   <TD>Macintosh OS X</TD>
   <TD>CoreAudio</TD>
   <TD>__MACOSX_CORE__</TD>
   <TD><TT>pthread, CoreAudio, CoreMIDI, CoreFoundation</TT></TD>
-</TR>
-<TR>
-  <TD>Irix</TD>
-  <TD>AL</TD>
-  <TD>__IRIX_AL__, __IRIX_MD__</TD>
-  <TD><TT>audio, pthread</TT></TD>
 </TR>
 </TABLE>
 </CENTER>
@@ -85,7 +79,7 @@ g++ -Wall -D__LITTLE_ENDIAN__ -o sineosc Stk.cpp FileRead.cpp FileWrite.cpp WvIn
 
 Note that the <TT>sineosc.cpp</TT> example does not make use of realtime audio or MIDI input/output classes.  For programs using any of the STK realtime classes mentioned above, it is necessary to specify an audio/MIDI API preprocessor definition and link with the appropriate libraries or frameworks.
 
-When working with a number of different projects that make use of ToolKit classes, the above approach can become cumbersome (especially when trying to synchronize with new STK releases).  Most of the STK projects (e.g., demo, effects, ...) contain <TT>Makefiles</TT> (built by the configure script) which compile project-specific class objects from the distribution <TT>src</TT> and <TT>include</TT> directories.  This approach makes it relatively easy when upgrading to a new STK release (by making path substitutions in the <TT>Makefile</TT> or by moving the projects to a similar relative path within the new STK source tree).  A <TT>Makefile</TT> is provided in the <TT>projects/examples</TT> directory for compiling all the tutorial programs, as well as other example programs.  To compile the <TT>sineosc.cpp</TT> program, for example, one need only type <TT>make sineosc</TT> from within the <TT>projects/examples</TT> directory.
+When working with a number of different projects that make use of ToolKit classes, the above approach can become cumbersome (especially when trying to synchronize with new STK releases).  Most of the STK projects (e.g., demo, effects, ...) contain <TT>Makefiles</TT> (built by the configure script) that compile project-specific class objects from the distribution <TT>src</TT> and <TT>include</TT> directories.  This approach makes it relatively easy when upgrading to a new STK release (by making path substitutions in the <TT>Makefile</TT> or by moving the projects to a similar relative path within the new STK source tree).  A <TT>Makefile</TT> is provided in the <TT>projects/examples</TT> directory for compiling all the tutorial programs, as well as other example programs.  To compile the <TT>sineosc.cpp</TT> program, for example, one need only type <TT>make sineosc</TT> from within the <TT>projects/examples</TT> directory.
 
 
 \subsection library Library Use:
@@ -114,11 +108,11 @@ g++ -Wall -D__LITTLE_ENDIAN__ -o sineosc sineosc.cpp -lstk
 
 \section compileWin Windows:
 
-STK has been tested on Windows platforms using the Visual C++ compiler
+STK has been tested on Windows platforms using the Visual .NET compiler
 only.  It is assumed here that you're familiar with Visual C++ and its
-particular idiosyncrasies.
+particular idiosyncrasies.  STK won't compile in Visual C++ 6.0 any more.
 
-The approach when using Visual C++ is to build a project which
+The approach when using Visual C++ is to build a project that
 includes the necessary ToolKit files from the distribution
 <TT>src</TT> and <TT>include</TT> directories.  For the example
 program from the previous tutorial chapter, create a VC++ console

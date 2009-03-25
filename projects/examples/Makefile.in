@@ -1,6 +1,6 @@
 ### STK examples Makefile - for various flavors of unix
 
-PROGRAMS = sine play record io inetIn inetOut sineosc rtsine crtsine bethree controlbee foursine threebees playsmf grains
+PROGRAMS = sine sineosc foursine
 RM = /bin/rm
 SRC_PATH = ../../src
 OBJECT_PATH = @object_path@
@@ -22,6 +22,7 @@ LIBRARY += @frameworks@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
+  PROGRAMS += play record probe duplex inetIn inetOut rtsine crtsine bethree controlbee threebees playsmf grains
 	DEFS    += @audio_apis@
 endif
 
@@ -45,6 +46,9 @@ clean :
 strip : 
 	strip $(PROGRAMS)
 
+probe: RtAudio.o
+	$(CC) $(CFLAGS) $(DEFS) -o probe probe.cpp $(OBJECT_PATH)/RtAudio.o $(LIBRARY)
+
 play: play.cpp Stk.o FileRead.o WvIn.o FileWvIn.o RtAudio.o
 	$(CC) $(CFLAGS) $(DEFS) -o play play.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/WvIn.o $(OBJECT_PATH)/FileRead.o $(OBJECT_PATH)/FileWvIn.o $(OBJECT_PATH)/RtAudio.o $(LIBRARY)
 
@@ -54,8 +58,8 @@ record: record.cpp Stk.o WvIn.o FileWrite.o WvOut.o FileWvOut.o RtWvIn.o RtAudio
 sine: sine.cpp Stk.o Generator.o SineWave.o FileWrite.o WvOut.o FileWvOut.o
 	$(CC) $(CFLAGS) $(DEFS) -o sine sine.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/Generator.o $(OBJECT_PATH)/SineWave.o $(OBJECT_PATH)/FileWrite.o $(OBJECT_PATH)/WvOut.o $(OBJECT_PATH)/FileWvOut.o $(LIBRARY)
 
-io: io.cpp Stk.o RtAudio.o RtDuplex.o
-	$(CC) $(CFLAGS) $(DEFS) -o io io.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/RtAudio.o $(OBJECT_PATH)/RtDuplex.o $(LIBRARY)
+duplex: duplex.cpp RtAudio.o
+	$(CC) $(CFLAGS) $(DEFS) -o duplex duplex.cpp $(OBJECT_PATH)/RtAudio.o $(LIBRARY)
 
 inetIn: inetIn.cpp Stk.o WvIn.o InetWvIn.o WvOut.o RtWvOut.o RtAudio.o Socket.o TcpServer.o UdpSocket.o Thread.o Mutex.o
 	$(CC) $(CFLAGS) $(DEFS) -o inetIn inetIn.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/WvIn.o $(OBJECT_PATH)/InetWvIn.o $(OBJECT_PATH)/Socket.o $(OBJECT_PATH)/TcpServer.o $(OBJECT_PATH)/UdpSocket.o $(OBJECT_PATH)/Thread.o $(OBJECT_PATH)/Mutex.o $(OBJECT_PATH)/WvOut.o $(OBJECT_PATH)/RtWvOut.o $(OBJECT_PATH)/RtAudio.o $(LIBRARY)

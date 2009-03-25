@@ -9,7 +9,7 @@
     \e keyOff messages, ramping to 1.0 on
     keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -58,6 +58,7 @@ class Envelope : public Generator
  protected:
 
   virtual StkFloat computeSample( void );
+  virtual void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
 
   StkFloat value_;
   StkFloat target_;

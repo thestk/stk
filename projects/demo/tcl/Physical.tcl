@@ -68,6 +68,7 @@ pack .radios2.pluk -side left -padx 5 -pady 10
 pack .radios2.karp -side left -padx 5 -pady 10
 pack .radios2.sitr -side left -padx 5 -pady 10
 pack .radios2.mand -side left -padx 5 -pady 10
+pack .radios2.blot -side left -padx 5 -pady 10
 
 pack .radios1
 pack .radios2

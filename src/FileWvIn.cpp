@@ -26,7 +26,7 @@
     See the FileRead class for a description of the supported audio
     file formats.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -37,6 +37,7 @@ FileWvIn :: FileWvIn( unsigned long chunkThreshold, unsigned long chunkSize )
   : finished_(true), interpolate_(false), time_(0.0),
     chunkThreshold_(chunkThreshold), chunkSize_(chunkSize)
 {
+  Stk::addSampleRateAlert( this );
 }
 
 FileWvIn :: FileWvIn( std::string fileName, bool raw, bool doNormalize,
@@ -45,11 +46,19 @@ FileWvIn :: FileWvIn( std::string fileName, bool raw, bool doNormalize,
     chunkThreshold_(chunkThreshold), chunkSize_(chunkSize)
 {
   openFile( fileName, raw, doNormalize );
+  Stk::addSampleRateAlert( this );
 }
 
 FileWvIn :: ~FileWvIn()
 {
   this->closeFile();
+  Stk::removeSampleRateAlert( this );
+}
+
+void FileWvIn :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
+{
+  if ( !ignoreSampleRateChange_ )
+    this->setRate( oldRate * rate_ / newRate );
 }
 
 void FileWvIn :: closeFile( void )
@@ -130,6 +139,11 @@ void FileWvIn :: normalize( StkFloat peak )
 
 void FileWvIn :: setRate( StkFloat rate )
 {
+#if defined(_STK_DEBUG_)
+  errorString_ << "FileWvIn::setRate: changing file read rate from " << rate_ << " to " << rate << '.';
+  handleError( StkError::DEBUG_WARNING );
+#endif
+
   rate_ = rate;
 
   // If negative rate and at beginning of sound, move pointer to end

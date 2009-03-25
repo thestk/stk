@@ -3,18 +3,18 @@
     \brief STK realtime audio (blocking) input class.
 
     This class provides a simplified interface to RtAudio for realtime
-    audio input.  It is a subclass of WvIn.  Because this class makes
-    use of RtAudio's blocking output routines, its performance is less
-    robust on systems where the audio API is callback-based (Macintosh
-    CoreAudio and Windows ASIO).
+    audio input.  It is a subclass of WvIn.  This class makes use of
+    RtAudio's callback functionality by creating a large ring-buffer
+    from which data is read.  This class should not be used when
+    low-latency is desired.
 
-    RtWvIn supports multi-channel data in interleaved format.  It is
-    important to distinguish the tick() methods, which return samples
-    produced by averaging across sample frames, from the tickFrame()
-    methods, which return references or pointers to multi-channel
-    sample frames.
+    RtWvIn supports multi-channel data in both interleaved and
+    non-interleaved formats.  It is important to distinguish the
+    tick() methods, which return samples produced by averaging across
+    sample frames, from the tickFrame() methods, which return
+    references or pointers to multi-channel sample frames.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -39,8 +39,7 @@ public:
     is defined in Stk.h.  An StkError will be thrown if an error
     occurs duing instantiation.
   */
-  RtWvIn( unsigned int nChannels = 1, StkFloat sampleRate = Stk::sampleRate(),
-          int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 4 );
+  RtWvIn( unsigned int nChannels = 1, StkFloat sampleRate = Stk::sampleRate(), int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 20 );
 
   //! Class destructor.
   ~RtWvIn();
@@ -59,15 +58,19 @@ public:
   */
   void stop( void );
 
+  // This function is not intended for general use but had to be made
+  // public for access from the audio callback function.
+  void fillBuffer( void *buffer, unsigned int nFrames );
+
 protected:
 
   void computeFrame( void );
 
-	RtAudio *adc_;
-  StkFloat *buffer_;
+	RtAudio adc_;
   bool stopped_;
-  unsigned int bufferFrames_;
-  unsigned int bufferIndex_;
+  unsigned int readIndex_;
+  unsigned int writeIndex_;
+  unsigned int framesFilled_;
 
 };
 

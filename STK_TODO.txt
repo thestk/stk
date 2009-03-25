@@ -1,0 +1,25 @@
+Ongoing STK "to do" list:
+
+- OSC server/client classes
+
+- move various error checks, especially in tick() functions, into __DEBUG__ blocks
+
+- more information reported in __DEBUG__ blocks
+
+- add funcionality for sample rate in MAT-file support
+
+- develop a good solution for multi-channel support in Instrumnt class (and others)
+
+- add WAVEFORMATEXTENSIBLE support to WvIn/WvOut?
+
+- port Blotar and Ublotar classes from PeRColate
+
+- consider further sample rate change updates in classes?
+
+- more documentation
+
+
+To see differences:
+-------------------
+
+diff -B -C2 -P -u original_src_dir new_src_dir > difffile.txt

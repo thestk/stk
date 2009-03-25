@@ -42,7 +42,7 @@ CFLAGS  += @warn@ $(INCLUDE)
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
-	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o RtWvIn.o RtDuplex.o InetWvOut.o InetWvIn.o Thread.o Mutex.o Socket.o TcpClient.o TcpServer.o UdpSocket.o
+	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o RtWvIn.o InetWvOut.o InetWvIn.o Thread.o Mutex.o Socket.o TcpClient.o TcpServer.o UdpSocket.o
 	DEFS    += @audio_apis@
 endif
 

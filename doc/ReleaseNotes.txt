@@ -1,13 +1,22 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2005.
+By Perry R. Cook and Gary P. Scavone, 1995-2007.
 
-Future To Do:
-- OSC server/client classes
-- move various error checks, especially in tick() functions, into __DEBUG__ blocks?
-- add WAVEFORMATEXTENSIBLE support to RtAudio
-- add WAVEFORMATEXTENSIBLE support to WvIn/WvOut?
-- better documentation
+v4.3.0: (13 August 2007)
+- an official MIT-like license
+- new functionality to automatically update class data when the STK sample rate changes (partly implemented)
+- updates for new RtAudio version 4.0
+- bug fix in interpolate() function in Stk.h for non-interleaved data
+- fixes / improvements to the Granulate class
+- fix in Whistle when doing animation
+- fixes in BlitSquare for frequency, harmonics, and dc offset
+- updates to Makefiles for non-realtime compile
+- fix in demo.cpp for voice channel assignment
+- updated versions of RtMidi and RtAudio
+- updated ASIO files for MinGW compiler
+- new FAQ in documentation
+- MAT-file bug fix in FileRead class
+
 
 v4.2.1: (14 October 2005)
 - greatly expanded StkFrames functionality (including interpolation and indexing by channel/frame)

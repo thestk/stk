@@ -1,10 +1,10 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2005.
+By Perry R. Cook and Gary P. Scavone, 1995-2007.
 
 Please read the file README and INSTALL for more general STK information.
 
-Realtime support for Macintosh OS X uses the CoreAudio HAL API and is specified during compilation using the __MACOSX_CORE__ preprocessor definition.
+The default realtime support for Macintosh OS X uses the CoreAudio HAL API and is specified during compilation using the __MACOSX_CORE__ preprocessor definition.  There is also support for the JACK low-latency audio server using the __UNIX_JACK__ preprocessor definition.
 
 It is necessary to install the OS X developer kit in order to compile STK.  STK was successfully tested on OS X versions 10.4.
 

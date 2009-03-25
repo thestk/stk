@@ -16,10 +16,10 @@ completely user-extensible (all source included, no unusual libraries,
 and no hidden drivers).  We like to think that this increases the
 chances that our programs will still work in another 5-10 years.  In
 fact, the ToolKit has been working continuously for about 10 years
-now.  STK currently runs with "realtime" support (audio and MIDI) on
-SGI (Irix), Linux, Macintosh OS X, and Windows computer platforms.
-Generic, non-realtime support has been tested under NeXTStep, Sun, and
-other platforms and should work with any standard C++ compiler.
+now.  STK currently runs with realtime support (audio and MIDI) on
+Linux, Macintosh OS X, and Windows computer platforms.  Generic,
+non-realtime support has been tested under NeXTStep, Sun, and other
+platforms and should work with any standard C++ compiler.
 
 - \ref information
 - \ref classes
@@ -28,6 +28,7 @@ other platforms and should work with any standard C++ compiler.
 - \ref maillist
 - \ref system
 - \ref links
+- \ref faq
 - \ref tutorial
 
 */

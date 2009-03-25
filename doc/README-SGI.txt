@@ -1,12 +1,12 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2005.
+By Perry R. Cook and Gary P. Scavone, 1995-2007.
 
 Please read the file README and INSTALL for more general STK information.
 
 The project Makefiles are created by configure.  If you have trouble running "make", try invoking "gmake" (for GNU make).  If that doesn't work, try to download the GNU Makefile utilities from the Internet.
 
-Another issue that has crept up with this release is proper compiler support for C++ error handling.  If you experience problems, you probably don't have a recent version of the C++ compiler.  Otherwise, STK should compile and run on SGI platforms without any problems.  Release 4.0 of STK is confirmed to compile (with various warnings) using CC version 7.30.
+With STK version 4.3, realtime support for IRIX has been discontinued due to the inability to test it.  If you need realtime support on an SGI, go back to version 4.2.1.  Release 4.0 of STK is confirmed to compile (with various warnings) using CC version 7.30.
 
 The __IRIX_AL__ and __IRIX_MD__ preprocessor definitions are required for realtime audio and MIDI support.
 

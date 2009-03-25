@@ -12,18 +12,24 @@ SineWave.h, is 2048 samples.
 
 The class RtWvOut is a protected subclass of WvOut.  A number of
 optional constructor arguments can be used to fine tune its
-performance for a given system.  RtWvOut provides a "single-sample"
-interface to the RtAudio class.  Note that RtWvOut (as well as the
-RtWvIn and RtDuplex classes described below) make use of RtAudio's
-blocking input/output functionality.  On systems that implement an
-inherently callback-based audio API (Linux Jack, Windows ASIO, OS-X
-CoreAudio), this blocking functionality will be less robust.  An
-example of audio output using a callback scheme will be discussed in a
-subsequent tutorial section.
+performance for a given system.  RtWvOut provides a "single-sample",
+blocking interface to the RtAudio class.  Note that RtWvOut (as well
+as the RtWvIn class described below) makes use of RtAudio's callback
+input/output functionality by creating a large ring-buffer into which
+data is written.  These classes should not be used when low-latency
+and robust performance is necessary
 
-Though not used here, an RtWvIn class exists as well that can be used to read realtime audio data from an input device.  See the <TT>record.cpp</TT> example program in the <TT>examples</TT> project for more information.
+Though not used here, an RtWvIn class exists as well that can be used
+to read realtime audio data from an input device.  See the
+<TT>record.cpp</TT> example program in the <TT>examples</TT> project
+for more information.
 
-It may be possible to use an instance of RtWvOut and an instance of RtWvIn to simultaneously read and write realtime audio to and from a hardware device or devices.  However, it is recommended to instead use a single instance of RtDuplex to achieve this behavior, in that it guarantees better synchronization between the input and output data.  See the <TT>effects</TT> project or the <TT>io.cpp</TT> example program in the <TT>examples</TT> project for more information.
+It may be possible to use an instance of RtWvOut and an instance of
+RtWvIn to simultaneously read and write realtime audio to and from a
+hardware device or devices.  However, it is recommended to instead use
+a single instance of RtAudio to achieve this behavior, as described in the next section.
+See the <TT>effects</TT> project or the <TT>duplex.cpp</TT> example
+program in the <TT>examples</TT> project for more information.
 
 When using any realtime STK class (RtAudio, RtWvOut, RtWvIn, RtDuplex, RtMidi, InetWvIn, InetWvOut, Socket, UdpSocket, TcpServer, TcpClient, and Thread), it is necessary to specify an audio/MIDI API preprocessor definition and link with the appropriate libraries or frameworks.  For example, the above program could be compiled on a Linux system using the GNU g++ compiler and the ALSA audio API as follows (assuming all necessary files exist in the project directory):
 

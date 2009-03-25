@@ -8,7 +8,7 @@
     frequency response while maintaining a
     constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -25,6 +25,9 @@ class TwoZero : protected Filter
 
   //! Class destructor.
   ~TwoZero();
+
+  //! A function to enable/disable the automatic updating of class data when the STK sample rate changes.
+  void ignoreSampleRateChange( bool ignore = true ) { ignoreSampleRateChange_ = ignore; };
 
   //! Clears the internal states of the filter.
   void clear(void);
@@ -75,6 +78,10 @@ class TwoZero : protected Filter
     channels in the StkFrames object.
   */
   StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+
+ protected:
+
+  virtual void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
 };
 
 #endif

@@ -61,7 +61,7 @@ or the input sample is distributed across all channels of a sample
 frame.
 
 Nearly all STK classes inherit from the Stk base class.  Stk provides
-a static sample rate which is queried by subclasses as needed.
+a static sample rate that is queried by subclasses as needed.
 Because many classes use the current sample rate value during
 instantiation, it is important that the desired value be set at the
 beginning of a program.  The default STK sample rate is 44100 Hz.

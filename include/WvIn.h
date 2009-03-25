@@ -13,7 +13,7 @@
     Both interleaved and non-interleaved data is supported via the use
     of StkFrames objects.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

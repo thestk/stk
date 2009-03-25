@@ -8,7 +8,31 @@
     provides error handling and byte-swapping
     functions.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    Any person wishing to distribute modifications to the Software is
+    asked to send the modifications to the original developer so that
+    they can be incorporated into the canonical version.  This is,
+    however, not a binding provision of this license.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+    ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+    CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 /***************************************************/
 
@@ -22,15 +46,53 @@ const Stk::StkFormat Stk :: STK_SINT24  = 0x4;
 const Stk::StkFormat Stk :: STK_SINT32  = 0x8;
 const Stk::StkFormat Stk :: STK_FLOAT32 = 0x10;
 const Stk::StkFormat Stk :: STK_FLOAT64 = 0x20;
-bool Stk :: showWarnings_ = false;
+bool Stk :: showWarnings_ = true;
 bool Stk :: printErrors_ = true;
+std::vector<Stk *> Stk :: alertList_;
 
-Stk :: Stk(void)
+Stk :: Stk( void )
+  : ignoreSampleRateChange_(false)
 {
 }
 
-Stk :: ~Stk(void)
+Stk :: ~Stk( void )
 {
+}
+
+void Stk :: setSampleRate( StkFloat rate )
+{
+  if ( rate > 0.0 && rate != srate_ ) {
+    StkFloat oldRate = srate_;
+    srate_ = rate;
+
+    for ( unsigned int i=0; i<alertList_.size(); i++ )
+      alertList_[i]->sampleRateChanged( srate_, oldRate );
+  }
+}
+
+void Stk :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
+{
+  // This function should be reimplemented in classes that need to
+  // make internal variable adjustments in response to a global sample
+  // rate change.
+}
+
+void Stk :: addSampleRateAlert( Stk *ptr )
+{
+  for ( unsigned int i=0; i<alertList_.size(); i++ )
+    if ( alertList_[i] == ptr ) return;
+
+  alertList_.push_back( ptr );
+}
+
+void Stk :: removeSampleRateAlert( Stk *ptr )
+{
+  for ( unsigned int i=0; i<alertList_.size(); i++ ) {
+    if ( alertList_[i] == ptr ) {
+      alertList_.erase( alertList_.begin() + i );
+      return;
+    }
+  }
 }
 
 void Stk :: setRawwavePath( std::string path )
@@ -304,7 +366,7 @@ StkFloat StkFrames :: interpolate( StkFloat frame, unsigned int channel ) const
   else {
     iIndex += channel * nFrames_;
     output = data_[ iIndex ];
-    output += ( alpha * ( data_[ iIndex++ ] - output ) );
+    output += ( alpha * ( data_[ ++iIndex ] - output ) );
   }
 
   return output;

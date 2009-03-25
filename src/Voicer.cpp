@@ -25,7 +25,7 @@
     an ensemble.  Alternately, control changes can
     be sent to all voices on a given channel.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

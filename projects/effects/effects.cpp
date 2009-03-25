@@ -149,11 +149,13 @@ void processMessage( TickData* data )
 // The tick() function handles sample computation and scheduling of
 // control updates.  It will be called automatically by RtAudio when
 // the system needs a new buffer of audio samples.
-int tick(char *buffer, int bufferSize, void *dataPointer)
+int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+         double streamTime, RtAudioStreamStatus status, void *dataPointer )
 {
   TickData *data = (TickData *) dataPointer;
-  register StkFloat sample, *samples = (StkFloat *) buffer;
-  int i, counter, nTicks = bufferSize;
+  register StkFloat *oSamples = (StkFloat *) outputBuffer, *iSamples = (StkFloat *) inputBuffer;
+  register StkFloat sample;
+  int i, counter, nTicks = (int) nBufferFrames;
 
   while ( nTicks > 0 && !done ) {
 
@@ -170,9 +172,9 @@ int tick(char *buffer, int bufferSize, void *dataPointer)
     counter = min( nTicks, data->counter );
     data->counter -= counter;
     for ( i=0; i<counter; i++ ) {
-      sample = data->envelope.tick() * data->effect->tick( *samples );
-      *samples++ = sample; // two channels interleaved
-      *samples++ = sample;
+      sample = data->envelope.tick() * data->effect->tick( *iSamples++ );
+      *oSamples++ = sample; // two channels interleaved
+      *oSamples++ = sample;
       nTicks--;
     }
     if ( nTicks == 0 ) break;
@@ -188,10 +190,10 @@ int tick(char *buffer, int bufferSize, void *dataPointer)
 int main( int argc, char *argv[] )
 {
   TickData data;
-  RtAudio *adac = 0;
+  RtAudio adac;
   int i;
 
-  if (argc < 2 || argc > 6) usage();
+  if ( argc < 2 || argc > 6 ) usage();
 
   // If you want to change the default sample rate (set in Stk.h), do
   // it before instantiating any objects!  If the sample rate is
@@ -215,27 +217,31 @@ int main( int argc, char *argv[] )
 
   // Allocate the adac here.
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
-  int bufferSize = RT_BUFFER_SIZE;
+  RtAudio::StreamParameters oparameters, iparameters;
+  oparameters.deviceId = adac.getDefaultOutputDevice();
+  oparameters.nChannels = 2;
+  iparameters.deviceId = adac.getDefaultInputDevice();
+  iparameters.nChannels = 1;
+  unsigned int bufferFrames = RT_BUFFER_SIZE;
   try {
-    adac = new RtAudio(0, 2, 0, 2, format, (int)Stk::sampleRate(), &bufferSize, 4);
+    adac.openStream( &oparameters, &iparameters, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
   }
-  catch (RtError& error) {
+  catch ( RtError& error ) {
     error.printMessage();
     goto cleanup;
   }
 
   data.envelope.setRate( 0.001 );
-  data.effect = &(data.echo);
+  data.effect = &( data.echo );
 
   // Install an interrupt handler function.
 	(void) signal( SIGINT, finish );
 
   // If realtime output, set our callback function and start the dac.
   try {
-    adac->setStreamCallback( &tick, (void *)&data );
-    adac->startStream();
+    adac.startStream();
   }
-  catch (RtError &error) {
+  catch ( RtError &error ) {
     error.printMessage();
     goto cleanup;
   }
@@ -246,18 +252,15 @@ int main( int argc, char *argv[] )
     Stk::sleep( 50 );
   }
 
-  // Shut down the callback and output stream.
+  // Shut down the output stream.
   try {
-    adac->cancelStreamCallback();
-    adac->closeStream();
+    adac.closeStream();
   }
-  catch (RtError& error) {
+  catch ( RtError& error ) {
     error.printMessage();
   }
 
  cleanup:
-
-  delete adac;
 
 	std::cout << "\neffects finished ... goodbye.\n\n";
   return 0;

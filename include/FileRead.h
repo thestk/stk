@@ -25,7 +25,7 @@
     filling a matrix row.  The sample rate for
     MAT-files is assumed to be 44100 Hz.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

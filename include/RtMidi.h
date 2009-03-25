@@ -35,7 +35,7 @@
 */
 /**********************************************************************/
 
-// RtMidi: Version 1.0.4, 14 October 2005
+// RtMidi: Version 1.0.5, in development
 
 #ifndef RTMIDI_H
 #define RTMIDI_H
@@ -51,7 +51,7 @@ class RtMidi
   virtual void openPort( unsigned int portNumber = 0 ) = 0;
 
   //! Pure virtual openVirtualPort() function.
-  virtual void openVirtualPort() = 0;
+  virtual void openVirtualPort( const std::string portName = std::string( "RtMidi" ) ) = 0;
 
   //! Pure virtual getPortCount() function.
   virtual unsigned int getPortCount() = 0;
@@ -128,7 +128,7 @@ class RtMidiIn : public RtMidi
       is currently only supported by the Macintosh OS-X and Linux ALSA
       APIs (the function does nothing for the other APIs).
   */
-  void openVirtualPort();
+  void openVirtualPort( const std::string portName = std::string( "RtMidi Input" ) );
 
   //! Set a callback function to be invoked for incoming MIDI messages.
   /*!
@@ -270,7 +270,7 @@ class RtMidiOut : public RtMidi
       exception is thrown if an error occurs while attempting to create
       the virtual port.
   */
-  void openVirtualPort();
+  void openVirtualPort( const std::string portName = std::string( "RtMidi Output" ) );
 
   //! Return the number of available MIDI output ports.
   unsigned int getPortCount();
@@ -279,7 +279,7 @@ class RtMidiOut : public RtMidi
   /*!
       An exception is thrown if an invalid port specifier is provided.
   */
-  std::string getPortName( unsigned int portNumber );
+  std::string getPortName( unsigned int portNumber = 0 );
 
   //! Immediately send a single message out an open MIDI output port.
   /*!

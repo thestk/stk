@@ -35,7 +35,7 @@
 */
 /**********************************************************************/
 
-// RtMidi: Version 1.0.4, 14 October 2005
+// RtMidi: Version 1.0.5, in development
 
 #include "RtMidi.h"
 #include <sstream>
@@ -383,13 +383,15 @@ void RtMidiIn :: openPort( unsigned int portNumber )
   connected_ = true;
 }
 
-void RtMidiIn :: openVirtualPort()
+void RtMidiIn :: openVirtualPort( const std::string portName )
 {
   CoreMidiData *data = static_cast<CoreMidiData *> (apiData_);
 
   // Create a virtual MIDI input destination.
   MIDIEndpointRef endpoint;
-  OSStatus result = MIDIDestinationCreate( data->client, CFSTR("RtMidi Input"), midiInputCallback, (void *)&inputData_, &endpoint );
+  OSStatus result = MIDIDestinationCreate( data->client,
+                                           CFStringCreateWithCString( NULL, portName.c_str(), kCFStringEncodingASCII ),
+                                           midiInputCallback, (void *)&inputData_, &endpoint );
   if ( result != noErr ) {
     errorString_ = "RtMidiIn::openVirtualPort: error creating virtual OS-X MIDI destination.";
     error( RtError::DRIVER_ERROR );
@@ -548,7 +550,7 @@ void RtMidiOut :: closePort( void )
   }
 }
 
-void RtMidiOut :: openVirtualPort()
+void RtMidiOut :: openVirtualPort( std::string portName )
 {
   CoreMidiData *data = static_cast<CoreMidiData *> (apiData_);
 
@@ -560,7 +562,9 @@ void RtMidiOut :: openVirtualPort()
 
   // Create a virtual MIDI output source.
   MIDIEndpointRef endpoint;
-  OSStatus result = MIDISourceCreate( data->client, CFSTR("RtMidi Output"), &endpoint );
+  OSStatus result = MIDISourceCreate( data->client,
+                                      CFStringCreateWithCString( NULL, portName.c_str(), kCFStringEncodingASCII ),
+                                      &endpoint );
   if ( result != noErr ) {
     errorString_ = "RtMidiOut::initialize: error creating OS-X virtual MIDI source.";
     error( RtError::DRIVER_ERROR );
@@ -957,7 +961,7 @@ void RtMidiIn :: openPort( unsigned int portNumber )
   connected_ = true;
 }
 
-void RtMidiIn :: openVirtualPort()
+void RtMidiIn :: openVirtualPort( std::string portName )
 {
   AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
   if ( data->vport < 0 ) {
@@ -973,7 +977,7 @@ void RtMidiIn :: openVirtualPort()
     snd_seq_port_info_set_timestamping(pinfo, 1);
     snd_seq_port_info_set_timestamp_real(pinfo, 1);    
     snd_seq_port_info_set_timestamp_queue(pinfo, data->queue_id);
-    snd_seq_port_info_set_name(pinfo, "RtMidi Input");
+    snd_seq_port_info_set_name(pinfo, portName.c_str());
     data->vport = snd_seq_create_port(data->seq, pinfo);
 
     if ( data->vport < 0 ) {
@@ -1195,11 +1199,11 @@ void RtMidiOut :: closePort( void )
   }
 }
 
-void RtMidiOut :: openVirtualPort()
+void RtMidiOut :: openVirtualPort( std::string portName )
 {
   AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
   if ( data->vport < 0 ) {
-    data->vport = snd_seq_create_simple_port( data->seq, "RtMidi Output",
+    data->vport = snd_seq_create_simple_port( data->seq, portName.c_str(),
                                               SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ,
                                               SND_SEQ_PORT_TYPE_MIDI_GENERIC );
 
@@ -1484,7 +1488,7 @@ void RtMidiIn :: openPort( unsigned int portNumber )
   connected_ = true;
 }
 
-void RtMidiIn :: openVirtualPort()
+void RtMidiIn :: openVirtualPort( std::string portName )
 {
   // This function cannot be implemented for the Irix MIDI API.
   errorString_ = "RtMidiIn::openVirtualPort: cannot be implemented in Irix MIDI API!";
@@ -1617,7 +1621,7 @@ void RtMidiOut :: closePort( void )
   }
 }
 
-void RtMidiOut :: openVirtualPort()
+void RtMidiOut :: openVirtualPort( std::string portName )
 {
   // This function cannot be implemented for the Irix MIDI API.
   errorString_ = "RtMidiOut::openVirtualPort: cannot be implemented in Irix MIDI API!";
@@ -1676,6 +1680,8 @@ void RtMidiOut :: sendMessage( std::vector<unsigned char> *message )
 // API information deciphered from:
 //  - http://msdn.microsoft.com/library/default.asp?url=/library/en-us/multimed/htm/_win32_midi_reference.asp
 
+// Thanks to Jean-Baptiste Berruchon for the sysex code.
+
 #if defined(__WINDOWS_MM__)
 
 // The Windows MM API is based on the use of a callback function for
@@ -1693,7 +1699,10 @@ struct WinMidiData {
   HMIDIOUT outHandle;  // Handle to Midi Output Device
   DWORD lastTime;
   RtMidiIn::MidiMessage message;
+  LPMIDIHDR sysexBuffer;
 };
+
+#define  RT_SYSEX_BUFFER_SIZE 1024
 
 //*********************************************************************//
 //  API: Windows MM
@@ -1748,11 +1757,21 @@ static void CALLBACK midiInputCallback( HMIDIOUT hmin,
     unsigned char *ptr = (unsigned char *) &midiMessage;
     for ( int i=0; i<nBytes; i++ ) apiData->message.bytes.push_back( *ptr++ );
   }
-  else { // Sysex message
+  else if ( !(data->ignoreFlags & 0x01) ) {
+    // Sysex message and we're not ignoring it
     MIDIHDR *sysex = ( MIDIHDR *) midiMessage;
     for ( int i=0; i<(int)sysex->dwBytesRecorded; i++ )
       apiData->message.bytes.push_back( sysex->lpData[i] );
-    if ( apiData->message.bytes.back() != 0xF7 ) return;
+
+    // When the callback has to be unaffected (application closes), 
+    // it seems WinMM calls it with an empty sysex to de-queue the buffer
+    // If the buffer is requeued afer that message, the PC suddenly reboots
+    // after one or two minutes (JB).
+    if ( apiData->sysexBuffer->dwBytesRecorded > 0 ) {
+      MMRESULT result = midiInAddBuffer( apiData->inHandle, apiData->sysexBuffer, sizeof(MIDIHDR) );
+      if ( result != MMSYSERR_NOERROR )
+        std::cerr << "\nRtMidiIn::midiInputCallback: error sending sysex to Midi device!!\n\n";
+    }
   }
 
   if ( data->usingCallback ) {
@@ -1822,6 +1841,27 @@ void RtMidiIn :: openPort( unsigned int portNumber )
     error( RtError::DRIVER_ERROR );
   }
 
+  // Allocate and init the sysex buffer.
+  data->sysexBuffer = (MIDIHDR*) new char[ sizeof(MIDIHDR) ];
+  data->sysexBuffer->lpData = new char[1024];
+  data->sysexBuffer->dwBufferLength = 1024;
+  data->sysexBuffer->dwFlags = 0;
+
+  result = midiInPrepareHeader( data->inHandle, data->sysexBuffer, sizeof(MIDIHDR) );
+  if ( result != MMSYSERR_NOERROR ) {
+    midiInClose( data->inHandle );
+    errorString_ = "RtMidiIn::openPort: error starting Windows MM MIDI input port (PrepareHeader).";
+    error( RtError::DRIVER_ERROR );
+  }
+
+  // Register the buffer.
+  result = midiInAddBuffer( data->inHandle, data->sysexBuffer, sizeof(MIDIHDR) );
+  if ( result != MMSYSERR_NOERROR ) {
+    midiInClose( data->inHandle );
+    errorString_ = "RtMidiIn::openPort: error starting Windows MM MIDI input port (AddBuffer).";
+    error( RtError::DRIVER_ERROR );
+  }
+
   result = midiInStart( data->inHandle );
   if ( result != MMSYSERR_NOERROR ) {
     midiInClose( data->inHandle );
@@ -1832,7 +1872,7 @@ void RtMidiIn :: openPort( unsigned int portNumber )
   connected_ = true;
 }
 
-void RtMidiIn :: openVirtualPort()
+void RtMidiIn :: openVirtualPort( std::string portName )
 {
   // This function cannot be implemented for the Windows MM MIDI API.
   errorString_ = "RtMidiIn::openVirtualPort: cannot be implemented in Windows MM MIDI API!";
@@ -1845,6 +1885,16 @@ void RtMidiIn :: closePort( void )
     WinMidiData *data = static_cast<WinMidiData *> (apiData_);
     midiInReset( data->inHandle );
     midiInStop( data->inHandle );
+
+    int result = midiInUnprepareHeader(data->inHandle, data->sysexBuffer, sizeof(MIDIHDR));
+    delete [] data->sysexBuffer->lpData;
+    delete [] data->sysexBuffer;
+    if ( result != MMSYSERR_NOERROR ) {
+      midiInClose( data->inHandle );
+      errorString_ = "RtMidiIn::openPort: error closing Windows MM MIDI input port (midiInUnprepareHeader).";
+      error( RtError::DRIVER_ERROR );
+    }
+
     midiInClose( data->inHandle );
     connected_ = false;
   }
@@ -1878,7 +1928,14 @@ std::string RtMidiIn :: getPortName( unsigned int portNumber )
   MIDIINCAPS deviceCaps;
   MMRESULT result = midiInGetDevCaps( portNumber, &deviceCaps, sizeof(MIDIINCAPS));
 
-  std::string stringName = std::string( deviceCaps.szPname );
+  // For some reason, we need to copy character by character with
+  // UNICODE (thanks to Eduardo Coutinho!).
+  //std::string stringName = std::string( deviceCaps.szPname );
+  char nameString[MAXPNAMELEN];
+  for( int i=0; i<MAXPNAMELEN; i++ )
+    nameString[i] = (char)( deviceCaps.szPname[i] );
+
+  std::string stringName( nameString );
   return stringName;
 }
 
@@ -1905,7 +1962,14 @@ std::string RtMidiOut :: getPortName( unsigned int portNumber )
   MIDIOUTCAPS deviceCaps;
   MMRESULT result = midiOutGetDevCaps( portNumber, &deviceCaps, sizeof(MIDIOUTCAPS));
 
-  std::string stringName = std::string( deviceCaps.szPname );
+  // For some reason, we need to copy character by character with
+  // UNICODE (thanks to Eduardo Coutinho!).
+  //std::string stringName = std::string( deviceCaps.szPname );
+  char nameString[MAXPNAMELEN];
+  for( int i=0; i<MAXPNAMELEN; i++ )
+    nameString[i] = (char)( deviceCaps.szPname[i] );
+
+  std::string stringName( nameString );
   return stringName;
 }
 
@@ -1969,7 +2033,7 @@ void RtMidiOut :: closePort( void )
   }
 }
 
-void RtMidiOut :: openVirtualPort()
+void RtMidiOut :: openVirtualPort( std::string portName )
 {
   // This function cannot be implemented for the Windows MM MIDI API.
   errorString_ = "RtMidiOut::openVirtualPort: cannot be implemented in Windows MM MIDI API!";

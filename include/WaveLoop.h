@@ -12,7 +12,7 @@
     which return references or pointers to multi-channel sample
     frames.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -83,6 +83,7 @@ public:
 protected:
 
   virtual void computeFrame( void );
+  virtual void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
 
   StkFrames firstFrame_;
   StkFloat phaseOffset_;

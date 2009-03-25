@@ -19,12 +19,12 @@
     to \e keyOn and \e keyOff messages by ramping to
     1.0 on keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
 #include "Asymp.h"
-#include <math.h>
+#include <cmath>
 
 Asymp :: Asymp(void) : Envelope()
 {
@@ -34,6 +34,14 @@ Asymp :: Asymp(void) : Envelope()
 
 Asymp :: ~Asymp(void)
 {    
+}
+
+void Asymp :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
+{
+  if ( !ignoreSampleRateChange_ ) {
+    StkFloat tau = -1.0 / ( std::log( factor_ ) * oldRate );
+    factor_ = std::exp( -1.0 / ( tau * newRate ) );
+  }
 }
 
 void Asymp :: keyOn(void)
@@ -56,7 +64,7 @@ void Asymp :: setTau(StkFloat tau)
     return;
   }
 
-  factor_ = exp( -1.0 / ( tau * Stk::sampleRate() ) );
+ factor_ = std::exp( -1.0 / ( tau * Stk::sampleRate() ) );
   constant_ = ( 1.0 - factor_ ) * target_;
 }
 
@@ -68,8 +76,8 @@ void Asymp :: setTime(StkFloat time)
     return;
   }
 
-  StkFloat tau = -time / log( TARGET_THRESHOLD );
-  factor_ = exp( -1.0 / ( tau * Stk::sampleRate() ) );
+  StkFloat tau = -time / std::log( TARGET_THRESHOLD );
+  factor_ = std::exp( -1.0 / ( tau * Stk::sampleRate() ) );
   constant_ = ( 1.0 - factor_ ) * target_;
 }
 

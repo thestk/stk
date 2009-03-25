@@ -8,7 +8,7 @@
     frequency response while maintaining a nearly
     constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -21,10 +21,20 @@ TwoPole :: TwoPole() : Filter()
   std::vector<StkFloat> a(3, 0.0);
   a[0] = 1.0;
   Filter::setCoefficients( b, a );
+  Stk::addSampleRateAlert( this );
 }
 
 TwoPole :: ~TwoPole()
 {
+  Stk::removeSampleRateAlert( this );
+}
+
+void TwoPole :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
+{
+  if ( !ignoreSampleRateChange_ ) {
+    errorString_ << "TwoPole::sampleRateChanged: you may need to recompute filter coefficients!";
+    handleError( StkError::WARNING );
+  }
 }
 
 void TwoPole :: clear(void)

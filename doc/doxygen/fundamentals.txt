@@ -1,6 +1,6 @@
 /*! \page fundamentals STK Fundamentals
 
-The Synthesis ToolKit is implemented in the C++ programming language.  STK does not attempt to provide a new programming environment or paradigm but rather provides a set of objects which can be used within a normal C++ programming framework.  Therefore, it is expected that users of STK will have some familiarity with C/C++ programming concepts.  That said, the STK classes do have some particular idiosyncrasies that we will mention here.
+The Synthesis ToolKit is implemented in the C++ programming language.  STK does not attempt to provide a new programming environment or paradigm but rather provides a set of objects that can be used within a normal C++ programming framework.  Therefore, it is expected that users of STK will have some familiarity with C/C++ programming concepts.  That said, the STK classes do have some particular idiosyncrasies that we will mention here.
 
 \section Signal Computations:
 
@@ -25,7 +25,7 @@ int main()
 }
 \endcode
 
-Nearly all STK classes implement <TT>tick()</TT> functions that take and/or return sample values. Within the <TT>tick()</TT> function, the fundamental sample calculations are performed for a given class.  Most STK classes consume/generate a single sample per operation and their <TT>tick()</TT> method takes/returns each sample "by value".  In addition, every class implementing a <TT>tick()</TT> function also provides one or more overloaded <TT>tick()</TT> functions which can be used for vectorized computations, as shown in the next example.
+Nearly all STK classes implement <TT>tick()</TT> functions that take and/or return sample values. Within the <TT>tick()</TT> function, the fundamental sample calculations are performed for a given class.  Most STK classes consume/generate a single sample per operation and their <TT>tick()</TT> method takes/returns each sample "by value".  In addition, every class implementing a <TT>tick()</TT> function also provides one or more overloaded <TT>tick()</TT> functions that can be used for vectorized computations, as shown in the next example.
 
 \code
 #include "Noise.h"
@@ -48,7 +48,7 @@ In this way, it might be possible to achieve improved processing efficiency usin
 
 \section STK Inheritance:
 
-Nearly all STK classes inherit from the Stk abstract base class, which provides common functionality related to error reporting, sample rate control, and byte swapping.  Several other base classes exist which roughly group many of the classes according to function as follows:
+Nearly all STK classes inherit from the Stk abstract base class, which provides common functionality related to error reporting, sample rate control, and byte swapping.  Several other base classes exist that roughly group many of the classes according to function as follows:
 
 - Generator: source signal unit generator classes [Envelope, ADSR, Asymp, Noise, SubNoise, Modulate, SingWave, SineWave Blit, BlitSaw, BlitSquare, Granulate]
 - Filter: digital filtering classes [OneZero, OnePole, PoleZero, TwoZero, TwoPole, BiQuad, FormSwep, Delay, DelayL, DelayA]

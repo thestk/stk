@@ -9,7 +9,7 @@
 
     The "table" length, set in SineWave.h, is 2048 samples by default.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -27,10 +27,19 @@ SineWave :: SineWave( void )
     for ( unsigned long i=0; i<=TABLE_SIZE; i++ )
       table_[i] = sin( TWO_PI * i * temp );
   }
+
+  Stk::addSampleRateAlert( this );
 }
 
 SineWave :: ~SineWave()
 {
+  Stk::removeSampleRateAlert( this );
+}
+
+void SineWave :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
+{
+  if ( !ignoreSampleRateChange_ )
+    this->setRate( oldRate * rate_ / newRate );
 }
 
 void SineWave :: reset(void)

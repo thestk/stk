@@ -12,7 +12,7 @@
     filters in parallel with corresponding right
     and left outputs.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

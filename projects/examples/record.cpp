@@ -39,18 +39,18 @@ void usage(void) {
 int main(int argc, char *argv[])
 {
   // minimal command-line checking
-  if (argc != 5) usage();
+  if ( argc != 5 ) usage();
 
   Stk::showWarnings( true );
 
-  int channels = (int) atoi(argv[1]);
-  double sample_rate = atof(argv[4]);
+  unsigned int channels = (unsigned int) atoi(argv[1]);
+  double sampleRate = atof(argv[4]);
   double time = atof(argv[3]);
   long samples, i;
   StkFrames frame( 1, channels );
 
   // Set the global sample rate.
-  Stk::setSampleRate( sample_rate );
+  Stk::setSampleRate( sampleRate );
 
   // Initialize our WvIn/WvOut pointers.
   RtWvIn *input = 0;
@@ -58,22 +58,22 @@ int main(int argc, char *argv[])
 
   // Open the realtime input device
   try {
-    input = new RtWvIn(channels);
+    input = new RtWvIn( channels );
   }
-  catch (StkError &) {
+  catch ( StkError & ) {
     exit(0);
   }
   
   // Open the soundfile for output.
   try {
-    output = new FileWvOut(argv[2], channels, FileWrite::FILE_WAV);
+    output = new FileWvOut( argv[2], channels, FileWrite::FILE_WAV );
   }
-  catch (StkError &) {
+  catch ( StkError & ) {
     goto cleanup;
   }
 
   // Here's the runtime loop
-  samples = (long) (time * Stk::sampleRate());
+  samples = (long) ( time * Stk::sampleRate() );
   for ( i=0; i<samples; i++ ) {
     output->tickFrame( input->tickFrame( frame ) );
   }

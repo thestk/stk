@@ -11,7 +11,7 @@
     envelope value reaches 0.0 in the
     ADSR::RELEASE state.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -75,6 +75,7 @@ class ADSR : public Envelope
  protected:  
 
   StkFloat computeSample( void );
+  void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
 
   StkFloat attackRate_;
   StkFloat decayRate_;
