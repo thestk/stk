@@ -18,7 +18,7 @@
     order Lagrange interpolators can typically
     improve (minimize) this attenuation characteristic.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -110,9 +110,9 @@ StkFloat DelayL :: nextOut(void)
   return nextOutput_;
 }
 
-StkFloat DelayL :: tick(StkFloat sample)
+StkFloat DelayL :: computeSample( StkFloat input )
 {
-  inputs_[inPoint_++] = sample;
+  inputs_[inPoint_++] = input;
 
   // Increment input pointer modulo length.
   if (inPoint_ == inputs_.size())
@@ -128,12 +128,3 @@ StkFloat DelayL :: tick(StkFloat sample)
   return outputs_[0];
 }
 
-StkFloat *DelayL :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Filter::tick( vector, vectorSize );
-}
-
-StkFrames& DelayL :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Filter::tick( frames, channel );
-}

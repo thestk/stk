@@ -17,13 +17,13 @@
        - String Sustain = 11
        - String Stretch = 1
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
 #include "StifKarp.h"
 #include "SKINI.msg"
-#include <math.h>
+#include <cmath>
 
 StifKarp :: StifKarp(StkFloat lowestFrequency)
 {
@@ -180,7 +180,7 @@ void StifKarp :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat StifKarp :: tick()
+StkFloat StifKarp :: computeSample()
 {
   StkFloat temp = delayLine_.lastOut() * loopGain_;
 
@@ -194,16 +194,6 @@ StkFloat StifKarp :: tick()
   lastOutput_ = delayLine_.tick(temp);
   lastOutput_ = lastOutput_ - combDelay_.tick( lastOutput_ );
   return lastOutput_;
-}
-
-StkFloat *StifKarp :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& StifKarp :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void StifKarp :: controlChange(int number, StkFloat value)

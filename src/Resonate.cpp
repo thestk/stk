@@ -13,7 +13,7 @@
        - Zero Radii = 1
        - Envelope Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -112,21 +112,11 @@ void Resonate :: setEqualGainZeroes()
   filter_.setEqualGainZeroes();
 }
 
-StkFloat Resonate :: tick()
+StkFloat Resonate :: computeSample()
 {
   lastOutput_ = filter_.tick( noise_.tick() );
   lastOutput_ *= adsr_.tick();
   return lastOutput_;
-}
-
-StkFloat *Resonate :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Resonate :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Resonate :: controlChange(int number, StkFloat value)

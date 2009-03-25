@@ -28,7 +28,7 @@
     This class is primarily for use in STK example programs but it is
     generic enough to work in many other contexts.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -45,7 +45,7 @@ const int DEFAULT_QUEUE_LIMIT = 200;
 
 #include "Mutex.h"
 #include "Thread.h"
-#include "Socket.h"
+#include "TcpServer.h"
 #include "RtMidi.h"
 
 extern "C" THREAD_RETURN THREAD_TYPE stdinHandler(void * ptr);
@@ -69,7 +69,7 @@ class Messager : public Stk
 #if defined(__STK_REALTIME__)
     Mutex mutex;
     RtMidiIn *midi;
-    Socket *socket;
+    TcpServer *socket;
     std::vector<int> fd;
     fd_set mask;
 #endif

@@ -128,8 +128,8 @@ void usage(char *function) {
   printf("        -im <port> for realtime control input by MIDI (virtual port = 0, default = 1),\n");
 #endif
   printf("        and Instrument = one of these:\n");
-  for (i=0;i<NUM_INSTS;i+=8)  {
-    for (j=0;j<8 && (i+j) < NUM_INSTS;j++)  {
+  for ( i=0; i<NUM_INSTS; i+=8 ) {
+    for ( j=0; j<8 && (i+j)<NUM_INSTS; j++ ) {
       printf("%s ",insts[i+j]);
     }
     printf("\n");
@@ -182,10 +182,10 @@ int checkArgs(int numArgs, char *args[])
   }
 
   // Check for multiple flags of the same type
-  for (i=0; i<=j; i++) {
+  for ( i=0; i<=j; i++ ) {
     w = i+1;
-    while (w <= j) {
-      if (flags[0][i] == flags[0][w] && flags[1][i] == flags[1][w] ) {
+    while  (w <= j ) {
+      if ( flags[0][i] == flags[0][w] && flags[1][i] == flags[1][w] ) {
         printf("\nError: Multiple command line flags of the same type specified.\n\n");
         usage(args[0]);
       }
@@ -203,7 +203,7 @@ int countVoices(int nArgs, char *args[])
 {
   int i = 2, nInstruments = 1;
 
-  while (i < nArgs) {
+  while ( i < nArgs ) {
     if ( strncmp( args[i], "-n", 2) == 0 ) {
       if ( i+1 < nArgs && args[i+1][0] != '-' ) {
         nInstruments = atoi( args[i+1] );
@@ -218,7 +218,7 @@ int countVoices(int nArgs, char *args[])
 
 bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
 {
-  int i = 2, j = 0;
+  int i = 2, j = 0, nWvIns = 0;
   bool realtime = false;
   char fileName[256];
 
@@ -228,12 +228,14 @@ bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
 
       case 'f':
         strcpy(fileName,args[++i]);
-        if ( !messager.setScoreFile( fileName ) ) usage(args[0]);
+        if ( !messager.setScoreFile( fileName ) ) exit(0);
+        nWvIns++;
         break;
 
       case 'p':
 #if defined(__STK_REALTIME__)
-        if ( !messager.startStdInput() ) usage(args[0]);
+        if ( !messager.startStdInput() ) exit(0);
+        nWvIns++;
         break;
 #else
         usage(args[0]);
@@ -244,9 +246,10 @@ bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
         // Check for an optional socket port argument.
         if ((i+1 < numArgs) && args[i+1][0] != '-') {
           int port = atoi(args[++i]);
-          if ( !messager.startSocketInput( port ) ) usage(args[0]);
+          if ( !messager.startSocketInput( port ) ) exit(0);
         }
-        else if ( !messager.startSocketInput() ) usage(args[0]);
+        else if ( !messager.startSocketInput() ) exit(0);
+        nWvIns++;
         break;
 #else
         usage(args[0]);
@@ -257,9 +260,10 @@ bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
         // Check for an optional MIDI port argument.
         if ((i+1 < numArgs) && args[i+1][0] != '-') {
           int port = atoi(args[++i]);
-          if ( !messager.startMidiInput( port-1 ) ) usage(args[0]);
+          if ( !messager.startMidiInput( port-1 ) ) exit(0);
         }
-        else if ( !messager.startMidiInput() ) usage(args[0]);
+        else if ( !messager.startMidiInput() ) exit(0);
+        nWvIns++;
         break;
 #else
         usage(args[0]);
@@ -287,7 +291,7 @@ bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
           strcpy(fileName,args[i]);
         }
         else strcpy(fileName,"testwav");
-        output[j] = new WvOut(fileName, 1, WvOut::WVOUT_WAV );
+        output[j] = new FileWvOut(fileName, 1, FileWrite::FILE_WAV );
         j++;
         break;
           
@@ -297,7 +301,7 @@ bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
           strcpy(fileName,args[i]);
         }
         else strcpy(fileName,"testsnd");
-        output[j] = new WvOut(fileName,1, WvOut::WVOUT_SND);
+        output[j] = new FileWvOut(fileName,1, FileWrite::FILE_SND);
         j++;
         break;
           
@@ -307,7 +311,7 @@ bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
           strcpy(fileName,args[i]);
         }
         else strcpy(fileName,"testmat");
-        output[j] = new WvOut(fileName,1, WvOut::WVOUT_MAT);
+        output[j] = new FileWvOut(fileName,1, FileWrite::FILE_MAT);
         j++;
         break;
 
@@ -317,7 +321,7 @@ bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
           strcpy(fileName,args[i]);
         }
         else strcpy(fileName,"testaif");
-        output[j] = new WvOut(fileName,1, WvOut::WVOUT_AIF );
+        output[j] = new FileWvOut(fileName,1, FileWrite::FILE_AIF );
         j++;
         break;
           
@@ -327,6 +331,15 @@ bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
       }
     }
     i++;
+  }
+
+  if ( nWvIns == 0 ) {
+#if defined(__STK_REALTIME__)
+    if ( !messager.startStdInput() ) exit(0);
+#else
+    printf("\nError: The -if file input flag must be specified for non-realtime use.\n\n");
+    usage(args[0]);
+#endif
   }
 
   return realtime;

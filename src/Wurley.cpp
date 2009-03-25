@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -56,7 +56,7 @@ Wurley :: Wurley()
   adsr_[3]->setAllTimes( 0.001, 0.15, 0.0, 0.04);
 
   twozero_.setGain( 2.0 );
-  vibrato_->setFrequency( 8.0 );
+  vibrato_.setFrequency( 8.0 );
 }  
 
 Wurley :: ~Wurley()
@@ -87,7 +87,7 @@ void Wurley :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-StkFloat Wurley :: tick()
+StkFloat Wurley :: computeSample()
 {
   StkFloat temp, temp2;
 
@@ -104,19 +104,10 @@ StkFloat Wurley :: tick()
   temp += control2_ * 0.5 * gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
 
   // Calculate amplitude modulation and apply it to output.
-  temp2 = vibrato_->tick() * modDepth_;
+  temp2 = vibrato_.tick() * modDepth_;
   temp = temp * (1.0 + temp2);
     
   lastOutput_ = temp * 0.5;
   return lastOutput_;
 }
 
-StkFloat *Wurley :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Wurley :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
-}

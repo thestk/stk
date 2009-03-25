@@ -8,7 +8,7 @@
     It provides methods for controlling the sweep
     rate and target frequency.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -87,12 +87,12 @@ void FormSwep :: setSweepTime(StkFloat time)
   if ( sweepRate_ < 0.0 ) sweepRate_ = 0.0;
 }
 
-StkFloat FormSwep :: tick(StkFloat sample)
+StkFloat FormSwep :: computeSample( StkFloat input )
 {                                     
   if (dirty_)  {
     sweepState_ += sweepRate_;
     if ( sweepState_ >= 1.0 )   {
-      sweepState_ = (StkFloat) 1.0;
+      sweepState_ = 1.0;
       dirty_ = false;
       radius_ = targetRadius_;
       frequency_ = targetFrequency_;
@@ -106,15 +106,6 @@ StkFloat FormSwep :: tick(StkFloat sample)
     BiQuad::setResonance( frequency_, radius_, true );
   }
 
-  return BiQuad::tick( sample );
+  return BiQuad::computeSample( input );
 }
 
-StkFloat *FormSwep :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Filter::tick( vector, vectorSize );
-}
-
-StkFrames& FormSwep :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Filter::tick( frames, channel );
-}

@@ -6,7 +6,7 @@
     C rand() function.  The quality of the rand()
     function varies from one OS to another.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -40,20 +40,10 @@ void Noise :: setSeed( unsigned int seed )
     srand( seed );
 }
 
-StkFloat Noise :: tick()
+StkFloat Noise :: computeSample()
 {
   lastOutput_ = (StkFloat) (2.0 * rand() / (RAND_MAX + 1.0) );
   lastOutput_ -= 1.0;
   return lastOutput_;
-}
-
-StkFloat *Noise :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Generator::tick( vector, vectorSize );
-}
-
-StkFrames& Noise :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Generator::tick( frames, channel );
 }
 

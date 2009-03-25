@@ -23,7 +23,7 @@
        - String Detuning = 1
        - Microphone Position = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -31,7 +31,7 @@
 #define STK_MANDOLIN_H
 
 #include "PluckTwo.h"
-#include "WvIn.h"
+#include "FileWvIn.h"
 
 class Mandolin : public PluckTwo
 {
@@ -54,29 +54,17 @@ class Mandolin : public PluckTwo
   //! Set the body size (a value of 1.0 produces the "default" size).
   void setBodySize(StkFloat size);
 
-  //! Compute one output sample.
-  StkFloat tick();
-
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   void controlChange(int number, StkFloat value);
 
-  protected:  
-    WvIn *soundfile_[12];
-    int mic_;
-    long dampTime_;
-    bool waveDone_;
+  protected:
+
+  StkFloat computeSample( void );
+
+  FileWvIn *soundfile_[12];
+  int mic_;
+  long dampTime_;
+  bool waveDone_;
 };
 
 #endif

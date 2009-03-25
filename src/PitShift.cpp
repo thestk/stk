@@ -5,12 +5,12 @@
     This class implements a simple pitch shifter
     using delay lines.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
 #include "PitShift.h"
-#include <math.h>
+#include <cmath>
 
 const int maxDelay = 5024;
 
@@ -55,7 +55,7 @@ void PitShift :: setShift(StkFloat shift)
   }
 }
 
-StkFloat PitShift :: tick(StkFloat input)
+StkFloat PitShift :: computeSample(StkFloat input)
 {
   // Calculate the two delay length values, keeping them within the
   // range 12 to maxDelay-12.
@@ -83,15 +83,6 @@ StkFloat PitShift :: tick(StkFloat input)
   lastOutput_[0] *= effectMix_;
   lastOutput_[0] += (1.0 - effectMix_) * input;
   lastOutput_[1] = lastOutput_[0];
+
   return lastOutput_[0];
-}
-
-StkFloat *PitShift :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Effect::tick( vector, vectorSize );
-}
-
-StkFrames& PitShift :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Effect::tick( frames, channel );
 }

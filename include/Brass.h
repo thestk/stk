@@ -16,7 +16,7 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -28,7 +28,7 @@
 #include "BiQuad.h"
 #include "PoleZero.h"
 #include "ADSR.h"
-#include "WaveLoop.h"
+#include "SineWave.h"
 
 class Brass: public Instrmnt
 {
@@ -63,30 +63,18 @@ class Brass: public Instrmnt
   //! Stop a note with the given amplitude (speed of decay).
   void noteOff(StkFloat amplitude);
 
-  //! Compute one output sample.
-  StkFloat tick();
-
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   void controlChange(int number, StkFloat value);
 
- protected:  
+ protected:
+
+  StkFloat computeSample( void );
+
   DelayA   delayLine_;
   BiQuad   lipFilter_;
   PoleZero dcBlock_;
   ADSR     adsr_;
-  WaveLoop *vibrato_;
+  SineWave vibrato_;
   unsigned long length_;
   StkFloat lipTarget_;
   StkFloat slideTarget_;

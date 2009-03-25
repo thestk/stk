@@ -3,7 +3,7 @@
 // Gary P. Scavone, 1999.
 
 #include "Instrmnt.h"
-#include "WvOut.h"
+#include "FileWvOut.h"
 #include "Messager.h"
 
 int voiceByNumber(int number, Instrmnt **instrument);

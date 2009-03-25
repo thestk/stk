@@ -5,7 +5,7 @@
     This class implements a simple bowed string
     non-linear function, as described by Smith (1986).
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -32,7 +32,7 @@ void BowTable :: setSlope(StkFloat slope)
   slope_ = slope;
 }
 
-StkFloat BowTable :: tick(StkFloat input)
+StkFloat BowTable :: computeSample(StkFloat input)
 {
   // The input represents differential string vs. bow velocity.
   StkFloat sample;
@@ -49,12 +49,3 @@ StkFloat BowTable :: tick(StkFloat input)
   return lastOutput_;
 }
 
-StkFloat *BowTable :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Function::tick( vector, vectorSize );
-}
-
-StkFrames& BowTable :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Function::tick( frames, channel );
-}

@@ -11,7 +11,7 @@
     of simultaneous voices) via a #define in the
     Drummer.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -19,7 +19,7 @@
 #define STK_DRUMMER_H
 
 #include "Instrmnt.h"
-#include "WvIn.h"
+#include "FileWvIn.h"
 #include "OnePole.h"
 
 const int DRUM_NUMWAVES = 11;
@@ -49,25 +49,14 @@ class Drummer : public Instrmnt
   //! Stop a note with the given amplitude (speed of decay).
   void noteOff(StkFloat amplitude);
 
-  //! Compute one output sample.
-  StkFloat tick();
+ protected:
 
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+  StkFloat computeSample( void );
 
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
- protected:  
-  WvIn    *waves_[DRUM_POLYPHONY];
-  OnePole *filters_[DRUM_POLYPHONY];
-  int      sounding_[DRUM_POLYPHONY];
+  FileWvIn waves_[DRUM_POLYPHONY];
+  OnePole  filters_[DRUM_POLYPHONY];
+  std::vector<int> soundOrder_;
+  std::vector<int> soundNumber_;
   int      nSounding_;
 };
 

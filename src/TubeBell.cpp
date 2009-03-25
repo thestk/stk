@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -56,7 +56,7 @@ TubeBell :: TubeBell()
   adsr_[3]->setAllTimes( 0.004, 4.0, 0.0, 0.04);
 
   twozero_.setGain( 0.5 );
-  vibrato_->setFrequency( 2.0 );
+  vibrato_.setFrequency( 2.0 );
 }  
 
 TubeBell :: ~TubeBell()
@@ -78,7 +78,7 @@ void TubeBell :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-StkFloat TubeBell :: tick()
+StkFloat TubeBell :: computeSample()
 {
   StkFloat temp, temp2;
 
@@ -95,19 +95,9 @@ StkFloat TubeBell :: tick()
   temp += control2_ * 0.5 * gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
 
   // Calculate amplitude modulation and apply it to output.
-  temp2 = vibrato_->tick() * modDepth_;
+  temp2 = vibrato_.tick() * modDepth_;
   temp = temp * (1.0 + temp2);
     
   lastOutput_ = temp * 0.5;
   return lastOutput_;
-}
-
-StkFloat *TubeBell :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& TubeBell :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }

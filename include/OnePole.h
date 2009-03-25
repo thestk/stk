@@ -8,7 +8,7 @@
     the real axis of the z-plane while maintaining
     a constant peak filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -25,7 +25,7 @@ public:
   OnePole();
 
   //! Overloaded constructor which sets the pole position during instantiation.
-  OnePole(StkFloat thePole);
+  OnePole( StkFloat thePole );
 
   //! Class destructor.
   ~OnePole();
@@ -65,17 +65,14 @@ public:
   //! Input one sample to the filter and return one output.
   StkFloat tick(StkFloat sample);
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
   //! Take a channel of the StkFrames object as inputs to the filter and replace with corresponding outputs.
   /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
+    The \c channel argument should be zero or greater (the first
+    channel is specified by 0).  An StkError will be thrown if the \c
+    channel argument is equal to or greater than the number of
     channels in the StkFrames object.
   */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
 
 };
 

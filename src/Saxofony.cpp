@@ -31,7 +31,7 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -51,9 +51,7 @@ Saxofony :: Saxofony(StkFloat lowestFrequency)
   reedTable_.setOffset( 0.7 );
   reedTable_.setSlope( 0.3 );
 
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  vibrato_->setFrequency((StkFloat) 5.735);
+  vibrato_.setFrequency((StkFloat) 5.735);
 
   outputGain_ = 0.3;
   noiseGain_ = 0.2;
@@ -62,7 +60,6 @@ Saxofony :: Saxofony(StkFloat lowestFrequency)
 
 Saxofony :: ~Saxofony()
 {
-  delete vibrato_;
 }
 
 void Saxofony :: clear()
@@ -138,7 +135,7 @@ void Saxofony :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Saxofony :: tick()
+StkFloat Saxofony :: computeSample()
 {
   StkFloat pressureDiff;
   StkFloat breathPressure;
@@ -147,7 +144,7 @@ StkFloat Saxofony :: tick()
   // Calculate the breath pressure (envelope + noise + vibrato)
   breathPressure = envelope_.tick(); 
   breathPressure += breathPressure * noiseGain_ * noise_.tick();
-  breathPressure += breathPressure * vibratoGain_ * vibrato_->tick();
+  breathPressure += breathPressure * vibratoGain_ * vibrato_.tick();
 
   temp = -0.95 * filter_.tick( delays_[0].lastOut() );
   lastOutput_ = temp - delays_[1].lastOut();
@@ -157,16 +154,6 @@ StkFloat Saxofony :: tick()
 
   lastOutput_ *= outputGain_;
   return lastOutput_;
-}
-
-StkFloat *Saxofony :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Saxofony :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Saxofony :: controlChange(int number, StkFloat value)
@@ -188,7 +175,7 @@ void Saxofony :: controlChange(int number, StkFloat value)
   else if (number == __SK_NoiseLevel_) // 4
     noiseGain_ = ( norm * 0.4 );
   else if (number == 29) // 29
-    vibrato_->setFrequency( norm * 12.0 );
+    vibrato_.setFrequency( norm * 12.0 );
   else if (number == __SK_ModWheel_) // 1
     vibratoGain_ = ( norm * 0.5 );
   else if (number == __SK_AfterTouch_Cont_) // 128

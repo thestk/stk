@@ -87,6 +87,18 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=..\..\src\FileRead.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWvIn.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Generator.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\RtAudio.cpp
 # End Source File
 # Begin Source File
@@ -96,6 +108,10 @@ SOURCE=.\rtsine.cpp
 # Begin Source File
 
 SOURCE=..\..\src\RtWvOut.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\SineWave.cpp
 # End Source File
 # Begin Source File
 
@@ -117,6 +133,14 @@ SOURCE=..\..\src\WvOut.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\..\include\FileRead.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWvIn.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\include\RtAudio.h

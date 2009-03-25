@@ -103,6 +103,14 @@ SOURCE=..\..\src\Envelope.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\FileRead.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWvIn.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\Filter.cpp
 # End Source File
 # Begin Source File
@@ -124,6 +132,10 @@ SOURCE=..\..\src\RtAudio.cpp
 # Begin Source File
 
 SOURCE=..\..\src\RtWvOut.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\SineWave.cpp
 # End Source File
 # Begin Source File
 
@@ -163,6 +175,14 @@ SOURCE=..\..\include\Envelope.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\FileRead.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWvIn.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\Filter.h
 # End Source File
 # Begin Source File
@@ -180,6 +200,10 @@ SOURCE=..\..\include\Instrmnt.h
 # Begin Source File
 
 SOURCE=..\..\include\RtAudio.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\SineWave.h
 # End Source File
 # Begin Source File
 

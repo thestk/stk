@@ -8,7 +8,7 @@
     this class provides error handling and
     byte-swapping functions.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -18,7 +18,6 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include <valarray>
 
 // Most data in STK is passed and calculated with the
 // following user-definable floating-point type.  You
@@ -52,6 +51,8 @@ public:
     STATUS,
     WARNING,
     DEBUG_WARNING,
+    MEMORY_ALLOCATION,
+    MEMORY_ACCESS,
     FUNCTION_ARGUMENT,
     FILE_NOT_FOUND,
     FILE_UNKNOWN_FORMAT,
@@ -70,7 +71,8 @@ protected:
 
 public:
   //! The constructor.
-  StkError(const std::string& message, Type type = StkError::UNSPECIFIED) : message_(message), type_(type) {}
+  StkError(const std::string& message, Type type = StkError::UNSPECIFIED)
+    : message_(message), type_(type) {}
 
   //! The destructor.
   virtual ~StkError(void) {};
@@ -139,9 +141,17 @@ public:
   //! Static function for error reporting and handling using c++ strings.
   static void handleError( std::string message, StkError::Type type );
 
+  //! Toggle display of WARNING and STATUS messages.
+  static void showWarnings( bool status ) { showWarnings_ = status; }
+
+  //! Toggle display of error messages before throwing exceptions.
+  static void printErrors( bool status ) { printErrors_ = status; }
+
 private:
   static StkFloat srate_;
   static std::string rawwavepath_;
+  static bool showWarnings_;
+  static bool printErrors_;
 
 protected:
 
@@ -164,13 +174,14 @@ protected:
 
     This class can hold single- or multi-channel audio data in either
     interleaved or non-interleaved formats.  The data type is always
-    StkFloat.
+    StkFloat.  In an effort to maintain efficiency, no out-of-bounds
+    checks are performed in this class.
 
-    Possible future improvements in this class could include static
-    functions to inter- or de-interleave the data and to convert to
-    and return other data types.
+    Possible future improvements in this class could include functions
+    to inter- or de-interleave the data and to convert to and return
+    other data types.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -179,36 +190,82 @@ class StkFrames
 public:
 
   //! The default constructor initializes the frame data structure to size zero.
-  StkFrames( unsigned int nFrames = 0, unsigned int nChannels = 1, bool interleaved = true );
+  StkFrames( unsigned int nFrames = 0, unsigned int nChannels = 0, bool interleaved = true );
 
-  //! Overloaded constructor which initializes the frame data to the specified size with \c value.
+  //! Overloaded constructor that initializes the frame data to the specified size with \c value.
   StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels, bool interleaved = true );
+
+  //! The destructor.
+  ~StkFrames();
 
   //! Subscript operator which returns a reference to element \c n of self.
   /*!
     The result can be used as an lvalue . This reference is valid
     until the resize function is called or the array is destroyed. The
     index \c n must be between 0 and size less one.  No range checking
-    is performed.
+    is performed unless _STK_DEBUG_ is defined.
   */
-  StkFloat& operator[]( size_t n ) { return data_[n]; };
+  StkFloat& operator[] ( size_t n );
 
-  //! Subscript operator which returns the value at element \c n of self.
+  //! Subscript operator that returns the value at element \c n of self.
   /*!
     The index \c n must be between 0 and size less one.  No range
-    checking is performed.
+    checking is performed unless _STK_DEBUG_ is defined.
   */
-  StkFloat operator[]( size_t n ) const { return data_[n]; };
+  StkFloat operator[] ( size_t n ) const;
+
+  //! Channel / frame subscript operator that returns a reference.
+  /*!
+    The result can be used as an lvalue. This reference is valid
+    until the resize function is called or the array is destroyed. The
+    \c frame index must be between 0 and frames() - 1.  The \c channel
+    index must be between 0 and channels() - 1.  No range checking is
+    performed unless _STK_DEBUG_ is defined.
+  */
+  StkFloat& operator() ( size_t frame, unsigned int channel );
+
+  //! Channel / frame subscript operator that returns a value.
+  /*!
+    The \c frame index must be between 0 and frames() - 1.  The \c
+    channel index must be between 0 and channels() - 1.  No range checking
+    is performed unless _STK_DEBUG_ is defined.
+  */
+  StkFloat operator() ( size_t frame, unsigned int channel ) const;
+
+  //! Return an interpolated value at the fractional frame index and channel.
+  /*!
+    This function performs linear interpolation.  The \c frame
+    index must be between 0.0 and frames() - 1.  The \c channel index
+    must be between 0 and channels() - 1.  No range checking is
+    performed unless _STK_DEBUG_ is defined.
+  */
+  StkFloat interpolate( StkFloat frame, unsigned int channel = 0 ) const;
 
   //! Returns the total number of audio samples represented by the object.
   size_t size() const { return size_; }; 
 
+  //! Returns \e true if the object size is zero and \e false otherwise.
+  bool empty() const;
+
   //! Resize self to represent the specified number of channels and frames.
   /*!
     Changes the size of self based on the number of frames and
-    channels, and assigns \c value to every element.
+    channels.  No element assignment is performed.  No memory
+    deallocation occurs if the new size is smaller than the previous
+    size.  Further, no new memory is allocated when the new size is
+    smaller or equal to a previously allocated size.
   */
-  void resize( unsigned int nFrames, unsigned int nChannels = 1, StkFloat value = 0.0 );
+  void resize( size_t nFrames, unsigned int nChannels = 1 );
+
+  //! Resize self to represent the specified number of channels and frames and perform element initialization.
+  /*!
+    Changes the size of self based on the number of frames and
+    channels, and assigns \c value to every element.  No memory
+    deallocation occurs if the new size is smaller than the previous
+    size.  Further, no new memory is allocated when the new size is
+    smaller or equal to a previously allocated size.
+  */
+  void resize( size_t nFrames, unsigned int nChannels, StkFloat value );
 
   //! Return the number of channels represented by the data.
   unsigned int channels( void ) const { return nChannels_; };
@@ -216,23 +273,47 @@ public:
   //! Return the number of sample frames represented by the data.
   unsigned int frames( void ) const { return nFrames_; };
 
+  //! Set the sample rate associated with the StkFrames data.
+  /*!
+    By default, this value is set equal to the current STK sample
+    rate at the time of instantiation.
+   */
+  void setDataRate( StkFloat rate ) { dataRate_ = rate; };
+
+  //! Return the sample rate associated with the StkFrames data.
+  /*!
+    By default, this value is set equal to the current STK sample
+    rate at the time of instantiation.
+   */
+  StkFloat dataRate( void ) const { return dataRate_; };
+
   //! Returns \c true if the data is in interleaved format, \c false if the data is non-interleaved.
   bool interleaved( void ) const { return interleaved_; };
 
   //! Set the flag to indicate whether the internal data is in interleaved (\c true) or non-interleaved (\c false) format.
+  /*!
+    Note that this function does not modify the internal data order
+    with respect to the argument value.  It simply changes the
+    indicator flag value.
+   */
   void setInterleaved( bool isInterleaved ) { interleaved_ = isInterleaved; };
 
 private:
-  std::valarray<StkFloat> data_;
-  unsigned int nFrames_;
+
+  StkFloat *data_;
+  StkFloat dataRate_;
+  size_t nFrames_;
   unsigned int nChannels_;
   size_t size_;
+  size_t bufferSize_;
   bool interleaved_;
 
 };
 
 
 // Here are a few other useful typedefs.
+typedef unsigned short UINT16;
+typedef unsigned int UINT32;
 typedef signed short SINT16;
 typedef signed int SINT32;
 typedef float FLOAT32;
@@ -260,11 +341,11 @@ const unsigned int RT_BUFFER_SIZE = 512;
   #define RAWWAVE_PATH "../../rawwaves/"
 #endif
 
-const StkFloat PI           = 3.14159265359;
+const StkFloat PI           = 3.14159265358979;
 const StkFloat TWO_PI       = 2 * PI;
 const StkFloat ONE_OVER_128 = 0.0078125;
 
-#if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__)
+#if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__) || defined(__WINDOWS_MM__)
   #define __OS_WINDOWS__
   #define __STK_REALTIME__
 #elif defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) || defined(__LINUX_JACK__)

@@ -159,6 +159,22 @@ SOURCE=..\..\src\Envelope.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\FileRead.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWrite.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWvIn.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWvOut.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\Filter.cpp
 # End Source File
 # Begin Source File
@@ -323,6 +339,10 @@ SOURCE=..\..\src\Simple.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\SineWave.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\SingWave.cpp
 # End Source File
 # Begin Source File
@@ -352,6 +372,10 @@ SOURCE=..\..\src\Stk.cpp
 # Begin Source File
 
 SOURCE=..\..\src\SubNoise.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\TcpServer.cpp
 # End Source File
 # Begin Source File
 
@@ -476,6 +500,22 @@ SOURCE=..\..\include\Effect.h
 # Begin Source File
 
 SOURCE=..\..\include\Envelope.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileRead.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWrite.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWvIn.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWvOut.h
 # End Source File
 # Begin Source File
 
@@ -643,6 +683,10 @@ SOURCE=..\..\include\Simple.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\SineWave.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\SingWave.h
 # End Source File
 # Begin Source File
@@ -672,6 +716,10 @@ SOURCE=..\..\include\Stk.h
 # Begin Source File
 
 SOURCE=..\..\include\SubNoise.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\TcpServer.h
 # End Source File
 # Begin Source File
 

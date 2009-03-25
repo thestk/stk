@@ -14,7 +14,7 @@
     used in fixed delay-length applications, such
     as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -83,22 +83,24 @@ public:
    */
   virtual StkFloat nextOut(void);
 
-  //! Input one sample to the delayline and return one output.
+  //! Input one sample to the filter and return one output.
   virtual StkFloat tick(StkFloat sample);
 
-  //! Input \e vectorSize samples to the delayline and return an equal number of outputs in \e vector.
-  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
-  //! Take a channel of the StkFrames object as inputs to the delayline and replace with corresponding outputs.
+  //! Take a channel of the StkFrames object as inputs to the filter and replace with corresponding outputs.
   /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
+    The \c channel argument should be zero or greater (the first
+    channel is specified by 0).  An StkError will be thrown if the \c
+    channel argument is equal to or greater than the number of
     channels in the StkFrames object.
   */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
 
 protected:
+
+  // This function must be implemented in all subclasses. It is used
+  // to get around a C++ problem with overloaded virtual functions.
+  virtual StkFloat computeSample( StkFloat input );
+
   unsigned long inPoint_;
   unsigned long outPoint_;
   StkFloat delay_;

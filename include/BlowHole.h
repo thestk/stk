@@ -29,7 +29,7 @@
        - Register State = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -43,7 +43,7 @@
 #include "PoleZero.h"
 #include "Envelope.h"
 #include "Noise.h"
-#include "WaveLoop.h"
+#include "SineWave.h"
 
 class BlowHole : public Instrmnt
 {
@@ -81,25 +81,13 @@ class BlowHole : public Instrmnt
   //! Stop a note with the given amplitude (speed of decay).
   void noteOff(StkFloat amplitude);
 
-  //! Compute one output sample.
-  StkFloat tick();
-
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   void controlChange(int number, StkFloat value);
 
- protected:  
+ protected:
+
+  StkFloat computeSample( void );
+
   DelayL    delays_[3];
   ReedTable reedTable_;
   OneZero   filter_;
@@ -107,7 +95,7 @@ class BlowHole : public Instrmnt
   PoleZero  vent_;
   Envelope  envelope_;
   Noise     noise_;
-  WaveLoop *vibrato_;
+  SineWave vibrato_;
   unsigned long length_;
   StkFloat scatter_;
   StkFloat thCoeff_;

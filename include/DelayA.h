@@ -2,23 +2,20 @@
 /*! \class DelayA
     \brief STK allpass interpolating delay line class.
 
-    This Delay subclass implements a fractional-
-    length digital delay-line using a first-order
-    allpass filter.  A fixed maximum length
-    of 4095 and a delay of 0.5 is set using the
-    default constructor.  Alternatively, the
-    delay and maximum length can be set during
-    instantiation with an overloaded constructor.
+    This Delay subclass implements a fractional-length digital
+    delay-line using a first-order allpass filter.  A fixed maximum
+    length of 4095 and a delay of 0.5 is set using the default
+    constructor.  Alternatively, the delay and maximum length can be
+    set during instantiation with an overloaded constructor.
 
-    An allpass filter has unity magnitude gain but
-    variable phase delay properties, making it useful
-    in achieving fractional delays without affecting
-    a signal's frequency magnitude response.  In
-    order to achieve a maximally flat phase delay
-    response, the minimum delay possible in this
-    implementation is limited to a value of 0.5.
+    An allpass filter has unity magnitude gain but variable phase
+    delay properties, making it useful in achieving fractional delays
+    without affecting a signal's frequency magnitude response.  In
+    order to achieve a maximally flat phase delay response, the
+    minimum delay possible in this implementation is limited to a
+    value of 0.5.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -55,7 +52,7 @@ public:
   void setDelay(StkFloat delay);
 
   //! Return the current delay-line length.
-  StkFloat getDelay(void);
+  StkFloat getDelay(void) const;
 
   //! Return the value which will be output by the next call to tick().
   /*!
@@ -63,22 +60,10 @@ public:
    */
   StkFloat nextOut(void);
 
-  //! Input one sample to the delayline and return one output.
-  StkFloat tick(StkFloat sample);
-
-  //! Input \e vectorSize samples to the delayline and return an equal number of outputs in \e vector.
-  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
-  //! Take a channel of the StkFrames object as inputs to the delayline and replace with corresponding outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
 protected:  
+
+  StkFloat computeSample( StkFloat input );
+
   StkFloat alpha_;
   StkFloat coeff_;
   StkFloat apInput_;

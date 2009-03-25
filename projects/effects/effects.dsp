@@ -138,6 +138,22 @@ SOURCE=..\..\include\Envelope.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\FileRead.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileRead.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWvIn.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWvIn.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\Filter.cpp
 # End Source File
 # Begin Source File
@@ -218,6 +234,14 @@ SOURCE=..\..\include\RtMidi.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\SineWave.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\SineWave.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\SKINI.cpp
 # End Source File
 # Begin Source File
@@ -239,6 +263,14 @@ SOURCE=..\..\src\Stk.cpp
 # Begin Source File
 
 SOURCE=..\..\include\Stk.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\TcpServer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\TcpServer.h
 # End Source File
 # Begin Source File
 

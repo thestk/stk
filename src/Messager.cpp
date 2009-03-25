@@ -28,7 +28,7 @@
     This class is primarily for use in STK example programs but it is
     generic enough to work in many other contexts.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -264,7 +264,7 @@ bool Messager :: startSocketInput( int port )
 
   // Create the socket server.
   try {
-    data_.socket = new Socket( port );
+    data_.socket = new TcpServer( port );
   }
   catch ( StkError& ) {
     return false;
@@ -290,14 +290,9 @@ bool Messager :: startSocketInput( int port )
   return true;
 }
 
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOS__))
-  #include <sys/socket.h>
-  #include <sys/types.h>
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
   #include <sys/time.h>
   #include <errno.h>
-  #include <unistd.h>
-  #include <netinet/in.h>
-  #include <netinet/tcp.h>
 #endif
 
 THREAD_RETURN THREAD_TYPE socketHandler(void *ptr)

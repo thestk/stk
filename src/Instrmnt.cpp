@@ -5,7 +5,7 @@
     This class provides a common interface for
     all STK instruments.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -41,18 +41,15 @@ StkFloat Instrmnt :: lastOutRight(void) const
   return 0.5 * lastOutput_;
 }
 
-StkFloat *Instrmnt :: tick(StkFloat *vector, unsigned int vectorSize)
+StkFloat Instrmnt :: tick( void )
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick();
-
-  return vector;
+  return computeSample();
 }
 
 StkFrames& Instrmnt :: tick( StkFrames& frames, unsigned int channel )
 {
-  if ( channel == 0 || frames.channels() < channel ) {
-    errorString_ << "Instrmnt::tick(): channel argument (" << channel << ") is zero or > channels in StkFrames argument!";
+  if ( channel >= frames.channels() ) {
+    errorString_ << "Instrmnt::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -62,16 +59,16 @@ StkFrames& Instrmnt :: tick( StkFrames& frames, unsigned int channel )
   }
   else if ( frames.interleaved() ) {
     unsigned int hop = frames.channels();
-    unsigned int index = channel - 1;
+    unsigned int index = channel;
     for ( unsigned int i=0; i<frames.frames(); i++ ) {
       frames[index] = tick();
       index += hop;
     }
   }
   else {
-    unsigned int iStart = (channel - 1) * frames.frames();
-    for ( unsigned int i=0; i<frames.frames(); i++ )
-      frames[iStart + i] = tick();
+    unsigned int iStart = channel * frames.frames();
+    for ( unsigned int i=0; i<frames.frames(); i++, iStart++ )
+      frames[iStart] = tick();
   }
 
   return frames;

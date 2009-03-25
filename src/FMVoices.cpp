@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -123,12 +123,12 @@ void FMVoices :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-StkFloat FMVoices :: tick()
+StkFloat FMVoices :: computeSample()
 {
   register StkFloat temp, temp2;
 
   temp = gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
-  temp2 = vibrato_->tick() * modDepth_ * 0.1;
+  temp2 = vibrato_.tick() * modDepth_ * 0.1;
 
   waves_[0]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[0]);
   waves_[1]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[1]);
@@ -146,16 +146,6 @@ StkFloat FMVoices :: tick()
 
   lastOutput_ = temp * 0.33;
   return lastOutput_;
-}
-
-StkFloat *FMVoices :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& FMVoices :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void FMVoices :: controlChange(int number, StkFloat value)

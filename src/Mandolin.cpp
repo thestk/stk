@@ -23,7 +23,7 @@
        - String Detuning = 1
        - Microphone Position = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -34,18 +34,18 @@ Mandolin :: Mandolin(StkFloat lowestFrequency)
   : PluckTwo(lowestFrequency)
 {
   // Concatenate the STK rawwave path to the rawwave files
-  soundfile_[0] = new WvIn( (Stk::rawwavePath() + "mand1.raw").c_str(), true );
-  soundfile_[1] = new WvIn( (Stk::rawwavePath() + "mand2.raw").c_str(), true );
-  soundfile_[2] = new WvIn( (Stk::rawwavePath() + "mand3.raw").c_str(), true );
-  soundfile_[3] = new WvIn( (Stk::rawwavePath() + "mand4.raw").c_str(), true );
-  soundfile_[4] = new WvIn( (Stk::rawwavePath() + "mand5.raw").c_str(), true );
-  soundfile_[5] = new WvIn( (Stk::rawwavePath() + "mand6.raw").c_str(), true );
-  soundfile_[6] = new WvIn( (Stk::rawwavePath() + "mand7.raw").c_str(), true );
-  soundfile_[7] = new WvIn( (Stk::rawwavePath() + "mand8.raw").c_str(), true );
-  soundfile_[8] = new WvIn( (Stk::rawwavePath() + "mand9.raw").c_str(), true );
-  soundfile_[9] = new WvIn( (Stk::rawwavePath() + "mand10.raw").c_str(), true );
-  soundfile_[10] = new WvIn( (Stk::rawwavePath() + "mand11.raw").c_str(), true );
-  soundfile_[11] = new WvIn( (Stk::rawwavePath() + "mand12.raw").c_str(), true );
+  soundfile_[0] = new FileWvIn( (Stk::rawwavePath() + "mand1.raw").c_str(), true );
+  soundfile_[1] = new FileWvIn( (Stk::rawwavePath() + "mand2.raw").c_str(), true );
+  soundfile_[2] = new FileWvIn( (Stk::rawwavePath() + "mand3.raw").c_str(), true );
+  soundfile_[3] = new FileWvIn( (Stk::rawwavePath() + "mand4.raw").c_str(), true );
+  soundfile_[4] = new FileWvIn( (Stk::rawwavePath() + "mand5.raw").c_str(), true );
+  soundfile_[5] = new FileWvIn( (Stk::rawwavePath() + "mand6.raw").c_str(), true );
+  soundfile_[6] = new FileWvIn( (Stk::rawwavePath() + "mand7.raw").c_str(), true );
+  soundfile_[7] = new FileWvIn( (Stk::rawwavePath() + "mand8.raw").c_str(), true );
+  soundfile_[8] = new FileWvIn( (Stk::rawwavePath() + "mand9.raw").c_str(), true );
+  soundfile_[9] = new FileWvIn( (Stk::rawwavePath() + "mand10.raw").c_str(), true );
+  soundfile_[10] = new FileWvIn( (Stk::rawwavePath() + "mand11.raw").c_str(), true );
+  soundfile_[11] = new FileWvIn( (Stk::rawwavePath() + "mand12.raw").c_str(), true );
 
   mic_ = 0;
   dampTime_ = 0;
@@ -120,7 +120,7 @@ void Mandolin :: setBodySize(StkFloat size)
     soundfile_[i]->setRate( rate );
 }
 
-StkFloat Mandolin :: tick()
+StkFloat Mandolin :: computeSample()
 {
   StkFloat temp = 0.0;
   if ( !waveDone_ ) {
@@ -148,16 +148,6 @@ StkFloat Mandolin :: tick()
 
   lastOutput_ *= 0.3;
   return lastOutput_;
-}
-
-StkFloat *Mandolin :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Mandolin :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Mandolin :: controlChange(int number, StkFloat value)

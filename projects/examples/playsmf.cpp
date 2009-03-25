@@ -8,7 +8,6 @@
 #include "MidiFileIn.h"
 #include "RtMidi.h"
 #include <signal.h>
-#include <unistd.h>
 
 bool done = false;
 static void finish(int ignore){ done = true; }

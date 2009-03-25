@@ -8,12 +8,12 @@
     frequency response while maintaining a constant
     filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
 #include "BiQuad.h"
-#include <math.h>
+#include <cmath>
 
 BiQuad :: BiQuad() : Filter()
 {
@@ -100,9 +100,9 @@ StkFloat BiQuad :: lastOut(void) const
   return Filter::lastOut();
 }
 
-StkFloat BiQuad :: tick(StkFloat sample)
+StkFloat BiQuad :: computeSample( StkFloat input )
 {
-  inputs_[0] = gain_ * sample;
+  inputs_[0] = gain_ * input;
   outputs_[0] = b_[0] * inputs_[0] + b_[1] * inputs_[1] + b_[2] * inputs_[2];
   outputs_[0] -= a_[2] * outputs_[2] + a_[1] * outputs_[1];
   inputs_[2] = inputs_[1];
@@ -113,9 +113,9 @@ StkFloat BiQuad :: tick(StkFloat sample)
   return outputs_[0];
 }
 
-StkFloat *BiQuad :: tick(StkFloat *vector, unsigned int vectorSize)
+StkFloat BiQuad :: tick( StkFloat input )
 {
-  return Filter::tick( vector, vectorSize );
+  return this->computeSample( input );
 }
 
 StkFrames& BiQuad :: tick( StkFrames& frames, unsigned int channel )

@@ -2,35 +2,34 @@
 /*! \class RtWvOut
     \brief STK realtime audio (blocking) output class.
 
-    This class provides a simplified interface to
-    RtAudio for realtime audio output.  It is a
-    protected subclass of WvOut.
+    This class provides a simplified interface to RtAudio for realtime
+    audio output.  It is a subclass of WvOut.  Because this class
+    makes use of RtAudio's blocking output routines, its performance
+    is less robust on systems where the audio API is callback-based
+    (Macintosh CoreAudio and Windows ASIO).
 
-    RtWvOut supports multi-channel data in
-    interleaved format.  It is important to
-    distinguish the tick() methods, which output
-    single samples to all channels in a sample
-    frame, from the tickFrame() method, which
-    takes a pointer to multi-channel sample
+    RtWvOut supports multi-channel data in interleaved format.  It is
+    important to distinguish the tick() methods, which output single
+    samples to all channels in a sample frame, from the tickFrame()
+    method, which take a pointer or reference to multi-channel sample
     frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
 #include "RtWvOut.h"
-#include <iostream>
 
 RtWvOut :: RtWvOut( unsigned int nChannels, StkFloat sampleRate, int device, int bufferFrames, int nBuffers )
+  : stopped_( true ), nChannels_(nChannels), bufferIndex_( 0 ), iBuffer_( 0 )
 {
-  // We'll let RtAudio deal with channel and srate limitations.
-  channels_ = nChannels;
-  bufferSize_ = bufferFrames;
+  // We'll let RtAudio deal with channel and sample rate limitations.
+  int size = bufferFrames;
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
 
-  audio_ = 0;
+  dac_ = 0;
   try {
-    audio_ = new RtAudio();
+    dac_ = new RtAudio();
   }
   catch (RtError &error) {
     handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
@@ -38,28 +37,28 @@ RtWvOut :: RtWvOut( unsigned int nChannels, StkFloat sampleRate, int device, int
 
   // Now open a stream and get the buffer pointer.
   try {
-    audio_->openStream(device, (int)channels_, 0, 0, format,
-                       (int)sampleRate, &bufferSize_, nBuffers);
-    dataPtr_ = (StkFloat *) audio_->getStreamBuffer();
+    dac_->openStream( device, (int)nChannels, 0, 0, format,
+                      (int)sampleRate, &size, nBuffers );
+    buffer_ = (StkFloat *) dac_->getStreamBuffer();
   }
   catch (RtError &error) {
     handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
   }
 
-  stopped_ = true;
+  bufferFrames_ = size;
 }
 
 RtWvOut :: ~RtWvOut()
 {
-  if ( !stopped_ )
-    audio_->stopStream();
-  delete audio_;
+  if ( !stopped_ ) dac_->stopStream();
+  dac_->closeStream();
+  delete dac_;
 }
 
 void RtWvOut :: start()
 {
   if ( stopped_ ) {
-    audio_->startStream();
+    dac_->startStream();
     stopped_ = false;
   }
 }
@@ -67,162 +66,80 @@ void RtWvOut :: start()
 void RtWvOut :: stop()
 {
   if ( !stopped_ ) {
-    audio_->stopStream();
+    dac_->stopStream();
     stopped_ = true;
   }
 }
 
-unsigned long RtWvOut :: getFrames( void ) const
+void RtWvOut :: incrementFrame( void )
 {
-  return totalCount_;
-}
+  frameCounter_++;
+  bufferIndex_++;
 
-StkFloat RtWvOut :: getTime( void ) const
-{
-  return (StkFloat) totalCount_ / Stk::sampleRate();
-}
-
-void RtWvOut :: tick( const StkFloat sample )
-{
-  if ( stopped_ )
-    start();
-
-  StkFloat input = sample;
-  this->clipTest( input );
-  for ( unsigned int j=0; j<channels_; j++ )
-    dataPtr_[counter_*channels_+j] = input;
-
-  counter_++;
-  totalCount_++;
-
-  if ( counter_ >= (unsigned int )bufferSize_ ) {
+  if ( bufferIndex_ == bufferFrames_ ) {
     try {
-      audio_->tickStream();
+      dac_->tickStream();
     }
     catch (RtError &error) {
       handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
     }
-    counter_ = 0;
+    bufferIndex_ = 0;
+    iBuffer_ = 0;
   }
 }
 
-void RtWvOut :: tick( const StkFloat *vector, unsigned int vectorSize )
+void RtWvOut :: computeSample( const StkFloat sample )
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    tick( vector[i] );
+  if ( stopped_ ) start();
+
+  StkFloat input = sample;
+  clipTest( input );
+  for ( unsigned int j=0; j<nChannels_; j++ )
+    buffer_[iBuffer_++] = input;
+
+  this->incrementFrame();
 }
 
-void RtWvOut :: tick( const StkFrames& frames, unsigned int channel )
+void RtWvOut :: computeFrames( const StkFrames& frames )
 {
-  if ( channel == 0 || frames.channels() < channel ) {
-    errorString_ << "RtWvOut::tick(): channel argument (" << channel << ") is zero or > channels in StkFrames argument!";
+  if ( stopped_ ) start();
+
+  if ( frames.channels() != nChannels_ ) {
+    errorString_ << "RtWvOut::computeFrames(): incompatible channel value in StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
-
-  if ( stopped_ )
-    start();
-
-  if ( frames.channels() == 1 ) {
-    for ( unsigned int i=0; i<frames.frames(); i++ )
-      tick( frames[i] );
-  }
-  else if ( frames.interleaved() ) {
-    unsigned int hop = frames.channels();
-    unsigned int index = channel - 1;
-    for ( unsigned int i=0; i<frames.frames(); i++ ) {
-      tick( frames[index] );
-      index += hop;
-    }
-  }
-  else {
-    unsigned int iStart = (channel - 1) * frames.frames();
-    for ( unsigned int i=0; i<frames.frames(); i++ )
-      tick( frames[iStart + i] );
-  }
-}
-
-void RtWvOut :: tickFrame( const StkFloat *frameVector, unsigned int frames )
-{
-  if ( stopped_ )
-    start();
-
-  StkFloat sample;
-  for ( unsigned int i=0; i<frames; i++ ) {
-    for ( unsigned int j=0; j<channels_; j++ ) {
-      sample = frameVector[i*channels_+j];
-      this->clipTest( sample );
-      dataPtr_[counter_*channels_+j] = sample;
-    }
-    counter_++;
-    totalCount_++;
-
-    if ( counter_ >= (unsigned int)bufferSize_ ) {
-      try {
-        audio_->tickStream();
-      }
-      catch (RtError &error) {
-        handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
-      }
-      counter_ = 0;
-    }
-  }
-}
-
-void RtWvOut :: tickFrame( const StkFrames& frames )
-{
-  if ( channels_ != frames.channels() ) {
-    errorString_ << "RtWvOut::tickFrame(): incompatible channel value in StkFrames argument!";
-    handleError( StkError::FUNCTION_ARGUMENT );
-  }
-
-  if ( stopped_ )
-    start();
 
   unsigned int j;
-  StkFloat sample;
-  if ( channels_ == 1 || frames.interleaved() ) {
-    unsigned long iFrames = 0, iData = counter_;
-    for ( unsigned int i=0; i<frames.frames(); i++ ) {
-      for ( j=0; j<channels_; j++ ) {
-        sample = frames[iFrames++];
-        this->clipTest( sample );
-        dataPtr_[iData++] = sample;
-      }
-      counter_++;
-      totalCount_++;
+  if ( nChannels_ == 1 || frames.interleaved() ) {
 
-      if ( counter_ >= (unsigned int)bufferSize_ ) {
-        try {
-          audio_->tickStream();
-        }
-        catch (RtError &error) {
-          handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
-        }
-        counter_ = 0;
+    unsigned int iFrames = 0;
+    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+
+      for ( j=0; j<nChannels_; j++ ) {
+        buffer_[iBuffer_] = frames[iFrames++];
+        clipTest( buffer_[iBuffer_++] );
       }
+
+      this->incrementFrame();
     }
   }
-  else {
-    unsigned int hop = frames.frames();
-    unsigned long iData = counter_;
-    for ( unsigned int i=0; i<frames.frames(); i++ ) {
-      for ( j=0; j<channels_; j++ ) {
-        sample = frames[i + j*hop];
-        this->clipTest( sample );
-        dataPtr_[iData++] = sample;
-      }
-      counter_++;
-      totalCount_++;
+  else { // non-interleaved frames
 
-      if ( counter_ >= (unsigned int)bufferSize_ ) {
-        try {
-          audio_->tickStream();
-        }
-        catch (RtError &error) {
-          handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
-        }
-        counter_ = 0;
+    unsigned long hop = frames.frames();
+    unsigned int index;
+    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+
+      index = i;
+      for ( j=0; j<nChannels_; j++ ) {
+        buffer_[iBuffer_] = frames[index];
+        clipTest( buffer_[iBuffer_++] );
+        index += hop;
       }
+
+      this->incrementFrame();
     }
   }
 }
+
+
+

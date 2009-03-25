@@ -99,6 +99,14 @@ SOURCE=..\..\src\Envelope.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\FileRead.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWvIn.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\Filter.cpp
 # End Source File
 # Begin Source File
@@ -135,6 +143,10 @@ SOURCE=..\..\src\RtWvOut.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\SineWave.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\SKINI.cpp
 # End Source File
 # Begin Source File
@@ -144,6 +156,10 @@ SOURCE=..\..\src\Socket.cpp
 # Begin Source File
 
 SOURCE=..\..\src\Stk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\TcpServer.cpp
 # End Source File
 # Begin Source File
 

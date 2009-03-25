@@ -16,11 +16,11 @@ The \c main() function blocks at the std::cin.get() call until the user hits the
 
 \section callback Blocking vs. Callbacks
 
-Prior to version 4.2.0, all STK example projects and programs used blocking audio input/output functionality (typically with the RtWvIn, RtWvOut, or RtDuplex classes).  In many instances, a blocking scheme results in a clearer and more straight forward program structure.  Within a graphical user interface (GUI) programming context, however, callback routines are often more natural.
+Prior to version 4.2.0, all STK example projects and programs used blocking audio input/output functionality (typically with the RtWvIn, RtWvOut, or RtDuplex classes).  In many instances, a blocking scheme results in a clearer and more straight-forward program structure.  Within a graphical user interface (GUI) programming context, however, callback routines are often more natural.
 
 The RtAudio class provides both blocking and callback routines for all supported audio APIs.  It should be noted that it is easy to embed blocking calls within a thread to create "callback-like" functionality.  In fact, this is what RtAudio does for those audio APIs which are naturally based on blocking routines (Linux ALSA and OSS, SGI Irix, and Windows DirectSound).  It is much more difficult to make an inherently callback-based system work like a blocking scheme.  RtAudio attempts to do this with the Linux JACK, Macintosh OS-X CoreAudio, and Windows ASIO APIs, but the result is not fully robust (audio over/underruns are more likely to occur).
 
 In order to allow all STK programs to function with equal proficiency on all supported computer platforms, a decision was made to modify the example projects to use audio callback routines.  The result is a more complicated code structure, which is unfortunate given that we generally strive to make STK code as clear as possible for educational purposes.  This was especially an issue with the demo program because it is designed to function in both realtime and non-realtime contexts.  The use of global variables has been avoided by defining data structures to hold all variables which must be accessible to the callback routine and other functions.  Alternative schemes for making control updates could be designed depending on particular program needs and constraints.
 
-[<A HREF="instruments.html">Next tutorial</A>] &nbsp; [<A HREF="tutorial.html">Main tutorial page</A>]
+[<A HREF="tutorial.html">Main tutorial page</A>] &nbsp; [<A HREF="instruments.html">Next tutorial</A>]
 */

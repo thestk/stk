@@ -8,7 +8,7 @@
     frequency response while maintaining a
     constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -76,19 +76,14 @@ StkFloat TwoZero :: lastOut(void) const
   return Filter::lastOut();
 }
 
-StkFloat TwoZero :: tick(StkFloat sample)
+StkFloat TwoZero :: tick( StkFloat input )
 {
-  inputs_[0] = gain_ * sample;
+  inputs_[0] = gain_ * input;
   outputs_[0] = b_[2] * inputs_[2] + b_[1] * inputs_[1] + b_[0] * inputs_[0];
   inputs_[2] = inputs_[1];
   inputs_[1] = inputs_[0];
 
   return outputs_[0];
-}
-
-StkFloat *TwoZero :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Filter::tick( vector, vectorSize );
 }
 
 StkFrames& TwoZero :: tick( StkFrames& frames, unsigned int channel )

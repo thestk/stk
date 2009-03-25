@@ -4,7 +4,7 @@
 
     This class implements an echo effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -35,22 +35,10 @@ class Echo : public Effect
   //! Set the delay line length in samples.
   void setDelay( unsigned long delay );
 
-  //! Compute one output sample.
-  StkFloat tick(StkFloat input);
+ protected:
 
-  //! Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
-  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+  StkFloat computeSample( StkFloat input );
 
-  //! Take a channel of the StkFrames object as inputs to the effect and replace with corresponding outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
- protected:  
   Delay delayLine_;
   unsigned long length_;
 

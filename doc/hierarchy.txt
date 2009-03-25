@@ -1,20 +1,24 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
 
-By Perry R. Cook and Gary P. Scavone, 1995-2004.
+By Perry R. Cook and Gary P. Scavone, 1995-2005.
 
 STK Classes - See the HTML documentation in the html directory for complete information.
 
 
-     .- Generator - (Modulate, Noise, SingWave, Envelope)
+     .- Generator - (Modulate, Noise, SingWave, Envelope, SineWave, Blit, BlitSaw, BlitSquare, Granulate)
      |                           |                 |
      |                        SubNoise            ADSR
      |                                            Asymp
      |
-     |- Function - (Table, BowTable, JetTable, ReedTable)
+     |- Function - (BowTable, JetTable, ReedTable)
      |
-     |- WvIn - (WaveLoop, RtWvIn, TcpWvIn)
+     |- FileRead, FileWrite
      |
-     |- WvOut - (RtWvOut, TcpWvOut)
+     |- WvIn - (FileWvIn, RtWvIn, InetWvIn)
+     |             |
+     |          WaveLoop
+     |
+     |- WvOut - (FileWvOut, RtWvOut, TcpWvOut)
      |
      |- Filter - (OnePole, OneZero, Delay, TwoPole, TwoZero, PoleZero, Biquad)
      |                                |                                  |
@@ -22,7 +26,13 @@ STK Classes - See the HTML documentation in the html directory for complete info
      |                              DelayA
      |
      |- RtAudio, RtMidi, RtDuplex, Socket, Thread, Mutex
-Stk -|
+     |                               |
+Stk -|                           UdpSocket
+     |                           TcpServer
+     |                           TcpClient
+     |
+     |- StkFrames
+     |
      |- Effect - (Echo, Chorus, PitShift, PRCRev, JCRev, NRev)
      |
      |- Voicer, Message, Skini, MidiFileIn, Phonemes, Sphere, Vector3D
@@ -58,42 +68,50 @@ Stk -|
 
 Master Class:  Stk.cpp         Sample rate, byte-swapping, error handling functionality
 
-Sources:       Generator.cpp   Abstract Base Class for Various Source Signal Classes
-               Function.cpp    Abstract Base Class for Various Input/Output Mapping Classes
-               Envelope.cpp    Linearly Goes to Target by Rate
-               ADSR.cpp        ADSR Flavor of Envelope
-               Asymp.cpp       Exponentially Approaches Target
-               Noise.cpp       Random Number Generator
-               SubNoise.cpp    Random Numbers each N samples
-               Table.cpp       Lookup Table (assumes given data in big-endian format)
-               WvIn.cpp        Data Input Class (interpolating) for RAW, WAV, SND (AU), AIFF, MAT-file files
-               WaveLoop.cpp    Wavetable looping (subclass of WvIn)
-               RtWvIn.cpp      Realtime Audio Input Class (subclass of WvIn)
-               TcpWvIn.cpp     Audio Streaming (socket server) Input Class (subclass of WvIn)
+Sources:       Generator.cpp   Abstract base class for various source signal classes
+               Function.cpp    Abstract base class for various input/output mapping classes
+               Envelope.cpp    Linearly goes to target by rate
+               ADSR.cpp        ADSR flavor of Envelope
+               Asymp.cpp       Exponentially approaches target
+               Noise.cpp       Random number generator
+               SubNoise.cpp    Random numbers each N samples
+               SineWave.cpp    Sinusoidal oscillator with internally computed static table
+               Blit.cpp        Bandlimited impulse train
+               BlitSaw.cpp     Bandlimited sawtooth generator
+               BlitSquare.cpp  Bandlimited square wave generator
+               Granulate.cpp   Granular synthesis class that processes a monophonic audio file
+               FileRead.cpp    Audio file input class (no internal data storage) for RAW, WAV, SND (AU), AIFF, MAT-file files
+               WvIn.cpp        Abstract base class for audio data input classes
+               FileWvIn.cpp    Audio file input interface class with interpolation
+               WaveLoop.cpp    Wavetable looping (subclass of FileWvIn)
+               RtWvIn.cpp      Realtime audio input class (subclass of WvIn)
+               InetWvIn.cpp    Audio streaming (socket server) input class (subclass of WvIn)
 
-Sinks:         WvOut.cpp       Output Master Class for RAW, WAV, SND (AU), AIFF, MAT-file files
-               RtWvOut.cpp     Realtime Audio Output Class (subclass of WvOut)
-               TcpWvOut.cpp    Audio Streaming (socket client) Output Class (subclass of WvOut)
+Sinks:         FileWrite.cpp   Audio file output class (no internal data storage) for RAW, WAV, SND (AU), AIFF, MAT-file files
+               WvOut.cpp       Abstract base class for audio data output classes
+               FileWvOut.cpp   Audio file output interface class to FileWrite
+               RtWvOut.cpp     Realtime audio output class (subclass of WvOut)
+               InetWvOut.cpp   Audio streaming (socket client) output class (subclass of WvOut)
 
-Duplex:        RtDuplex.cpp    Synchronous Realtime Audio Input/Output Class
+Duplex:        RtDuplex.cpp    Synchronous realtime audio input/output class (blocking)
 
-Filters:       Filter.cpp      Filter Master Class
-               OneZero.cpp     One Zero Filter
-               OnePole.cpp     One Pole Filter
-               PoleZero.cpp    One Pole/One Zero Filter
-               TwoZero.cpp     Two Zero Filter
-               TwoPole.cpp     Two Pole Filter
-               BiQuad.cpp      Two Pole/Two Zero Filter
-               FormSwep.cpp    Sweepable BiQuad Filter (goes to target by rate)
-               Delay.cpp       Non-Interpolating Delay Line Class
-               DelayL.cpp      Linearly Interpolating Delay Line (subclass of Delay)
-               DelayA.cpp      Allpass Interpolating Delay Line (subclass of Delay)
+Filters:       Filter.cpp      Filter master class
+               OneZero.cpp     One zero filter
+               OnePole.cpp     One pole filter
+               PoleZero.cpp    One pole/one zero filter
+               TwoZero.cpp     Two zero filter
+               TwoPole.cpp     Two pole filter
+               BiQuad.cpp      Two pole/two zero filter
+               FormSwep.cpp    Sweepable biquad filter (goes to target by rate)
+               Delay.cpp       Non-interpolating delay line class
+               DelayL.cpp      Linearly interpolating delay line (subclass of Delay)
+               DelayA.cpp      Allpass interpolating delay line (subclass of Delay)
 
-Non-Linear:    JetTabl.cpp     Cubic Jet Non-Linearity
-               BowTabl.cpp     x^(-3) Bow Non-Linearity
-               ReedTabl.cpp    One Breakpoint Saturating Reed Non-Linearity
+Non-Linear:    JetTabl.cpp     Cubic jet non-linearity
+               BowTabl.cpp     x^(-3) Bow non-linearity
+               ReedTabl.cpp    One breakpoint saturating reed non-linearity
                                 
-Derived:       Modulate.cpp    Periodic and Random Vibrato: WvIn, SubNoise, OnePole
+Derived:       Modulate.cpp    Periodic and random vibrato: WvIn, SubNoise, OnePole
                SingWave.cpp    Looping wave table with randomness: Modulate, WaveLoop, Envelope
 
 

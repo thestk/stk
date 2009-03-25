@@ -49,7 +49,7 @@ StkFloat Vector3D :: getLength()
 
 void Vector3D :: setXYZ(StkFloat x, StkFloat y, StkFloat z)
 {
-  myX_ = z;
+  myX_ = x;
   myY_ = y;
   myZ_ = z;
 };

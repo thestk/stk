@@ -8,7 +8,7 @@
     the real axis of the z-plane while maintaining
     a constant peak filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -82,18 +82,13 @@ StkFloat OnePole :: lastOut(void) const
   return Filter::lastOut();
 }
 
-StkFloat OnePole :: tick(StkFloat sample)
+StkFloat OnePole :: tick( StkFloat input )
 {
-  inputs_[0] = gain_ * sample;
+  inputs_[0] = gain_ * input;
   outputs_[0] = b_[0] * inputs_[0] - a_[1] * outputs_[1];
   outputs_[1] = outputs_[0];
 
   return outputs_[0];
-}
-
-StkFloat *OnePole :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Filter::tick( vector, vectorSize );
 }
 
 StkFrames& OnePole :: tick( StkFrames& frames, unsigned int channel )

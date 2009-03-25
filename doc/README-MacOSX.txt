@@ -1,12 +1,12 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2004.
+By Perry R. Cook and Gary P. Scavone, 1995-2005.
 
 Please read the file README and INSTALL for more general STK information.
 
 Realtime support for Macintosh OS X uses the CoreAudio HAL API and is specified during compilation using the __MACOSX_CORE__ preprocessor definition.
 
-It is necessary to install the OS X developer kit in order to compile STK.  STK was successfully tested on OS X versions 10.2 and 10.3.
+It is necessary to install the OS X developer kit in order to compile STK.  STK was successfully tested on OS X versions 10.4.
 
 The internal Macintosh audio hardware typically supports a sample rate of 44100 Hz only.  The default STK sample rate is now 44100 Hz and all current example programs use this rate.  However, it is possible to manually override this value in some programs from the command-line.  The default sample rate is set in Stk.h.  In addition, the RT_BUFFER_SIZE, specified in Stk.h, could be increased (to a higher power of two) for more robust performance.
 

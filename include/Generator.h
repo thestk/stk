@@ -3,9 +3,9 @@
     \brief STK abstract unit generator parent class.
 
     This class provides common functionality for
-    STK unit generator source subclasses.
+    STK unit generator sample-source subclasses.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -18,30 +18,32 @@ class Generator : public Stk
 {
  public:
   //! Class constructor.
-  Generator();
+  Generator( void );
 
   //! Class destructor.
-  virtual ~Generator();
+  virtual ~Generator( void );
 
   //! Return the last output value.
-  virtual StkFloat lastOut() const { return lastOutput_; };
+  virtual StkFloat lastOut( void ) const { return lastOutput_; };
 
-  //! Abstract tick function ... must be implemented in subclasses.
-  virtual StkFloat tick( void ) = 0;
-
-  //! Compute \e vectorSize outputs and return them in \e vector.
-  virtual StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+  //! Compute one sample and output.
+  StkFloat tick( void );
 
   //! Fill a channel of the StkFrames object with computed outputs.
   /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
+    The \c channel argument should be zero or greater (the first
+    channel is specified by 0).  An StkError will be thrown if the \c
+    channel argument is equal to or greater than the number of
     channels in the StkFrames object.
   */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
 
  protected:
+
+  // This abstract function must be implemented in all subclasses.
+  // It is used to get around a C++ problem with overloaded virtual
+  // functions.
+  virtual StkFloat computeSample( void ) = 0;
 
   StkFloat lastOutput_;
 

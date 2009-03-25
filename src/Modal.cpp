@@ -7,7 +7,7 @@
     (non-sweeping BiQuad filters), where N is set
     during instantiation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -32,11 +32,8 @@ Modal :: Modal(unsigned int modes)
     filters_[i]->setEqualGainZeroes();
   }
 
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( Stk::rawwavePath() + "sinewave.raw", true );
-
   // Set some default values.
-  vibrato_->setFrequency( 6.0 );
+  vibrato_.setFrequency( 6.0 );
   vibratoGain_ = 0.0;
   directGain_ = 0.0;
   masterGain_ = 1.0;
@@ -50,8 +47,6 @@ Modal :: Modal(unsigned int modes)
 
 Modal :: ~Modal()
 {
-  delete vibrato_;
-
   for (unsigned int i=0; i<nModes_; i++ ) {
     delete filters_[i];
   }
@@ -190,7 +185,7 @@ void Modal :: damp(StkFloat amplitude)
   }
 }
 
-StkFloat Modal :: tick()
+StkFloat Modal :: computeSample()
 {
   StkFloat temp = masterGain_ * onepole_.tick( wave_->tick() * envelope_.tick() );
 
@@ -203,20 +198,10 @@ StkFloat Modal :: tick()
 
   if (vibratoGain_ != 0.0)	{
     // Calculate AM and apply to master out
-    temp = 1.0 + (vibrato_->tick() * vibratoGain_);
+    temp = 1.0 + (vibrato_.tick() * vibratoGain_);
     temp2 = temp * temp2;
   }
     
   lastOutput_ = temp2;
   return lastOutput_;
-}
-
-StkFloat *Modal :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Modal :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }

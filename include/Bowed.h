@@ -17,7 +17,7 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -29,7 +29,7 @@
 #include "BowTable.h"
 #include "OnePole.h"
 #include "BiQuad.h"
-#include "WaveLoop.h"
+#include "SineWave.h"
 #include "ADSR.h"
 
 class Bowed : public Instrmnt
@@ -62,31 +62,19 @@ class Bowed : public Instrmnt
   //! Stop a note with the given amplitude (speed of decay).
   void noteOff(StkFloat amplitude);
 
-  //! Compute one output sample.
-  StkFloat tick();
-
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   void controlChange(int number, StkFloat value);
 
- protected:  
+ protected:
+
+  StkFloat computeSample( void );
+
   DelayL   neckDelay_;
   DelayL   bridgeDelay_;
   BowTable bowTable_;
   OnePole  stringFilter_;
   BiQuad   bodyFilter_;
-  WaveLoop *vibrato_;
+  SineWave vibrato_;
   ADSR     adsr_;
   StkFloat maxVelocity_;
   StkFloat baseDelay_;

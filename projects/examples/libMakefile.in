@@ -1,6 +1,6 @@
 ### STK examples Makefile - for various flavors of unix
 
-PROGRAMS = sine play record io tcpIn tcpOut sineosc rtsine crtsine bethree controlbee foursine threebees playsmf
+PROGRAMS = sine play record io inetIn inetOut sineosc rtsine crtsine bethree controlbee foursine threebees playsmf grains
 RM = /bin/rm
 
 INCLUDE = @include@
@@ -20,7 +20,6 @@ LIBRARY += @frameworks@
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
 	DEFS    += @audio_apis@
-	DEFS    += @midiator@
 endif
 
 RAWWAVES = @rawwaves@
@@ -39,7 +38,6 @@ clean :
 strip : 
 	strip $(PROGRAMS)
 
-#play: play.cpp Stk.o WvIn.o WvOut.o RtWvOut.o RtAudio.o
 play: play.cpp
 	$(CC) $(CFLAGS) $(DEFS) -o play play.cpp -L../../src $(LIBRARY) -lstk
 
@@ -52,11 +50,11 @@ sine: sine.cpp
 io: io.cpp
 	$(CC) $(CFLAGS) $(DEFS) -o io io.cpp -L../../src $(LIBRARY) -lstk
 
-tcpIn: tcpIn.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o tcpIn tcpIn.cpp -L../../src $(LIBRARY) -lstk
+inetIn: inetIn.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o inetIn inetIn.cpp -L../../src $(LIBRARY) -lstk
 
-tcpOut: tcpOut.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o tcpOut tcpOut.cpp -L../../src $(LIBRARY) -lstk
+inetOut: inetOut.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o inetOut inetOut.cpp -L../../src $(LIBRARY) -lstk
 
 sineosc: sineosc.cpp
 	$(CC) $(CFLAGS) $(DEFS) -o sineosc sineosc.cpp -L../../src $(LIBRARY) -lstk
@@ -81,4 +79,7 @@ threebees: threebees.cpp
 
 playsmf: playsmf.cpp
 	$(CC) $(CFLAGS) $(DEFS) -o playsmf playsmf.cpp -L../../src $(LIBRARY) -lstk
+
+grains: grains.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o grains grains.cpp -L../../src $(LIBRARY) -lstk
 

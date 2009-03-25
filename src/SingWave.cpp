@@ -9,7 +9,7 @@
     from pitch shifting.  It will be used as an
     excitation source for other instruments.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -22,21 +22,19 @@ SingWave :: SingWave( std::string fileName, bool raw)
 
 	rate_ = 1.0;
 	sweepRate_ = 0.001;
-	modulator_ = new Modulate();
-	modulator_->setVibratoRate( 6.0 );
-	modulator_->setVibratoGain( 0.04 );
-	modulator_->setRandomGain( 0.005 );
+	modulator_.setVibratoRate( 6.0 );
+	modulator_.setVibratoGain( 0.04 );
+	modulator_.setRandomGain( 0.005 );
 	this->setFrequency( 75.0 );
 	pitchEnvelope_.setRate( 1.0 );
-	this->tick();
-	this->tick();
+	this->computeSample();
+	this->computeSample();
 	pitchEnvelope_.setRate( sweepRate_ * rate_ );
 }
 
 SingWave :: ~SingWave()
 {
   delete wave_;
-	delete modulator_;
 }
 
 void SingWave :: reset()
@@ -67,17 +65,17 @@ void SingWave :: setFrequency(StkFloat frequency)
 
 void SingWave :: setVibratoRate(StkFloat rate)
 {
-	modulator_->setVibratoRate( rate );
+	modulator_.setVibratoRate( rate );
 }
 
 void SingWave :: setVibratoGain(StkFloat gain)
 {
-	modulator_->setVibratoGain(gain);
+	modulator_.setVibratoGain(gain);
 }
 
 void SingWave :: setRandomGain(StkFloat gain)
 {
-	modulator_->setRandomGain(gain);
+	modulator_.setRandomGain(gain);
 }
 
 void SingWave :: setSweepRate(StkFloat rate)
@@ -105,25 +103,15 @@ void SingWave :: noteOff()
 	envelope_.keyOff();
 }
 
-StkFloat SingWave :: tick()
+StkFloat SingWave :: computeSample()
 {
   // Set the wave rate.
   StkFloat newRate = pitchEnvelope_.tick();
-  newRate += newRate * modulator_->tick();
+  newRate += newRate * modulator_.tick();
   wave_->setRate( newRate );
 
   lastOutput_ = wave_->tick();
 	lastOutput_ *= envelope_.tick();
-    
+
 	return lastOutput_;             
-}
-
-StkFloat *SingWave :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Generator::tick( vector, vectorSize );
-}
-
-StkFrames& SingWave :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Generator::tick( frames, channel );
 }

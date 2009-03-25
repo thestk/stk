@@ -8,7 +8,7 @@
     filter with a given coefficient.  Another
     method is provided to create a DC blocking filter.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -79,19 +79,14 @@ StkFloat PoleZero :: lastOut(void) const
   return Filter::lastOut();
 }
 
-StkFloat PoleZero :: tick(StkFloat sample)
+StkFloat PoleZero :: tick( StkFloat input )
 {
-  inputs_[0] = gain_ * sample;
+  inputs_[0] = gain_ * input;
   outputs_[0] = b_[0] * inputs_[0] + b_[1] * inputs_[1] - a_[1] * outputs_[1];
   inputs_[1] = inputs_[0];
   outputs_[1] = outputs_[0];
 
   return outputs_[0];
-}
-
-StkFloat *PoleZero :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Filter::tick( vector, vectorSize );
 }
 
 StkFrames& PoleZero :: tick( StkFrames& frames, unsigned int channel )

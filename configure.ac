@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(STK, 4.2.0, gary@music.mcgill.ca, stk)
+AC_INIT(STK, 4.2.1, gary@music.mcgill.ca, stk)
 AC_CONFIG_SRCDIR(src/Stk.cpp)
-AC_CONFIG_FILES(src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile)
+AC_CONFIG_FILES(src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile)
 
 # Checks for programs.
 AC_PROG_CC
@@ -53,7 +53,7 @@ AC_ARG_ENABLE(debug,
 
 # Check compiler and use -Wall if gnu.
 if test $GXX = "yes" ; then
-  AC_SUBST( warn, ["-Wall -g -Woverloaded-virtual -D__GXX__"] )
+  AC_SUBST( warn, ["-Wall -g -D__GXX__"] )
 fi
 
 if test $realtime = yes; then

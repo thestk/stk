@@ -5,7 +5,7 @@
     This class provides a common interface for
     all STK instruments.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -41,26 +41,29 @@ class Instrmnt : public Stk
   //! Return the last right output value.
   StkFloat lastOutRight() const;
 
-  //! Compute one output sample.
-  virtual StkFloat tick() = 0;
-
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+  //! Compute one sample and output.
+  StkFloat tick( void );
 
   //! Fill a channel of the StkFrames object with computed outputs.
   /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
+    The \c channel argument should be zero or greater (the first
+    channel is specified by 0).  An StkError will be thrown if the \c
+    channel argument is equal to or greater than the number of
     channels in the StkFrames object.
   */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   virtual void controlChange(int number, StkFloat value);
 
-  protected:
-    StkFloat lastOutput_;
+ protected:
+
+  // This abstract function must be implemented in all subclasses.
+  // It is used to get around a C++ problem with overloaded virtual
+  // functions.
+  virtual StkFloat computeSample( void ) = 0;
+
+  StkFloat lastOutput_;
 
 };
 

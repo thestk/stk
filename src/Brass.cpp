@@ -16,13 +16,13 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
 #include "Brass.h"
 #include "SKINI.msg"
-#include <math.h>
+#include <cmath>
 
 Brass :: Brass(StkFloat lowestFrequency)
 {
@@ -35,9 +35,7 @@ Brass :: Brass(StkFloat lowestFrequency)
 
   adsr_.setAllTimes( 0.005, 0.001, 1.0, 0.010);
 
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  vibrato_->setFrequency( 6.137 );
+  vibrato_.setFrequency( 6.137 );
   vibratoGain_ = 0.0;
 
   this->clear();
@@ -50,7 +48,6 @@ Brass :: Brass(StkFloat lowestFrequency)
 
 Brass :: ~Brass()
 {
-  delete vibrato_;
 }
 
 void Brass :: clear()
@@ -123,10 +120,10 @@ void Brass :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Brass :: tick()
+StkFloat Brass :: computeSample()
 {
   StkFloat breathPressure = maxPressure_ * adsr_.tick();
-  breathPressure += vibratoGain_ * vibrato_->tick();
+  breathPressure += vibratoGain_ * vibrato_.tick();
 
   StkFloat mouthPressure = 0.3 * breathPressure;
   StkFloat borePressure = 0.85 * delayLine_.lastOut();
@@ -140,16 +137,6 @@ StkFloat Brass :: tick()
   lastOutput_ = delayLine_.tick( dcBlock_.tick( lastOutput_ ) );
 
   return lastOutput_;
-}
-
-StkFloat *Brass :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Brass :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Brass :: controlChange(int number, StkFloat value)
@@ -173,7 +160,7 @@ void Brass :: controlChange(int number, StkFloat value)
   else if (number == __SK_SlideLength_) // 4
     delayLine_.setDelay( slideTarget_ * (0.5 + norm) );
   else if (number == __SK_ModFrequency_) // 11
-    vibrato_->setFrequency( norm * 12.0 );
+    vibrato_.setFrequency( norm * 12.0 );
   else if (number == __SK_ModWheel_ ) // 1
     vibratoGain_ = norm * 0.4;
   else if (number == __SK_AfterTouch_Cont_) // 128

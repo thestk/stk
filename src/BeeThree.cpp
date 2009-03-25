@@ -28,7 +28,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -79,12 +79,12 @@ void BeeThree :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-StkFloat BeeThree :: tick()
+StkFloat BeeThree :: computeSample()
 {
   register StkFloat temp;
 
   if (modDepth_ > 0.0)	{
-    temp = 1.0 + (modDepth_ * vibrato_->tick() * 0.1);
+    temp = 1.0 + (modDepth_ * vibrato_.tick() * 0.1);
     waves_[0]->setFrequency(baseFrequency_ * temp * ratios_[0]);
     waves_[1]->setFrequency(baseFrequency_ * temp * ratios_[1]);
     waves_[2]->setFrequency(baseFrequency_ * temp * ratios_[2]);
@@ -103,12 +103,4 @@ StkFloat BeeThree :: tick()
   return lastOutput_;
 }
 
-StkFloat *BeeThree :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
 
-StkFrames& BeeThree :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
-}

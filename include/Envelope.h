@@ -9,7 +9,7 @@
     \e keyOff messages, ramping to 1.0 on
     keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -25,8 +25,14 @@ class Envelope : public Generator
   //! Default constructor.
   Envelope(void);
 
+  //! Copy constructor.
+  Envelope( const Envelope& e );
+
   //! Class destructor.
   virtual ~Envelope(void);
+
+  //! Assignment operator.
+  Envelope& operator= ( const Envelope& e );
 
   //! Set target = 1.
   virtual void keyOn(void);
@@ -49,22 +55,10 @@ class Envelope : public Generator
   //! Return the current envelope \e state (0 = at target, 1 otherwise).
   virtual int getState(void) const;
 
-  //! Return one envelope output value.
-  virtual StkFloat tick(void);
-
-  //! Compute \e vectorSize outputs and return them in \e vector.
-  virtual StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
  protected:
+
+  virtual StkFloat computeSample( void );
+
   StkFloat value_;
   StkFloat target_;
   StkFloat rate_;

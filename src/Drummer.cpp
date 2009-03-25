@@ -3,7 +3,7 @@
     \brief STK drum sample player class.
 
     This class implements a drum sampling
-    synthesizer using WvIn objects and one-pole
+    synthesizer using FileWvIn objects and one-pole
     filters.  The drum rawwave files are sampled
     at 22050 Hz, but will be appropriately
     interpolated for other sample rates.  You can
@@ -11,12 +11,12 @@
     of simultaneous voices) via a #define in the
     Drummer.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
 #include "Drummer.h"
-#include <math.h>
+#include <cmath>
 
 // Not really General MIDI yet.
 unsigned char genMIDIMap[128] =
@@ -55,20 +55,14 @@ char waveNames[DRUM_NUMWAVES][16] =
 
 Drummer :: Drummer() : Instrmnt()
 {
-  for ( int i=0; i<DRUM_POLYPHONY; i++ ) {
-    filters_[i] = new OnePole;
-    sounding_[i] = -1;
-  }
-
   // This counts the number of sounding voices.
   nSounding_ = 0;
+  soundOrder_ = std::vector<int> (DRUM_POLYPHONY, -1);
+  soundNumber_ = std::vector<int> (DRUM_POLYPHONY, -1);
 }
 
 Drummer :: ~Drummer()
 {
-  int i;
-  for ( i=0; i<nSounding_; i++ ) delete waves_[i];
-  for ( i=0; i<DRUM_POLYPHONY; i++ ) delete filters_[i];
 }
 
 void Drummer :: noteOn(StkFloat instrument, StkFloat amplitude)
@@ -91,97 +85,86 @@ void Drummer :: noteOn(StkFloat instrument, StkFloat amplitude)
   }
 
   // Yes, this is tres kludgey.
-  int noteNum = (int) ( ( 12*log(instrument/220.0)/log(2.0) ) + 57.01 );
+  int noteNumber = (int) ( ( 12 * log( instrument / 220.0 ) / log( 2.0 ) ) + 57.01 );
 
-  // Check first to see if there's already one like this sounding.
-  int i, waveIndex = -1;
-  for ( i=0; i<DRUM_POLYPHONY; i++ ) {
-    if (sounding_[i] == noteNum) waveIndex = i;
-  }
-
-  if ( waveIndex >= 0 ) {
-    // Reset this sound.
-    waves_[waveIndex]->reset();
-    filters_[waveIndex]->setPole( 0.999 - (gain * 0.6) );
-    filters_[waveIndex]->setGain( gain );
-  }
-  else {
-    if (nSounding_ == DRUM_POLYPHONY) {
-      // If we're already at maximum polyphony, then preempt the oldest voice.
-      delete waves_[0];
-      filters_[0]->clear();
-      OnePole *tempFilt = filters_[0];
-      // Re-order the list.
-      for ( i=0; i<DRUM_POLYPHONY-1; i++ ) {
-        waves_[i] = waves_[i+1];
-        filters_[i] = filters_[i+1];
+  // If we already have a wave of this note number loaded, just reset
+  // it.  Otherwise, look first for an unused wave or preempt the
+  // oldest if already at maximum polyphony.
+  int iWave;
+  for ( iWave=0; iWave<DRUM_POLYPHONY; iWave++ ) {
+    if ( soundNumber_[iWave] == noteNumber ) {
+      if ( waves_[iWave].isFinished() ) {
+        soundOrder_[iWave] = nSounding_;
+        nSounding_++;
       }
-      waves_[DRUM_POLYPHONY-1] = 0;
-      filters_[DRUM_POLYPHONY-1] = tempFilt;
+      waves_[iWave].reset();
+      filters_[iWave].setPole( 0.999 - (gain * 0.6) );
+      filters_[iWave].setGain( gain );
+      break;
     }
-    else
-      nSounding_ += 1;
+  }
 
-    sounding_[nSounding_-1] = noteNum;
+  if ( iWave == DRUM_POLYPHONY ) { // This note number is not currently loaded.
+    if ( nSounding_ < DRUM_POLYPHONY ) {
+      for ( iWave=0; iWave<DRUM_POLYPHONY; iWave++ )
+        if ( soundOrder_[iWave] < 0 ) break;
+      nSounding_ += 1;
+    }
+    else {
+      for ( iWave=0; iWave<DRUM_POLYPHONY; iWave++ )
+        if ( soundOrder_[iWave] == 0 ) break;
+      // Re-order the list.
+      for ( int j=0; j<DRUM_POLYPHONY; j++ ) {
+        if ( soundOrder_[j] > soundOrder_[iWave] )
+          soundOrder_[j] -= 1;
+      }
+    }
+    soundOrder_[iWave] = nSounding_ - 1;
+    soundNumber_[iWave] = noteNumber;
+
     // Concatenate the STK rawwave path to the rawwave file
-    waves_[nSounding_-1] = new WvIn( (Stk::rawwavePath() + waveNames[genMIDIMap[noteNum]]).c_str(), true );
-    if (Stk::sampleRate() != 22050.0)
-      waves_[nSounding_-1]->setRate( 22050.0 / Stk::sampleRate() );
-    filters_[nSounding_-1]->setPole( 0.999 - (gain * 0.6) );
-    filters_[nSounding_-1]->setGain( gain );
+    waves_[iWave].openFile( (Stk::rawwavePath() + waveNames[ genMIDIMap[ noteNumber ] ]).c_str(), true );
+    if ( Stk::sampleRate() != 22050.0 )
+      waves_[iWave].setRate( 22050.0 / Stk::sampleRate() );
+    filters_[iWave].setPole( 0.999 - (gain * 0.6) );
+    filters_[iWave].setGain( gain );
   }
 
 #if defined(_STK_DEBUG_)
   errorString_ << "Drummer::noteOn: number sounding = " << nSounding_ << '\n';
-  for (i=0; i<nSounding_; i++) errorString_ << sounding_[i] << "  ";
+  for ( int i=0; i<nSounding_; i++ ) errorString_ << soundNumber_[i] << "  ";
   errorString_ << '\n';
   handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Drummer :: noteOff(StkFloat amplitude)
+void Drummer :: noteOff( StkFloat amplitude )
 {
   // Set all sounding wave filter gains low.
   int i = 0;
-  while ( i < nSounding_ ) filters_[i++]->setGain( amplitude * 0.01 );
+  while ( i < nSounding_ ) filters_[i++].setGain( amplitude * 0.01 );
 }
 
-StkFloat Drummer :: tick()
+StkFloat Drummer :: computeSample()
 {
-  OnePole *tempFilt;
-
-  int j, i = 0;
   lastOutput_ = 0.0;
-  while (i < nSounding_) {
-    if ( waves_[i]->isFinished() ) {
-      delete waves_[i];
-	    tempFilt = filters_[i];
-      // Re-order the list.
-      for ( j=i; j<nSounding_-1; j++ ) {
-        sounding_[j] = sounding_[j+1];
-        waves_[j] = waves_[j+1];
-        filters_[j] = filters_[j+1];
+  if ( nSounding_ == 0 ) return lastOutput_;
+
+  for ( int i=0; i<DRUM_POLYPHONY; i++ ) {
+    if ( soundOrder_[i] >= 0 ) {
+      if ( waves_[i].isFinished() ) {
+        // Re-order the list.
+        for ( int j=0; j<DRUM_POLYPHONY; j++ ) {
+          if ( soundOrder_[j] > soundOrder_[i] )
+            soundOrder_[j] -= 1;
+        }
+        soundOrder_[i] = -1;
+        nSounding_--;
       }
-      filters_[j] = tempFilt;
-      filters_[j]->clear();
-      sounding_[j] = -1;
-      nSounding_ -= 1;
-      i -= 1;
+      else
+        lastOutput_ += filters_[i].tick( waves_[i].tick() );
     }
-    else
-      lastOutput_ += filters_[i]->tick( waves_[i]->tick() );
-    i++;
   }
 
   return lastOutput_;
-}
-
-StkFloat *Drummer :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Drummer :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }

@@ -176,7 +176,7 @@ proc noteOff {pitchVal pressVal} {
 proc patchChange {value} {
     global outID preset
     if {$preset == 1} {
-        .right.cont11 config -state normal -label "Vibrato Gain"
+        .right.cont11 config -state normal -label "Vibrato Rate"
     } else {
         .right.cont11 config -state disabled -label "Disabled"
     }

@@ -13,7 +13,7 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -50,22 +50,10 @@ class Sitar : public Instrmnt
   //! Stop a note with the given amplitude (speed of decay).
   void noteOff(StkFloat amplitude);
 
-  //! Compute one output sample.
-  StkFloat tick();
+ protected:
 
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+  StkFloat computeSample( void );
 
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
- protected:  
   DelayA  delayLine_;
   OneZero loopFilter_;
   Noise   noise_;

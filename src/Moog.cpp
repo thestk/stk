@@ -14,7 +14,7 @@
        - Vibrato Gain = 1
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -24,7 +24,7 @@
 Moog :: Moog()
 {
   // Concatenate the STK rawwave path to the rawwave file
-  attacks_.push_back( new WvIn( (Stk::rawwavePath() + "mandpluk.raw").c_str(), true ) );
+  attacks_.push_back( new FileWvIn( (Stk::rawwavePath() + "mandpluk.raw").c_str(), true ) );
   loops_.push_back ( new WaveLoop( (Stk::rawwavePath() + "impuls20.raw").c_str(), true ) );
   loops_.push_back ( new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true ) ); // vibrato
   loops_[1]->setFrequency( 6.122 );
@@ -92,7 +92,7 @@ void Moog :: setModulationDepth(StkFloat mDepth)
   modDepth_ = mDepth * 0.5;
 }
 
-StkFloat Moog :: tick()
+StkFloat Moog :: computeSample()
 {
   StkFloat temp;
 
@@ -108,16 +108,6 @@ StkFloat Moog :: tick()
   temp = filters_[0].tick( temp );
   lastOutput_ = filters_[1].tick( temp );
   return lastOutput_ * 3.0;
-}
-
-StkFloat *Moog :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Moog :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Moog :: controlChange(int number, StkFloat value)

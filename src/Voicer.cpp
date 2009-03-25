@@ -25,7 +25,7 @@
     an ensemble.  Alternately, control changes can
     be sent to all voices on a given channel.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -55,7 +55,7 @@ void Voicer :: addInstrument( Instrmnt *instrument, int channel )
 void Voicer :: removeInstrument( Instrmnt *instrument )
 {
   bool found = false;
-  std::vector< Voicer::Voice>::iterator i; 
+  std::vector< Voicer::Voice >::iterator i;
   for ( i=voices_.begin(); i!=voices_.end(); ++i ) {
     if ( (*i).instrument != instrument ) continue;
     voices_.erase( i );

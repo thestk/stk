@@ -4,7 +4,7 @@
 
     This class implements a chorus effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -19,11 +19,8 @@ Chorus :: Chorus(StkFloat baseDelay)
   delayLine_[1].setDelay( baseDelay );
   baseLength_ = baseDelay;
 
-  // Concatenate the STK rawwave path to the rawwave file
-  mods_[0] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  mods_[1] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  mods_[0]->setFrequency(0.2);
-  mods_[1]->setFrequency(0.222222);
+  mods_[0].setFrequency(0.2);
+  mods_[1].setFrequency(0.222222);
   modDepth_ = 0.05;
   effectMix_ = 0.5;
   this->clear();
@@ -31,8 +28,6 @@ Chorus :: Chorus(StkFloat baseDelay)
 
 Chorus :: ~Chorus()
 {
-  delete mods_[0];
-  delete mods_[1];
 }
 
 void Chorus :: clear()
@@ -50,27 +45,17 @@ void Chorus :: setModDepth(StkFloat depth)
 
 void Chorus :: setModFrequency(StkFloat frequency)
 {
-  mods_[0]->setFrequency(frequency);
-  mods_[1]->setFrequency(frequency * 1.1111);
+  mods_[0].setFrequency(frequency);
+  mods_[1].setFrequency(frequency * 1.1111);
 }
 
-StkFloat Chorus :: tick(StkFloat input)
+StkFloat Chorus :: computeSample(StkFloat input)
 {
-  delayLine_[0].setDelay( baseLength_ * 0.707 * (1.0 + mods_[0]->tick()) );
-  delayLine_[1].setDelay( baseLength_  * 0.5 *  (1.0 - mods_[1]->tick()) );
+  delayLine_[0].setDelay( baseLength_ * 0.707 * (1.0 + modDepth_ * mods_[0].tick()) );
+  delayLine_[1].setDelay( baseLength_  * 0.5 *  (1.0 - modDepth_ * mods_[1].tick()) );
   lastOutput_[0] = input * (1.0 - effectMix_);
   lastOutput_[0] += effectMix_ * delayLine_[0].tick(input);
   lastOutput_[1] = input * (1.0 - effectMix_);
   lastOutput_[1] += effectMix_ * delayLine_[1].tick(input);
   return Effect::lastOut();
-}
-
-StkFloat *Chorus :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Effect::tick( vector, vectorSize );
-}
-
-StkFrames& Chorus :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Effect::tick( frames, channel );
 }

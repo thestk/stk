@@ -11,7 +11,7 @@
     envelope value reaches 0.0 in the
     ADSR::RELEASE state.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -60,7 +60,7 @@ class ADSR : public Envelope
   //! Set the release rate based on a time duration.
   void setReleaseTime(StkFloat time);
 
-  //! Set sustain level and attach, decay, and release time durations.
+  //! Set sustain level and attack, decay, and release time durations.
   void setAllTimes(StkFloat aTime, StkFloat dTime, StkFloat sLevel, StkFloat rTime);
 
   //! Set the target value.
@@ -72,22 +72,10 @@ class ADSR : public Envelope
   //! Set to state = ADSR::SUSTAIN with current and target values of \e aValue.
   void setValue(StkFloat value);
 
-  //! Return one envelope output value.
-  StkFloat tick(void);
-
-  //! Compute \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
  protected:  
+
+  StkFloat computeSample( void );
+
   StkFloat attackRate_;
   StkFloat decayRate_;
   StkFloat sustainLevel_;

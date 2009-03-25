@@ -31,8 +31,7 @@
 
 #include "BandedWG.h"
 #include "SKINI.msg"
-#include "Noise.h"
-#include <math.h>
+#include <cmath>
 
 BandedWG :: BandedWG()
 {
@@ -264,7 +263,7 @@ void BandedWG :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat BandedWG :: tick()
+StkFloat BandedWG :: computeSample()
 {
   int k;
 
@@ -306,16 +305,6 @@ StkFloat BandedWG :: tick()
   //lastOutput = data * nModes_;
   lastOutput_ = data * 4;
   return lastOutput_;
-}
-
-StkFloat *BandedWG :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& BandedWG :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void BandedWG :: controlChange(int number, StkFloat value)

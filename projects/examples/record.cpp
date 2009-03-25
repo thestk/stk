@@ -23,7 +23,7 @@
 /******************************************/
 
 #include "RtWvIn.h"
-#include "WvOut.h"
+#include "FileWvOut.h"
 
 void usage(void) {
   // Error function in case of incorrect command-line
@@ -41,17 +41,20 @@ int main(int argc, char *argv[])
   // minimal command-line checking
   if (argc != 5) usage();
 
+  Stk::showWarnings( true );
+
   int channels = (int) atoi(argv[1]);
   double sample_rate = atof(argv[4]);
   double time = atof(argv[3]);
   long samples, i;
+  StkFrames frame( 1, channels );
 
   // Set the global sample rate.
   Stk::setSampleRate( sample_rate );
 
   // Initialize our WvIn/WvOut pointers.
   RtWvIn *input = 0;
-  WvOut *output = 0;
+  FileWvOut *output = 0;
 
   // Open the realtime input device
   try {
@@ -63,7 +66,7 @@ int main(int argc, char *argv[])
   
   // Open the soundfile for output.
   try {
-    output = new WvOut(argv[2], channels, WvOut::WVOUT_WAV);
+    output = new FileWvOut(argv[2], channels, FileWrite::FILE_WAV);
   }
   catch (StkError &) {
     goto cleanup;
@@ -71,8 +74,9 @@ int main(int argc, char *argv[])
 
   // Here's the runtime loop
   samples = (long) (time * Stk::sampleRate());
-  for ( i=0; i<samples; i++ )
-    output->tickFrame( input->tickFrame() );
+  for ( i=0; i<samples; i++ ) {
+    output->tickFrame( input->tickFrame( frame ) );
+  }
 
  cleanup:
   delete input;

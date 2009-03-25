@@ -8,7 +8,7 @@
     It provides methods for controlling the sweep
     rate and target frequency.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -56,7 +56,7 @@ class FormSwep : public BiQuad
     target values.  A sweep rate of 0.0 will produce no
     change in resonance parameters.  
   */
-  void setSweepRate(StkFloat rate);    
+  void setSweepRate(StkFloat rate);
 
   //! Set the sweep rate in terms of a time value in seconds.
   /*!
@@ -64,24 +64,12 @@ class FormSwep : public BiQuad
     given time for the formant parameters to reach
     their target values.
   */
-  void setSweepTime(StkFloat time);    
+  void setSweepTime(StkFloat time);
 
-  //! Input one sample to the filter and return one output.
-  StkFloat tick(StkFloat sample);
+ protected:
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+  StkFloat computeSample( StkFloat input );
 
-  //! Take a channel of the StkFrames object as inputs to the filter and replace with corresponding outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
- protected:  
   bool dirty_;
   StkFloat frequency_;
   StkFloat radius_;

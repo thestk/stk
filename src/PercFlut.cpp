@@ -22,7 +22,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -78,11 +78,11 @@ void PercFlut :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-StkFloat PercFlut :: tick()
+StkFloat PercFlut :: computeSample()
 {
   register StkFloat temp;
 
-  temp = vibrato_->tick() * modDepth_ * 0.2;    
+  temp = vibrato_.tick() * modDepth_ * 0.2;    
   waves_[0]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[0]);
   waves_[1]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[1]);
   waves_[2]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[2]);
@@ -103,14 +103,4 @@ StkFloat PercFlut :: tick()
     
   lastOutput_ = temp * 0.5;
   return lastOutput_;
-}
-
-StkFloat *PercFlut :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& PercFlut :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }

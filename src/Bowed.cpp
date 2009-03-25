@@ -17,7 +17,7 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -37,9 +37,7 @@ Bowed :: Bowed(StkFloat lowestFrequency)
 
   bowTable_.setSlope(3.0 );
 
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  vibrato_->setFrequency( 6.12723 );
+  vibrato_.setFrequency( 6.12723 );
   vibratoGain_ = 0.0;
 
   stringFilter_.setPole( 0.6 - (0.1 * 22050.0 / Stk::sampleRate()) );
@@ -58,7 +56,6 @@ Bowed :: Bowed(StkFloat lowestFrequency)
 
 Bowed :: ~Bowed()
 {
-  delete vibrato_;
 }
 
 void Bowed :: clear()
@@ -122,7 +119,7 @@ void Bowed :: setVibrato(StkFloat gain)
   vibratoGain_ = gain;
 }
 
-StkFloat Bowed :: tick()
+StkFloat Bowed :: computeSample()
 {
   StkFloat bowVelocity;
   StkFloat bridgeRefl;
@@ -143,22 +140,12 @@ StkFloat Bowed :: tick()
     
   if ( vibratoGain_ > 0.0 )  {
     neckDelay_.setDelay( (baseDelay_ * (1.0 - betaRatio_) ) + 
-                         (baseDelay_ * vibratoGain_ * vibrato_->tick()) );
+                         (baseDelay_ * vibratoGain_ * vibrato_.tick()) );
   }
 
   lastOutput_ = bodyFilter_.tick( bridgeDelay_.lastOut() );
 
   return lastOutput_;
-}
-
-StkFloat *Bowed :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Bowed :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Bowed :: controlChange(int number, StkFloat value)
@@ -183,7 +170,7 @@ void Bowed :: controlChange(int number, StkFloat value)
     neckDelay_.setDelay( baseDelay_ * (1.0 - betaRatio_) );
   }
   else if (number == __SK_ModFrequency_) // 11
-    vibrato_->setFrequency( norm * 12.0 );
+    vibrato_.setFrequency( norm * 12.0 );
   else if (number == __SK_ModWheel_) // 1
     vibratoGain_ = ( norm * 0.4 );
   else if (number == __SK_AfterTouch_Cont_) // 128

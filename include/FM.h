@@ -19,7 +19,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -29,6 +29,7 @@
 #include "Instrmnt.h"
 #include "ADSR.h"
 #include "WaveLoop.h"
+#include "SineWave.h"
 #include "TwoZero.h"
 
 class FM : public Instrmnt
@@ -79,28 +80,16 @@ class FM : public Instrmnt
   //! Stop a note with the given amplitude (speed of decay).
   void noteOff(StkFloat amplitude);
 
-  //! Pure virtual function ... must be defined in subclasses.
-  virtual StkFloat tick() = 0;
-
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize) = 0;
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 ) = 0;
-
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   virtual void controlChange(int number, StkFloat value);
 
- protected:  
+ protected:
+
+  virtual StkFloat computeSample( void ) = 0;
+
   std::vector<ADSR *> adsr_; 
   std::vector<WaveLoop *> waves_;
-  WaveLoop *vibrato_;
+  SineWave vibrato_;
   TwoZero  twozero_;
   unsigned int nOperators_;
   StkFloat baseFrequency_;

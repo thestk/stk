@@ -2,17 +2,17 @@
 
 <H3>References</H3>
 <UL>
-<LI><A HREF="Papers/stkicmc99.pdf">ICMC99 Paper</A></LI>
+<LI><A HREF="papers/stkupdate.pdf">ICMC2005 Paper</A></LI>
+<BR>
+A paper by Gary and Perry detailing recent updates to the Synthesis ToolKit in C++.
+<P>
+<LI><A HREF="papers/stkicmc99.pdf">ICMC99 Paper</A></LI>
 <BR>
 A not-so-recent paper by Perry and Gary about the Synthesis ToolKit in C++.
 <P>
-<LI><A HREF="Papers/STKsiggraph96.pdf">SIGGRAPH96 Paper</A></LI>
+<LI>Book Chapter: <A HREF="http://www.akpeters.com/product.asp?ProdCode=1047">Audio Anecdotes</A></LI>
 <BR>
-A very-not-so-recent paper by Perry about the Synthesis ToolKit in C++.
-<P>
-<LI><A HREF="http://www.cs.princeton.edu/~prc/NewWork.html#STK">Perry's STK Web Page</A></LI>
-<BR>
-This is a link to Perry Cook's STK Web page.  He has information about the \ref skini, the protocol used to control STK instruments, as well as a lot of other cool stuff.
+Here's a link to a book that includes an chapter on STK.
 </UL>
 
 
@@ -31,9 +31,30 @@ For those instances where a simple GUI with sliders and buttons is helpful, we u
 
 <H4>A brief history of the <I>Synthesis ToolKit in C++.</I></H4>
 
-Perry Cook began developing a pre-cursor to the Synthesis ToolKit (also called STK) under NeXTStep at the Center for Computer Research in Music and Acoustics (CCRMA) at Stanford University in the early-1990s.  With his move to Princeton University in 1996, he ported everything to C++ on SGI hardware, added real-time capabilities, and greatly expanded the synthesis techniques available.  With the help of Bill Putnam, Perry also made a port of STK to Windows95.  Gary Scavone began using STK extensively in the summer of 1997 and completed a full port of STK to Linux early in 1998. He finished the fully compatable Windows port (using Direct Sound API) in June 1998.  Numerous improvements and extensions have been made since then.
+Perry Cook began developing a pre-cursor to the Synthesis ToolKit
+(also called STK) under NeXTStep at the Center for Computer Research
+in Music and Acoustics (CCRMA) at Stanford University in the
+early-1990s.  With his move to Princeton University in 1996, he ported
+everything to C++ on SGI hardware, added real-time capabilities, and
+greatly expanded the synthesis techniques available.  With the help of
+Bill Putnam, Perry also made a port of STK to Windows95.  Gary Scavone
+began using STK extensively in the summer of 1997 and completed a full
+port of STK to Linux early in 1998. He finished the fully compatable
+Windows port (using Direct Sound API) in June 1998.  Numerous
+improvements and extensions have been made since then.
 
-The Toolkit has been distributed continuously since 1996 via the <A HREF="http://www.music.princeton.edu/psk">Princeton Sound Kitchen</A>, <A HREF="http://www.cs.princeton.edu/~prc">Perry Cook's home page</A> at Princeton, <A HREF="http://www-ccrma.stanford.edu/~gary/">Gary Scavone's home page</A> at Stanford's Center for Computer Research in Music and Acoustics (CCRMA), and the <A HREF="http://www-ccrma.stanford.edu/software/stk">Synthesis ToolKit home page</A>.  The ToolKit has been included in various collections of software.  Much of it has also been ported to Max/MSP on Macintosh computers by Dan trueman and Luke Dubois of Columbia University, and is distributed as <A HREF="http://music.columbia.edu/PeRColate">PeRColate</A>.  Help on real-time sound and MIDI has been provided over the years by Tim Stilson, Bill Putnam, and Gabriel Maldonado.
+The Toolkit has been distributed continuously since 1996 via the <A
+HREF="http://www.music.princeton.edu/psk">Princeton Sound Kitchen</A>,
+<A HREF="http://www.cs.princeton.edu/~prc">Perry Cook's home page</A>
+at Princeton, <A HREF="http://www.music.mcgill.ca/~gary/">Gary
+Scavone's home page</A> at McGill University, and the <A HREF="http://ccrma.stanford.edu/software/stk">Synthesis ToolKit
+home page</A>.  The ToolKit has been included in various collections
+of software.  Much of it has also been ported to Max/MSP on Macintosh
+computers by Dan Trueman and Luke Dubois of Columbia University, and
+is distributed as <A
+HREF="http://music.columbia.edu/PeRColate">PeRColate</A>.  Help on
+real-time sound and MIDI has been provided over the years by Tim
+Stilson, Bill Putnam, and Gabriel Maldonado.
 
 <H4>Legal and Ethical Notes</H4>
 

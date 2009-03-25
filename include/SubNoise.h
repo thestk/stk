@@ -6,7 +6,7 @@
     using the C rand() function.  The quality of the
     rand() function varies from one OS to another.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -20,33 +20,21 @@ class SubNoise : public Noise
  public:
 
   //! Default constructor sets sub-sample rate to 16.
-  SubNoise(int subRate = 16);
+  SubNoise( int subRate = 16 );
 
   //! Class destructor.
   ~SubNoise();
 
   //! Return the current sub-sampling rate.
-  int subRate(void) const;
+  int subRate( void ) const { return rate_; };
 
   //! Set the sub-sampling rate.
-  void setRate(int subRate);
-
-  //! Return a sub-sampled random number between -1.0 and 1.0.
-  StkFloat tick();
-
-  //! Compute \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+  void setRate( int subRate );
 
  protected:  
+
+  StkFloat computeSample( void );
+
   int counter_;
   int rate_;
 

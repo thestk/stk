@@ -13,7 +13,7 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -112,20 +112,10 @@ void Plucked :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Plucked :: tick()
+StkFloat Plucked :: computeSample()
 {
   // Here's the whole inner loop of the instrument!!
   lastOutput_ = delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ ) ); 
   lastOutput_ *= 3.0;
   return lastOutput_;
-}
-
-StkFloat *Plucked :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Plucked :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }

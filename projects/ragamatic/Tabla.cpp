@@ -2,38 +2,48 @@
 /*! \class Tabla
     \brief STK tabla drum class.
 
-    This class implements a drum sampling
-    synthesizer using WvIn objects and one-pole
-    filters.  The drum rawwave files are sampled
-    at 22050 Hz, but will be appropriately
-    interpolated for other sample rates.  You can
-    specify the maximum polyphony (maximum number
-    of simultaneous voices) in Drummer.h.
+    This class implements a drum sampling synthesizer using FileWvIn
+    objects and one-pole filters.  The drum rawwave files are sampled
+    at 22050 Hz, but will be appropriately interpolated for other
+    sample rates.  You can specify the maximum polyphony (maximum
+    number of simultaneous voices) in Tabla.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
 #include "Tabla.h"
-#include <math.h>
+#include <cmath>
 
 Tabla :: Tabla() : Instrmnt()
 {
-  for ( int i=0; i<TABLA_POLYPHONY; i++ ) {
-    filters_[i] = new OnePole;
-    sounding_[i] = -1;
-  }
-
   // This counts the number of sounding voices.
   nSounding_ = 0;
+  soundOrder_ = std::vector<int> (TABLA_POLYPHONY, -1);
+  soundNumber_ = std::vector<int> (TABLA_POLYPHONY, -1);
 }
 
 Tabla :: ~Tabla()
 {
-  int i;
-  for ( i=0; i<nSounding_; i++ ) delete waves_[i];
-  for ( i=0; i<TABLA_POLYPHONY; i++ ) delete filters_[i];
 }
+
+static char tablaWaves[TABLA_NUMWAVES][16] =
+  { "Drdak2.raw",
+    "Drdak3.raw",
+    "Drdak4.raw",
+    "Drddak1.raw",
+    "Drdee1.raw",
+    "Drdee2.raw",
+    "Drdoo1.raw",
+    "Drdoo2.raw",
+    "Drdoo3.raw",
+    "Drjun1.raw",
+    "Drjun2.raw",
+    "DrDoi1.raw",
+    "DrDoi2.raw",
+    "DrTak1.raw",
+    "DrTak2.raw"		    
+  };
 
 void Tabla :: noteOn(StkFloat instrument, StkFloat amplitude)
 {
@@ -54,68 +64,54 @@ void Tabla :: noteOn(StkFloat instrument, StkFloat amplitude)
     return;
   }
 
-  static char tablaWaves[TABLA_NUMWAVES][16] =
-    { "Drdak2.raw",
-      "Drdak3.raw",
-      "Drdak4.raw",
-      "Drddak1.raw",
-      "Drdee1.raw",
-      "Drdee2.raw",
-      "Drdoo1.raw",
-      "Drdoo2.raw",
-      "Drdoo3.raw",
-      "Drjun1.raw",
-      "Drjun2.raw",
-      "DrDoi1.raw",
-      "DrDoi2.raw",
-      "DrTak1.raw",
-      "DrTak2.raw"		    
-    };
+  int noteNumber = ( (int) instrument ) % 16;
 
-  int noteNum = ( (int) instrument ) % 16;
-
-  // Check first to see if there's already one like this sounding.
-  int i, waveIndex = -1;
-  for ( i=0; i<TABLA_POLYPHONY; i++ ) {
-    if ( sounding_[i] == noteNum ) waveIndex = i;
-  }
-
-  if ( waveIndex >= 0 ) {
-    // Reset this sound.
-    waves_[waveIndex]->reset();
-    filters_[waveIndex]->setPole( 0.999 - (gain * 0.6) );
-    filters_[waveIndex]->setGain( gain );
-  }
-  else {
-    if ( nSounding_ == TABLA_POLYPHONY ) {
-      // If we're already at maximum polyphony, then preempt the oldest voice.
-      delete waves_[0];
-      filters_[0]->clear();
-      OnePole *tempFilt = filters_[0];
-      // Re-order the list.
-      for ( i=0; i<TABLA_POLYPHONY-1; i++ ) {
-        waves_[i] = waves_[i+1];
-        filters_[i] = filters_[i+1];
+  // If we already have a wave of this note number loaded, just reset
+  // it.  Otherwise, look first for an unused wave or preempt the
+  // oldest if already at maximum polyphony.
+  int iWave;
+  for ( iWave=0; iWave<TABLA_POLYPHONY; iWave++ ) {
+    if ( soundNumber_[iWave] == noteNumber ) {
+      if ( waves_[iWave].isFinished() ) {
+        soundOrder_[iWave] = nSounding_;
+        nSounding_++;
       }
-      waves_[TABLA_POLYPHONY-1] = 0;
-      filters_[TABLA_POLYPHONY-1] = tempFilt;
+      waves_[iWave].reset();
+      filters_[iWave].setPole( 0.999 - (gain * 0.6) );
+      filters_[iWave].setGain( gain );
+      break;
     }
-    else
-      nSounding_ += 1;
+  }
 
-    sounding_[nSounding_-1] = noteNum;
-    // Concatenate the rawwave path to the file name.
-    waves_[nSounding_-1] = new WvIn( (std::string("rawwaves/") + tablaWaves[noteNum]).c_str(), true );
-    waves_[nSounding_-1]->normalize(0.4);
+  if ( iWave == TABLA_POLYPHONY ) { // This note number is not currently loaded.
+    if ( nSounding_ < TABLA_POLYPHONY ) {
+      for ( iWave=0; iWave<TABLA_POLYPHONY; iWave++ )
+        if ( soundOrder_[iWave] < 0 ) break;
+      nSounding_ += 1;
+    }
+    else {
+      for ( iWave=0; iWave<TABLA_POLYPHONY; iWave++ )
+        if ( soundOrder_[iWave] == 0 ) break;
+      // Re-order the list.
+      for ( int j=0; j<TABLA_POLYPHONY; j++ ) {
+        if ( soundOrder_[j] > soundOrder_[iWave] )
+          soundOrder_[j] -= 1;
+      }
+    }
+    soundOrder_[iWave] = nSounding_ - 1;
+    soundNumber_[iWave] = noteNumber;
+
+    // Concatenate the rawwave path to the rawwave file
+    waves_[iWave].openFile( (std::string("rawwaves/") + tablaWaves[ noteNumber ]).c_str(), true );
     if ( Stk::sampleRate() != 22050.0 )
-      waves_[nSounding_-1]->setRate( 22050.0 / Stk::sampleRate() );
-    filters_[nSounding_-1]->setPole( 0.999 - (gain * 0.6) );
-    filters_[nSounding_-1]->setGain( gain );
+      waves_[iWave].setRate( 22050.0 / Stk::sampleRate() );
+    filters_[iWave].setPole( 0.999 - (gain * 0.6) );
+    filters_[iWave].setGain( gain );
   }
 
 #if defined(_STK_DEBUG_)
   errorString_ << "Tabla::noteOn: number sounding = " << nSounding_ << '\n';
-  for (i=0; i<nSounding_; i++) errorString_ << sounding_[i] << "  ";
+  for (i=0; i<nSounding_; i++) errorString_ << soundNumber_[i] << "  ";
   errorString_ << '\n';
   handleError( StkError::DEBUG_WARNING );
 #endif
@@ -125,46 +121,30 @@ void Tabla :: noteOff(StkFloat amplitude)
 {
   // Set all sounding wave filter gains low.
   int i = 0;
-  while ( i < nSounding_ )
-    filters_[i++]->setGain( amplitude * 0.01 );
+  while ( i < nSounding_ ) filters_[i++].setGain( amplitude * 0.01 );
 }
 
-StkFloat Tabla :: tick()
+StkFloat Tabla :: computeSample()
 {
-  OnePole *tempFilt;
-
-  int j, i = 0;
   lastOutput_ = 0.0;
-  while ( i < nSounding_ ) {
-    if ( waves_[i]->isFinished() ) {
-      delete waves_[i];
-	    tempFilt = filters_[i];
-      // Re-order the list.
-      for ( j=i; j<nSounding_-1; j++ ) {
-        sounding_[j] = sounding_[j+1];
-        waves_[j] = waves_[j+1];
-        filters_[j] = filters_[j+1];
+  if ( nSounding_ == 0 ) return lastOutput_;
+
+  for ( int i=0; i<TABLA_POLYPHONY; i++ ) {
+    if ( soundOrder_[i] >= 0 ) {
+      if ( waves_[i].isFinished() ) {
+        // Re-order the list.
+        for ( int j=0; j<TABLA_POLYPHONY; j++ ) {
+          if ( soundOrder_[j] > soundOrder_[i] )
+            soundOrder_[j] -= 1;
+        }
+        soundOrder_[i] = -1;
+        nSounding_--;
       }
-      filters_[j] = tempFilt;
-      filters_[j]->clear();
-      sounding_[j] = -1;
-      nSounding_ -= 1;
-      i -= 1;
+      else
+        lastOutput_ += filters_[i].tick( waves_[i].tick() );
     }
-    else
-      lastOutput_ += filters_[i]->tick( waves_[i]->tick() );
-    i++;
   }
 
   return lastOutput_;
 }
 
-StkFloat *Tabla :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Tabla :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
-}

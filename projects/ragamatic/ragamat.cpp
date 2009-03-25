@@ -188,24 +188,22 @@ int tick(char *buffer, int bufferSize, void *dataPointer)
       // Do a bunch of random controls unless settling down to end.
       if ( data->settling ) {
         if ( data->counter == 0 ) {
-          if ( data->endPhase++ == 0 ) {
-            data->counter = (int) (data->t60 * Stk::sampleRate());
+          data->counter = (int) (data->t60 * Stk::sampleRate());
+          if ( data->endPhase == 0 ) {
             data->drones[2].noteOn( droneFreqs[2], 0.1 );
             std::cout << "What Need Have I for This?\n";
           }
           else if ( data->endPhase == 1 ) {
-            data->counter = (int) (data->t60 * Stk::sampleRate());
             data->drones[0].noteOn( droneFreqs[0], 0.1 );
             std::cout << "RagaMatic finished ... \n";
           }
           else if ( data->endPhase == 2 ) {
-            data->counter = (int) (data->t60 * Stk::sampleRate());
             std::cout << "All is Bliss ...\n";
           }
           else if ( data->endPhase == 3 ) {
             std::cout << "All is Bliss ...\n";
-            data->counter = (int) (data->t60 * Stk::sampleRate());
           }
+          data->endPhase++;
         }
       }
       else {

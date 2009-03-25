@@ -24,7 +24,7 @@
     methods, which take/return pointers to
     multi-channel sample frames.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 

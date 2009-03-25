@@ -14,7 +14,7 @@
     used in fixed delay-length applications, such
     as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -167,9 +167,9 @@ StkFloat Delay :: nextOut(void)
   return inputs_[outPoint_];
 }
 
-StkFloat Delay :: tick(StkFloat sample)
+StkFloat Delay :: computeSample( StkFloat input )
 {
-  inputs_[inPoint_++] = sample;
+  inputs_[inPoint_++] = input;
 
   // Check for end condition
   if (inPoint_ == inputs_.size())
@@ -184,9 +184,9 @@ StkFloat Delay :: tick(StkFloat sample)
   return outputs_[0];
 }
 
-StkFloat *Delay :: tick(StkFloat *vector, unsigned int vectorSize)
+StkFloat Delay :: tick( StkFloat input )
 {
-  return Filter::tick( vector, vectorSize );
+  return computeSample( input );
 }
 
 StkFrames& Delay :: tick( StkFrames& frames, unsigned int channel )

@@ -12,7 +12,7 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -25,9 +25,7 @@ BlowBotl :: BlowBotl()
 {
   dcBlock_.setBlockZero();
 
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  vibrato_->setFrequency( 5.925 );
+  vibrato_.setFrequency( 5.925 );
   vibratoGain_ = 0.0;
 
   resonator_.setResonance(500.0, __BOTTLE_RADIUS_, true);
@@ -39,7 +37,6 @@ BlowBotl :: BlowBotl()
 
 BlowBotl :: ~BlowBotl()
 {
-  delete vibrato_;
 }
 
 void BlowBotl :: clear()
@@ -94,7 +91,7 @@ void BlowBotl :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat BlowBotl :: tick()
+StkFloat BlowBotl :: computeSample()
 {
   StkFloat breathPressure;
   StkFloat randPressure;
@@ -102,7 +99,7 @@ StkFloat BlowBotl :: tick()
 
   // Calculate the breath pressure (envelope + vibrato)
   breathPressure = maxPressure_ * adsr_.tick();
-  breathPressure += vibratoGain_ * vibrato_->tick();
+  breathPressure += vibratoGain_ * vibrato_.tick();
 
   pressureDiff = breathPressure - resonator_.lastOut();
 
@@ -114,16 +111,6 @@ StkFloat BlowBotl :: tick()
   lastOutput_ = 0.2 * outputGain_ * dcBlock_.tick( pressureDiff );
 
   return lastOutput_;
-}
-
-StkFloat *BlowBotl :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& BlowBotl :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void BlowBotl :: controlChange(int number, StkFloat value)
@@ -143,7 +130,7 @@ void BlowBotl :: controlChange(int number, StkFloat value)
   if (number == __SK_NoiseLevel_) // 4
     noiseGain_ = norm * 30.0;
   else if (number == __SK_ModFrequency_) // 11
-    vibrato_->setFrequency( norm * 12.0 );
+    vibrato_.setFrequency( norm * 12.0 );
   else if (number == __SK_ModWheel_) // 1
     vibratoGain_ = norm * 0.4;
   else if (number == __SK_AfterTouch_Cont_) // 128

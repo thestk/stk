@@ -2,7 +2,7 @@
 /*! \class Filter
     \brief STK filter class.
 
-    This class implements a generic structure which
+    This class implements a generic structure that
     can be used to create a wide range of filters.
     It can function independently or be subclassed
     to provide more specific controls based on a
@@ -23,7 +23,7 @@
     results in one extra multiply per computed sample,
     but allows easy control of the overall filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -32,7 +32,6 @@
 
 #include "Stk.h"
 #include <vector>
-#include <valarray>
 
 class Filter : public Stk
 {
@@ -58,19 +57,20 @@ public:
     An StkError can be thrown if either of the coefficient vector
     sizes is zero, or if the a[0] coefficient is equal to zero.  If
     a[0] is not equal to 1, the filter coeffcients are normalized by
-    a[0].  The internal state of the filter is cleared.
+    a[0].  The internal state of the filter is not cleared unless the
+    \e clearState flag is \c true.
   */
-  void setCoefficients( std::vector<StkFloat> &bCoefficients, std::vector<StkFloat> &aCoefficients );
+  void setCoefficients( std::vector<StkFloat> &bCoefficients, std::vector<StkFloat> &aCoefficients, bool clearState = false );
 
   //! Set numerator coefficients.
   /*!
     An StkError can be thrown if coefficient vector is empty.  Any
     previously set denominator coefficients are left unaffected.  Note
     that the default constructor sets the single denominator
-    coefficient a[0] to 1.0.  The internal state of the filter is
-    cleared.
+    coefficient a[0] to 1.0.  The internal state of the filter is not
+    cleared unless the \e clearState flag is \c true.
   */
-  void setNumerator( std::vector<StkFloat> &bCoefficients );
+  void setNumerator( std::vector<StkFloat> &bCoefficients, bool clearState = false );
 
   //! Set denominator coefficients.
   /*!
@@ -79,9 +79,10 @@ public:
     numerator coefficients are unaffected unless a[0] is not equal to
     1, in which case all coeffcients are normalized by a[0].  Note
     that the default constructor sets the single numerator coefficient
-    b[0] to 1.0.  The internal state of the filter is cleared.
+    b[0] to 1.0.  The internal state of the filter is not cleared
+    unless the \e clearState flag is \c true.
   */
-  void setDenominator( std::vector<StkFloat> &aCoefficients );
+  void setDenominator( std::vector<StkFloat> &aCoefficients, bool clearState = false );
 
   //! Set the filter gain.
   /*!
@@ -97,21 +98,19 @@ public:
   virtual StkFloat lastOut(void) const;
 
   //! Input one sample to the filter and return one output.
-  virtual StkFloat tick(StkFloat sample);
-
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+  virtual StkFloat tick( StkFloat input );
 
   //! Take a channel of the StkFrames object as inputs to the filter and replace with corresponding outputs.
   /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
+    The \c channel argument should be zero or greater (the first
+    channel is specified by 0).  An StkError will be thrown if the \c
+    channel argument is equal to or greater than the number of
     channels in the StkFrames object.
   */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
 
 protected:
+
   StkFloat gain_;
   std::vector<StkFloat> b_;
   std::vector<StkFloat> a_;

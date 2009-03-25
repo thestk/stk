@@ -18,7 +18,7 @@
     order Lagrange interpolators can typically
     improve (minimize) this attenuation characteristic.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -60,22 +60,10 @@ public:
    */
   StkFloat nextOut(void);
 
-  //! Input one sample to the delay-line and return one output.
-  StkFloat tick(StkFloat sample);
+ protected:
 
-  //! Input \e vectorSize samples to the delay-line and return an equal number of outputs in \e vector.
-  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+  StkFloat computeSample( StkFloat input );
 
-  //! Take a channel of the StkFrames object as inputs to the delayline and replace with corresponding outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
- protected:  
   StkFloat alpha_;
   StkFloat omAlpha_;
   StkFloat nextOutput_;

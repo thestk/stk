@@ -4,7 +4,7 @@
 
     This class implements a chorus effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -13,7 +13,7 @@
 
 #include "Effect.h" 
 #include "DelayL.h" 
-#include "WaveLoop.h" 
+#include "SineWave.h" 
 
 class Chorus : public Effect
 {
@@ -36,24 +36,12 @@ class Chorus : public Effect
   //! Set modulation frequency.
   void setModFrequency(StkFloat frequency);
 
-  //! Compute one output sample.
-  StkFloat tick(StkFloat input);
+ protected:
 
-  //! Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
-  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+  StkFloat computeSample( StkFloat input );
 
-  //! Take a channel of the StkFrames object as inputs to the effect and replace with corresponding outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
- protected:  
   DelayL delayLine_[2];
-  WaveLoop *mods_[2];
+  SineWave mods_[2];
   StkFloat baseLength_;
   StkFloat modDepth_;
 

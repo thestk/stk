@@ -11,7 +11,7 @@
     envelope value reaches 0.0 in the
     ADSR::RELEASE state.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -153,7 +153,7 @@ int ADSR :: getState(void) const
   return state_;
 }
 
-StkFloat ADSR :: tick()
+StkFloat ADSR :: computeSample()
 {
   switch (state_) {
 
@@ -186,14 +186,4 @@ StkFloat ADSR :: tick()
 
   lastOutput_ = value_;
   return value_;
-}
-
-StkFloat *ADSR :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Generator::tick( vector, vectorSize );
-}
-
-StkFrames& ADSR :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Generator::tick( frames, channel );
 }

@@ -13,7 +13,7 @@
        - Envelope Rate = 11
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -73,7 +73,7 @@ void Simple :: setFrequency(StkFloat frequency)
   loop_->setFrequency( frequency );
 }
 
-StkFloat Simple :: tick()
+StkFloat Simple :: computeSample()
 {
   lastOutput_ = loopGain_ * loop_->tick();
   biquad_.tick( noise_.tick() );
@@ -81,16 +81,6 @@ StkFloat Simple :: tick()
   lastOutput_ = filter_.tick( lastOutput_ );
   lastOutput_ *= adsr_.tick();
   return lastOutput_;
-}
-
-StkFloat *Simple :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Simple :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Simple :: controlChange(int number, StkFloat value)

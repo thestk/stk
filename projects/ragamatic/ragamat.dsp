@@ -140,6 +140,22 @@ SOURCE=..\..\include\Envelope.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\FileRead.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileRead.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWvIn.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWvIn.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\Filter.cpp
 # End Source File
 # Begin Source File
@@ -269,6 +285,14 @@ SOURCE=.\Tabla.cpp
 # Begin Source File
 
 SOURCE=.\Tabla.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\TcpServer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\TcpServer.h
 # End Source File
 # Begin Source File
 

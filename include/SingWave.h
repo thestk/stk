@@ -9,7 +9,7 @@
     from pitch shifting.  It will be used as an
     excitation source for other instruments.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -28,7 +28,7 @@ class SingWave : public Generator
     An StkError will be thrown if the file is not found, its format is
     unknown, a read error occurs, or the rawwave path is incorrectly set.
   */
-  SingWave( std::string fileName, bool raw=false);
+  SingWave( std::string fileName, bool raw = false);
 
   //! Class destructor.
   ~SingWave();
@@ -69,25 +69,12 @@ class SingWave : public Generator
   //! Stop a note.
   void noteOff();
 
-  //! Compute one output sample.
-  StkFloat tick();
-
-  //! Compute \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
  protected:
 
+  StkFloat computeSample( void );
+
   WaveLoop *wave_;
-  Modulate *modulator_;
+  Modulate modulator_;
   Envelope envelope_;
   Envelope pitchEnvelope_;
   StkFloat rate_;
