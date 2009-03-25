@@ -20,19 +20,19 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
   return 0;
 }
 
-void usage(void) {
+void usage( void ) {
   // Error function in case of incorrect command-line
   // argument specifications.
-  printf("\nuseage: grains file N dur ramp offset delay stretch ramdomness\n");
-  printf("    where file = a soundfile to granulate,\n");
-  printf("    N = the number of grain voices to use,\n");
-  printf("    dur = the grain duration (ms),\n");
-  printf("    ramp = the envelope percent (0-100),\n");
-  printf("    offset = hop time between grains (ms),\n");
-  printf("    delay = pause time between grains (ms),\n");
-  printf("    stretch = stetch factor (1-1000),\n");
-  printf("    and randomness = factor between 0 - 1.0 to control grain parameter randomness.\n\n");
-  exit(0);
+  std::cout << "\nuseage: grains file N dur ramp offset delay stretch ramdomness\n";
+  std::cout << "    where file = a soundfile to granulate,\n";
+  std::cout << "    N = the number of grain voices to use,\n";
+  std::cout << "    dur = the grain duration (ms),\n";
+  std::cout << "    ramp = the envelope percent (0-100),\n";
+  std::cout << "    offset = hop time between grains (ms),\n";
+  std::cout << "    delay = pause time between grains (ms),\n";
+  std::cout << "    stretch = stetch factor (1-1000),\n";
+  std::cout << "    and randomness = factor between 0 - 1.0 to control grain parameter randomness.\n\n";
+  exit( 0 );
 }
 
 int main( int argc, char *argv[] )
@@ -60,7 +60,7 @@ int main( int argc, char *argv[] )
     grani.openFile( argv[1] );
   }
   catch ( StkError& ) {
-    exit(0);
+    exit( 1 );
   }
   grani.setVoices( N );
 

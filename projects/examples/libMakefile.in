@@ -13,13 +13,13 @@ CC       = @CXX@
 DEFS     = @byte_order@
 DEFS    += @debug@
 CFLAGS   = @cflags@
-CFLAGS  += @warn@ -I$(INCLUDE)
+CFLAGS  += @warn@ -I$(INCLUDE) -I../../src/include
 LIBRARY = @LIBS@
 LIBRARY += @frameworks@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
-  PROGRAMS += play record io inetIn inetOut rtsine crtsine bethree controlbee threebees playsmf grains
+  PROGRAMS += audioprobe midiprobe duplex play record inetIn inetOut rtsine crtsine bethree controlbee threebees playsmf grains
 	DEFS    += @audio_apis@
 endif
 
@@ -34,56 +34,59 @@ all : $(PROGRAMS)
 $(OBJECTS) : Stk.h
 
 clean : 
-	-rm $(PROGRAMS)
+	-rm $(PROGRAMS) *.exe
 
 strip : 
 	strip $(PROGRAMS)
 
-play: play.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o play play.cpp -L../../src $(LIBRARY) -lstk
+audioprobe: audioprobe.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o audioprobe audioprobe.cpp -L../../src -lstk $(LIBRARY)
 
-probe: probe.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o probe probe.cpp -L../../src $(LIBRARY) -lstk
+midiprobe: midiprobe.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o midiprobe midiprobe.cpp -L../../src -lstk $(LIBRARY)
+
+play: play.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o play play.cpp -L../../src -lstk $(LIBRARY)
 
 record: record.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o record record.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o record record.cpp -L../../src -lstk $(LIBRARY)
 
 sine: sine.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o sine sine.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o sine sine.cpp -L../../src -lstk $(LIBRARY)
 
 duplex: duplex.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o duplex duplex.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o duplex duplex.cpp -L../../src -lstk $(LIBRARY)
 
 inetIn: inetIn.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o inetIn inetIn.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o inetIn inetIn.cpp -L../../src -lstk $(LIBRARY)
 
 inetOut: inetOut.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o inetOut inetOut.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o inetOut inetOut.cpp -L../../src -lstk $(LIBRARY)
 
 sineosc: sineosc.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o sineosc sineosc.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o sineosc sineosc.cpp -L../../src -lstk $(LIBRARY)
 
 rtsine: rtsine.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o rtsine rtsine.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o rtsine rtsine.cpp -L../../src -lstk $(LIBRARY)
 
 crtsine: crtsine.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o crtsine crtsine.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o crtsine crtsine.cpp -L../../src -lstk $(LIBRARY)
 
 bethree: bethree.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o bethree bethree.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o bethree bethree.cpp -L../../src -lstk $(LIBRARY)
 
 controlbee: controlbee.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o controlbee controlbee.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o controlbee controlbee.cpp -L../../src -lstk $(LIBRARY)
 
 foursine: foursine.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o foursine foursine.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o foursine foursine.cpp -L../../src -lstk $(LIBRARY)
 
 threebees: threebees.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o threebees threebees.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o threebees threebees.cpp -L../../src -lstk $(LIBRARY)
 
 playsmf: playsmf.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o playsmf playsmf.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o playsmf playsmf.cpp -L../../src -lstk $(LIBRARY)
 
 grains: grains.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o grains grains.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(CFLAGS) $(DEFS) -o grains grains.cpp -L../../src -lstk $(LIBRARY)
 

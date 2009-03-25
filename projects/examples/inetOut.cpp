@@ -19,24 +19,23 @@
 
 #include "FileWvIn.h"
 #include "InetWvOut.h"
-#include <stdlib.h>
 
 void usage(void) {
   // Error function in case of incorrect command-line
   // argument specifications.
-  printf("\nuseage: inetOut file host <rate>\n");
-  printf("    where file = the file to load,\n");
-  printf("    host = the hostname where the receiving\n");
-  printf("           application is running.\n");
-  printf("    and rate = an optional playback rate for the file.\n");
-  printf("               (default = 1.0, can be negative)\n\n");
-  exit(0);
+  std::cout << "\nuseage: inetOut file host <rate>\n";
+  std::cout << "    where file = the file to load,\n";
+  std::cout << "    host = the hostname where the receiving\n";
+  std::cout << "           application is running.\n";
+  std::cout << "    and rate = an optional playback rate for the file.\n";
+  std::cout << "               (default = 1.0, can be negative)\n\n";
+  exit( 0 );
 }
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
   // Minimal command-line checking.
-  if (argc < 3 || argc > 4) usage();
+  if ( argc < 3 || argc > 4 ) usage();
 
   FileWvIn input;
   InetWvOut output;
@@ -45,8 +44,8 @@ int main(int argc, char *argv[])
   try {
     input.openFile( (char *)argv[1] );
   }
-  catch (StkError &) {
-    exit(0);
+  catch ( StkError & ) {
+    exit( 1 );
   }
 
   // Set the global STK sample rate to the file rate.
@@ -54,7 +53,7 @@ int main(int argc, char *argv[])
 
   // Set input read rate.
   double rate = 1.0;
-  if ( argc == 4 ) rate = atof(argv[3]);
+  if ( argc == 4 ) rate = atof( argv[3] );
   input.setRate( rate );
 
   // Find out how many channels we have.
@@ -66,8 +65,8 @@ int main(int argc, char *argv[])
     //output.connect( 2006, Socket::PROTO_UDP, (char *)argv[2], channels, Stk::STK_SINT16 );
     output.connect( 2006, Socket::PROTO_TCP, (char *)argv[2], channels, Stk::STK_SINT16 );
   }
-  catch (StkError &) {
-    exit(0);
+  catch ( StkError & ) {
+    exit( 1 );
   }
 
   // Here's the runtime loop

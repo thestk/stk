@@ -11,6 +11,23 @@
 
 Yes, we finally made something official for release 4.3.0.  It is listed in the Stk class and a few other places in the distribution, but I'll repeat it here for clarity:
 
+\verbatim
+The Synthesis ToolKit in C++ (STK) is a set of open source audio
+signal processing and algorithmic synthesis classes written in the
+C++ programming language. STK was designed to facilitate rapid
+development of music synthesis and audio processing software, with
+an emphasis on cross-platform functionality, realtime control,
+ease of use, and educational example code.  STK currently runs
+with realtime support (audio and MIDI) on Linux, Macintosh OS X,
+and Windows computer platforms. Generic, non-realtime support has
+been tested under NeXTStep, Sun, and other platforms and should
+work with any standard C++ compiler.
+
+STK WWW site: http://ccrma.stanford.edu/software/stk/
+
+The Synthesis ToolKit in C++ (STK)
+Copyright (c) 1995-2007 Perry R. Cook and Gary P. Scavone
+
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including
@@ -34,6 +51,7 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\endverbatim
 
 \section filerate Why is my file sample rate wrong?
 

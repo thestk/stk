@@ -21,7 +21,7 @@ int main()
     output.openFile( "foursine.aif", 4, FileWrite::FILE_AIF, Stk::STK_SINT16 );
   }
   catch (StkError &) {
-    exit(0);
+    exit( 1 );
   }
 
   // Write two seconds of four sines to the output file

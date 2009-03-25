@@ -17,7 +17,7 @@ int main()
     dac = new RtWvOut( 1 );
   }
   catch ( StkError & ) {
-    exit(0);
+    exit( 1 );
   }
 
   sine.setFrequency( 441.0 );

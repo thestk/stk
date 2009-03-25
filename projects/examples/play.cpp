@@ -32,7 +32,7 @@ void usage(void) {
   std::cout << "    where sr = sample rate,\n";
   std::cout << "    and rate = an optional playback rate.\n";
   std::cout << "               (default = 1.0, can be negative)\n\n";
-  exit(0);
+  exit( 0 );
 }
 
 // This tick() function handles sample computation only.  It will be
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   if ( argc < 3 || argc > 4 ) usage();
 
   // Set the global sample rate before creating class instances.
-  Stk::setSampleRate( (StkFloat) atof(argv[2]) );
+  Stk::setSampleRate( (StkFloat) atof( argv[2] ) );
 
   // Initialize our WvIn and RtAudio pointers.
   RtAudio dac;
@@ -72,14 +72,14 @@ int main(int argc, char *argv[])
   try {
     input.openFile( argv[1] );
   }
-  catch (StkError &) {
-    exit(0);
+  catch ( StkError & ) {
+    exit( 1 );
   }
 
   // Set input read rate based on the default STK sample rate.
   double rate = 1.0;
   rate = input.getFileRate() / Stk::sampleRate();
-  if ( argc == 4 ) rate *= atof(argv[3]);
+  if ( argc == 4 ) rate *= atof( argv[3] );
   input.setRate( rate );
 
   input.ignoreSampleRateChange();

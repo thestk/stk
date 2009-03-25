@@ -307,10 +307,6 @@ SOURCE=..\..\src\RtAudio.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\RtDuplex.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\RtMidi.cpp
 # End Source File
 # Begin Source File
@@ -648,10 +644,6 @@ SOURCE=..\..\include\Rhodey.h
 # Begin Source File
 
 SOURCE=..\..\include\RtAudio.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\RtDuplex.h
 # End Source File
 # Begin Source File
 

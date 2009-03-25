@@ -4,7 +4,7 @@ By Perry R. Cook and Gary P. Scavone, 1995-2007.
 
 The Synthesis ToolKit in C++ can be used in a variety of ways, depending on your particular needs.  Some people just choose the classes they need for a particular project and copy those to their project directory.  Others like to compile and link to a library of object files.  STK was not designed with one particular style of use in mind.
 
-To configure and compile (on Unix systems):
+To configure and compile (on Unix systems and MinGW):
 
 1. Unpack the STK distribution (tar -xzf stk-4.x.x.tar.gz).
 2. From within the directory containing this file, run configure:
@@ -22,6 +22,8 @@ Several options can be passed to configure, including:
   --with-oss = choose native OSS API support (linux only)
   --with-jack = choose native JACK server API support (linux and macintosh OS-X)
   --with-core = choose OS-X Core Audio API (macintosh OS-X only)
+  --with-asio = choose ASIO API support (windows only)
+  --with-ds = choose DirectSound API support (windows only)
 
 It is now possible to specify more than one audio API where supported.  Note however that the ALSA library is required in order to compile the RtMidi class, even if the "--with-oss" option is provided (only the OSS audio API will be used, not the OSS MIDI API).  Typing "./configure --help" will display all the available options.  In addition, it is possible to specify the RAWWAVES and INCLUDE paths to configure as (ex. to set to /home/gary/rawwaves and /home/gary/include):
 
@@ -39,4 +41,4 @@ In addition, a linux RPM is available from the Planet CCRMA WWW site (http://ccr
 
 For Windows Users:
 
-An STK distribution is available which contains precompiled executables.  In addition, Visual C++ project files are included for each of the example STK projects.
+MinGW support is provided in the configure script.  In addition, Visual C++ project files are included for each of the example STK projects.

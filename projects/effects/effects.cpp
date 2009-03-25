@@ -15,9 +15,7 @@
 #include <signal.h>
 #include <iostream>
 #include <algorithm>
-#if !defined(__OS_WINDOWS__) // Windoze bogosity for VC++ 6.0
-  using std::min;
-#endif
+using std::min;
 
 void usage(void) {
   // Error function in case of incorrect command-line argument specifications

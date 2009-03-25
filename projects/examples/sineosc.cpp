@@ -19,7 +19,7 @@ int main()
     output.openFile( "hellosine.wav", 1, FileWrite::FILE_WAV, Stk::STK_SINT16 );
   }
   catch ( StkError & ) {
-    exit(0);
+    exit( 1 );
   }
 
   input.setFrequency( 440.0 );
@@ -32,9 +32,8 @@ int main()
       output.tick( input.tick() );
     }
     catch ( StkError & ) {
-      exit(0);
+      exit( 1 );
     }
-
   }
 
   return 0;

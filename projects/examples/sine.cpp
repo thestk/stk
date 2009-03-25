@@ -14,21 +14,19 @@
 
 #include "SineWave.h"
 #include "FileWvOut.h"
-#include <stdlib.h>
 
 void usage(void) {
   // Error function in case of incorrect command-line
   // argument specifications.
-  printf("\nuseage: sine N file time fs\n");
-  printf("    where N = number of channels (sines),\n");
-  printf("    file = the .wav file to create,\n");
-  printf("    time = the amount of time to record (in seconds),\n");
-  printf("    and fs = the sample rate (in Hz).\n\n");
-  exit(0);
+  std::cout << "\nuseage: sine N file time fs\n";
+  std::cout << "    where N = number of channels (sines),\n";
+  std::cout << "    file = the .wav file to create,\n";
+  std::cout << "    time = the amount of time to record (in seconds),\n";
+  std::cout << "    and fs = the sample rate (in Hz).\n\n";
+  exit( 0 );
 }
 
-int
-main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
   float base_freq = 220.0;
   int i;
@@ -36,9 +34,9 @@ main(int argc, char *argv[])
   // Minimal command-line checking.
   if ( argc != 5 ) usage();
 
-  int channels = (int) atoi(argv[1]);
-  double time = atof(argv[3]);
-  double srate = atof(argv[4]);
+  int channels = (int) atoi( argv[1] );
+  double time = atof( argv[3] );
+  double srate = atof( argv[4] );
 
   // Create our object instances.
   FileWvOut output;

@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
   }
   catch ( RtError& e ) {
     std::cout << '\n' << e.getMessage() << '\n' << std::endl;
-    exit( 0 );
+    exit( 1 );
   }
 
   bufferBytes = bufferFrames * channels * sizeof( MY_TYPE );

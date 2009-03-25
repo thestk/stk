@@ -8,7 +8,21 @@
     this class provides error handling and
     byte-swapping functions.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    The Synthesis ToolKit in C++ (STK) is a set of open source audio
+    signal processing and algorithmic synthesis classes written in the
+    C++ programming language. STK was designed to facilitate rapid
+    development of music synthesis and audio processing software, with
+    an emphasis on cross-platform functionality, realtime control,
+    ease of use, and educational example code.  STK currently runs
+    with realtime support (audio and MIDI) on Linux, Macintosh OS X,
+    and Windows computer platforms. Generic, non-realtime support has
+    been tested under NeXTStep, Sun, and other platforms and should
+    work with any standard C++ compiler.
+
+    STK WWW site: http://ccrma.stanford.edu/software/stk/
+
+    The Synthesis ToolKit in C++ (STK)
+    Copyright (c) 1995-2007 Perry R. Cook and Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files

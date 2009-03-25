@@ -20,9 +20,9 @@
 #include "utilities.h"
 
 #include <signal.h>
-#include <cmath>
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 using std::min;
 
 bool done;
@@ -66,6 +66,10 @@ void processMessage( TickData* data )
   register StkFloat value1 = data->message.floatValues[0];
   register StkFloat value2 = data->message.floatValues[1];
 
+  // If only one instrument, allow messages from all channels to control it.
+  int channel = 1;
+  if ( data->nVoices > 1 ) channel = data->message.channel;
+
   switch( data->message.type ) {
 
   case __SK_Exit_:
@@ -75,13 +79,13 @@ void processMessage( TickData* data )
 
   case __SK_NoteOn_:
     if ( value2 == 0.0 ) // velocity is zero ... really a NoteOff
-      data->voicer->noteOff( value1, 64.0, data->message.channel );
+      data->voicer->noteOff( value1, 64.0, channel );
     else // a NoteOn
-      data->voicer->noteOn( value1, value2, data->message.channel );
+      data->voicer->noteOn( value1, value2, channel );
     break;
 
   case __SK_NoteOff_:
-    data->voicer->noteOff( value1, value2, data->message.channel );
+    data->voicer->noteOff( value1, value2, channel );
     break;
 
   case __SK_ControlChange_:
@@ -90,31 +94,34 @@ void processMessage( TickData* data )
     else if (value1 == 7.0)
       data->volume = value2 * ONE_OVER_128;
     else if (value1 == 49.0)
-      data->voicer->setFrequency( value2, data->message.channel );
+      data->voicer->setFrequency( value2, channel );
     else if (value1 == 50.0)
-      data->voicer->controlChange( 128, value2, data->message.channel );
+      data->voicer->controlChange( 128, value2, channel );
     else if (value1 == 51.0)
       data->frequency = data->message.intValues[1];
     else if (value1 == 52.0) {
       data->frequency += ( data->message.intValues[1] << 7 );
       // Convert to a fractional MIDI note value
       StkFloat note = 12.0 * log( data->frequency / 220.0 ) / log( 2.0 ) + 57.0;
-      data->voicer->setFrequency( note, data->message.channel );
+      data->voicer->setFrequency( note, channel );
     }
     else
-      data->voicer->controlChange( (int) value1, value2, data->message.channel );
+      data->voicer->controlChange( (int) value1, value2, channel );
     break;
 
   case __SK_AfterTouch_:
-    data->voicer->controlChange( 128, value1, data->message.channel );
+    data->voicer->controlChange( 128, value1, channel );
     break;
 
   case __SK_PitchChange_:
-    data->voicer->setFrequency( value1, data->message.channel );
+    data->voicer->setFrequency( value1, channel );
     break;
 
   case __SK_PitchBend_:
-    data->voicer->pitchBend( value1, data->message.channel );
+    short temp;
+    temp = data->message.intValues[1] << 7;
+    temp += data->message.intValues[0];
+    data->voicer->pitchBend( (StkFloat) temp, channel );
     break;
 
   case __SK_Volume_:
@@ -134,7 +141,7 @@ void processMessage( TickData* data )
       data->currentVoice = voiceByNumber( (int)value1, &data->instrument[i] );
       if ( data->currentVoice < 0 )
         data->currentVoice = voiceByNumber( 0, &data->instrument[i] );
-      data->voicer->addInstrument( data->instrument[i], data->message.channel );
+      data->voicer->addInstrument( data->instrument[i], channel );
       data->settling = false;
     }
 
@@ -155,7 +162,7 @@ void processMessage( TickData* data )
 // control updates.  If doing realtime audio output, it will be called
 // automatically when the system needs a new buffer of audio samples.
 int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
-         double streamTime, RtAudioStreamStatus status, void *dataPointer )
+          double streamTime, RtAudioStreamStatus status, void *dataPointer )
 {
   TickData *data = (TickData *) dataPointer;
   register StkFloat sample, *samples = (StkFloat *) outputBuffer;

@@ -1,15 +1,25 @@
 /*! \page download Download, Release Notes, and Bug Fixes
 
-\section down Download Version 4.3.0 (13 August 2007):
+\section down Download Version 4.3.1 (7 December 2007):
 
 <UL>
-<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.3.0.tar.gz">Source distribution</A></LI>
-<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.3.0.binaries.tar.gz">Source with precompiled Windows binaries</A></LI>
+<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.3.1.tar.gz">Source distribution</A></LI>
 <LI><A HREF="http://ccrma.stanford.edu/planetccrma/software/">Linux RPMs from Planet CCRMA</A></LI>
 </UL>
 
 
 \section notes Release Notes:
+
+\subsection v4dot3dot0 Version 4.3.1
+
+<ul>
+<li>Further headerless file support in FileRead.</li>
+<li>Bug fix in RtWvOut.cpp.</li>
+<li>Added configure support for MinGW.</li>
+<li>Updates to RtAudio and RtMidi for MinGW.</li>
+<li>Changes to channel assignment in demo.cpp.</li>
+</ul>
+
 
 \subsection v4dot3dot0 Version 4.3.0
 

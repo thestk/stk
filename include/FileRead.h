@@ -43,9 +43,12 @@ public:
   //! Overloaded constructor that opens a file during instantiation.
   /*!
     An StkError will be thrown if the file is not found or its
-    format is unknown or unsupported.
+    format is unknown or unsupported.  The optional arguments allow a
+    headerless file type to be supported.  If \c typeRaw is false (the
+    default), the subsequent parameters are ignored.
   */
-  FileRead( std::string fileName, bool typeRaw = false );
+  FileRead( std::string fileName, bool typeRaw = false, unsigned int nChannels = 1,
+            StkFormat format = STK_SINT16, StkFloat rate = 22050.0 );
 
   //! Class destructor.
   ~FileRead();
@@ -53,11 +56,12 @@ public:
   //! Open the specified file and determine its formatting.
   /*!
     An StkError will be thrown if the file is not found or its
-    format is unknown or unsupported.  An optional parameter is
-    provided to specify whether the input file is of type STK RAW
-    (default = false).
+    format is unknown or unsupported.  The optional arguments allow a
+    headerless file type to be supported.  If \c typeRaw is false (the
+    default), the subsequent parameters are ignored.
   */
-  void open( std::string fileName, bool typeRaw = false );
+  void open( std::string fileName, bool typeRaw = false, unsigned int nChannels = 1,
+             StkFormat format = STK_SINT16, StkFloat rate = 22050.0 );
 
   //! If a file is open, close it.
   void close( void );
@@ -97,7 +101,8 @@ public:
 protected:
 
   // Get STK RAW file information.
-  bool getRawInfo( const char *fileName );
+  bool getRawInfo( const char *fileName, unsigned int nChannels,
+                   StkFormat format, StkFloat rate );
 
   // Get WAV file header information.
   bool getWavInfo( const char *fileName );

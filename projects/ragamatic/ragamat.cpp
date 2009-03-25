@@ -13,9 +13,7 @@
 #include <signal.h>
 #include <iostream>
 #include <algorithm>
-#if !defined(__OS_WINDOWS__) // Windoze bogosity for VC++ 6.0
-  using std::min;
-#endif
+using std::min;
 
 StkFloat float_random(StkFloat max) // Return random float between 0.0 and max
 {	
@@ -149,7 +147,7 @@ void processMessage( TickData* data )
   data->counter = (int) (data->t60 * Stk::sampleRate());
   data->drones[1].noteOn( droneFreqs[1], 0.1 );
   data->settling = true;
-  std::cout << "What Need Have I for This?\n";
+  std::cout << "What Need Have I for This?" << std::endl;
 }
 
 // The tick() function handles sample computation and scheduling of
@@ -192,17 +190,17 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
           data->counter = (int) (data->t60 * Stk::sampleRate());
           if ( data->endPhase == 0 ) {
             data->drones[2].noteOn( droneFreqs[2], 0.1 );
-            std::cout << "What Need Have I for This?\n";
+            std::cout << "What Need Have I for This?" << std::endl;
           }
           else if ( data->endPhase == 1 ) {
             data->drones[0].noteOn( droneFreqs[0], 0.1 );
-            std::cout << "RagaMatic finished ... \n";
+            std::cout << "RagaMatic finished ... " << std::endl;
           }
           else if ( data->endPhase == 2 ) {
-            std::cout << "All is Bliss ...\n";
+            std::cout << "All is Bliss ... " << std::endl;
           }
           else if ( data->endPhase == 3 ) {
-            std::cout << "All is Bliss ...\n";
+            std::cout << "All is Bliss ..." << std::endl;
           }
           data->endPhase++;
         }

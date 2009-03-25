@@ -2,6 +2,14 @@ The Synthesis ToolKit in C++ (STK)
 
 By Perry R. Cook and Gary P. Scavone, 1995-2007.
 
+v4.3.1: (7 December 2007)
+- further headerless file support in FileRead
+- bug fix in RtWvOut.cpp
+- added configure support for MinGW
+- updates to RtAudio and RtMidi for MinGW
+- changes to channel assignment in demo.cpp
+
+
 v4.3.0: (13 August 2007)
 - an official MIT-like license
 - new functionality to automatically update class data when the STK sample rate changes (partly implemented)
