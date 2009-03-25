@@ -12,12 +12,12 @@
        - Blowing Frequency Modulation = 2
        - Volume = 128
 
-    by Perry R. Cook  1996 - 2002.
+    by Perry R. Cook  1996 - 2004.
 */
 /***************************************************/
 
-#if !defined(__WHISTLE_H)
-#define __WHISTLE_H
+#ifndef STK_WHISTLE_H
+#define STK_WHISTLE_H
 
 #include "Instrmnt.h"
 #include "Sphere.h"
@@ -31,6 +31,9 @@ class Whistle : public Instrmnt
 {
 public:
   //! Class constructor.
+  /*!
+    An StkError will be thrown if the rawwave path is incorrectly set.
+  */
   Whistle();
 
   //! Class destructor.
@@ -40,46 +43,58 @@ public:
   void clear();
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(MY_FLOAT frequency);
+  void setFrequency(StkFloat frequency);
 
   //! Apply breath velocity to instrument with given amplitude and rate of increase.
-  void startBlowing(MY_FLOAT amplitude, MY_FLOAT rate);
+  void startBlowing(StkFloat amplitude, StkFloat rate);
 
   //! Decrease breath velocity with given rate of decrease.
-  void stopBlowing(MY_FLOAT rate);
+  void stopBlowing(StkFloat rate);
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
 protected:  
-	Vector3D *tempVectorP;
-  Vector3D *tempVector;
-  OnePole onepole;
-  Noise noise;
-	Envelope envelope;
-  Sphere *can;           // Declare a Spherical "can".
-  Sphere *pea, *bumper;  // One spherical "pea", and a spherical "bumper".
 
-  WaveLoop *sine;
+	Vector3D *tempVectorP_;
+  Vector3D tempVector_;
+  OnePole onepole_;
+  Noise noise_;
+	Envelope envelope_;
+  Sphere can_;           // Declare a Spherical "can".
+  Sphere pea_, bumper_;  // One spherical "pea", and a spherical "bumper".
 
-  MY_FLOAT baseFrequency;
-	MY_FLOAT maxPressure;
-  MY_FLOAT noiseGain;
-  MY_FLOAT fippleFreqMod;
-	MY_FLOAT fippleGainMod;
-	MY_FLOAT blowFreqMod;
-	MY_FLOAT tickSize;
-	MY_FLOAT canLoss;
-	int subSample, subSampCount;
+  WaveLoop *sine_;
+
+  StkFloat baseFrequency_;
+  StkFloat noiseGain_;
+  StkFloat fippleFreqMod_;
+	StkFloat fippleGainMod_;
+	StkFloat blowFreqMod_;
+	StkFloat tickSize_;
+	StkFloat canLoss_;
+	int subSample_, subSampCount_;
 };
 
 #endif

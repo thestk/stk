@@ -14,114 +14,117 @@
     use possibly subject to patents held by
     Stanford University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "PluckTwo.h"
 
-PluckTwo :: PluckTwo(MY_FLOAT lowestFrequency)
+PluckTwo :: PluckTwo(StkFloat lowestFrequency)
 {
-  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
-  baseLoopGain = (MY_FLOAT) 0.995;
-  loopGain = (MY_FLOAT) 0.999;
-  delayLine = new DelayA((MY_FLOAT)(length / 2.0), length);
-  delayLine2 = new DelayA((MY_FLOAT)(length / 2.0), length);
-  combDelay = new DelayL((MY_FLOAT)(length / 2.0), length);
-  filter = new OneZero;
-  filter2 = new OneZero;
-  pluckAmplitude = (MY_FLOAT) 0.3;
-  pluckPosition = (MY_FLOAT) 0.4;
-  detuning = (MY_FLOAT) 0.995;
-  lastFrequency = lowestFrequency * (MY_FLOAT) 2.0;
-  lastLength = length * (MY_FLOAT) 0.5;
+  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  lastLength_ = length_ * 0.5;
+  delayLine_.setMaximumDelay( length_ );
+  delayLine_.setDelay( lastLength_ );
+  delayLine2_.setMaximumDelay( length_ );
+  delayLine2_.setDelay( lastLength_ );
+  combDelay_.setMaximumDelay( length_ );
+  combDelay_.setDelay( lastLength_ );
+
+  baseLoopGain_ = 0.995;
+  loopGain_ = 0.999;
+  pluckAmplitude_ = 0.3;
+  pluckPosition_ = 0.4;
+  detuning_ = 0.995;
+  lastFrequency_ = lowestFrequency * 2.0;
+
 }
 
 PluckTwo :: ~PluckTwo()
 {
-  delete delayLine;
-  delete delayLine2;
-  delete combDelay;
-  delete filter;
-  delete filter2;
 }
 
 void PluckTwo :: clear()
 {
-  delayLine->clear();
-  delayLine2->clear();
-  combDelay->clear();
-  filter->clear();
-  filter2->clear();
+  delayLine_.clear();
+  delayLine2_.clear();
+  combDelay_.clear();
+  filter_.clear();
+  filter2_.clear();
 }
 
-void PluckTwo :: setFrequency(MY_FLOAT frequency)
+void PluckTwo :: setFrequency(StkFloat frequency)
 {
-  lastFrequency = frequency;
-  if ( lastFrequency <= 0.0 ) {
-    std::cerr << "PluckTwo: setFrequency parameter less than or equal to zero!" << std::endl;
-    lastFrequency = 220.0;
+  lastFrequency_ = frequency;
+  if ( lastFrequency_ <= 0.0 ) {
+    errorString_ << "Clarinet::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
+    lastFrequency_ = 220.0;
   }
 
   // Delay = length - approximate filter delay.
-  lastLength = ( Stk::sampleRate() / lastFrequency);
-  MY_FLOAT delay = (lastLength / detuning) - (MY_FLOAT) 0.5;
+  lastLength_ = Stk::sampleRate() / lastFrequency_;
+  StkFloat delay = (lastLength_ / detuning_) - 0.5;
   if ( delay <= 0.0 ) delay = 0.3;
-  else if ( delay > length ) delay = length;
-  delayLine->setDelay( delay );
+  else if ( delay > length_ ) delay = length_;
+  delayLine_.setDelay( delay );
 
-  delay = (lastLength * detuning) - (MY_FLOAT) 0.5;
+  delay = (lastLength_ * detuning_) - 0.5;
   if ( delay <= 0.0 ) delay = 0.3;
-  else if ( delay > length ) delay = length;
-  delayLine2->setDelay( delay );
+  else if ( delay > length_ ) delay = length_;
+  delayLine2_.setDelay( delay );
 
-  loopGain = baseLoopGain + (frequency * (MY_FLOAT) 0.000005);
-  if ( loopGain > 1.0 ) loopGain = (MY_FLOAT) 0.99999;
+  loopGain_ = baseLoopGain_ + (frequency * 0.000005);
+  if ( loopGain_ > 1.0 ) loopGain_ = 0.99999;
 }
 
-void PluckTwo :: setDetune(MY_FLOAT detune)
+void PluckTwo :: setDetune(StkFloat detune)
 {
-  detuning = detune;
-  if ( detuning <= 0.0 ) {
-    std::cerr << "PluckTwo: setDetune parameter less than or equal to zero!" << std::endl;
-    detuning = 0.1;
+  detuning_ = detune;
+  if ( detuning_ <= 0.0 ) {
+    errorString_ << "Clarinet::setDeturn: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
+    detuning_ = 0.1;
   }
-  delayLine->setDelay(( lastLength / detuning) - (MY_FLOAT) 0.5);
-  delayLine2->setDelay( (lastLength * detuning) - (MY_FLOAT) 0.5);
+  delayLine_.setDelay(( lastLength_ / detuning_) - 0.5);
+  delayLine2_.setDelay( (lastLength_ * detuning_) - 0.5);
 }
 
-void PluckTwo :: setFreqAndDetune(MY_FLOAT frequency, MY_FLOAT detune)
+void PluckTwo :: setFreqAndDetune(StkFloat frequency, StkFloat detune)
 {
-  detuning = detune;
-  this->setFrequency(frequency);
+  detuning_ = detune;
+  this->setFrequency( frequency );
 }
 
-void PluckTwo :: setPluckPosition(MY_FLOAT position)
+void PluckTwo :: setPluckPosition(StkFloat position)
 {
-  pluckPosition = position;
+  pluckPosition_ = position;
   if ( position < 0.0 ) {
-    std::cerr << "PluckTwo: setPluckPosition parameter is less than zero!" << std::endl;
-    pluckPosition = 0.0;
+    errorString_ << "PluckTwo::setPluckPosition: parameter is less than zero ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    pluckPosition_ = 0.0;
   }
   else if ( position > 1.0 ) {
-    std::cerr << "PluckTwo: setPluckPosition parameter is greater than 1.0!" << std::endl;
-    pluckPosition = 1.0;
+    errorString_ << "PluckTwo::setPluckPosition: parameter is greater than one ... setting to 1.0!";
+    handleError( StkError::WARNING );
+    pluckPosition_ = 1.0;
   }
 }
 
-void PluckTwo :: setBaseLoopGain(MY_FLOAT aGain)
+void PluckTwo :: setBaseLoopGain(StkFloat aGain)
 {
-  baseLoopGain = aGain;
-  loopGain = baseLoopGain + (lastFrequency * (MY_FLOAT) 0.000005);
-  if ( loopGain > 0.99999 ) loopGain = (MY_FLOAT) 0.99999;
+  baseLoopGain_ = aGain;
+  loopGain_ = baseLoopGain_ + (lastFrequency_ * 0.000005);
+  if ( loopGain_ > 0.99999 ) loopGain_ = 0.99999;
 }
 
-void PluckTwo :: noteOff(MY_FLOAT amplitude)
+void PluckTwo :: noteOff(StkFloat amplitude)
 {
-  loopGain =  ((MY_FLOAT) 1.0 - amplitude) * (MY_FLOAT) 0.5;
+  loopGain_ =  (1.0 - amplitude) * 0.5;
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "PluckTwo: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "PluckTwo::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 

@@ -13,12 +13,12 @@
        - Zero Radii = 1
        - Envelope Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__RESONATE_H)
-#define __RESONATE_H
+#ifndef STK_RESONATE_H
+#define STK_RESONATE_H
 
 #include "Instrmnt.h"
 #include "ADSR.h"
@@ -38,10 +38,10 @@ class Resonate : public Instrmnt
   void clear();
 
   //! Set the filter for a resonance at the given frequency (Hz) and radius.
-  void setResonance(MY_FLOAT frequency, MY_FLOAT radius);
+  void setResonance(StkFloat frequency, StkFloat radius);
 
   //! Set the filter for a notch at the given frequency (Hz) and radius.
-  void setNotch(MY_FLOAT frequency, MY_FLOAT radius);
+  void setNotch(StkFloat frequency, StkFloat radius);
 
   //! Set the filter zero coefficients for contant resonance gain.
   void setEqualGainZeroes();
@@ -53,25 +53,37 @@ class Resonate : public Instrmnt
   void keyOff();
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  virtual void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
  protected:  
-  ADSR     *adsr;
-  BiQuad   *filter;
-  Noise    *noise;
-  MY_FLOAT poleFrequency;
-  MY_FLOAT poleRadius;
-  MY_FLOAT zeroFrequency;
-  MY_FLOAT zeroRadius;
+  ADSR     adsr_;
+  BiQuad   filter_;
+  Noise    noise_;
+  StkFloat poleFrequency_;
+  StkFloat poleRadius_;
+  StkFloat zeroFrequency_;
+  StkFloat zeroRadius_;
 
 };
 

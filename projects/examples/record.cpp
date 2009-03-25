@@ -3,6 +3,17 @@
   Example program to record N channels of data
   by Gary P. Scavone, 2000
 
+  NOTE: This program makes use of blocking audio
+  input/output routines.  On systems where the
+  underlying audio API is based on a callback scheme
+  (Macintosh OS-X, Windows ASIO, and Linux JACK), these
+  routines are not fully robust (over/underruns can
+  happen with some frequency).  See the STK tutorial
+  for example programs using callback schemes and/or
+  visit the RtAudio tutorial page
+  (http://music.mcgill.ca/~gary/rtaudio/) for more
+  information.
+
   This program is currently written to read
   from a realtime audio input device and to
   write to a WAV output file.  However, it
@@ -31,8 +42,8 @@ int main(int argc, char *argv[])
   if (argc != 5) usage();
 
   int channels = (int) atoi(argv[1]);
-  float sample_rate = atof(argv[4]);
-  float time = atof(argv[3]);
+  double sample_rate = atof(argv[4]);
+  double time = atof(argv[3]);
   long samples, i;
 
   // Set the global sample rate.

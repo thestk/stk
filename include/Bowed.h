@@ -17,16 +17,16 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__BOWED_H)
-#define __BOWED_H
+#ifndef STK_BOWED_H
+#define STK_BOWED_H
 
 #include "Instrmnt.h"
 #include "DelayL.h"
-#include "BowTabl.h"
+#include "BowTable.h"
 #include "OnePole.h"
 #include "BiQuad.h"
 #include "WaveLoop.h"
@@ -36,7 +36,7 @@ class Bowed : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  Bowed(MY_FLOAT lowestFrequency);
+  Bowed(StkFloat lowestFrequency);
 
   //! Class destructor.
   ~Bowed();
@@ -45,41 +45,53 @@ class Bowed : public Instrmnt
   void clear();
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(MY_FLOAT frequency);
+  void setFrequency(StkFloat frequency);
 
   //! Set vibrato gain.
-  void setVibrato(MY_FLOAT gain);
+  void setVibrato(StkFloat gain);
 
   //! Apply breath pressure to instrument with given amplitude and rate of increase.
-  void startBowing(MY_FLOAT amplitude, MY_FLOAT rate);
+  void startBowing(StkFloat amplitude, StkFloat rate);
 
   //! Decrease breath pressure with given rate of decrease.
-  void stopBowing(MY_FLOAT rate);
+  void stopBowing(StkFloat rate);
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
  protected:  
-  DelayL *neckDelay;
-  DelayL *bridgeDelay;
-  BowTabl *bowTable;
-  OnePole *stringFilter;
-  BiQuad *bodyFilter;
-  WaveLoop *vibrato;
-  ADSR *adsr;
-  MY_FLOAT maxVelocity;
-  MY_FLOAT baseDelay;
-  MY_FLOAT vibratoGain;
-  MY_FLOAT betaRatio;
+  DelayL   neckDelay_;
+  DelayL   bridgeDelay_;
+  BowTable bowTable_;
+  OnePole  stringFilter_;
+  BiQuad   bodyFilter_;
+  WaveLoop *vibrato_;
+  ADSR     adsr_;
+  StkFloat maxVelocity_;
+  StkFloat baseDelay_;
+  StkFloat vibratoGain_;
+  StkFloat betaRatio_;
 
 };
 

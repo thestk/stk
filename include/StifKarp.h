@@ -17,12 +17,12 @@
        - String Sustain = 11
        - String Stretch = 1
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__StifKarp_h)
-#define __StifKarp_h
+#ifndef STK_STIFKARP_H
+#define STK_STIFKARP_H
 
 #include "Instrmnt.h"
 #include "DelayL.h"
@@ -35,7 +35,7 @@ class StifKarp : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  StifKarp(MY_FLOAT lowestFrequency);
+  StifKarp(StkFloat lowestFrequency);
 
   //! Class destructor.
   ~StifKarp();
@@ -44,13 +44,13 @@ class StifKarp : public Instrmnt
   void clear();
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(MY_FLOAT frequency);
+  void setFrequency(StkFloat frequency);
 
   //! Set the stretch "factor" of the string (0.0 - 1.0).
-  void setStretch(MY_FLOAT stretch);
+  void setStretch(StkFloat stretch);
 
   //! Set the pluck or "excitation" position along the string (0.0 - 1.0).
-  void setPickupPosition(MY_FLOAT position);
+  void setPickupPosition(StkFloat position);
 
   //! Set the base loop gain.
   /*!
@@ -58,37 +58,50 @@ class StifKarp : public Instrmnt
     Because of high-frequency loop filter roll-off, higher
     frequency settings have greater loop gains.
   */
-  void setBaseLoopGain(MY_FLOAT aGain);
+  void setBaseLoopGain(StkFloat aGain);
 
   //! Pluck the string with the given amplitude using the current frequency.
-  void pluck(MY_FLOAT amplitude);
+  void pluck(StkFloat amplitude);
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
  protected:  
-    DelayA *delayLine;
-    DelayL *combDelay;
-    OneZero *filter;
-    Noise *noise;
-    BiQuad *biQuad[4];
-    long length;
-    MY_FLOAT loopGain;
-    MY_FLOAT baseLoopGain;
-    MY_FLOAT lastFrequency;
-    MY_FLOAT lastLength;
-    MY_FLOAT stretching;
-    MY_FLOAT pluckAmplitude;
-    MY_FLOAT pickupPosition;
+    DelayA  delayLine_;
+    DelayL  combDelay_;
+    OneZero filter_;
+    Noise   noise_;
+    BiQuad  biquad_[4];
+
+    unsigned long length_;
+    StkFloat loopGain_;
+    StkFloat baseLoopGain_;
+    StkFloat lastFrequency_;
+    StkFloat lastLength_;
+    StkFloat stretching_;
+    StkFloat pluckAmplitude_;
+    StkFloat pickupPosition_;
 
 };
 

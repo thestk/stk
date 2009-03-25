@@ -8,7 +8,7 @@
     the real axis of the z-plane while maintaining
     a constant peak filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -16,24 +16,25 @@
 
 OnePole :: OnePole() : Filter()
 {
-  MY_FLOAT B = 0.1;
-  MY_FLOAT A[2] = {1.0, -0.9};
-  Filter::setCoefficients( 1, &B, 2, A );
+  std::vector<StkFloat> b(1, 0.1);
+  std::vector<StkFloat> a(2, 1.0);
+  a[1] = -0.9;
+  Filter::setCoefficients( b, a );
 }
 
-OnePole :: OnePole(MY_FLOAT thePole) : Filter()
+OnePole :: OnePole(StkFloat thePole) : Filter()
 {
-  MY_FLOAT B;
-  MY_FLOAT A[2] = {1.0, -0.9};
+  std::vector<StkFloat> b(1);
+  std::vector<StkFloat> a(2, 1.0);
+  a[1] = -thePole;
 
   // Normalize coefficients for peak unity gain.
   if (thePole > 0.0)
-    B = (MY_FLOAT) (1.0 - thePole);
+    b[0] = (StkFloat) (1.0 - thePole);
   else
-    B = (MY_FLOAT) (1.0 + thePole);
+    b[0] = (StkFloat) (1.0 + thePole);
 
-  A[1] = -thePole;
-  Filter::setCoefficients( 1, &B, 2,  A );
+  Filter::setCoefficients( b, a );
 }
 
 OnePole :: ~OnePole()    
@@ -45,55 +46,57 @@ void OnePole :: clear(void)
   Filter::clear();
 }
 
-void OnePole :: setB0(MY_FLOAT b0)
+void OnePole :: setB0(StkFloat b0)
 {
-  b[0] = b0;
+  b_[0] = b0;
 }
 
-void OnePole :: setA1(MY_FLOAT a1)
+void OnePole :: setA1(StkFloat a1)
 {
-  a[1] = a1;
+  a_[1] = a1;
 }
 
-void OnePole :: setPole(MY_FLOAT thePole)
+void OnePole :: setPole(StkFloat thePole)
 {
   // Normalize coefficients for peak unity gain.
   if (thePole > 0.0)
-    b[0] = (MY_FLOAT) (1.0 - thePole);
+    b_[0] = (StkFloat) (1.0 - thePole);
   else
-    b[0] = (MY_FLOAT) (1.0 + thePole);
+    b_[0] = (StkFloat) (1.0 + thePole);
 
-  a[1] = -thePole;
+  a_[1] = -thePole;
 }
 
-void OnePole :: setGain(MY_FLOAT theGain)
+void OnePole :: setGain(StkFloat gain)
 {
-  Filter::setGain(theGain);
+  Filter::setGain(gain);
 }
 
-MY_FLOAT OnePole :: getGain(void) const
+StkFloat OnePole :: getGain(void) const
 {
   return Filter::getGain();
 }
 
-MY_FLOAT OnePole :: lastOut(void) const
+StkFloat OnePole :: lastOut(void) const
 {
   return Filter::lastOut();
 }
 
-MY_FLOAT OnePole :: tick(MY_FLOAT sample)
+StkFloat OnePole :: tick(StkFloat sample)
 {
-  inputs[0] = gain * sample;
-  outputs[0] = b[0] * inputs[0] - a[1] * outputs[1];
-  outputs[1] = outputs[0];
+  inputs_[0] = gain_ * sample;
+  outputs_[0] = b_[0] * inputs_[0] - a_[1] * outputs_[1];
+  outputs_[1] = outputs_[0];
 
-  return outputs[0];
+  return outputs_[0];
 }
 
-MY_FLOAT *OnePole :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *OnePole :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick(vector[i]);
+  return Filter::tick( vector, vectorSize );
+}
 
-  return vector;
+StkFrames& OnePole :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Filter::tick( frames, channel );
 }

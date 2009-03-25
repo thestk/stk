@@ -13,12 +13,12 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__SITAR_H)
-#define __SITAR_H
+#ifndef STK_SITAR_H
+#define STK_SITAR_H
 
 #include "Instrmnt.h"
 #include "DelayA.h"
@@ -30,7 +30,7 @@ class Sitar : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  Sitar(MY_FLOAT lowestFrequency);
+  Sitar( StkFloat lowestFrequency = 20 );
 
   //! Class destructor.
   ~Sitar();
@@ -39,30 +39,42 @@ class Sitar : public Instrmnt
   void clear();
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(MY_FLOAT frequency);
+  void setFrequency(StkFloat frequency);
 
   //! Pluck the string with the given amplitude using the current frequency.
-  void pluck(MY_FLOAT amplitude);
+  void pluck(StkFloat amplitude);
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
  protected:  
-  DelayA *delayLine;
-  OneZero *loopFilter;
-  Noise *noise;
-  ADSR *envelope;
-  long length;
-  MY_FLOAT loopGain;
-  MY_FLOAT amGain;
-  MY_FLOAT delay;
-  MY_FLOAT targetDelay;
+  DelayA  delayLine_;
+  OneZero loopFilter_;
+  Noise   noise_;
+  ADSR    envelope_;
+
+  StkFloat loopGain_;
+  StkFloat amGain_;
+  StkFloat delay_;
+  StkFloat targetDelay_;
 
 };
 

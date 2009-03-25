@@ -8,7 +8,7 @@
     frequency response while maintaining a
     constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -17,9 +17,10 @@
 
 TwoZero :: TwoZero() : Filter()
 {
-  MY_FLOAT B[3] = {1.0, 0.0, 0.0};
-  MY_FLOAT A = 1.0;
-  Filter::setCoefficients( 3, B, 1, &A );
+  std::vector<StkFloat> b(3, 0.0);
+  b[0] = 1.0;
+  std::vector<StkFloat> a(1, 1.0);
+  Filter::setCoefficients( b, a );
 }
 
 TwoZero :: ~TwoZero()
@@ -31,64 +32,66 @@ void TwoZero :: clear(void)
   Filter::clear();
 }
 
-void TwoZero :: setB0(MY_FLOAT b0)
+void TwoZero :: setB0(StkFloat b0)
 {
-  b[0] = b0;
+  b_[0] = b0;
 }
 
-void TwoZero :: setB1(MY_FLOAT b1)
+void TwoZero :: setB1(StkFloat b1)
 {
-  b[1] = b1;
+  b_[1] = b1;
 }
 
-void TwoZero :: setB2(MY_FLOAT b2)
+void TwoZero :: setB2(StkFloat b2)
 {
-  b[2] = b2;
+  b_[2] = b2;
 }
 
-void TwoZero :: setNotch(MY_FLOAT frequency, MY_FLOAT radius)
+void TwoZero :: setNotch(StkFloat frequency, StkFloat radius)
 {
-  b[2] = radius * radius;
-  b[1] = (MY_FLOAT) -2.0 * radius * cos(TWO_PI * (double) frequency / Stk::sampleRate());
+  b_[2] = radius * radius;
+  b_[1] = (StkFloat) -2.0 * radius * cos(TWO_PI * (double) frequency / Stk::sampleRate());
 
   // Normalize the filter gain.
-  if (b[1] > 0.0) // Maximum at z = 0.
-    b[0] = 1.0 / (1.0+b[1]+b[2]);
+  if (b_[1] > 0.0) // Maximum at z = 0.
+    b_[0] = 1.0 / (1.0+b_[1]+b_[2]);
   else            // Maximum at z = -1.
-    b[0] = 1.0 / (1.0-b[1]+b[2]);
-  b[1] *= b[0];
-  b[2] *= b[0];
+    b_[0] = 1.0 / (1.0-b_[1]+b_[2]);
+  b_[1] *= b_[0];
+  b_[2] *= b_[0];
 }
 
-void TwoZero :: setGain(MY_FLOAT theGain)
+void TwoZero :: setGain(StkFloat gain)
 {
-  Filter::setGain(theGain);
+  Filter::setGain(gain);
 }
 
-MY_FLOAT TwoZero :: getGain(void) const
+StkFloat TwoZero :: getGain(void) const
 {
   return Filter::getGain();
 }
 
-MY_FLOAT TwoZero :: lastOut(void) const
+StkFloat TwoZero :: lastOut(void) const
 {
   return Filter::lastOut();
 }
 
-MY_FLOAT TwoZero :: tick(MY_FLOAT sample)
+StkFloat TwoZero :: tick(StkFloat sample)
 {
-  inputs[0] = gain * sample;
-  outputs[0] = b[2] * inputs[2] + b[1] * inputs[1] + b[0] * inputs[0];
-  inputs[2] = inputs[1];
-  inputs[1] = inputs[0];
+  inputs_[0] = gain_ * sample;
+  outputs_[0] = b_[2] * inputs_[2] + b_[1] * inputs_[1] + b_[0] * inputs_[0];
+  inputs_[2] = inputs_[1];
+  inputs_[1] = inputs_[0];
 
-  return outputs[0];
+  return outputs_[0];
 }
 
-MY_FLOAT *TwoZero :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *TwoZero :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick(vector[i]);
+  return Filter::tick( vector, vectorSize );
+}
 
-  return vector;
+StkFrames& TwoZero :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Filter::tick( frames, channel );
 }

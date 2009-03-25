@@ -4,69 +4,69 @@
 
     This class implements a three-dimensional vector.
 
-    by Perry R. Cook, 1995 - 2002.
+    by Perry R. Cook, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Vector3D.h"
 #include <math.h>
 
-Vector3D :: Vector3D(double initX, double initY, double initZ)
+Vector3D :: Vector3D(StkFloat initX, StkFloat initY, StkFloat initZ)
 {
-  myX = initX;
-  myY = initY;
-  myZ = initZ;
+  myX_ = initX;
+  myY_ = initY;
+  myZ_ = initZ;
 }
 
 Vector3D :: ~Vector3D()
 {
 }
 
-double Vector3D :: getX()
+StkFloat Vector3D :: getX()
 {
-  return myX;
+  return myX_;
 }
 
-double Vector3D :: getY()
+StkFloat Vector3D :: getY()
 {
-  return myY;
+  return myY_;
 }
 
-double Vector3D :: getZ()
+StkFloat Vector3D :: getZ()
 {
-  return myZ;
+  return myZ_;
 }
 
-double Vector3D :: getLength()
+StkFloat Vector3D :: getLength()
 {
-  double temp;
-  temp = myX * myX;
-  temp += myY * myY;
-  temp += myZ * myZ;
+  StkFloat temp;
+  temp = myX_ * myX_;
+  temp += myY_ * myY_;
+  temp += myZ_ * myZ_;
   temp = sqrt(temp);
   return temp;
 }
 
-void Vector3D :: setXYZ(double anX, double aY, double aZ)
+void Vector3D :: setXYZ(StkFloat x, StkFloat y, StkFloat z)
 {
-  myX = anX;
-  myY = aY;
-  myZ = aZ;
+  myX_ = z;
+  myY_ = y;
+  myZ_ = z;
 };
 
-void Vector3D :: setX(double aval)
+void Vector3D :: setX(StkFloat x)
 {
-  myX = aval;
+  myX_ = x;
 }
 
-void Vector3D :: setY(double aval)
+void Vector3D :: setY(StkFloat y)
 {
-  myY = aval;
+  myY_ = y;
 }
 
-void Vector3D :: setZ(double aval)
+void Vector3D :: setZ(StkFloat z)
 {
-  myZ = aval;
+  myZ_ = z;
 }
 
 

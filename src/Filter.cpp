@@ -14,7 +14,7 @@
     a[0]*y[n] = b[0]*x[n] + ... + b[nb]*x[n-nb] -
                 a[1]*y[n-1] - ... - a[na]*y[n-na]
 
-    If a[0] is not equal to 1, the filter coeffcients
+    If a[0] is not equal to 1, the filter coefficients
     are normalized by a[0].
 
     The \e gain parameter is applied at the filter
@@ -23,7 +23,7 @@
     results in one extra multiply per computed sample,
     but allows easy control of the overall filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -33,212 +33,209 @@
 Filter :: Filter()
 {
   // The default constructor should setup for pass-through.
-  gain = 1.0;
-  nB = 1;
-  nA = 1;
-  b = new MY_FLOAT[nB];
-  b[0] = 1.0;
-  a = new MY_FLOAT[nA];
-  a[0] = 1.0;
+  gain_ = 1.0;
+  b_.push_back( 1.0 );
+  a_.push_back( 1.0 );
 
-  inputs = new MY_FLOAT[nB];
-  outputs = new MY_FLOAT[nA];
-  this->clear();
+  inputs_.push_back( 0.0 );
+  outputs_.push_back( 0.0 );
 }
 
-Filter :: Filter(int nb, MY_FLOAT *bCoefficients, int na, MY_FLOAT *aCoefficients)
+Filter :: Filter( std::vector<StkFloat> &bCoefficients, std::vector<StkFloat> &aCoefficients )
 {
-  char message[256];
-
   // Check the arguments.
-  if ( nb < 1 || na < 1 ) {
-    sprintf(message, "Filter: nb (%d) and na (%d) must be >= 1!", nb, na);
-    handleError( message, StkError::FUNCTION_ARGUMENT );
+  if ( bCoefficients.size() == 0 || aCoefficients.size() == 0 ) {
+    errorString_ << "Filter: a and b coefficient vectors must both have size > 0!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
   if ( aCoefficients[0] == 0.0 ) {
-    sprintf(message, "Filter: a[0] coefficient cannot == 0!");
-    handleError( message, StkError::FUNCTION_ARGUMENT );
+    errorString_ << "Filter: a[0] coefficient cannot == 0!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
-  gain = 1.0;
-  nB = nb;
-  nA = na;
-  b = new MY_FLOAT[nB];
-  a = new MY_FLOAT[nA];
+  gain_ = 1.0;
+  b_ = bCoefficients;
+  a_ = aCoefficients;
 
-  inputs = new MY_FLOAT[nB];
-  outputs = new MY_FLOAT[nA];
+  inputs_ = std::vector<StkFloat> ( b_.size() );
+  outputs_ = std::vector<StkFloat> ( a_.size() );
   this->clear();
-
-  this->setCoefficients(nB, bCoefficients, nA, aCoefficients);
 }
 
 Filter :: ~Filter()
 {
-  delete [] b;
-  delete [] a;
-  delete [] inputs;
-  delete [] outputs;
 }
 
 void Filter :: clear(void)
 {
-  int i;
-  for (i=0; i<nB; i++)
-    inputs[i] = 0.0;
-  for (i=0; i<nA; i++)
-    outputs[i] = 0.0;
+  unsigned int i;
+  for (i=0; i<inputs_.size(); i++)
+    inputs_[i] = 0.0;
+  for (i=0; i<outputs_.size(); i++)
+    outputs_[i] = 0.0;
 }
 
-void Filter :: setCoefficients(int nb, MY_FLOAT *bCoefficients, int na, MY_FLOAT *aCoefficients)
+void Filter :: setCoefficients( std::vector<StkFloat> &bCoefficients, std::vector<StkFloat> &aCoefficients )
 {
-  int i;
-  char message[256];
-
   // Check the arguments.
-  if ( nb < 1 || na < 1 ) {
-    sprintf(message, "Filter: nb (%d) and na (%d) must be >= 1!", nb, na);
-    handleError( message, StkError::FUNCTION_ARGUMENT );
+  if ( bCoefficients.size() == 0 || aCoefficients.size() == 0 ) {
+    errorString_ << "Filter::setCoefficients: a and b coefficient vectors must both have size > 0!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
   if ( aCoefficients[0] == 0.0 ) {
-    sprintf(message, "Filter: a[0] coefficient cannot == 0!");
-    handleError( message, StkError::FUNCTION_ARGUMENT );
+    errorString_ << "Filter::setCoefficients: a[0] coefficient cannot == 0!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
-  if (nb != nB) {
-    delete [] b;
-    delete [] inputs;
-    nB = nb;
-    b = new MY_FLOAT[nB];
-    inputs = new MY_FLOAT[nB];
-    for (i=0; i<nB; i++) inputs[i] = 0.0;
+  if ( b_.size() != bCoefficients.size() ) {
+    b_ = bCoefficients;
+    inputs_.clear();
+    inputs_ = std::vector<StkFloat> ( b_.size() );
+  }
+  else {
+    for ( unsigned int i=0; i<b_.size(); i++ ) b_[i] = bCoefficients[i];
   }
 
-  if (na != nA) {
-    delete [] a;
-    delete [] outputs;
-    nA = na;
-    a = new MY_FLOAT[nA];
-    outputs = new MY_FLOAT[nA];
-    for (i=0; i<nA; i++) outputs[i] = 0.0;
+  if ( a_.size() != aCoefficients.size() ) {
+    a_ = aCoefficients;
+    outputs_.clear();
+    outputs_ = std::vector<StkFloat> ( a_.size() );
+  }
+  else {
+    for ( unsigned int i=0; i<a_.size(); i++ ) a_[i] = aCoefficients[i];
   }
 
-  for (i=0; i<nB; i++)
-    b[i] = bCoefficients[i];
-  for (i=0; i<nA; i++)
-    a[i] = aCoefficients[i];
+  this->clear();
 
-  // scale coefficients by a[0] if necessary
-  if (a[0] != 1.0) {
-    for (i=0; i<nB; i++)
-      b[i] /= a[0];
-    for (i=0; i<nA; i++)
-      a[i] /= a[0];
+  // Scale coefficients by a[0] if necessary
+  if ( a_[0] != 1.0 ) {
+    unsigned int i;
+    for ( i=0; i<b_.size(); i++ ) b_[i] /= a_[0];
+    for ( i=1; i<a_.size(); i++ )  a_[i] /= a_[0];
   }
 }
 
-void Filter :: setNumerator(int nb, MY_FLOAT *bCoefficients)
+void Filter :: setNumerator( std::vector<StkFloat> &bCoefficients )
 {
-  int i;
-  char message[256];
-
-  // Check the arguments.
-  if ( nb < 1 ) {
-    sprintf(message, "Filter: nb (%d) must be >= 1!", nb);
-    handleError( message, StkError::FUNCTION_ARGUMENT );
+  // Check the argument.
+  if ( bCoefficients.size() == 0 ) {
+    errorString_ << "Filter::setNumerator: coefficient vector must have size > 0!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
-  if (nb != nB) {
-    delete [] b;
-    delete [] inputs;
-    nB = nb;
-    b = new MY_FLOAT[nB];
-    inputs = new MY_FLOAT[nB];
-    for (i=0; i<nB; i++) inputs[i] = 0.0;
+  if ( b_.size() != bCoefficients.size() ) {
+    b_ = bCoefficients;
+    inputs_.clear();
+    inputs_ = std::vector<StkFloat> ( b_.size() );
+  }
+  else {
+    for ( unsigned int i=0; i<b_.size(); i++ ) b_[i] = bCoefficients[i];
   }
 
-  for (i=0; i<nB; i++)
-    b[i] = bCoefficients[i];
+  this->clear();
 }
 
-void Filter :: setDenominator(int na, MY_FLOAT *aCoefficients)
+void Filter :: setDenominator( std::vector<StkFloat> &aCoefficients )
 {
-  int i;
-  char message[256];
-
-  // Check the arguments.
-  if ( na < 1 ) {
-    sprintf(message, "Filter: na (%d) must be >= 1!", na);
-    handleError( message, StkError::FUNCTION_ARGUMENT );
+  // Check the argument.
+  if ( aCoefficients.size() == 0 ) {
+    errorString_ << "Filter::setDenominator: coefficient vector must have size > 0!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
   if ( aCoefficients[0] == 0.0 ) {
-    sprintf(message, "Filter: a[0] coefficient cannot == 0!");
-    handleError( message, StkError::FUNCTION_ARGUMENT );
+    errorString_ << "Filter::setDenominator: a[0] coefficient cannot == 0!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
-  if (na != nA) {
-    delete [] a;
-    delete [] outputs;
-    nA = na;
-    a = new MY_FLOAT[nA];
-    outputs = new MY_FLOAT[nA];
-    for (i=0; i<nA; i++) outputs[i] = 0.0;
+  if ( a_.size() != aCoefficients.size() ) {
+    a_ = aCoefficients;
+    outputs_.clear();
+    outputs_ = std::vector<StkFloat> ( a_.size() );
+  }
+  else {
+    for ( unsigned int i=0; i<a_.size(); i++ ) a_[i] = aCoefficients[i];
   }
 
-  for (i=0; i<nA; i++)
-    a[i] = aCoefficients[i];
+  this->clear();
 
-  // scale coefficients by a[0] if necessary
-  if (a[0] != 1.0) {
-    for (i=0; i<nB; i++)
-      b[i] /= a[0];
-    for (i=0; i<nA; i++)
-      a[i] /= a[0];
+  // Scale coefficients by a[0] if necessary
+  if ( a_[0] != 1.0 ) {
+    unsigned int i;
+    for ( i=0; i<b_.size(); i++ ) b_[i] /= a_[0];
+    for ( i=1; i<a_.size(); i++ )  a_[i] /= a_[0];
   }
 }
 
-void Filter :: setGain(MY_FLOAT theGain)
+void Filter :: setGain(StkFloat gain)
 {
-  gain = theGain;
+  gain_ = gain;
 }
 
-MY_FLOAT Filter :: getGain(void) const
+StkFloat Filter :: getGain(void) const
 {
-  return gain;
+  return gain_;
 }
 
-MY_FLOAT Filter :: lastOut(void) const
+StkFloat Filter :: lastOut(void) const
 {
-  return outputs[0];
+  return outputs_[0];
 }
 
-MY_FLOAT Filter :: tick(MY_FLOAT sample)
+StkFloat Filter :: tick(StkFloat sample)
 {
-  int i;
+  unsigned int i;
 
-  outputs[0] = 0.0;
-  inputs[0] = gain * sample;
-  for (i=nB-1; i>0; i--) {
-    outputs[0] += b[i] * inputs[i];
-    inputs[i] = inputs[i-1];
+  outputs_[0] = 0.0;
+  inputs_[0] = gain_ * sample;
+  for (i=b_.size()-1; i>0; i--) {
+    outputs_[0] += b_[i] * inputs_[i];
+    inputs_[i] = inputs_[i-1];
   }
-  outputs[0] += b[0] * inputs[0];
+  outputs_[0] += b_[0] * inputs_[0];
 
-  for (i=nA-1; i>0; i--) {
-    outputs[0] += -a[i] * outputs[i];
-    outputs[i] = outputs[i-1];
+  for (i=a_.size()-1; i>0; i--) {
+    outputs_[0] += -a_[i] * outputs_[i];
+    outputs_[i] = outputs_[i-1];
   }
 
-  return outputs[0];
+  return outputs_[0];
 }
 
-MY_FLOAT *Filter :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *Filter :: tick(StkFloat *vector, unsigned int vectorSize)
 {
   for (unsigned int i=0; i<vectorSize; i++)
     vector[i] = tick(vector[i]);
 
   return vector;
+}
+
+StkFrames& Filter :: tick( StkFrames& frames, unsigned int channel )
+{
+  if ( channel == 0 || frames.channels() < channel ) {
+    errorString_ << "Filter::tick(): channel argument (" << channel << ") is zero or > channels in StkFrames argument!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  if ( frames.channels() == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      frames[i] = tick( frames[i] );
+  }
+  else if ( frames.interleaved() ) {
+    unsigned int hop = frames.channels();
+    unsigned int index = channel - 1;
+    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+      frames[index] = tick( frames[index] );
+      index += hop;
+    }
+  }
+  else {
+    unsigned int iStart = (channel - 1) * frames.frames();
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      frames[iStart + i] = tick( frames[iStart + i] );
+  }
+
+  return frames;
 }

@@ -10,44 +10,49 @@
     subsequent output.  Linear interpolation is
     used for fractional "read rates".
 
-    WvIn supports multi-channel data in interleaved
-    format.  It is important to distinguish the
-    tick() methods, which return samples produced
-    by averaging across sample frames, from the 
-    tickFrame() methods, which return pointers to
-    multi-channel sample frames.  For single-channel
-    data, these methods return equivalent values.
+    WvIn supports multi-channel data in
+    interleaved format.  It is important to
+    distinguish the tick() methods, which return
+    samples produced by averaging across sample
+    frames, from the tickFrame() methods, which
+    return pointers to multi-channel sample
+    frames.  For single-channel data, these
+    methods return equivalent values.
 
-    Small files are completely read into local memory
-    during instantiation.  Large files are read
-    incrementally from disk.  The file size threshold
-    and the increment size values are defined in
-    WvIn.h.
+    Small files are completely read into local
+    memory during instantiation.  Large files are
+    read incrementally from disk.  The file size
+    threshold and the increment size values are
+    defined in WvIn.h.
+
+    When the end of a file is reached, subsequent
+    calls to the tick() functions return the data
+    values at the end of the file.
 
     WvIn currently supports WAV, AIFF, SND (AU),
     MAT-file (Matlab), and STK RAW file formats.
     Signed integer (8-, 16-, and 32-bit) and floating-
     point (32- and 64-bit) data types are supported.
-    Uncompressed data types are not supported.  If
-    using MAT-files, data should be saved in an array
-    with each data channel filling a matrix row.
+    Compressed data types are not supported.  If using
+    MAT-files, data should be saved in an array with
+    each data channel filling a matrix row.  The sample
+    rate for MAT-files is assumed to be 44100 Hz.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__WVIN_H)
-#define __WVIN_H
+#ifndef STK_WVIN_H
+#define STK_WVIN_H
 
 // Files larger than CHUNK_THRESHOLD will be copied into memory
 // in CHUNK_SIZE increments, rather than completely loaded into
 // a buffer at once.
 
-#define CHUNK_THRESHOLD 5000000  // 5 Mb
-#define CHUNK_SIZE 1024          // sample frames
+const unsigned long CHUNK_THRESHOLD = 5000000;  // 5 Mb
+const long CHUNK_SIZE = 1024;          // sample frames
 
 #include "Stk.h"
-#include <stdio.h>
 
 class WvIn : public Stk
 {
@@ -60,7 +65,7 @@ public:
     An StkError will be thrown if the file is not found, its format is
     unknown, or a read error occurs.
   */
-  WvIn( const char *fileName, bool raw = FALSE, bool doNormalize = TRUE );
+  WvIn( std::string fileName, bool raw = false, bool doNormalize = true );
 
   //! Class destructor.
   virtual ~WvIn();
@@ -70,7 +75,7 @@ public:
     An StkError will be thrown if the file is not found, its format is
     unknown, or a read error occurs.
   */
-  void openFile( const char *fileName, bool raw = FALSE, bool doNormalize = TRUE );
+  void openFile( std::string fileName, bool raw = false, bool doNormalize = true );
 
   //! If a file is open, close it.
   void closeFile(void);
@@ -94,7 +99,7 @@ public:
     (\e peak/maximum).  For incrementally loaded files with floating-
     point data types, direct scaling by \e peak is performed.
   */
-  void normalize(MY_FLOAT peak);
+  void normalize(StkFloat peak);
 
   //! Return the file size in sample frames.
   unsigned long getSize(void) const;
@@ -108,7 +113,7 @@ public:
     their headers.  STK RAW files have a sample rate of 22050 Hz
     by definition.  MAT-files are assumed to have a rate of 44100 Hz.
   */
-  MY_FLOAT getFileRate(void) const;
+  StkFloat getFileRate(void) const;
 
   //! Query whether reading is complete.
   bool isFinished(void) const;
@@ -117,10 +122,10 @@ public:
   /*!
     If the rate value is negative, the data is read in reverse order.
   */
-  void setRate(MY_FLOAT aRate);
+  void setRate(StkFloat aRate);
 
   //! Increment the read pointer by \e aTime samples.
-  virtual void addTime(MY_FLOAT aTime);
+  virtual void addTime(StkFloat aTime);
 
   //! Turn linear interpolation on/off.
   /*!
@@ -132,34 +137,53 @@ public:
   void setInterpolate(bool doInterpolate);
 
   //! Return the average across the last output sample frame.
-  virtual MY_FLOAT lastOut(void) const;
+  virtual StkFloat lastOut(void) const;
 
   //! Read out the average across one sample frame of data.
   /*!
     An StkError will be thrown if a file is read incrementally and a read error occurs.
   */
-  virtual MY_FLOAT tick(void);
+  virtual StkFloat tick(void);
 
   //! Read out vectorSize averaged sample frames of data in \e vector.
   /*!
     An StkError will be thrown if a file is read incrementally and a read error occurs.
   */
-  virtual MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with averaged sample frames.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if a file
+    is read incrementally and a read error occurs or the \c channel
+    argument is zero or it is greater than the number of channels in
+    the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Return a pointer to the last output sample frame.
-  virtual const MY_FLOAT *lastFrame(void) const;
+  virtual const StkFloat *lastFrame(void) const;
 
   //! Return a pointer to the next sample frame of data.
   /*!
     An StkError will be thrown if a file is read incrementally and a read error occurs.
   */
-  virtual const MY_FLOAT *tickFrame(void);
+  virtual const StkFloat *tickFrame(void);
 
   //! Read out sample \e frames of data to \e frameVector.
   /*!
     An StkError will be thrown if a file is read incrementally and a read error occurs.
   */
-  virtual MY_FLOAT *tickFrame(MY_FLOAT *frameVector, unsigned int frames);
+  virtual StkFloat *tickFrame(StkFloat *frameVector, unsigned int frames);
+
+  //! Fill the StkFrames object with sample frames of data and return the same reference.
+  /*!
+    An StkError will be thrown if a file is read incrementally and
+    a read error occurs or if there is an incompatability between the
+    number of channels in the WvIn object and that in the StkFrames
+    object.
+  */
+  virtual StkFrames& tickFrame( StkFrames& frames );
 
 protected:
 
@@ -184,24 +208,23 @@ protected:
   // Get MAT-file header information.
   bool getMatInfo( const char *fileName );
 
-  char msg[256];
-  FILE *fd;
-  MY_FLOAT *data;
-  MY_FLOAT *lastOutput;
-  bool chunking;
-  bool finished;
-  bool interpolate;
-  bool byteswap;
-  unsigned long fileSize;
-  unsigned long bufferSize;
-  unsigned long dataOffset;
-  unsigned int channels;
-  long chunkPointer;
-  STK_FORMAT dataType;
-  MY_FLOAT fileRate;
-  MY_FLOAT gain;
-  MY_FLOAT time;
-  MY_FLOAT rate;
+  FILE *fd_;
+  StkFloat *data_;
+  StkFloat *lastOutputs_;
+  bool chunking_;
+  bool finished_;
+  bool interpolate_;
+  bool byteswap_;
+  unsigned long fileSize_;
+  unsigned long bufferSize_;
+  unsigned long dataOffset_;
+  unsigned int channels_;
+  long chunkPointer_;
+  StkFormat dataType_;
+  StkFloat fileRate_;
+  StkFloat gain_;
+  StkFloat time_;
+  StkFloat rate_;
 };
 
-#endif // defined(__WVIN_H)
+#endif

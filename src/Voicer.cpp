@@ -25,7 +25,7 @@
     an ensemble.  Alternately, control changes can
     be sent to all voices on a given channel.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -33,183 +33,167 @@
 #include <stdlib.h>
 #include <math.h>
 
-Voicer :: Voicer( int maxInstruments, MY_FLOAT decayTime )
+Voicer :: Voicer( StkFloat decayTime )
 {
-  nVoices = 0;
-  maxVoices = maxInstruments;
-  voices = (Voice *) new Voice[maxVoices];
-  tags = 23456;
-  muteTime = (int) ( decayTime * Stk::sampleRate() );
+  tags_ = 23456;
+  muteTime_ = (int) ( decayTime * Stk::sampleRate() );
 }
 
 Voicer :: ~Voicer()
 {
-  delete [] voices;
 }
 
 void Voicer :: addInstrument( Instrmnt *instrument, int channel )
 {
-  //voices = (Voice *) realloc( (void *) voices, nVoices+1 * sizeof( Voice ) );
-  if ( nVoices == maxVoices ) {
-    std::cerr << "Voicer: Maximum number of voices already added!!" << std::endl;
-    return;
-  }
-
-  voices[nVoices].instrument = instrument;
-  voices[nVoices].tag = 0;
-  voices[nVoices].channel = channel;
-  voices[nVoices].noteNumber = -1;
-  voices[nVoices].frequency = 0.0;
-  voices[nVoices].sounding = 0;
-  nVoices++;
+  Voicer::Voice voice;
+  voice.instrument = instrument;
+  voice.channel = channel;
+  voice.noteNumber = -1;
+  voices_.push_back( voice );
 }
 
 void Voicer :: removeInstrument( Instrmnt *instrument )
 {
   bool found = false;
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].instrument == instrument ) found = true;
-    if ( found && i+1 < nVoices ) {
-      voices[i].instrument = voices[i+1].instrument;
-      voices[i].tag = voices[i+1].tag;
-      voices[i].noteNumber = voices[i+1].noteNumber;
-      voices[i].frequency = voices[i+1].frequency;
-      voices[i].sounding = voices[i+1].sounding;
-      voices[i].channel = voices[i+1].channel;
-    }
+  std::vector< Voicer::Voice>::iterator i; 
+  for ( i=voices_.begin(); i!=voices_.end(); ++i ) {
+    if ( (*i).instrument != instrument ) continue;
+    voices_.erase( i );
+    found = true;
+    break;
   }
 
-  if ( found )
-    nVoices--;
-    //voices = (Voice *) realloc( voices, --nVoices * sizeof( Voice ) );
-
+  if ( !found ) {
+    errorString_ << "Voicer::removeInstrument: instrument pointer not found in current voices!";
+    handleError( StkError::WARNING );
+  }
 }
 
-long Voicer :: noteOn(MY_FLOAT noteNumber, MY_FLOAT amplitude, int channel )
+long Voicer :: noteOn(StkFloat noteNumber, StkFloat amplitude, int channel )
 {
-  int i;
-  MY_FLOAT frequency = (MY_FLOAT) 220.0 * pow( 2.0, (noteNumber - 57.0) / 12.0 );
-  for ( i=0; i<nVoices; i++ ) {
-    if (voices[i].noteNumber < 0 && voices[i].channel == channel) {
-	    voices[i].tag = tags++;
-      voices[i].channel = channel;
-      voices[i].noteNumber = noteNumber;
-      voices[i].frequency = frequency;
-	    voices[i].instrument->noteOn( frequency, amplitude * ONE_OVER_128 );
-      voices[i].sounding = 1;
-      return voices[i].tag;
+  unsigned int i;
+  StkFloat frequency = (StkFloat) 220.0 * pow( 2.0, (noteNumber - 57.0) / 12.0 );
+  for ( i=0; i<voices_.size(); i++ ) {
+    if (voices_[i].noteNumber < 0 && voices_[i].channel == channel) {
+	    voices_[i].tag = tags_++;
+      voices_[i].channel = channel;
+      voices_[i].noteNumber = noteNumber;
+      voices_[i].frequency = frequency;
+	    voices_[i].instrument->noteOn( frequency, amplitude * ONE_OVER_128 );
+      voices_[i].sounding = 1;
+      return voices_[i].tag;
     }
   }
 
   // All voices are sounding, so interrupt the oldest voice.
   int voice = -1;
-  for ( i=0; i<nVoices; i++ ) {
-    if ( voices[i].channel == channel ) {
+  for ( i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].channel == channel ) {
       if ( voice == -1 ) voice = i;
-      else if ( voices[i].tag < voices[voice].tag ) voice = i;
+      else if ( voices_[i].tag < voices_[voice].tag ) voice = (int) i;
     }
   }
 
   if ( voice >= 0 ) {
-    voices[voice].tag = tags++;
-    voices[voice].channel = channel;
-    voices[voice].noteNumber = noteNumber;
-    voices[voice].frequency = frequency;
-    voices[voice].instrument->noteOn( frequency, amplitude * ONE_OVER_128 );
-    voices[voice].sounding = 1;
-    return voices[voice].tag;
+    voices_[voice].tag = tags_++;
+    voices_[voice].channel = channel;
+    voices_[voice].noteNumber = noteNumber;
+    voices_[voice].frequency = frequency;
+    voices_[voice].instrument->noteOn( frequency, amplitude * ONE_OVER_128 );
+    voices_[voice].sounding = 1;
+    return voices_[voice].tag;
   }
 
   return -1;
 }
 
-void Voicer :: noteOff( MY_FLOAT noteNumber, MY_FLOAT amplitude, int channel )
+void Voicer :: noteOff( StkFloat noteNumber, StkFloat amplitude, int channel )
 {
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].noteNumber == noteNumber && voices[i].channel == channel ) {
-      voices[i].instrument->noteOff( amplitude * ONE_OVER_128 );
-      voices[i].sounding = -muteTime;
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].noteNumber == noteNumber && voices_[i].channel == channel ) {
+      voices_[i].instrument->noteOff( amplitude * ONE_OVER_128 );
+      voices_[i].sounding = -muteTime_;
     }
   }
 }
 
-void Voicer :: noteOff( long tag, MY_FLOAT amplitude )
+void Voicer :: noteOff( long tag, StkFloat amplitude )
 {
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].tag == tag ) {
-      voices[i].instrument->noteOff( amplitude * ONE_OVER_128 );
-      voices[i].sounding = -muteTime;
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].tag == tag ) {
+      voices_[i].instrument->noteOff( amplitude * ONE_OVER_128 );
+      voices_[i].sounding = -muteTime_;
       break;
     }
   }
 }
 
-void Voicer :: setFrequency( MY_FLOAT noteNumber, int channel )
+void Voicer :: setFrequency( StkFloat noteNumber, int channel )
 {
-  MY_FLOAT frequency = (MY_FLOAT) 220.0 * pow( 2.0, (noteNumber - 57.0) / 12.0 );
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].channel == channel ) {
-      voices[i].noteNumber = noteNumber;
-      voices[i].frequency = frequency;
-      voices[i].instrument->setFrequency( frequency );
+  StkFloat frequency = (StkFloat) 220.0 * pow( 2.0, (noteNumber - 57.0) / 12.0 );
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].channel == channel ) {
+      voices_[i].noteNumber = noteNumber;
+      voices_[i].frequency = frequency;
+      voices_[i].instrument->setFrequency( frequency );
     }
   }
 }
 
-void Voicer :: setFrequency( long tag, MY_FLOAT noteNumber )
+void Voicer :: setFrequency( long tag, StkFloat noteNumber )
 {
-  MY_FLOAT frequency = (MY_FLOAT) 220.0 * pow( 2.0, (noteNumber - 57.0) / 12.0 );
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].tag == tag ) {
-      voices[i].noteNumber = noteNumber;
-      voices[i].frequency = frequency;
-      voices[i].instrument->setFrequency( frequency );
+  StkFloat frequency = (StkFloat) 220.0 * pow( 2.0, (noteNumber - 57.0) / 12.0 );
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].tag == tag ) {
+      voices_[i].noteNumber = noteNumber;
+      voices_[i].frequency = frequency;
+      voices_[i].instrument->setFrequency( frequency );
       break;
     }
   }
 }
 
-void Voicer :: pitchBend( MY_FLOAT value, int channel )
+void Voicer :: pitchBend( StkFloat value, int channel )
 {
-  MY_FLOAT pitchScaler;
+  StkFloat pitchScaler;
   if ( value < 64.0 )
     pitchScaler = pow(0.5, (64.0-value)/64.0);
   else
     pitchScaler = pow(2.0, (value-64.0)/64.0);
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].channel == channel )
-      voices[i].instrument->setFrequency( (MY_FLOAT) (voices[i].frequency * pitchScaler) );
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].channel == channel )
+      voices_[i].instrument->setFrequency( (StkFloat) (voices_[i].frequency * pitchScaler) );
   }
 }
 
-void Voicer :: pitchBend( long tag, MY_FLOAT value )
+void Voicer :: pitchBend( long tag, StkFloat value )
 {
-  MY_FLOAT pitchScaler;
+  StkFloat pitchScaler;
   if ( value < 64.0 )
     pitchScaler = pow(0.5, (64.0-value)/64.0);
   else
     pitchScaler = pow(2.0, (value-64.0)/64.0);
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].tag == tag ) {
-      voices[i].instrument->setFrequency( (MY_FLOAT) (voices[i].frequency * pitchScaler) );
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].tag == tag ) {
+      voices_[i].instrument->setFrequency( (StkFloat) (voices_[i].frequency * pitchScaler) );
       break;
     }
   }
 }
 
-void Voicer :: controlChange( int number, MY_FLOAT value, int channel )
+void Voicer :: controlChange( int number, StkFloat value, int channel )
 {
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].channel == channel )
-      voices[i].instrument->controlChange( number, value );
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].channel == channel )
+      voices_[i].instrument->controlChange( number, value );
   }
 }
 
-void Voicer :: controlChange( long tag, int number, MY_FLOAT value )
+void Voicer :: controlChange( long tag, int number, StkFloat value )
 {
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].tag == tag ) {
-      voices[i].instrument->controlChange( number, value );
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].tag == tag ) {
+      voices_[i].instrument->controlChange( number, value );
       break;
     }
   }
@@ -217,31 +201,31 @@ void Voicer :: controlChange( long tag, int number, MY_FLOAT value )
 
 void Voicer :: silence( void )
 {
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].sounding > 0 )
-      voices[i].instrument->noteOff( 0.5 );
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].sounding > 0 )
+      voices_[i].instrument->noteOff( 0.5 );
   }
 }
 
-MY_FLOAT Voicer :: tick()
+StkFloat Voicer :: tick()
 {
-  lastOutput = lastOutputLeft = lastOutputRight = 0.0;
-  for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].sounding != 0 ) {
-      lastOutput += voices[i].instrument->tick();
-      lastOutputLeft += voices[i].instrument->lastOutLeft();
-      lastOutputRight += voices[i].instrument->lastOutRight();
+  lastOutput_ = lastOutputLeft_ = lastOutputRight_ = 0.0;
+  for ( unsigned int i=0; i<voices_.size(); i++ ) {
+    if ( voices_[i].sounding != 0 ) {
+      lastOutput_ += voices_[i].instrument->tick();
+      lastOutputLeft_ += voices_[i].instrument->lastOutLeft();
+      lastOutputRight_ += voices_[i].instrument->lastOutRight();
     }
-    if ( voices[i].sounding < 0 ) {
-      voices[i].sounding++;
-      if ( voices[i].sounding == 0 )
-        voices[i].noteNumber = -1;
+    if ( voices_[i].sounding < 0 ) {
+      voices_[i].sounding++;
+      if ( voices_[i].sounding == 0 )
+        voices_[i].noteNumber = -1;
     }
   }
-  return lastOutput / nVoices;
+  return lastOutput_ / voices_.size();
 }
 
-MY_FLOAT *Voicer :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *Voicer :: tick(StkFloat *vector, unsigned int vectorSize)
 {
   for (unsigned int i=0; i<vectorSize; i++)
     vector[i] = tick();
@@ -249,18 +233,46 @@ MY_FLOAT *Voicer :: tick(MY_FLOAT *vector, unsigned int vectorSize)
   return vector;
 }
 
-MY_FLOAT Voicer :: lastOut() const
+StkFrames& Voicer :: tick( StkFrames& frames, unsigned int channel )
 {
-  return lastOutput;
+  if ( channel == 0 || frames.channels() < channel ) {
+    errorString_ << "Voicer::tick(): channel argument (" << channel << ") is zero or > channels in StkFrames argument!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  if ( frames.channels() == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      frames[i] = tick();
+  }
+  else if ( frames.interleaved() ) {
+    unsigned int hop = frames.channels();
+    unsigned int index = channel - 1;
+    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+      frames[index] = tick();
+      index += hop;
+    }
+  }
+  else {
+    unsigned int iStart = (channel - 1) * frames.frames();
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      frames[iStart + i] = tick();
+  }
+
+  return frames;
 }
 
-MY_FLOAT Voicer :: lastOutLeft() const
+StkFloat Voicer :: lastOut() const
 {
-  return lastOutputLeft;
+  return lastOutput_;
 }
 
-MY_FLOAT Voicer :: lastOutRight() const
+StkFloat Voicer :: lastOutLeft() const
 {
-  return lastOutputRight;
+  return lastOutputLeft_;
+}
+
+StkFloat Voicer :: lastOutRight() const
+{
+  return lastOutputRight_;
 }
 

@@ -5,100 +5,95 @@
     This class implements a spherical ball with
     radius, mass, position, and velocity parameters.
 
-    by Perry R. Cook, 1995 - 2002.
+    by Perry R. Cook, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Sphere.h"
-#include <stdio.h>
 #include <math.h>
 
-Sphere::Sphere(double initRadius)
+Sphere::Sphere(StkFloat radius)
 {
-  myRadius = initRadius;
-  myMass = 1.0;
-  myPosition = new Vector3D(0, 0, 0);
-  myVelocity = new Vector3D(0, 0, 0);
+  radius_ = radius;
+  mass_ = 1.0;
 };
 
 Sphere::~Sphere()
 {
-  delete myPosition;
-  delete myVelocity;
 }
 
-void Sphere::setPosition(double anX, double aY, double aZ)
+void Sphere::setPosition(StkFloat x, StkFloat y, StkFloat z)
 {
-  myPosition->setXYZ(anX, aY, aZ);
+  position_.setXYZ(x, y, z);
 };
 
-void Sphere::setVelocity(double anX, double aY, double aZ)
+void Sphere::setVelocity(StkFloat x, StkFloat y, StkFloat z)
 {
-  myVelocity->setXYZ(anX, aY, aZ);
+  velocity_.setXYZ(x, y, z);
 };
 
-void Sphere::setRadius(double aRadius)
+void Sphere::setRadius(StkFloat radius)
 {
-  myRadius = aRadius;
+  radius_ = radius;
 };
 
-void Sphere::setMass(double aMass)
+void Sphere::setMass(StkFloat mass)
 {
-  myMass = aMass;
+  mass_ = mass;
 };
 
 Vector3D* Sphere::getPosition()
 {
-  return myPosition;
+  return &position_;
 };
 
-Vector3D* Sphere::getRelativePosition(Vector3D* aPosition)
+Vector3D* Sphere::getRelativePosition(Vector3D* position)
 {
-  workingVector.setXYZ(aPosition->getX() - myPosition->getX(),
-                       aPosition->getY() - myPosition->getY(),  
-                       aPosition->getZ() - myPosition->getZ());
-  return &workingVector;
+  workingVector_.setXYZ(position->getX() - position_.getX(),
+                        position->getY() - position_.getY(),  
+                        position->getZ() - position_.getZ());
+  return &workingVector_;
 };
 
-double Sphere::getVelocity(Vector3D* aVelocity)
+StkFloat Sphere::getVelocity(Vector3D* velocity)
 {
-  aVelocity->setXYZ(myVelocity->getX(), myVelocity->getY(), myVelocity->getZ());
-  return myVelocity->getLength();
+  velocity->setXYZ( velocity_.getX(), velocity_.getY(), velocity_.getZ() );
+  return velocity_.getLength();
 };
 
-double Sphere::isInside(Vector3D *aPosition)
+StkFloat Sphere::isInside(Vector3D *position)
 {
   // Return directed distance from aPosition to spherical boundary ( <
   // 0 if inside).
-  double distance;
+  StkFloat distance;
   Vector3D *tempVector;
 
-  tempVector = this->getRelativePosition(aPosition);
+  tempVector = this->getRelativePosition( position );
   distance = tempVector->getLength();
-  return distance - myRadius;
+  return distance - radius_;
 };
 
-double Sphere::getRadius()
+StkFloat Sphere::getRadius()
 {
-  return myRadius;
+  return radius_;
 };
 
-double Sphere::getMass()
+StkFloat Sphere::getMass()
 {
-  return myMass;
+  return mass_;
 };
 
-void Sphere::addVelocity(double anX, double aY, double aZ)
+void Sphere::addVelocity(StkFloat x, StkFloat y, StkFloat z)
 {
-  myVelocity->setX(myVelocity->getX() + anX);
-  myVelocity->setY(myVelocity->getY() + aY);
-  myVelocity->setZ(myVelocity->getZ() + aZ);
+  velocity_.setX(velocity_.getX() + x);
+  velocity_.setY(velocity_.getY() + y);
+  velocity_.setZ(velocity_.getZ() + z);
 }
 
-void Sphere::tick(double timeIncrement)
+void Sphere::tick(StkFloat timeIncrement)
 {
-  myPosition->setX(myPosition->getX() + (timeIncrement * myVelocity->getX()));
-  myPosition->setY(myPosition->getY() + (timeIncrement * myVelocity->getY()));
-  myPosition->setZ(myPosition->getZ() + (timeIncrement * myVelocity->getZ()));
+  position_.setX(position_.getX() + (timeIncrement * velocity_.getX()));
+  position_.setY(position_.getY() + (timeIncrement * velocity_.getY()));
+  position_.setZ(position_.getZ() + (timeIncrement * velocity_.getZ()));
 };
 

@@ -13,7 +13,7 @@
        - Envelope Rate = 11
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -22,101 +22,110 @@
 
 Simple :: Simple()
 {
-  adsr = new ADSR;
-  baseFrequency = (MY_FLOAT) 440.0;
-
   // Concatenate the STK rawwave path to the rawwave file
-  loop = new WaveLoop( (Stk::rawwavePath() + "impuls10.raw").c_str(), TRUE );
+  loop_ = new WaveLoop( (Stk::rawwavePath() + "impuls10.raw").c_str(), true );
 
-  filter = new OnePole(0.5);
-  noise = new Noise;
-  biquad = new BiQuad();
-
-  setFrequency(baseFrequency);
-  loopGain = 0.5;
+  filter_.setPole( 0.5 );
+  baseFrequency_ = 440.0;
+  setFrequency( baseFrequency_ );
+  loopGain_ = 0.5;
 }  
 
 Simple :: ~Simple()
 {
-  delete adsr;
-  delete loop;
-  delete filter;
-  delete biquad;
+  delete loop_;
 }
 
 void Simple :: keyOn()
 {
-  adsr->keyOn();
+  adsr_.keyOn();
 }
 
 void Simple :: keyOff()
 {
-  adsr->keyOff();
+  adsr_.keyOff();
 }
 
-void Simple :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Simple :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  keyOn();
-  setFrequency(frequency);
-  filter->setGain(amplitude); 
+  this->keyOn();
+  this->setFrequency( frequency );
+  filter_.setGain( amplitude ); 
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Simple: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Simple::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
-void Simple :: noteOff(MY_FLOAT amplitude)
+void Simple :: noteOff(StkFloat amplitude)
 {
-  keyOff();
+  this->keyOff();
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Simple: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "Simple::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Simple :: setFrequency(MY_FLOAT frequency)
+void Simple :: setFrequency(StkFloat frequency)
 {
-  biquad->setResonance( frequency, 0.98, true );
-  loop->setFrequency(frequency);
+  biquad_.setResonance( frequency, 0.98, true );
+  loop_->setFrequency( frequency );
 }
 
-MY_FLOAT Simple :: tick()
+StkFloat Simple :: tick()
 {
-  lastOutput = loopGain * loop->tick();
-  biquad->tick( noise->tick() );
-  lastOutput += (1.0 - loopGain) * biquad->lastOut();
-  lastOutput = filter->tick( lastOutput );
-  lastOutput *= adsr->tick();
-  return lastOutput;
+  lastOutput_ = loopGain_ * loop_->tick();
+  biquad_.tick( noise_.tick() );
+  lastOutput_ += (1.0 - loopGain_) * biquad_.lastOut();
+  lastOutput_ = filter_.tick( lastOutput_ );
+  lastOutput_ *= adsr_.tick();
+  return lastOutput_;
 }
 
-void Simple :: controlChange(int number, MY_FLOAT value)
+StkFloat *Simple :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Simple :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void Simple :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "Clarinet: Control value less than zero!" << std::endl;
+    errorString_ << "Simple::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "Clarinet: Control value greater than 128.0!" << std::endl;
+    errorString_ << "Simple::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == __SK_Breath_) // 2
-    filter->setPole( 0.99 * (1.0 - (norm * 2.0)) );
+    filter_.setPole( 0.99 * (1.0 - (norm * 2.0)) );
   else if (number == __SK_NoiseLevel_) // 4
-    loopGain = norm;
+    loopGain_ = norm;
   else if (number == __SK_ModFrequency_) { // 11
     norm /= 0.2 * Stk::sampleRate();
-    adsr->setAttackRate( norm );
-    adsr->setDecayRate( norm );
-    adsr->setReleaseRate( norm );
+    adsr_.setAttackRate( norm );
+    adsr_.setDecayRate( norm );
+    adsr_.setReleaseRate( norm );
   }
   else if (number == __SK_AfterTouch_Cont_) // 128
-    adsr->setTarget( norm );
-  else
-    std::cerr << "Simple: Undefined Control Number (" << number << ")!!" << std::endl;
+    adsr_.setTarget( norm );
+  else {
+    errorString_ << "Simple::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Simple: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "Simple::controlChange: number = " << number << ", value = " << value << '.';
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }

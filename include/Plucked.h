@@ -13,12 +13,12 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__PLUCKED_H)
-#define __PLUCKED_H
+#ifndef STK_PLUCKED_H
+#define STK_PLUCKED_H
 
 #include "Instrmnt.h"
 #include "DelayA.h"
@@ -30,7 +30,7 @@ class Plucked : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  Plucked(MY_FLOAT lowestFrequency);
+  Plucked(StkFloat lowestFrequency);
 
   //! Class destructor.
   ~Plucked();
@@ -39,27 +39,39 @@ class Plucked : public Instrmnt
   void clear();
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(MY_FLOAT frequency);
+  virtual void setFrequency(StkFloat frequency);
 
   //! Pluck the string with the given amplitude using the current frequency.
-  void pluck(MY_FLOAT amplitude);
+  void pluck(StkFloat amplitude);
 
   //! Start a note with the given frequency and amplitude.
-  virtual void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  virtual void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  virtual void noteOff(MY_FLOAT amplitude);
+  virtual void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  virtual MY_FLOAT tick();
+  virtual StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
  protected:  
-  DelayA *delayLine;
-  OneZero *loopFilter;
-  OnePole *pickFilter;
-  Noise *noise;
-  long length;
-  MY_FLOAT loopGain;
+  DelayA   delayLine_;
+  OneZero  loopFilter_;
+  OnePole  pickFilter_;
+  Noise    noise_;
+  StkFloat loopGain_;
+  unsigned long length_;
 
 };
 

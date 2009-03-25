@@ -19,9 +19,9 @@
     port and IP address of which must be specified
     as constructor arguments.  The default data
     type is signed 16-bit integers but any of the
-    defined STK_FORMATs are permissible.
+    defined StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -30,112 +30,117 @@
 
 TcpWvOut :: TcpWvOut()
 {
-  buffer = 0;
-  soket = 0;
+  buffer_ = 0;
+  soket_ = 0;
 }
 
-TcpWvOut :: TcpWvOut(int port, const char *hostname, unsigned int nChannels, Stk::STK_FORMAT format)
+TcpWvOut :: TcpWvOut(int port, const char *hostname, unsigned int nChannels, Stk::StkFormat format)
 {
-  buffer = 0;
-  soket = 0;
+  buffer_ = 0;
+  soket_ = 0;
   connect( port, hostname, nChannels, format );
 }
 
 TcpWvOut :: ~TcpWvOut()
 {
   disconnect();
-  delete soket;
-  delete [] buffer;
+  delete soket_;
+  delete [] buffer_;
 }
 
-void TcpWvOut :: connect(int port, const char *hostname, unsigned int nChannels, Stk::STK_FORMAT format)
+void TcpWvOut :: connect(int port, const char *hostname, unsigned int nChannels, Stk::StkFormat format)
 {
-  if ( soket && soket->isValid( soket->socket() ) )
+  if ( soket_ && soket_->isValid( soket_->id() ) )
     disconnect();
 
   if (nChannels < 1) {
-    sprintf(msg, "TcpWvOut: the channel argument (%d) must be greater than zero.", nChannels);
-    handleError( msg, StkError::FUNCTION_ARGUMENT );
+    errorString_ << "TcpWvOut::connect: the channel argument (" << nChannels << ") must be greater than zero!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
-  unsigned int lastChannels = channels;
-  channels = nChannels;
+  unsigned int lastChannels = channels_;
+  channels_ = nChannels;
 
-  if ( format == STK_SINT8 ) dataSize = 1;
-  else if ( format == STK_SINT16 ) dataSize = 2;
-  else if ( format == STK_SINT32 || format == MY_FLOAT32 ) dataSize = 4;
-  else if ( format == MY_FLOAT64 ) dataSize = 8;
+  if ( format == STK_SINT8 ) dataSize_ = 1;
+  else if ( format == STK_SINT16 ) dataSize_ = 2;
+  else if ( format == STK_SINT32 || format == STK_FLOAT32 ) dataSize_ = 4;
+  else if ( format == STK_FLOAT64 ) dataSize_ = 8;
   else {
-    sprintf( msg, "TcpWvOut: Unknown data type specified (%ld).", format );
-    handleError(msg, StkError::FUNCTION_ARGUMENT);
+    errorString_ << "TcpWvOut::connect: unknown data type specified (" << format << ").";
+    handleError( StkError::FUNCTION_ARGUMENT );
   } 
-  dataType = format;
+  dataType_ = format;
 
-  if ( !soket )
-    soket = new Socket( port, hostname );
+  if ( !soket_ )
+    soket_ = new Socket( port, hostname );
   else
-    soket->connect( port, hostname );
+    soket_->connect( port, hostname );
 
   // Allocate new memory if necessary.
-  if ( lastChannels < channels ) {
-    if ( data ) delete [] data;
-    data = (MY_FLOAT *) new MY_FLOAT[BUFFER_SIZE*channels];
-    if ( buffer) delete [] buffer;
-    long bytes = dataSize * BUFFER_SIZE * channels;
-    buffer = (char *) new char[bytes];
+  if ( lastChannels < channels_ ) {
+    data_.resize( BUFFER_SIZE*channels_ );
+    if ( buffer_) delete [] buffer_;
+    long bytes = dataSize_ * BUFFER_SIZE * channels_;
+    buffer_ = (char *) new char[bytes];
   }
-  counter = 0;
+  counter_ = 0;
 }
 
 void TcpWvOut :: disconnect(void)
 {
-  if ( soket ) {
-    writeData( counter );
-    soket->close();
+  if ( soket_ ) {
+    writeData( counter_ );
+    soket_->close();
   }
 }
 
 void TcpWvOut :: writeData( unsigned long frames )
 {
-  if ( dataType == STK_SINT8 ) {
-    signed char *ptr = (signed char *) buffer;
-    for ( unsigned long k=0; k<frames*channels; k++ )
-      *ptr++ = (signed char) (data[k] * 127.0);
+  if ( dataType_ == STK_SINT8 ) {
+    signed char *ptr = (signed char *) buffer_;
+    for ( unsigned long k=0; k<frames*channels_; k++ ) {
+      this->clipTest( data_[k] );
+      *ptr++ = (signed char) (data_[k] * 127.0);
+    }
   }
-  else if ( dataType == STK_SINT16 ) {
-    SINT16 *ptr = (SINT16 *) buffer;
-    for ( unsigned long k=0; k<frames*channels; k++ ) {
-      *ptr = (SINT16) (data[k] * 32767.0);
+  else if ( dataType_ == STK_SINT16 ) {
+    SINT16 *ptr = (SINT16 *) buffer_;
+    for ( unsigned long k=0; k<frames*channels_; k++ ) {
+      this->clipTest( data_[k] );
+      *ptr = (SINT16) (data_[k] * 32767.0);
 #ifdef __LITTLE_ENDIAN__
       swap16 ((unsigned char *)ptr);
 #endif
       ptr++;
     }
   }
-  else if ( dataType == STK_SINT32 ) {
-    SINT32 *ptr = (SINT32 *) buffer;
-    for ( unsigned long k=0; k<frames*channels; k++ ) {
-      *ptr = (SINT32) (data[k] * 2147483647.0);
+  else if ( dataType_ == STK_SINT32 ) {
+    SINT32 *ptr = (SINT32 *) buffer_;
+    for ( unsigned long k=0; k<frames*channels_; k++ ) {
+      this->clipTest( data_[k] );
+      *ptr = (SINT32) (data_[k] * 2147483647.0);
 #ifdef __LITTLE_ENDIAN__
       swap32 ((unsigned char *)ptr);
 #endif
       ptr++;
     }
   }
-  else if ( dataType == MY_FLOAT32 ) {
-    FLOAT32 *ptr = (FLOAT32 *) buffer;
-    for ( unsigned long k=0; k<frames*channels; k++ ) {
-      *ptr = (FLOAT32) data[k];
+  else if ( dataType_ == STK_FLOAT32 ) {
+    FLOAT32 *ptr = (FLOAT32 *) buffer_;
+    for ( unsigned long k=0; k<frames*channels_; k++ ) {
+      this->clipTest( data_[k] );
+      *ptr = (FLOAT32) data_[k];
 #ifdef __LITTLE_ENDIAN__
       swap32 ((unsigned char *)ptr);
 #endif
       ptr++;
     }
   }
-  else if ( dataType == MY_FLOAT64 ) {
-    FLOAT64 *ptr = (FLOAT64 *) buffer;
-    for ( unsigned long k=0; k<frames*channels; k++ ) {
-      *ptr = (FLOAT64) data[k];
+  else if ( dataType_ == STK_FLOAT64 ) {
+    FLOAT64 *ptr = (FLOAT64 *) buffer_;
+    for ( unsigned long k=0; k<frames*channels_; k++ ) {
+      this->clipTest( data_[k] );
+      *ptr = (FLOAT64) data_[k];
 #ifdef __LITTLE_ENDIAN__
       swap64 ((unsigned char *)ptr);
 #endif
@@ -143,62 +148,133 @@ void TcpWvOut :: writeData( unsigned long frames )
     }
   }
 
-  long bytes = dataSize * frames * channels;
-  if ( soket->writeBuffer( (const void *)buffer, bytes, 0 ) < 0 ) {
-    sprintf(msg, "TcpWvOut: connection to socket server failed!");
-    handleError( msg, StkError::PROCESS_SOCKET );
+  long bytes = dataSize_ * frames * channels_;
+  if ( soket_->writeBuffer( (const void *)buffer_, bytes, 0 ) < 0 ) {
+    errorString_ << "TcpWvOut: connection to socket server failed!";
+    handleError( StkError::PROCESS_SOCKET );
   }
 }
 
 unsigned long TcpWvOut :: getFrames( void ) const
 {
-  return totalCount;
+  return totalCount_;
 }
 
-MY_FLOAT TcpWvOut :: getTime( void ) const
+StkFloat TcpWvOut :: getTime( void ) const
 {
-  return (MY_FLOAT) totalCount / Stk::sampleRate();
+  return (StkFloat) totalCount_ / Stk::sampleRate();
 }
 
-void TcpWvOut :: tick(MY_FLOAT sample)
+void TcpWvOut :: tick( const StkFloat sample )
 {
-  if ( !soket || !soket->isValid( soket->socket() ) ) return;
+  if ( !soket_ || !soket_->isValid( soket_->id() ) ) return;
 
-  for ( unsigned int j=0; j<channels; j++ )
-    data[counter*channels+j] = sample;
+  for ( unsigned int j=0; j<channels_; j++ )
+    data_[counter_*channels_+j] = sample;
 
-  counter++;
-  totalCount++;
+  counter_++;
+  totalCount_++;
 
-  if ( counter == BUFFER_SIZE ) {
+  if ( counter_ == BUFFER_SIZE ) {
     writeData( BUFFER_SIZE );
-    counter = 0;
+    counter_ = 0;
   }
 }
 
-void TcpWvOut :: tick(const MY_FLOAT *vector, unsigned int vectorSize)
+void TcpWvOut :: tick( const StkFloat *vector, unsigned int vectorSize )
 {
-  if ( !soket || !soket->isValid( soket->socket() ) ) return;
+  if ( !soket_ || !soket_->isValid( soket_->id() ) ) return;
 
   for (unsigned int i=0; i<vectorSize; i++)
     tick( vector[i] );
 }
 
-void TcpWvOut :: tickFrame(const MY_FLOAT *frameVector, unsigned int frames)
+void TcpWvOut :: tick( const StkFrames& frames, unsigned int channel )
 {
-  if ( !soket || !soket->isValid( soket->socket() ) ) return;
+  if ( channel == 0 || frames.channels() < channel ) {
+    errorString_ << "TcpWvOut::tick(): channel argument (" << channel << ") is zero or > channels in StkFrames argument!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  if ( !soket_ || !soket_->isValid( soket_->id() ) ) return;
+
+  if ( frames.channels() == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      tick( frames[i] );
+  }
+  else if ( frames.interleaved() ) {
+    unsigned int hop = frames.channels();
+    unsigned int index = channel - 1;
+    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+      tick( frames[index] );
+      index += hop;
+    }
+  }
+  else {
+    unsigned int iStart = (channel - 1) * frames.frames();
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      tick( frames[iStart + i] );
+  }
+}
+
+void TcpWvOut :: tickFrame( const StkFloat *frameVector, unsigned int frames )
+{
+  if ( !soket_ || !soket_->isValid( soket_->id() ) ) return;
 
   unsigned int j;
   for ( unsigned int i=0; i<frames; i++ ) {
-    for ( j=0; j<channels; j++ ) {
-      data[counter*channels+j] = frameVector[i*channels+j];
+    for ( j=0; j<channels_; j++ ) {
+      data_[counter_*channels_+j] = frameVector[i*channels_+j];
     }
-    counter++;
-    totalCount++;
+    counter_++;
+    totalCount_++;
 
-    if ( counter == BUFFER_SIZE ) {
+    if ( counter_ == BUFFER_SIZE ) {
       writeData( BUFFER_SIZE );
-      counter = 0;
+      counter_ = 0;
+    }
+  }
+}
+
+void TcpWvOut :: tickFrame( const StkFrames& frames )
+{
+  if ( channels_ != frames.channels() ) {
+    errorString_ << "TcpWvOut::tickFrame(): incompatible channel value in StkFrames argument!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  if ( !soket_ || !soket_->isValid( soket_->id() ) ) return;
+
+  unsigned int j;
+  if ( channels_ == 1 || frames.interleaved() ) {
+    unsigned long iFrames = 0, iData = counter_;
+    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+      for ( j=0; j<channels_; j++ ) {
+        data_[iData++] = frames[iFrames++];
+      }
+      counter_++;
+      totalCount_++;
+
+      if ( counter_ == BUFFER_SIZE ) {
+        writeData( BUFFER_SIZE );
+        counter_ = 0;
+      }
+    }
+  }
+  else {
+    unsigned int hop = frames.frames();
+    unsigned long iData = counter_;
+    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+      for ( j=0; j<channels_; j++ ) {
+        data_[iData++] = frames[i + j*hop];
+      }
+      counter_++;
+      totalCount_++;
+
+      if ( counter_ == BUFFER_SIZE ) {
+        writeData( BUFFER_SIZE );
+        counter_ = 0;
+      }
     }
   }
 }

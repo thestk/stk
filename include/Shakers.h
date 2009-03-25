@@ -48,17 +48,17 @@
         - Little Rocks = 21
         - Tuned Bamboo Chimes = 22
 
-    by Perry R. Cook, 1996 - 1999.
+    by Perry R. Cook, 1996 - 2004.
 */
 /***************************************************/
 
-#if !defined(__SHAKERS_H)
-#define __SHAKERS_H
+#ifndef STK_SHAKERS_H
+#define STK_SHAKERS_H
 
 #include "Instrmnt.h"
 
-#define MAX_FREQS 8
-#define NUM_INSTR 24
+const int MAX_FREQS = 8;
+const int NUM_INSTR = 24;
 
 class Shakers : public Instrmnt
 {
@@ -74,54 +74,65 @@ class Shakers : public Instrmnt
     Use the instrument numbers above, converted to frequency values
     as if MIDI note numbers, to select a particular instrument.
   */
-  virtual void noteOn(MY_FLOAT instrument, MY_FLOAT amplitude);
+  void noteOn(StkFloat instrument, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  virtual void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  virtual void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
  protected:
 
   int setupName(char* instr);
   int setupNum(int inst);
-  int setFreqAndReson(int which, MY_FLOAT freq, MY_FLOAT reson);
-  void setDecays(MY_FLOAT sndDecay, MY_FLOAT sysDecay);
-  void setFinalZs(MY_FLOAT z0, MY_FLOAT z1, MY_FLOAT z2);
-  MY_FLOAT wuter_tick();
-  MY_FLOAT tbamb_tick();
-  MY_FLOAT ratchet_tick();
+  int setFreqAndReson(int which, StkFloat freq, StkFloat reson);
+  void setDecays(StkFloat sndDecay, StkFloat sysDecay);
+  void setFinalZs(StkFloat z0, StkFloat z1, StkFloat z2);
+  StkFloat wuter_tick();
+  StkFloat tbamb_tick();
+  StkFloat ratchet_tick();
 
-  int instType;
-  int ratchetPos, lastRatchetPos;
-  MY_FLOAT shakeEnergy;
-  MY_FLOAT inputs[MAX_FREQS];
-  MY_FLOAT outputs[MAX_FREQS][2];
-  MY_FLOAT coeffs[MAX_FREQS][2];
-  MY_FLOAT sndLevel;
-  MY_FLOAT baseGain;
-  MY_FLOAT gains[MAX_FREQS];
-  int nFreqs;
-  MY_FLOAT t_center_freqs[MAX_FREQS];
-  MY_FLOAT center_freqs[MAX_FREQS];
-  MY_FLOAT resons[MAX_FREQS];
-  MY_FLOAT freq_rand[MAX_FREQS];
-  int freqalloc[MAX_FREQS];
-  MY_FLOAT soundDecay;
-  MY_FLOAT systemDecay;
-  MY_FLOAT nObjects;
-  MY_FLOAT collLikely;
-  MY_FLOAT totalEnergy;
-  MY_FLOAT ratchet,ratchetDelta;
-  MY_FLOAT finalZ[3];
-  MY_FLOAT finalZCoeffs[3];
-  MY_FLOAT defObjs[NUM_INSTR];
-  MY_FLOAT defDecays[NUM_INSTR];
-  MY_FLOAT decayScale[NUM_INSTR];
+  int instType_;
+  int ratchetPos_, lastRatchetPos_;
+  StkFloat shakeEnergy_;
+  StkFloat inputs_[MAX_FREQS];
+  StkFloat outputs_[MAX_FREQS][2];
+  StkFloat coeffs_[MAX_FREQS][2];
+  StkFloat sndLevel_;
+  StkFloat baseGain_;
+  StkFloat gains_[MAX_FREQS];
+  int nFreqs_;
+  StkFloat t_center_freqs_[MAX_FREQS];
+  StkFloat center_freqs_[MAX_FREQS];
+  StkFloat resons_[MAX_FREQS];
+  StkFloat freq_rand_[MAX_FREQS];
+  int freqalloc_[MAX_FREQS];
+  StkFloat soundDecay_;
+  StkFloat systemDecay_;
+  StkFloat nObjects_;
+  StkFloat totalEnergy_;
+  StkFloat ratchet_, ratchetDelta_;
+  StkFloat finalZ_[3];
+  StkFloat finalZCoeffs_[3];
+  StkFloat defObjs_[NUM_INSTR];
+  StkFloat defDecays_[NUM_INSTR];
+  StkFloat decayScale_[NUM_INSTR];
 
 };
 

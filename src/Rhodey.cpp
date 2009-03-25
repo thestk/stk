@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -36,74 +36,85 @@ Rhodey :: Rhodey()
   : FM()
 {
   // Concatenate the STK rawwave path to the rawwave files
-  for ( int i=0; i<3; i++ )
-    waves[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
-  waves[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), TRUE );
+  for ( unsigned int i=0; i<3; i++ )
+    waves_[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  waves_[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), true );
 
   this->setRatio(0, 1.0);
   this->setRatio(1, 0.5);
   this->setRatio(2, 1.0);
   this->setRatio(3, 15.0);
 
-  gains[0] = __FM_gains[99];
-  gains[1] = __FM_gains[90];
-  gains[2] = __FM_gains[99];
-  gains[3] = __FM_gains[67];
+  gains_[0] = fmGains_[99];
+  gains_[1] = fmGains_[90];
+  gains_[2] = fmGains_[99];
+  gains_[3] = fmGains_[67];
 
-  adsr[0]->setAllTimes( 0.001, 1.50, 0.0, 0.04);
-  adsr[1]->setAllTimes( 0.001, 1.50, 0.0, 0.04);
-  adsr[2]->setAllTimes( 0.001, 1.00, 0.0, 0.04);
-  adsr[3]->setAllTimes( 0.001, 0.25, 0.0, 0.04);
+  adsr_[0]->setAllTimes( 0.001, 1.50, 0.0, 0.04);
+  adsr_[1]->setAllTimes( 0.001, 1.50, 0.0, 0.04);
+  adsr_[2]->setAllTimes( 0.001, 1.00, 0.0, 0.04);
+  adsr_[3]->setAllTimes( 0.001, 0.25, 0.0, 0.04);
 
-  twozero->setGain((MY_FLOAT) 1.0);
+  twozero_.setGain( 1.0 );
 }  
 
 Rhodey :: ~Rhodey()
 {
 }
 
-void Rhodey :: setFrequency(MY_FLOAT frequency)
+void Rhodey :: setFrequency(StkFloat frequency)
 {    
-  baseFrequency = frequency * (MY_FLOAT) 2.0;
+  baseFrequency_ = frequency * 2.0;
 
-  for (int i=0; i<nOperators; i++ )
-    waves[i]->setFrequency( baseFrequency * ratios[i] );
+  for (unsigned int i=0; i<nOperators_; i++ )
+    waves_[i]->setFrequency( baseFrequency_ * ratios_[i] );
 }
 
-void Rhodey :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Rhodey :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  gains[0] = amplitude * __FM_gains[99];
-  gains[1] = amplitude * __FM_gains[90];
-  gains[2] = amplitude * __FM_gains[99];
-  gains[3] = amplitude * __FM_gains[67];
-  this->setFrequency(frequency);
+  gains_[0] = amplitude * fmGains_[99];
+  gains_[1] = amplitude * fmGains_[90];
+  gains_[2] = amplitude * fmGains_[99];
+  gains_[3] = amplitude * fmGains_[67];
+  this->setFrequency( frequency );
   this->keyOn();
 
 #if defined(_STK_DEBUG_)
-  cerr << "Rhodey: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  errorString_ << "Rhodey::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT Rhodey :: tick()
+StkFloat Rhodey :: tick()
 {
-  MY_FLOAT temp, temp2;
+  StkFloat temp, temp2;
 
-  temp = gains[1] * adsr[1]->tick() * waves[1]->tick();
-  temp = temp * control1;
+  temp = gains_[1] * adsr_[1]->tick() * waves_[1]->tick();
+  temp = temp * control1_;
 
-  waves[0]->addPhaseOffset(temp);
-  waves[3]->addPhaseOffset(twozero->lastOut());
-  temp = gains[3] * adsr[3]->tick() * waves[3]->tick();
-  twozero->tick(temp);
+  waves_[0]->addPhaseOffset( temp );
+  waves_[3]->addPhaseOffset( twozero_.lastOut() );
+  temp = gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
+  twozero_.tick(temp);
 
-  waves[2]->addPhaseOffset(temp);
-  temp = ( 1.0 - (control2 * 0.5)) * gains[0] * adsr[0]->tick() * waves[0]->tick();
-  temp += control2 * 0.5 * gains[2] * adsr[2]->tick() * waves[2]->tick();
+  waves_[2]->addPhaseOffset( temp );
+  temp = ( 1.0 - (control2_ * 0.5)) * gains_[0] * adsr_[0]->tick() * waves_[0]->tick();
+  temp += control2_ * 0.5 * gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
 
   // Calculate amplitude modulation and apply it to output.
-  temp2 = vibrato->tick() * modDepth;
+  temp2 = vibrato_->tick() * modDepth_;
   temp = temp * (1.0 + temp2);
     
-  lastOutput = temp * 0.5;
-  return lastOutput;
+  lastOutput_ = temp * 0.5;
+  return lastOutput_;
+}
+
+StkFloat *Rhodey :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Rhodey :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
 }

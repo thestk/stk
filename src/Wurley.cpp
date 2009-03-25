@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -36,76 +36,87 @@ Wurley :: Wurley()
   : FM()
 {
   // Concatenate the STK rawwave path to the rawwave files
-  for ( int i=0; i<3; i++ )
-    waves[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
-  waves[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), TRUE );
+  for ( unsigned int i=0; i<3; i++ )
+    waves_[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  waves_[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), true );
 
   this->setRatio(0, 1.0);
   this->setRatio(1, 4.0);
   this->setRatio(2, -510.0);
   this->setRatio(3, -510.0);
 
-  gains[0] = __FM_gains[99];
-  gains[1] = __FM_gains[82];
-  gains[2] = __FM_gains[92];
-  gains[3] = __FM_gains[68];
+  gains_[0] = fmGains_[99];
+  gains_[1] = fmGains_[82];
+  gains_[2] = fmGains_[92];
+  gains_[3] = fmGains_[68];
 
-  adsr[0]->setAllTimes( 0.001, 1.50, 0.0, 0.04);
-  adsr[1]->setAllTimes( 0.001, 1.50, 0.0, 0.04);
-  adsr[2]->setAllTimes( 0.001, 0.25, 0.0, 0.04);
-  adsr[3]->setAllTimes( 0.001, 0.15, 0.0, 0.04);
+  adsr_[0]->setAllTimes( 0.001, 1.50, 0.0, 0.04);
+  adsr_[1]->setAllTimes( 0.001, 1.50, 0.0, 0.04);
+  adsr_[2]->setAllTimes( 0.001, 0.25, 0.0, 0.04);
+  adsr_[3]->setAllTimes( 0.001, 0.15, 0.0, 0.04);
 
-  twozero->setGain( 2.0 );
-  vibrato->setFrequency( 8.0 );
+  twozero_.setGain( 2.0 );
+  vibrato_->setFrequency( 8.0 );
 }  
 
 Wurley :: ~Wurley()
 {
 }
 
-void Wurley :: setFrequency(MY_FLOAT frequency)
+void Wurley :: setFrequency(StkFloat frequency)
 {    
-  baseFrequency = frequency;
-  waves[0]->setFrequency(baseFrequency * ratios[0]);
-  waves[1]->setFrequency(baseFrequency * ratios[1]);
-  waves[2]->setFrequency(ratios[2]);	// Note here a 'fixed resonance'.
-  waves[3]->setFrequency(ratios[3]);
+  baseFrequency_ = frequency;
+  waves_[0]->setFrequency( baseFrequency_ * ratios_[0]);
+  waves_[1]->setFrequency( baseFrequency_ * ratios_[1]);
+  waves_[2]->setFrequency( ratios_[2] );	// Note here a 'fixed resonance'.
+  waves_[3]->setFrequency( ratios_[3] );
 }
 
-void Wurley :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Wurley :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  gains[0] = amplitude * __FM_gains[99];
-  gains[1] = amplitude * __FM_gains[82];
-  gains[2] = amplitude * __FM_gains[82];
-  gains[3] = amplitude * __FM_gains[68];
-  this->setFrequency(frequency);
+  gains_[0] = amplitude * fmGains_[99];
+  gains_[1] = amplitude * fmGains_[82];
+  gains_[2] = amplitude * fmGains_[82];
+  gains_[3] = amplitude * fmGains_[68];
+  this->setFrequency( frequency );
   this->keyOn();
 
 #if defined(_STK_DEBUG_)
-  cerr << "Wurley: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  errorString_ << "Wurley::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT Wurley :: tick()
+StkFloat Wurley :: tick()
 {
-  MY_FLOAT temp, temp2;
+  StkFloat temp, temp2;
 
-  temp = gains[1] * adsr[1]->tick() * waves[1]->tick();
-  temp = temp * control1;
+  temp = gains_[1] * adsr_[1]->tick() * waves_[1]->tick();
+  temp = temp * control1_;
 
-  waves[0]->addPhaseOffset(temp);
-  waves[3]->addPhaseOffset(twozero->lastOut());
-  temp = gains[3] * adsr[3]->tick() * waves[3]->tick();
-  twozero->tick(temp);
+  waves_[0]->addPhaseOffset( temp );
+  waves_[3]->addPhaseOffset( twozero_.lastOut() );
+  temp = gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
+  twozero_.tick(temp);
 
-  waves[2]->addPhaseOffset(temp);
-  temp = ( 1.0 - (control2 * 0.5)) * gains[0] * adsr[0]->tick() * waves[0]->tick();
-  temp += control2 * 0.5 * gains[2] * adsr[2]->tick() * waves[2]->tick();
+  waves_[2]->addPhaseOffset( temp );
+  temp = ( 1.0 - (control2_ * 0.5)) * gains_[0] * adsr_[0]->tick() * waves_[0]->tick();
+  temp += control2_ * 0.5 * gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
 
   // Calculate amplitude modulation and apply it to output.
-  temp2 = vibrato->tick() * modDepth;
+  temp2 = vibrato_->tick() * modDepth_;
   temp = temp * (1.0 + temp2);
     
-  lastOutput = temp * 0.5;
-  return lastOutput;
+  lastOutput_ = temp * 0.5;
+  return lastOutput_;
+}
+
+StkFloat *Wurley :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Wurley :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
 }

@@ -8,12 +8,12 @@
     the real axis of the z-plane while maintaining
     a constant peak filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__ONEPOLE_H)
-#define __ONEPOLE_H
+#ifndef STK_ONEPOLE_H
+#define STK_ONEPOLE_H
 
 #include "Filter.h"
 
@@ -25,7 +25,7 @@ public:
   OnePole();
 
   //! Overloaded constructor which sets the pole position during instantiation.
-  OnePole(MY_FLOAT thePole);
+  OnePole(StkFloat thePole);
 
   //! Class destructor.
   ~OnePole();
@@ -34,10 +34,10 @@ public:
   void clear(void);
 
   //! Set the b[0] coefficient value.
-  void setB0(MY_FLOAT b0);
+  void setB0(StkFloat b0);
 
   //! Set the a[1] coefficient value.
-  void setA1(MY_FLOAT a1);
+  void setA1(StkFloat a1);
 
   //! Set the pole position in the z-plane.
   /*!
@@ -47,26 +47,36 @@ public:
     pole value produces a high-pass filter.  This method does not
     affect the filter \e gain value.
   */
-  void setPole(MY_FLOAT thePole);
+  void setPole(StkFloat thePole);
 
   //! Set the filter gain.
   /*!
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    */
-  void setGain(MY_FLOAT theGain);
+  void setGain(StkFloat gain);
 
   //! Return the current filter gain.
-  MY_FLOAT getGain(void) const;
+  StkFloat getGain(void) const;
 
   //! Return the last computed output value.
-  MY_FLOAT lastOut(void) const;
+  StkFloat lastOut(void) const;
 
   //! Input one sample to the filter and return one output.
-  MY_FLOAT tick(MY_FLOAT sample);
+  StkFloat tick(StkFloat sample);
 
   //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Take a channel of the StkFrames object as inputs to the filter and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+
 };
 
 #endif

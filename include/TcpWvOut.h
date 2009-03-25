@@ -19,14 +19,14 @@
     port and IP address of which must be specified
     as constructor arguments.  The default data
     type is signed 16-bit integers but any of the
-    defined STK_FORMATs are permissible.
+    defined StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__TCPWVOUT_H)
-#define __TCPWVOUT_H
+#ifndef STK_TCPWVOUT_H
+#define STK_TCPWVOUT_H
 
 #include "WvOut.h"
 #include "Socket.h"
@@ -41,7 +41,7 @@ class TcpWvOut : protected WvOut
   /*!
     An StkError is thrown if a socket error occurs or an invalid argument is specified.
   */
-  TcpWvOut(int port, const char *hostname = "localhost", unsigned int nChannels = 1, Stk::STK_FORMAT format = STK_SINT16);
+  TcpWvOut(int port, const char *hostname = "localhost", unsigned int nChannels = 1, Stk::StkFormat format = STK_SINT16);
 
   //! Class destructor.
   ~TcpWvOut();
@@ -50,7 +50,7 @@ class TcpWvOut : protected WvOut
   /*!
     An StkError is thrown if a socket error occurs or an invalid argument is specified.
   */
-  void connect(int port, const char *hostname = "localhost", unsigned int nChannels = 1, Stk::STK_FORMAT format = STK_SINT16);
+  void connect(int port, const char *hostname = "localhost", unsigned int nChannels = 1, Stk::StkFormat format = STK_SINT16);
 
   //! If a connection is open, write out remaining samples in the queue and then disconnect.
   void disconnect(void);
@@ -59,35 +59,51 @@ class TcpWvOut : protected WvOut
   unsigned long getFrames( void ) const;
 
   //! Return the number of seconds of data output.
-  MY_FLOAT getTime( void ) const;
+  StkFloat getTime( void ) const;
 
   //! Output a single sample to all channels in a sample frame.
   /*!
     An StkError is thrown if a socket write error occurs.
   */
-  void tick(MY_FLOAT sample);
+  void tick( const StkFloat sample );
 
   //! Output each sample in \e vector to all channels in \e vectorSize sample frames.
   /*!
     An StkError is thrown if a socket write error occurs.
   */
-  void tick(const MY_FLOAT *vector, unsigned int vectorSize);
+  void tick( const StkFloat *vector, unsigned int vectorSize );
+
+  //! Output a channel of the StkFrames object to all channels of the TcpWvOut object.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if a
+    socket write error occurs or the \c channel argument is zero or it
+    is greater than the number of channels in the StkFrames object.
+  */
+  void tick( const StkFrames& frames, unsigned int channel = 1 );
 
   //! Output the \e frameVector of sample frames of the given length.
   /*!
     An StkError is thrown if a socket write error occurs.
   */
-  void tickFrame(const MY_FLOAT *frameVector, unsigned int frames = 1);
+  void tickFrame( const StkFloat *frameVector, unsigned int frames = 1 );
+
+  //! Output the StkFrames data to the TcpWvOut object.
+  /*!
+    An StkError will be thrown if a socket write error occurs or if
+    there is an incompatability between the number of channels in the
+    TcpWvOut object and that in the StkFrames object.
+  */
+  virtual void tickFrame( const StkFrames& frames );
 
  protected:
 
   // Write a buffer of length \e frames via the socket connection.
   void writeData( unsigned long frames );
 
-  char msg[256];
-  char *buffer;
-  Socket *soket;
-  int dataSize;
+  char *buffer_;
+  Socket *soket_;
+  int dataSize_;
 };
 
-#endif // defined(__TCPWVOUT_H)
+#endif

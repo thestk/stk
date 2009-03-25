@@ -19,200 +19,200 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "FM.h"
 #include "SKINI.msg"
-#include <stdlib.h>
 
-FM :: FM(int operators)
-  : nOperators(operators)
+FM :: FM( unsigned int operators )
+  : nOperators_(operators)
 {
-  if ( nOperators <= 0 ) {
-    char msg[256];
-    sprintf(msg, "FM: Invalid number of operators (%d) argument to constructor!", operators);
-    handleError(msg, StkError::FUNCTION_ARGUMENT);
+  if ( nOperators_ == 0 ) {
+    errorString_ << "FM: Invalid number of operators (" << operators << ") argument to constructor!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
-  twozero = new TwoZero();
-  twozero->setB2( -1.0 );
-  twozero->setGain( 0.0 );
+  twozero_.setB2( -1.0 );
+  twozero_.setGain( 0.0 );
 
   // Concatenate the STK rawwave path to the rawwave file
-  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
-  vibrato->setFrequency(6.0);
+  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  vibrato_->setFrequency( 6.0 );
 
-  int i;
-  ratios = (MY_FLOAT *) new MY_FLOAT[nOperators];
-  gains = (MY_FLOAT *) new MY_FLOAT[nOperators];
-  adsr = (ADSR **) calloc( nOperators, sizeof(ADSR *) );
-  waves = (WaveLoop **) calloc( nOperators, sizeof(WaveLoop *) );
-  for (i=0; i<nOperators; i++ ) {
-    ratios[i] = 1.0;
-    gains[i] = 1.0;
-    adsr[i] = new ADSR();
+  unsigned int j;
+  adsr_.resize( nOperators_ );
+  waves_.resize( nOperators_ );
+  for (j=0; j<nOperators_; j++ ) {
+    ratios_.push_back( 1.0 );
+    gains_.push_back( 1.0 );
+    adsr_[j] = new ADSR();
   }
 
-  modDepth = (MY_FLOAT) 0.0;
-  control1 = (MY_FLOAT) 1.0;
-  control2 = (MY_FLOAT) 1.0;
-  baseFrequency = (MY_FLOAT) 440.0;
+  modDepth_ = 0.0;
+  control1_ = 1.0;
+  control2_ = 1.0;
+  baseFrequency_ = 440.0;
 
-  MY_FLOAT temp = 1.0;
+  int i;
+  StkFloat temp = 1.0;
   for (i=99; i>=0; i--) {
-    __FM_gains[i] = temp;
+    fmGains_[i] = temp;
     temp *= 0.933033;
   }
 
   temp = 1.0;
   for (i=15; i>=0; i--) {
-    __FM_susLevels[i] = temp;
+    fmSusLevels_[i] = temp;
     temp *= 0.707101;
   }
 
   temp = 8.498186;
   for (i=0; i<32; i++) {
-    __FM_attTimes[i] = temp;
+    fmAttTimes_[i] = temp;
     temp *= 0.707101;
   }
 }
 
 FM :: ~FM()
 {
-  delete vibrato;
-  delete twozero;
+  delete vibrato_;
 
-  delete [] ratios;
-  delete [] gains;
-  for (int i=0; i<nOperators; i++ ) {
-    delete adsr[i];
-    delete waves[i];
+  for (unsigned int i=0; i<nOperators_; i++ ) {
+    delete waves_[i];
+    delete adsr_[i];
   }
-
-  free(adsr);
-  free(waves);
 }
 
 void FM :: loadWaves(const char **filenames )
 {
-  for (int i=0; i<nOperators; i++ )
-    waves[i] = new WaveLoop( filenames[i], TRUE );
+  for (unsigned int i=0; i<nOperators_; i++ )
+    waves_[i] = new WaveLoop( filenames[i], true );
 }
 
-void FM :: setFrequency(MY_FLOAT frequency)
+void FM :: setFrequency(StkFloat frequency)
 {    
-  baseFrequency = frequency;
+  baseFrequency_ = frequency;
 
-  for (int i=0; i<nOperators; i++ )
-    waves[i]->setFrequency( baseFrequency * ratios[i] );
+  for (unsigned int i=0; i<nOperators_; i++ )
+    waves_[i]->setFrequency( baseFrequency_ * ratios_[i] );
 }
 
-void FM :: setRatio(int waveIndex, MY_FLOAT ratio)
+void FM :: setRatio(unsigned int waveIndex, StkFloat ratio)
 {
   if ( waveIndex < 0 ) {
-    std::cerr << "FM: setRatio waveIndex parameter is less than zero!" << std::endl;
+    errorString_ << "FM::setRatio: waveIndex parameter is less than zero!";
+    handleError( StkError::WARNING );
     return;
   }
-  else if ( waveIndex >= nOperators ) {
-    std::cerr << "FM: setRatio waveIndex parameter is greater than the number of operators!" << std::endl;
+  else if ( waveIndex >= nOperators_ ) {
+    errorString_ << "FM:setRatio: waveIndex parameter is greater than the number of operators!";
+    handleError( StkError::WARNING );
     return;
   }
 
-  ratios[waveIndex] = ratio;
+  ratios_[waveIndex] = ratio;
   if (ratio > 0.0) 
-    waves[waveIndex]->setFrequency(baseFrequency * ratio);
+    waves_[waveIndex]->setFrequency( baseFrequency_ * ratio );
   else
-    waves[waveIndex]->setFrequency(ratio);
+    waves_[waveIndex]->setFrequency( ratio );
 }
 
-void FM :: setGain(int waveIndex, MY_FLOAT gain)
+void FM :: setGain(unsigned int waveIndex, StkFloat gain)
 {
   if ( waveIndex < 0 ) {
-    std::cerr << "FM: setGain waveIndex parameter is less than zero!" << std::endl;
+    errorString_ << "FM::setGain: waveIndex parameter is less than zero!";
+    handleError( StkError::WARNING );
     return;
   }
-  else if ( waveIndex >= nOperators ) {
-    std::cerr << "FM: setGain waveIndex parameter is greater than the number of operators!" << std::endl;
+  else if ( waveIndex >= nOperators_ ) {
+    errorString_ << "FM::setGain: waveIndex parameter is greater than the number of operators!";
+    handleError( StkError::WARNING );
     return;
   }
 
-  gains[waveIndex] = gain;
+  gains_[waveIndex] = gain;
 }
 
-void FM :: setModulationSpeed(MY_FLOAT mSpeed)
+void FM :: setModulationSpeed(StkFloat mSpeed)
 {
-  vibrato->setFrequency(mSpeed);
+  vibrato_->setFrequency( mSpeed );
 }
 
-void FM :: setModulationDepth(MY_FLOAT mDepth)
+void FM :: setModulationDepth(StkFloat mDepth)
 {
-  modDepth = mDepth;
+  modDepth_ = mDepth;
 }
 
-void FM :: setControl1(MY_FLOAT cVal)
+void FM :: setControl1(StkFloat cVal)
 {
-  control1 = cVal * (MY_FLOAT) 2.0;
+  control1_ = cVal * 2.0;
 }
 
-void FM :: setControl2(MY_FLOAT cVal)
+void FM :: setControl2(StkFloat cVal)
 {
-  control2 = cVal * (MY_FLOAT) 2.0;
+  control2_ = cVal * 2.0;
 }
 
 void FM :: keyOn()
 {
-  for (int i=0; i<nOperators; i++ )
-    adsr[i]->keyOn();
+  for (unsigned int i=0; i<nOperators_; i++ )
+    adsr_[i]->keyOn();
 }
 
 void FM :: keyOff()
 {
-  for (int i=0; i<nOperators; i++ )
-    adsr[i]->keyOff();
+  for (unsigned int i=0; i<nOperators_; i++ )
+    adsr_[i]->keyOff();
 }
 
-void FM :: noteOff(MY_FLOAT amplitude)
+void FM :: noteOff(StkFloat amplitude)
 {
-  keyOff();
+  this->keyOff();
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "FM: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "FM::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void FM :: controlChange(int number, MY_FLOAT value)
+void FM :: controlChange(int number, StkFloat value)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "FM: Control value less than zero!" << std::endl;
+    errorString_ << "FM::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "FM: Control value greater than 128.0!" << std::endl;
+    errorString_ << "FM::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == __SK_Breath_) // 2
-    setControl1( norm );
+    this->setControl1( norm );
   else if (number == __SK_FootControl_) // 4
-    setControl2( norm );
+    this->setControl2( norm );
   else if (number == __SK_ModFrequency_) // 11
-    setModulationSpeed( norm * 12.0);
+    this->setModulationSpeed( norm * 12.0);
   else if (number == __SK_ModWheel_) // 1
-    setModulationDepth( norm );
+    this->setModulationDepth( norm );
   else if (number == __SK_AfterTouch_Cont_)	{ // 128
-    //adsr[0]->setTarget( norm );
-    adsr[1]->setTarget( norm );
-    //adsr[2]->setTarget( norm );
-    adsr[3]->setTarget( norm );
+    //adsr_[0]->setTarget( norm );
+    adsr_[1]->setTarget( norm );
+    //adsr_[2]->setTarget( norm );
+    adsr_[3]->setTarget( norm );
   }
-  else
-    std::cerr << "FM: Undefined Control Number (" << number << ")!!" << std::endl;
+  else {
+    errorString_ << "FM::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "FM: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "FM::controlChange: number = " << number << ", value = " << value << '.';
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }
 

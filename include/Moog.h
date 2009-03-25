@@ -14,12 +14,12 @@
        - Vibrato Gain = 1
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__MOOG_H)
-#define __MOOG_H
+#ifndef STK_MOOG_H
+#define STK_MOOG_H
 
 #include "Sampler.h"
 #include "FormSwep.h"
@@ -28,34 +28,49 @@ class Moog : public Sampler
 {
  public:
   //! Class constructor.
+  /*!
+    An StkError will be thrown if the rawwave path is incorrectly set.
+  */
   Moog();
 
   //! Class destructor.
   ~Moog();
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(MY_FLOAT frequency);
+  void setFrequency(StkFloat frequency);
 
   //! Start a note with the given frequency and amplitude.
-  virtual void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Set the modulation (vibrato) speed in Hz.
-  void setModulationSpeed(MY_FLOAT mSpeed);
+  void setModulationSpeed(StkFloat mSpeed);
 
   //! Set the modulation (vibrato) depth.
-  void setModulationDepth(MY_FLOAT mDepth);
+  void setModulationDepth(StkFloat mDepth);
 
   //! Compute one output sample.
-  virtual MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  virtual void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
  protected:
-  FormSwep *filters[2];
-  MY_FLOAT modDepth;
-  MY_FLOAT filterQ;
-  MY_FLOAT filterRate;
+  FormSwep filters_[2];
+  StkFloat modDepth_;
+  StkFloat filterQ_;
+  StkFloat filterRate_;
 
 };
 

@@ -9,31 +9,62 @@
   the number of channels or sample rate of
   the soundfile, the program will stop.
 
-  By Gary P. Scavone, 2000 - 2002.
+  By Gary P. Scavone, 2000 - 2004.
 */
 /******************************************/
 
-#include "RtWvOut.h"
 #include "WvIn.h"
-#include <stdlib.h>
+#include "RtAudio.h"
+
+#include <signal.h>
+#include <iostream>
+
+// Eewww ... global variables! :-)
+bool done;
+StkFrames frames;
+static void finish(int ignore){ done = true; }
 
 void usage(void) {
   // Error function in case of incorrect command-line
   // argument specifications.
-  printf("\nuseage: play file <rate>\n");
-  printf("    where file = the file to play,\n");
-  printf("    and rate = an optional playback rate.\n");
-  printf("               (default = 1.0, can be negative)\n\n");
+  std::cout << "\nuseage: play file sr <rate>\n";
+  std::cout << "    where file = the file to play,\n";
+  std::cout << "    where sr = sample rate,\n";
+  std::cout << "    and rate = an optional playback rate.\n";
+  std::cout << "               (default = 1.0, can be negative)\n\n";
   exit(0);
+}
+
+// This tick() function handles sample computation only.  It will be
+// called automatically when the system needs a new buffer of audio
+// samples.
+int tick(char *buffer, int bufferSize, void *dataPointer)
+{
+  WvIn *input = (WvIn *) dataPointer;
+  register StkFloat *samples = (StkFloat *) buffer;
+
+  input->tickFrame( frames );
+  for ( unsigned int i=0; i<frames.size(); i++ )
+    *samples++ = frames[i];
+
+  if ( input->isFinished() ) {
+    done = true;
+    return 1;
+  }
+  else
+    return 0;
 }
 
 int main(int argc, char *argv[])
 {
   // Minimal command-line checking.
-  if (argc < 2 || argc > 3) usage();
+  if (argc < 3 || argc > 4) usage();
 
-  // Initialize our WvIn/WvOut pointers.
-  RtWvOut *output = 0;
+  // Set the global sample rate before creating class instances.
+  Stk::setSampleRate( (StkFloat) atof(argv[2]) );
+
+  // Initialize our WvIn and RtAudio pointers.
+  RtAudio *dac = 0;
   WvIn *input = 0;
 
   // Try to load the soundfile.
@@ -45,29 +76,57 @@ int main(int argc, char *argv[])
   }
 
   // Set input read rate based on the default STK sample rate.
-  float rate = 1.0;
+  double rate = 1.0;
   rate = input->getFileRate() / Stk::sampleRate();
-  if ( argc == 3 ) rate *= atof(argv[2]);
+  if ( argc == 4 ) rate *= atof(argv[3]);
   input->setRate( rate );
 
   // Find out how many channels we have.
   int channels = input->getChannels();
 
-  // Define and open the realtime output device
+  // Define and open the realtime output device.
+  // Figure out how many bytes in an StkFloat and setup the RtAudio object.
+  RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
+  int bufferSize = RT_BUFFER_SIZE;
   try {
-    output = new RtWvOut( channels, Stk::sampleRate(), 0, RT_BUFFER_SIZE, 4 );
+    dac = new RtAudio(0, channels, 0, 0, format, (int)Stk::sampleRate(), &bufferSize, 4);
   }
-  catch (StkError &) {
+  catch (RtError &error) {
+    error.printMessage();
     goto cleanup;
   }
 
-  // Here's the runtime loop.
-  while (!input->isFinished()) {
-    output->tickFrame( input->tickFrame() );
+  // Install an interrupt handler function.
+	(void) signal(SIGINT, finish);
+
+  // Resize the StkFrames object appropriately.
+  frames.resize( bufferSize, channels );
+
+  try {
+    dac->setStreamCallback(&tick, (void *)input);
+    dac->startStream();
+  }
+  catch (RtError &error) {
+    error.printMessage();
+    goto cleanup;
+  }
+
+  // Block waiting until callback signals done.
+  while ( !done )
+    Stk::sleep( 100 );
+  
+  // By returning a non-zero value in the callback above, the stream
+  // is automatically stopped.  But we should still close it.
+  try {
+    dac->cancelStreamCallback();
+    dac->closeStream();
+  }
+  catch (RtError &error) {
+    error.printMessage();
   }
 
  cleanup:
   delete input;
-  delete output;
+  delete dac;
   return 0;
 }

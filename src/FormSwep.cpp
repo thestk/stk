@@ -8,7 +8,7 @@
     It provides methods for controlling the sweep
     rate and target frequency.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -16,17 +16,17 @@
 
 FormSwep :: FormSwep() : BiQuad()
 {
-  frequency = (MY_FLOAT) 0.0;
-  radius = (MY_FLOAT) 0.0;
-  targetGain = (MY_FLOAT) 1.0;
-  targetFrequency = (MY_FLOAT) 0.0;
-  targetRadius = (MY_FLOAT) 0.0;
-  deltaGain = (MY_FLOAT) 0.0;
-  deltaFrequency = (MY_FLOAT) 0.0;
-  deltaRadius = (MY_FLOAT) 0.0;
-  sweepState = (MY_FLOAT)  0.0;
-  sweepRate = (MY_FLOAT) 0.002;
-  dirty = false;
+  frequency_ = (StkFloat) 0.0;
+  radius_ = (StkFloat) 0.0;
+  targetGain_ = (StkFloat) 1.0;
+  targetFrequency_ = (StkFloat) 0.0;
+  targetRadius_ = (StkFloat) 0.0;
+  deltaGain_ = (StkFloat) 0.0;
+  deltaFrequency_ = (StkFloat) 0.0;
+  deltaRadius_ = (StkFloat) 0.0;
+  sweepState_ = (StkFloat)  0.0;
+  sweepRate_ = (StkFloat) 0.002;
+  dirty_ = false;
   this->clear();
 }
 
@@ -34,85 +34,87 @@ FormSwep :: ~FormSwep()
 {
 }
 
-void FormSwep :: setResonance(MY_FLOAT aFrequency, MY_FLOAT aRadius)
+void FormSwep :: setResonance(StkFloat frequency, StkFloat radius)
 {
-  dirty = false;
-  radius = aRadius;
-  frequency = aFrequency;
+  dirty_ = false;
+  radius_ = radius;
+  frequency_ = frequency;
 
-  BiQuad::setResonance( frequency, radius, true );
+  BiQuad::setResonance( frequency_, radius_, true );
 }
 
-void FormSwep :: setStates(MY_FLOAT aFrequency, MY_FLOAT aRadius, MY_FLOAT aGain)
+void FormSwep :: setStates(StkFloat frequency, StkFloat radius, StkFloat gain)
 {
-  dirty = false;
+  dirty_ = false;
 
-  if ( frequency != aFrequency || radius != aRadius )
-    BiQuad::setResonance( aFrequency, aRadius, true );
+  if ( frequency_ != frequency || radius_ != radius )
+    BiQuad::setResonance( frequency, radius, true );
 
-  frequency = aFrequency;
-  radius = aRadius;
-  gain = aGain;
-  targetFrequency = aFrequency;
-  targetRadius = aRadius;
-  targetGain = aGain;
+  frequency_ = frequency;
+  radius_ = radius;
+  gain_ = gain;
+  targetFrequency_ = frequency;
+  targetRadius_ = radius;
+  targetGain_ = gain;
 }
 
-void FormSwep :: setTargets(MY_FLOAT aFrequency, MY_FLOAT aRadius, MY_FLOAT aGain)
+void FormSwep :: setTargets(StkFloat frequency, StkFloat radius, StkFloat gain)
 {
-  dirty = true;
-  startFrequency = frequency;
-  startRadius = radius;
-  startGain = gain;
-  targetFrequency = aFrequency;
-  targetRadius = aRadius;
-  targetGain = aGain;
-  deltaFrequency = aFrequency - frequency;
-  deltaRadius = aRadius - radius;
-  deltaGain = aGain - gain;
-  sweepState = (MY_FLOAT) 0.0;
+  dirty_ = true;
+  startFrequency_ = frequency_;
+  startRadius_ = radius_;
+  startGain_ = gain_;
+  targetFrequency_ = frequency;
+  targetRadius_ = radius;
+  targetGain_ = gain;
+  deltaFrequency_ = frequency - frequency_;
+  deltaRadius_ = radius - radius_;
+  deltaGain_ = gain - gain_;
+  sweepState_ = (StkFloat) 0.0;
 }
 
-void FormSwep :: setSweepRate(MY_FLOAT aRate)
+void FormSwep :: setSweepRate(StkFloat rate)
 {
-  sweepRate = aRate;
-  if ( sweepRate > 1.0 ) sweepRate = 1.0;
-  if ( sweepRate < 0.0 ) sweepRate = 0.0;
+  sweepRate_ = rate;
+  if ( sweepRate_ > 1.0 ) sweepRate_ = 1.0;
+  if ( sweepRate_ < 0.0 ) sweepRate_ = 0.0;
 }
 
-void FormSwep :: setSweepTime(MY_FLOAT aTime)
+void FormSwep :: setSweepTime(StkFloat time)
 {
-  sweepRate = 1.0 / ( aTime * Stk::sampleRate() );
-  if ( sweepRate > 1.0 ) sweepRate = 1.0;
-  if ( sweepRate < 0.0 ) sweepRate = 0.0;
+  sweepRate_ = 1.0 / ( time * Stk::sampleRate() );
+  if ( sweepRate_ > 1.0 ) sweepRate_ = 1.0;
+  if ( sweepRate_ < 0.0 ) sweepRate_ = 0.0;
 }
 
-MY_FLOAT FormSwep :: tick(MY_FLOAT sample)
+StkFloat FormSwep :: tick(StkFloat sample)
 {                                     
-  if (dirty)  {
-    sweepState += sweepRate;
-    if ( sweepState >= 1.0 )   {
-      sweepState = (MY_FLOAT) 1.0;
-      dirty = false;
-      radius = targetRadius;
-      frequency = targetFrequency;
-      gain = targetGain;
+  if (dirty_)  {
+    sweepState_ += sweepRate_;
+    if ( sweepState_ >= 1.0 )   {
+      sweepState_ = (StkFloat) 1.0;
+      dirty_ = false;
+      radius_ = targetRadius_;
+      frequency_ = targetFrequency_;
+      gain_ = targetGain_;
     }
     else  {
-      radius = startRadius + (deltaRadius * sweepState);
-      frequency = startFrequency + (deltaFrequency * sweepState);
-      gain = startGain + (deltaGain * sweepState);
+      radius_ = startRadius_ + (deltaRadius_ * sweepState_);
+      frequency_ = startFrequency_ + (deltaFrequency_ * sweepState_);
+      gain_ = startGain_ + (deltaGain_ * sweepState_);
     }
-    BiQuad::setResonance( frequency, radius, true );
+    BiQuad::setResonance( frequency_, radius_, true );
   }
 
   return BiQuad::tick( sample );
 }
 
-MY_FLOAT *FormSwep :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *FormSwep :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick(vector[i]);
+  return Filter::tick( vector, vectorSize );
+}
 
-  return vector;
+StkFrames& FormSwep :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Filter::tick( frames, channel );
 }

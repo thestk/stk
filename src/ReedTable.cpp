@@ -1,5 +1,5 @@
 /***************************************************/
-/*! \class ReedTabl
+/*! \class ReedTable
     \brief STK reed table class.
 
     This class implements a simple one breakpoint,
@@ -13,59 +13,54 @@
     Smith (1986), Hirschman, Cook, Scavone, and
     others for more information.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#include "ReedTabl.h"
+#include "ReedTable.h"
 
-ReedTabl :: ReedTabl()
+ReedTable :: ReedTable()
 {
-  offSet = (MY_FLOAT) 0.6;  // Offset is a bias, related to reed rest position.
-  slope = (MY_FLOAT) -0.8;  // Slope corresponds loosely to reed stiffness.
+  offset_ = (StkFloat) 0.6;  // Offset is a bias, related to reed rest position.
+  slope_ = (StkFloat) -0.8;  // Slope corresponds loosely to reed stiffness.
 }
 
-ReedTabl :: ~ReedTabl()
+ReedTable :: ~ReedTable()
 {
-
 }
 
-void ReedTabl :: setOffset(MY_FLOAT aValue)
+void ReedTable :: setOffset(StkFloat offset)
 {
-  offSet = aValue;
+  offset_ = offset;
 }
 
-void ReedTabl :: setSlope(MY_FLOAT aValue)
+void ReedTable :: setSlope(StkFloat slope)
 {
-  slope = aValue;
+  slope_ = slope;
 }
 
-MY_FLOAT ReedTabl :: lastOut() const
-{
-    return lastOutput;
-}
-
-MY_FLOAT ReedTabl :: tick(MY_FLOAT input)    
+StkFloat ReedTable :: tick(StkFloat input)    
 {
   // The input is differential pressure across the reed.
-  lastOutput = offSet + (slope * input);
+  lastOutput_ = offset_ + (slope_ * input);
 
   // If output is > 1, the reed has slammed shut and the
   // reflection function value saturates at 1.0.
-  if (lastOutput > 1.0) lastOutput = (MY_FLOAT) 1.0;
+  if (lastOutput_ > 1.0) lastOutput_ = (StkFloat) 1.0;
 
   // This is nearly impossible in a physical system, but
   // a reflection function value of -1.0 corresponds to
   // an open end (and no discontinuity in bore profile).
-  if (lastOutput < -1.0) lastOutput = (MY_FLOAT) -1.0;
-  return lastOutput;
+  if (lastOutput_ < -1.0) lastOutput_ = (StkFloat) -1.0;
+  return lastOutput_;
 }
 
-MY_FLOAT *ReedTabl :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *ReedTable :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick(vector[i]);
-
-  return vector;
+  return Function::tick( vector, vectorSize );
 }
 
+StkFrames& ReedTable :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Function::tick( frames, channel );
+}

@@ -9,7 +9,7 @@
 
     RtAudio WWW site: http://music.mcgill.ca/~gary/rtaudio/
 
-    RtAudio: a realtime audio i/o C++ class
+    RtAudio: realtime audio i/o C++ classes
     Copyright (c) 2001-2004 Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
@@ -37,10 +37,11 @@
 */
 /************************************************************************/
 
-// RtAudio: Version 3.0.1, 22 March 2004
+// RtAudio: Version 3.0.2, pre-release for STK 4.2.0
 
 #include "RtAudio.h"
 #include <iostream>
+#include <stdio.h>
 
 // Static variable definitions.
 const unsigned int RtApi::MAX_SAMPLE_RATES = 14;
@@ -92,6 +93,26 @@ RtAudio :: RtAudio( int outputDevice, int outputChannels,
   }
 }
 
+RtAudio :: RtAudio( int outputDevice, int outputChannels,
+                    int inputDevice, int inputChannels,
+                    RtAudioFormat format, int sampleRate,
+                    int *bufferSize, int *numberOfBuffers, RtAudioApi api )
+{
+  initialize( api );
+
+  try {
+    rtapi_->openStream( outputDevice, outputChannels,
+                        inputDevice, inputChannels,
+                        format, sampleRate,
+                        bufferSize, numberOfBuffers );
+  }
+  catch (RtError &exception) {
+    // Deallocate the RtApi instance.
+    delete rtapi_;
+    throw exception;
+  }
+}
+
 RtAudio :: ~RtAudio()
 {
   delete rtapi_;
@@ -105,6 +126,16 @@ void RtAudio :: openStream( int outputDevice, int outputChannels,
   rtapi_->openStream( outputDevice, outputChannels, inputDevice,
                       inputChannels, format, sampleRate,
                       bufferSize, numberOfBuffers );
+}
+
+void RtAudio :: openStream( int outputDevice, int outputChannels,
+                            int inputDevice, int inputChannels,
+                            RtAudioFormat format, int sampleRate,
+                            int *bufferSize, int *numberOfBuffers )
+{
+  rtapi_->openStream( outputDevice, outputChannels, inputDevice,
+                      inputChannels, format, sampleRate,
+                      bufferSize, *numberOfBuffers );
 }
 
 void RtAudio::initialize( RtAudioApi api )
@@ -216,6 +247,7 @@ void RtAudio::initialize( RtAudioApi api )
 RtApi :: RtApi()
 {
   stream_.mode = UNINITIALIZED;
+  stream_.state = STREAM_STOPPED;
   stream_.apiHandle = 0;
   MUTEX_INITIALIZE(&stream_.mutex);
 }
@@ -223,6 +255,17 @@ RtApi :: RtApi()
 RtApi :: ~RtApi()
 {
   MUTEX_DESTROY(&stream_.mutex);
+}
+
+void RtApi :: openStream( int outputDevice, int outputChannels,
+                         int inputDevice, int inputChannels,
+                         RtAudioFormat format, int sampleRate,
+                         int *bufferSize, int *numberOfBuffers )
+{
+  this->openStream( outputDevice, outputChannels, inputDevice,
+                    inputChannels, format, sampleRate,
+                    bufferSize, *numberOfBuffers );
+  *numberOfBuffers = stream_.nBuffers;
 }
 
 void RtApi :: openStream( int outputDevice, int outputChannels,
@@ -259,6 +302,7 @@ void RtApi :: openStream( int outputDevice, int outputChannels,
     }
   }
 
+  std::string errorMessages;
   clearStreamInfo();
   bool result = FAILURE;
   int device, defaultDevice = 0;
@@ -291,6 +335,9 @@ void RtApi :: openStream( int outputDevice, int outputChannels,
         result = probeDeviceOpen(device, mode, channels, sampleRate,
                                  format, bufferSize, numberOfBuffers);
       if ( result == SUCCESS ) break;
+      errorMessages.append( "    " );
+      errorMessages.append( message_ );
+      errorMessages.append( "\n" );
       if ( outputDevice > 0 ) break;
       clearStreamInfo();
     }
@@ -323,6 +370,9 @@ void RtApi :: openStream( int outputDevice, int outputChannels,
         result = probeDeviceOpen(device, mode, channels, sampleRate,
                                  format, bufferSize, numberOfBuffers);
       if (result == SUCCESS) break;
+      errorMessages.append( "    " );
+      errorMessages.append( message_ );
+      errorMessages.append( "\n" );
       if ( outputDevice > 0 ) break;
     }
   }
@@ -336,9 +386,11 @@ void RtApi :: openStream( int outputDevice, int outputChannels,
   clearStreamInfo();
   if ( ( outputDevice == 0 && outputChannels > 0 )
        || ( inputDevice == 0 && inputChannels > 0 ) )
-    sprintf(message_,"RtApi: no devices found for given stream parameters.");
+    sprintf(message_,"RtApi: no devices found for given stream parameters: \n%s",
+            errorMessages.c_str());
   else
-    sprintf(message_,"RtApi: unable to open specified device(s) with given stream parameters.");
+    sprintf(message_,"RtApi: unable to open specified device(s) with given stream parameters: \n%s",
+            errorMessages.c_str());
   error(RtError::INVALID_PARAMETER);
 
   return;
@@ -347,6 +399,11 @@ void RtApi :: openStream( int outputDevice, int outputChannels,
 int RtApi :: getDeviceCount(void)
 {
   return devices_.size();
+}
+
+RtApi::StreamState RtApi :: getStreamState( void ) const
+{
+  return stream_.state;
 }
 
 RtAudioDeviceInfo RtApi :: getDeviceInfo( int device )
@@ -1130,6 +1187,49 @@ bool RtApiOss :: probeDeviceOpen(int device, StreamMode mode, int channels,
   else
     stream_.mode = mode;
 
+  // Setup the buffer conversion information structure.
+  if ( stream_.doConvertBuffer[mode] ) {
+    if (mode == INPUT) { // convert device to user buffer
+      stream_.convertInfo[mode].inJump = stream_.nDeviceChannels[1];
+      stream_.convertInfo[mode].outJump = stream_.nUserChannels[1];
+      stream_.convertInfo[mode].inFormat = stream_.deviceFormat[1];
+      stream_.convertInfo[mode].outFormat = stream_.userFormat;
+    }
+    else { // convert user to device buffer
+      stream_.convertInfo[mode].inJump = stream_.nUserChannels[0];
+      stream_.convertInfo[mode].outJump = stream_.nDeviceChannels[0];
+      stream_.convertInfo[mode].inFormat = stream_.userFormat;
+      stream_.convertInfo[mode].outFormat = stream_.deviceFormat[0];
+    }
+
+    if ( stream_.convertInfo[mode].inJump < stream_.convertInfo[mode].outJump )
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].inJump;
+    else
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].outJump;
+
+    // Set up the interleave/deinterleave offsets.
+    if ( mode == INPUT && stream_.deInterleave[1] ) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+        stream_.convertInfo[mode].inJump = 1;
+      }
+    }
+    else if (mode == OUTPUT && stream_.deInterleave[0]) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outJump = 1;
+      }
+    }
+    else {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+      }
+    }
+  }
+
   return SUCCESS;
 
  error:
@@ -1145,7 +1245,7 @@ bool RtApiOss :: probeDeviceOpen(int device, StreamMode mode, int channels,
     stream_.userBuffer = 0;
   }
 
-  error(RtError::WARNING);
+  error(RtError::DEBUG_WARNING);
   return FAILURE;
 }
 
@@ -1313,8 +1413,8 @@ void RtApiOss :: tickStream()
 
     // Setup parameters and do buffer conversion if necessary.
     if (stream_.doConvertBuffer[0]) {
-      convertStreamBuffer(OUTPUT);
       buffer = stream_.deviceBuffer;
+      convertBuffer( buffer, stream_.userBuffer, stream_.convertInfo[0] );
       samples = stream_.bufferSize * stream_.nDeviceChannels[0];
       format = stream_.deviceFormat[0];
     }
@@ -1369,7 +1469,7 @@ void RtApiOss :: tickStream()
 
     // Do buffer conversion if necessary.
     if (stream_.doConvertBuffer[1])
-      convertStreamBuffer(INPUT);
+      convertBuffer( stream_.userBuffer, stream_.deviceBuffer, stream_.convertInfo[1] );
   }
 
  unlock:
@@ -1476,7 +1576,7 @@ extern "C" void *ossCallbackHandler(void *ptr)
 // quite a bit of extra code and most likely, a user program wouldn't
 // be prepared for the result anyway.
 
-// A structure to hold various information related to the CoreAuio API
+// A structure to hold various information related to the CoreAudio API
 // implementation.
 struct CoreHandle {
   UInt32 index[2];
@@ -2110,7 +2210,7 @@ bool RtApiCore :: probeDeviceOpen( int device, StreamMode mode, int channels,
     stream_.apiHandle = (void *) handle;
   }
   else
-     handle = (CoreHandle *) stream_.apiHandle;
+    handle = (CoreHandle *) stream_.apiHandle;
   handle->index[mode] = iStream;
 
   // Allocate necessary internal buffers.
@@ -2171,6 +2271,49 @@ bool RtApiCore :: probeDeviceOpen( int device, StreamMode mode, int channels,
   stream_.state = STREAM_STOPPED;
   stream_.callbackInfo.object = (void *) this;
 
+  // Setup the buffer conversion information structure.
+  if ( stream_.doConvertBuffer[mode] ) {
+    if (mode == INPUT) { // convert device to user buffer
+      stream_.convertInfo[mode].inJump = stream_.nDeviceChannels[1];
+      stream_.convertInfo[mode].outJump = stream_.nUserChannels[1];
+      stream_.convertInfo[mode].inFormat = stream_.deviceFormat[1];
+      stream_.convertInfo[mode].outFormat = stream_.userFormat;
+    }
+    else { // convert user to device buffer
+      stream_.convertInfo[mode].inJump = stream_.nUserChannels[0];
+      stream_.convertInfo[mode].outJump = stream_.nDeviceChannels[0];
+      stream_.convertInfo[mode].inFormat = stream_.userFormat;
+      stream_.convertInfo[mode].outFormat = stream_.deviceFormat[0];
+    }
+
+    if ( stream_.convertInfo[mode].inJump < stream_.convertInfo[mode].outJump )
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].inJump;
+    else
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].outJump;
+
+    // Set up the interleave/deinterleave offsets.
+    if ( mode == INPUT && stream_.deInterleave[1] ) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+        stream_.convertInfo[mode].inJump = 1;
+      }
+    }
+    else if (mode == OUTPUT && stream_.deInterleave[0]) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outJump = 1;
+      }
+    }
+    else {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+      }
+    }
+  }
+
   if ( stream_.mode == OUTPUT && mode == INPUT && stream_.device[0] == device )
     // Only one callback procedure per device.
     stream_.mode = DUPLEX;
@@ -2206,7 +2349,7 @@ bool RtApiCore :: probeDeviceOpen( int device, StreamMode mode, int channels,
     stream_.userBuffer = 0;
   }
 
-  error(RtError::WARNING);
+  error(RtError::DEBUG_WARNING);
   return FAILURE;
 }
 
@@ -2407,7 +2550,7 @@ void RtApiCore :: callbackEvent( AudioDeviceID deviceId, void *inData, void *out
       else
         stream_.deviceBuffer = handle->deviceBuffer;
 
-      convertStreamBuffer(OUTPUT);
+      convertBuffer( stream_.deviceBuffer, stream_.userBuffer, stream_.convertInfo[0] );
       if ( stream_.doByteSwap[0] )
         byteSwapBuffer(stream_.deviceBuffer,
                        stream_.bufferSize * stream_.nDeviceChannels[0],
@@ -2453,7 +2596,7 @@ void RtApiCore :: callbackEvent( AudioDeviceID deviceId, void *inData, void *out
         byteSwapBuffer(stream_.deviceBuffer,
                        stream_.bufferSize * stream_.nDeviceChannels[1],
                        stream_.deviceFormat[1]);
-      convertStreamBuffer(INPUT);
+      convertBuffer( stream_.userBuffer, stream_.deviceBuffer, stream_.convertInfo[1] );
 
     }
     else {
@@ -2526,9 +2669,10 @@ void RtApiCore :: cancelStreamCallback()
 //
 // .jackd -d alsa -d hw:0
 //
-// Many of the parameters normally set for a stream are fixed by the
-// JACK server and can be specified when the JACK server is started.
-// In particular,
+// or through an interface program such as qjackctl.  Many of the
+// parameters normally set for a stream are fixed by the JACK server
+// and can be specified when the JACK server is started.  In
+// particular,
 //
 // .jackd -d alsa -d hw:0 -r 44100 -p 512 -n 4
 //
@@ -2645,7 +2789,7 @@ void RtApiJack :: probeDeviceInfo(RtApiDevice *info)
   if (info->maxOutputChannels == 0 && info->maxInputChannels == 0) {
     jack_client_close(client);
     sprintf(message_, "RtApiJack: error determining jack input/output channels!");
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return;
   }
 
@@ -2671,7 +2815,7 @@ void RtApiJack :: probeDeviceInfo(RtApiDevice *info)
   if (info->nativeFormats == 0) {
     jack_client_close(client);
     sprintf(message_, "RtApiJack: error determining jack server data format!");
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return;
   }
 
@@ -2700,6 +2844,14 @@ void jackShutdown(void *infoPointer)
   JackHandle *handle = (JackHandle *) info->apiInfo;
   handle->clientOpen = false;
   RtApiJack *object = (RtApiJack *) info->object;
+
+  // Check current stream state.  If stopped, then we'll assume this
+  // was called as a result of a call to RtApiJack::stopStream (the
+  // deactivation of a client handle causes this function to be called).
+  // If not, we'll assume the Jack server is shutting down or some
+  // other problem occurred and we should close the stream.
+  if ( object->getStreamState() == RtApi::STREAM_STOPPED ) return;
+
   try {
     object->closeStream();
   }
@@ -2708,7 +2860,7 @@ void jackShutdown(void *infoPointer)
     return;
   }
 
-  fprintf(stderr, "\nRtApiJack: the Jack server is shutting down ... stream stopped and closed!!!\n\n");
+  fprintf(stderr, "\nRtApiJack: the Jack server is shutting down this client ... stream stopped and closed!!!\n\n");
 }
 
 int jackXrun( void * )
@@ -2877,6 +3029,49 @@ bool RtApiJack :: probeDeviceOpen(int device, StreamMode mode, int channels,
     jack_on_shutdown( handle->client, jackShutdown, (void *) &stream_.callbackInfo );
   }
 
+  // Setup the buffer conversion information structure.
+  if ( stream_.doConvertBuffer[mode] ) {
+    if (mode == INPUT) { // convert device to user buffer
+      stream_.convertInfo[mode].inJump = stream_.nDeviceChannels[1];
+      stream_.convertInfo[mode].outJump = stream_.nUserChannels[1];
+      stream_.convertInfo[mode].inFormat = stream_.deviceFormat[1];
+      stream_.convertInfo[mode].outFormat = stream_.userFormat;
+    }
+    else { // convert user to device buffer
+      stream_.convertInfo[mode].inJump = stream_.nUserChannels[0];
+      stream_.convertInfo[mode].outJump = stream_.nDeviceChannels[0];
+      stream_.convertInfo[mode].inFormat = stream_.userFormat;
+      stream_.convertInfo[mode].outFormat = stream_.deviceFormat[0];
+    }
+
+    if ( stream_.convertInfo[mode].inJump < stream_.convertInfo[mode].outJump )
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].inJump;
+    else
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].outJump;
+
+    // Set up the interleave/deinterleave offsets.
+    if ( mode == INPUT && stream_.deInterleave[1] ) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+        stream_.convertInfo[mode].inJump = 1;
+      }
+    }
+    else if (mode == OUTPUT && stream_.deInterleave[0]) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outJump = 1;
+      }
+    }
+    else {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+      }
+    }
+  }
+
   return SUCCESS;
 
  error:
@@ -2897,7 +3092,7 @@ bool RtApiJack :: probeDeviceOpen(int device, StreamMode mode, int channels,
     stream_.userBuffer = 0;
   }
 
-  error(RtError::WARNING);
+  error(RtError::DEBUG_WARNING);
   return FAILURE;
 }
 
@@ -3093,11 +3288,11 @@ void RtApiJack :: callbackEvent( unsigned long nframes )
   }
 
   jack_default_audio_sample_t *jackbuffer;
-  long bufferBytes = nframes * sizeof (jack_default_audio_sample_t);
+  long bufferBytes = nframes * sizeof(jack_default_audio_sample_t);
   if ( stream_.mode == OUTPUT || stream_.mode == DUPLEX ) {
 
     if (stream_.doConvertBuffer[0]) {
-      convertStreamBuffer(OUTPUT);
+      convertBuffer( stream_.deviceBuffer, stream_.userBuffer, stream_.convertInfo[0] );
 
       for ( int i=0; i<stream_.nDeviceChannels[0]; i++ ) {
         jackbuffer = (jack_default_audio_sample_t *) jack_port_get_buffer(handle->ports[0][i],
@@ -3120,7 +3315,7 @@ void RtApiJack :: callbackEvent( unsigned long nframes )
                                                                         (jack_nframes_t) nframes);
       memcpy(&stream_.deviceBuffer[i*bufferBytes], jackbuffer, bufferBytes );
     }
-    convertStreamBuffer(INPUT);
+    convertBuffer( stream_.userBuffer, stream_.deviceBuffer, stream_.convertInfo[1] );
     }
     else { // single channel only
       jackbuffer = (jack_default_audio_sample_t *) jack_port_get_buffer(handle->ports[1][0],
@@ -3177,6 +3372,17 @@ void RtApiJack :: cancelStreamCallback()
 #include <alsa/asoundlib.h>
 #include <unistd.h>
 #include <ctype.h>
+
+// A structure to hold various information related to the ALSA API
+// implementation.
+struct AlsaHandle {
+  snd_pcm_t *handles[2];
+  bool synchronized;
+  char *tempBuffer;
+
+  AlsaHandle()
+    :synchronized(false), tempBuffer(0) {}
+};
 
 extern "C" void *alsaCallbackHandler(void * ptr);
 
@@ -3319,7 +3525,7 @@ void RtApiAlsa :: probeDeviceInfo(RtApiDevice *info)
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: hardware probe error (%s): %s.",
             info->name.c_str(), snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     goto capture_probe;
   }
 
@@ -3330,7 +3536,7 @@ void RtApiAlsa :: probeDeviceInfo(RtApiDevice *info)
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: hardware minimum channel probe error (%s): %s.",
             info->name.c_str(), snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     goto capture_probe;
   }
   info->minOutputChannels = value;
@@ -3340,7 +3546,7 @@ void RtApiAlsa :: probeDeviceInfo(RtApiDevice *info)
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: hardware maximum channel probe error (%s): %s.",
             info->name.c_str(), snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     goto capture_probe;
   }
   info->maxOutputChannels = value;
@@ -3391,7 +3597,7 @@ void RtApiAlsa :: probeDeviceInfo(RtApiDevice *info)
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: hardware probe error (%s): %s.",
             info->name.c_str(), snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     if (info->maxOutputChannels > 0)
       goto probe_parameters;
     else
@@ -3404,7 +3610,7 @@ void RtApiAlsa :: probeDeviceInfo(RtApiDevice *info)
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: hardware minimum in channel probe error (%s): %s.",
             info->name.c_str(), snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     if (info->maxOutputChannels > 0)
       goto probe_parameters;
     else
@@ -3417,7 +3623,7 @@ void RtApiAlsa :: probeDeviceInfo(RtApiDevice *info)
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: hardware maximum in channel probe error (%s): %s.",
             info->name.c_str(), snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     if (info->maxOutputChannels > 0)
       goto probe_parameters;
     else
@@ -3453,7 +3659,7 @@ void RtApiAlsa :: probeDeviceInfo(RtApiDevice *info)
   if (err < 0) {
     sprintf(message_, "RtApiAlsa: pcm (%s) won't reopen during probe: %s.",
             info->name.c_str(), snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return;
   }
 
@@ -3463,7 +3669,7 @@ void RtApiAlsa :: probeDeviceInfo(RtApiDevice *info)
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: hardware reopen probe error (%s): %s.",
             info->name.c_str(), snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return;
   }
 
@@ -3509,7 +3715,7 @@ void RtApiAlsa :: probeDeviceInfo(RtApiDevice *info)
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: pcm device (%s) data format not supported by RtAudio.",
             info->name.c_str());
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return;
   }
 
@@ -3544,7 +3750,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
   if (err < 0) {
     sprintf(message_,"RtApiAlsa: pcm device (%s) won't open: %s.",
             name, snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -3556,7 +3762,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: error getting parameter handle (%s): %s.",
             name, snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -3576,14 +3782,14 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
   else {
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: device (%s) access not supported by RtAudio.", name);
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
   if (err < 0) {
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: error setting access ( (%s): %s.", name, snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -3649,7 +3855,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
   // If we get here, no supported format was found.
   sprintf(message_,"RtApiAlsa: pcm device (%s) data format not supported by RtAudio.", name);
   snd_pcm_close(handle);
-  error(RtError::WARNING);
+  error(RtError::DEBUG_WARNING);
   return FAILURE;
 
  set_format:
@@ -3658,7 +3864,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: error setting format (%s): %s.",
             name, snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -3672,7 +3878,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
       snd_pcm_close(handle);
       sprintf(message_, "RtApiAlsa: error getting format endian-ness (%s): %s.",
               name, snd_strerror(err));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
   }
@@ -3683,7 +3889,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: error setting sample rate (%d) on device (%s): %s.",
             sampleRate, name, snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -3697,7 +3903,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: channels (%d) not supported by device (%s).",
             channels, name);
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -3705,7 +3911,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
   if (err < 0 ) {
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: error getting min channels count on device (%s).", name);
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
   device_channels = value;
@@ -3718,7 +3924,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: error setting channels (%d) on device (%s): %s.",
             device_channels, name, snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -3727,54 +3933,26 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
   unsigned int periods = numberOfBuffers;
   // Even though the hardware might allow 1 buffer, it won't work reliably.
   if (periods < 2) periods = 2;
-  err = snd_pcm_hw_params_get_periods_min(hw_params, &value, &dir);
-  if (err < 0) {
-    snd_pcm_close(handle);
-    sprintf(message_, "RtApiAlsa: error getting min periods on device (%s): %s.",
-            name, snd_strerror(err));
-    error(RtError::WARNING);
-    return FAILURE;
-  }
-  if (value > periods) periods = value;
-  err = snd_pcm_hw_params_get_periods_max(hw_params, &value, &dir);
-  if (err < 0) {
-    snd_pcm_close(handle);
-    sprintf(message_, "RtApiAlsa: error getting max periods on device (%s): %s.",
-            name, snd_strerror(err));
-    error(RtError::WARNING);
-    return FAILURE;
-  }
-  if (value < periods) periods = value;
-
-  err = snd_pcm_hw_params_set_periods(handle, hw_params, periods, 0);
+  err = snd_pcm_hw_params_set_periods_near(handle, hw_params, &periods, &dir);
   if (err < 0) {
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: error setting periods (%s): %s.",
             name, snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
   // Set the buffer (or period) size.
-  snd_pcm_uframes_t period_size;
-  err = snd_pcm_hw_params_get_period_size_min(hw_params, &period_size, &dir);
-  if (err < 0) {
-    snd_pcm_close(handle);
-    sprintf(message_, "RtApiAlsa: error getting period size (%s): %s.",
-            name, snd_strerror(err));
-    error(RtError::WARNING);
-    return FAILURE;
-  }
-  if (*bufferSize < (int) period_size) *bufferSize = (int) period_size;
-
-  err = snd_pcm_hw_params_set_period_size(handle, hw_params, *bufferSize, 0);
+  snd_pcm_uframes_t period_size = *bufferSize;
+  err = snd_pcm_hw_params_set_period_size_near(handle, hw_params, &period_size, &dir);
   if (err < 0) {
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: error setting period size (%s): %s.",
             name, snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
+  *bufferSize = period_size;
 
   // If attempting to setup a duplex stream, the bufferSize parameter
   // MUST be the same in both directions!
@@ -3793,7 +3971,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
     snd_pcm_close(handle);
     sprintf(message_, "RtApiAlsa: error installing hardware configuration (%s): %s.",
             name, snd_strerror(err));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -3802,23 +3980,40 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
   snd_pcm_hw_params_dump(hw_params, out);
 #endif
 
-  // Allocate the stream handle if necessary and then save.
-  snd_pcm_t **handles;
+  // Set the software configuration to fill buffers with zeros and prevent device stopping on xruns.
+  snd_pcm_sw_params_t *sw_params = NULL;
+  snd_pcm_sw_params_alloca( &sw_params );
+  snd_pcm_sw_params_current( handle, sw_params );
+  snd_pcm_sw_params_set_start_threshold( handle, sw_params, *bufferSize );
+  snd_pcm_sw_params_set_stop_threshold( handle, sw_params, 0x7fffffff );
+  snd_pcm_sw_params_set_silence_threshold( handle, sw_params, 0 );
+  snd_pcm_sw_params_set_silence_size( handle, sw_params, INT_MAX );
+  err = snd_pcm_sw_params( handle, sw_params );
+  if (err < 0) {
+    snd_pcm_close(handle);
+    sprintf(message_, "RtAudio: ALSA error installing software configuration (%s): %s.",
+            name, snd_strerror(err));
+    error(RtError::DEBUG_WARNING);
+    return FAILURE;
+  }
+
+#if defined(__RTAUDIO_DEBUG__)
+  fprintf(stderr, "\nRtApiAlsa: dump software params after installation:\n\n");
+  snd_pcm_sw_params_dump(sw_params, out);
+#endif
+
+  // Allocate the ApiHandle if necessary and then save.
+  AlsaHandle *apiInfo = 0;
   if ( stream_.apiHandle == 0 ) {
-    handles = (snd_pcm_t **) calloc(2, sizeof(snd_pcm_t *));
-    if ( handle == NULL ) {
-      sprintf(message_, "RtApiAlsa: error allocating handle memory (%s).",
-              devices_[device].name.c_str());
-      goto error;
-    }
-    stream_.apiHandle = (void *) handles;
-    handles[0] = 0;
-    handles[1] = 0;
+    apiInfo = (AlsaHandle *) new AlsaHandle;
+    stream_.apiHandle = (void *) apiInfo;
+    apiInfo->handles[0] = 0;
+    apiInfo->handles[1] = 0;
   }
   else {
-    handles = (snd_pcm_t **) stream_.apiHandle;
+    apiInfo = (AlsaHandle *) stream_.apiHandle;
   }
-  handles[mode] = handle;
+  apiInfo->handles[mode] = handle;
 
   // Set flags for buffer conversion
   stream_.doConvertBuffer[mode] = false;
@@ -3840,8 +4035,10 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
 
     buffer_bytes *= *bufferSize * formatBytes(stream_.userFormat);
     if (stream_.userBuffer) free(stream_.userBuffer);
+    if (apiInfo->tempBuffer) free(apiInfo->tempBuffer);
     stream_.userBuffer = (char *) calloc(buffer_bytes, 1);
-    if (stream_.userBuffer == NULL) {
+    apiInfo->tempBuffer = (char *) calloc(buffer_bytes, 1);
+    if ( stream_.userBuffer == NULL || apiInfo->tempBuffer == NULL ) {
       sprintf(message_, "RtApiAlsa: error allocating user buffer memory (%s).",
               devices_[device].name.c_str());
       goto error;
@@ -3876,23 +4073,77 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
 
   stream_.device[mode] = device;
   stream_.state = STREAM_STOPPED;
-  if ( stream_.mode == OUTPUT && mode == INPUT )
+  if ( stream_.mode == OUTPUT && mode == INPUT ) {
     // We had already set up an output stream.
     stream_.mode = DUPLEX;
+    // Link the streams if possible.
+    apiInfo->synchronized = false;
+    if (snd_pcm_link( apiInfo->handles[0], apiInfo->handles[1] ) == 0)
+      apiInfo->synchronized = true;
+    else {
+      sprintf(message_, "RtApiAlsa: unable to synchronize input and output streams (%s).",
+              devices_[device].name.c_str());
+      error(RtError::DEBUG_WARNING);
+    }
+  }
   else
     stream_.mode = mode;
   stream_.nBuffers = periods;
   stream_.sampleRate = sampleRate;
 
+  // Setup the buffer conversion information structure.
+  if ( stream_.doConvertBuffer[mode] ) {
+    if (mode == INPUT) { // convert device to user buffer
+      stream_.convertInfo[mode].inJump = stream_.nDeviceChannels[1];
+      stream_.convertInfo[mode].outJump = stream_.nUserChannels[1];
+      stream_.convertInfo[mode].inFormat = stream_.deviceFormat[1];
+      stream_.convertInfo[mode].outFormat = stream_.userFormat;
+    }
+    else { // convert user to device buffer
+      stream_.convertInfo[mode].inJump = stream_.nUserChannels[0];
+      stream_.convertInfo[mode].outJump = stream_.nDeviceChannels[0];
+      stream_.convertInfo[mode].inFormat = stream_.userFormat;
+      stream_.convertInfo[mode].outFormat = stream_.deviceFormat[0];
+    }
+
+    if ( stream_.convertInfo[mode].inJump < stream_.convertInfo[mode].outJump )
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].inJump;
+    else
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].outJump;
+
+    // Set up the interleave/deinterleave offsets.
+    if ( mode == INPUT && stream_.deInterleave[1] ) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+        stream_.convertInfo[mode].inJump = 1;
+      }
+    }
+    else if (mode == OUTPUT && stream_.deInterleave[0]) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outJump = 1;
+      }
+    }
+    else {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+      }
+    }
+  }
+
   return SUCCESS;
 
  error:
-  if (handles) {
-    if (handles[0])
-      snd_pcm_close(handles[0]);
-    if (handles[1])
-      snd_pcm_close(handles[1]);
-    free(handles);
+  if (apiInfo) {
+    if (apiInfo->handles[0])
+      snd_pcm_close(apiInfo->handles[0]);
+    if (apiInfo->handles[1])
+      snd_pcm_close(apiInfo->handles[1]);
+    if ( apiInfo->tempBuffer ) free(apiInfo->tempBuffer);
+    delete apiInfo;
     stream_.apiHandle = 0;
   }
 
@@ -3901,7 +4152,7 @@ bool RtApiAlsa :: probeDeviceOpen( int device, StreamMode mode, int channels,
     stream_.userBuffer = 0;
   }
 
-  error(RtError::WARNING);
+  error(RtError::DEBUG_WARNING);
   return FAILURE;
 }
 
@@ -3916,12 +4167,12 @@ void RtApiAlsa :: closeStream()
     return;
   }
 
-  snd_pcm_t **handle = (snd_pcm_t **) stream_.apiHandle;
+  AlsaHandle *apiInfo = (AlsaHandle *) stream_.apiHandle;
   if (stream_.state == STREAM_RUNNING) {
     if (stream_.mode == OUTPUT || stream_.mode == DUPLEX)
-      snd_pcm_drop(handle[0]);
+      snd_pcm_drop(apiInfo->handles[0]);
     if (stream_.mode == INPUT || stream_.mode == DUPLEX)
-      snd_pcm_drop(handle[1]);
+      snd_pcm_drop(apiInfo->handles[1]);
     stream_.state = STREAM_STOPPED;
   }
 
@@ -3930,11 +4181,12 @@ void RtApiAlsa :: closeStream()
     pthread_join(stream_.callbackInfo.thread, NULL);
   }
 
-  if (handle) {
-    if (handle[0]) snd_pcm_close(handle[0]);
-    if (handle[1]) snd_pcm_close(handle[1]);
-    free(handle);
-    handle = 0;
+  if (apiInfo) {
+    if (apiInfo->handles[0]) snd_pcm_close(apiInfo->handles[0]);
+    if (apiInfo->handles[1]) snd_pcm_close(apiInfo->handles[1]);
+    free(apiInfo->tempBuffer);
+    delete apiInfo;
+    stream_.apiHandle = 0;
   }
 
   if (stream_.userBuffer) {
@@ -3961,7 +4213,8 @@ void RtApiAlsa :: startStream()
 
   int err;
   snd_pcm_state_t state;
-  snd_pcm_t **handle = (snd_pcm_t **) stream_.apiHandle;
+  AlsaHandle *apiInfo = (AlsaHandle *) stream_.apiHandle;
+  snd_pcm_t **handle = (snd_pcm_t **) apiInfo->handles;
   if (stream_.mode == OUTPUT || stream_.mode == DUPLEX) {
     state = snd_pcm_state(handle[0]);
     if (state != SND_PCM_STATE_PREPARED) {
@@ -3975,7 +4228,7 @@ void RtApiAlsa :: startStream()
     }
   }
 
-  if (stream_.mode == INPUT || stream_.mode == DUPLEX) {
+  if ( (stream_.mode == INPUT || stream_.mode == DUPLEX) && !apiInfo->synchronized ) {
     state = snd_pcm_state(handle[1]);
     if (state != SND_PCM_STATE_PREPARED) {
       err = snd_pcm_prepare(handle[1]);
@@ -4003,7 +4256,8 @@ void RtApiAlsa :: stopStream()
   MUTEX_LOCK(&stream_.mutex);
 
   int err;
-  snd_pcm_t **handle = (snd_pcm_t **) stream_.apiHandle;
+  AlsaHandle *apiInfo = (AlsaHandle *) stream_.apiHandle;
+  snd_pcm_t **handle = (snd_pcm_t **) apiInfo->handles;
   if (stream_.mode == OUTPUT || stream_.mode == DUPLEX) {
     err = snd_pcm_drain(handle[0]);
     if (err < 0) {
@@ -4014,7 +4268,7 @@ void RtApiAlsa :: stopStream()
     }
   }
 
-  if (stream_.mode == INPUT || stream_.mode == DUPLEX) {
+  if ( (stream_.mode == INPUT || stream_.mode == DUPLEX) && !apiInfo->synchronized ) {
     err = snd_pcm_drain(handle[1]);
     if (err < 0) {
       sprintf(message_, "RtApiAlsa: error draining pcm device (%s): %s.",
@@ -4038,7 +4292,8 @@ void RtApiAlsa :: abortStream()
   MUTEX_LOCK(&stream_.mutex);
 
   int err;
-  snd_pcm_t **handle = (snd_pcm_t **) stream_.apiHandle;
+  AlsaHandle *apiInfo = (AlsaHandle *) stream_.apiHandle;
+  snd_pcm_t **handle = (snd_pcm_t **) apiInfo->handles;
   if (stream_.mode == OUTPUT || stream_.mode == DUPLEX) {
     err = snd_pcm_drop(handle[0]);
     if (err < 0) {
@@ -4049,7 +4304,7 @@ void RtApiAlsa :: abortStream()
     }
   }
 
-  if (stream_.mode == INPUT || stream_.mode == DUPLEX) {
+  if ( (stream_.mode == INPUT || stream_.mode == DUPLEX) && !apiInfo->synchronized ) {
     err = snd_pcm_drop(handle[1]);
     if (err < 0) {
       sprintf(message_, "RtApiAlsa: error draining pcm device (%s): %s.",
@@ -4070,7 +4325,8 @@ int RtApiAlsa :: streamWillBlock()
   MUTEX_LOCK(&stream_.mutex);
 
   int err = 0, frames = 0;
-  snd_pcm_t **handle = (snd_pcm_t **) stream_.apiHandle;
+  AlsaHandle *apiInfo = (AlsaHandle *) stream_.apiHandle;
+  snd_pcm_t **handle = (snd_pcm_t **) apiInfo->handles;
   if (stream_.mode == OUTPUT || stream_.mode == DUPLEX) {
     err = snd_pcm_avail_update(handle[0]);
     if (err < 0) {
@@ -4124,69 +4380,19 @@ void RtApiAlsa :: tickStream()
   int err;
   char *buffer;
   int channels;
+  AlsaHandle *apiInfo;
   snd_pcm_t **handle;
   RtAudioFormat format;
-  handle = (snd_pcm_t **) stream_.apiHandle;
-  if (stream_.mode == OUTPUT || stream_.mode == DUPLEX) {
+  apiInfo = (AlsaHandle *) stream_.apiHandle;
+  handle = (snd_pcm_t **) apiInfo->handles;
 
-    // Setup parameters and do buffer conversion if necessary.
-    if (stream_.doConvertBuffer[0]) {
-      convertStreamBuffer(OUTPUT);
-      buffer = stream_.deviceBuffer;
-      channels = stream_.nDeviceChannels[0];
-      format = stream_.deviceFormat[0];
-    }
-    else {
-      buffer = stream_.userBuffer;
-      channels = stream_.nUserChannels[0];
-      format = stream_.userFormat;
-    }
-
-    // Do byte swapping if necessary.
-    if (stream_.doByteSwap[0])
-      byteSwapBuffer(buffer, stream_.bufferSize * channels, format);
-
-    // Write samples to device in interleaved/non-interleaved format.
-    if (stream_.deInterleave[0]) {
-      void *bufs[channels];
-      size_t offset = stream_.bufferSize * formatBytes(format);
-      for (int i=0; i<channels; i++)
-        bufs[i] = (void *) (buffer + (i * offset));
-      err = snd_pcm_writen(handle[0], bufs, stream_.bufferSize);
-    }
-    else
-      err = snd_pcm_writei(handle[0], buffer, stream_.bufferSize);
-
-    if (err < stream_.bufferSize) {
-      // Either an error or underrun occured.
-      if (err == -EPIPE) {
-        snd_pcm_state_t state = snd_pcm_state(handle[0]);
-        if (state == SND_PCM_STATE_XRUN) {
-          sprintf(message_, "RtApiAlsa: underrun detected.");
-          error(RtError::WARNING);
-          err = snd_pcm_prepare(handle[0]);
-          if (err < 0) {
-            sprintf(message_, "RtApiAlsa: error preparing handle after underrun: %s.",
-                    snd_strerror(err));
-            MUTEX_UNLOCK(&stream_.mutex);
-            error(RtError::DRIVER_ERROR);
-          }
-        }
-        else {
-          sprintf(message_, "RtApiAlsa: tickStream() error, current state is %s.",
-                  snd_pcm_state_name(state));
-          MUTEX_UNLOCK(&stream_.mutex);
-          error(RtError::DRIVER_ERROR);
-        }
-        goto unlock;
-      }
-      else {
-        sprintf(message_, "RtApiAlsa: audio write error for device (%s): %s.",
-                devices_[stream_.device[0]].name.c_str(), snd_strerror(err));
-        MUTEX_UNLOCK(&stream_.mutex);
-        error(RtError::DRIVER_ERROR);
-      }
-    }
+  if ( stream_.mode == DUPLEX ) {
+    // In duplex mode, we need to make the snd_pcm_read call before
+    // the snd_pcm_write call in order to avoid under/over runs.  So,
+    // copy the userData to our temporary buffer.
+    int bufferBytes;
+    bufferBytes = stream_.bufferSize * stream_.nUserChannels[0] * formatBytes(stream_.userFormat);
+    memcpy( apiInfo->tempBuffer, stream_.userBuffer, bufferBytes );
   }
 
   if (stream_.mode == INPUT || stream_.mode == DUPLEX) {
@@ -4251,7 +4457,75 @@ void RtApiAlsa :: tickStream()
 
     // Do buffer conversion if necessary.
     if (stream_.doConvertBuffer[1])
-      convertStreamBuffer(INPUT);
+      convertBuffer( stream_.userBuffer, stream_.deviceBuffer, stream_.convertInfo[1] );
+  }
+
+  if (stream_.mode == OUTPUT || stream_.mode == DUPLEX) {
+
+    // Setup parameters and do buffer conversion if necessary.
+    if (stream_.doConvertBuffer[0]) {
+      buffer = stream_.deviceBuffer;
+      if ( stream_.mode == DUPLEX )
+        convertBuffer( buffer, apiInfo->tempBuffer, stream_.convertInfo[0] );
+      else
+        convertBuffer( buffer, stream_.userBuffer, stream_.convertInfo[0] );
+      channels = stream_.nDeviceChannels[0];
+      format = stream_.deviceFormat[0];
+    }
+    else {
+      if ( stream_.mode == DUPLEX )
+        buffer = apiInfo->tempBuffer;
+      else
+        buffer = stream_.userBuffer;
+      channels = stream_.nUserChannels[0];
+      format = stream_.userFormat;
+    }
+
+    // Do byte swapping if necessary.
+    if (stream_.doByteSwap[0])
+      byteSwapBuffer(buffer, stream_.bufferSize * channels, format);
+
+    // Write samples to device in interleaved/non-interleaved format.
+    if (stream_.deInterleave[0]) {
+      void *bufs[channels];
+      size_t offset = stream_.bufferSize * formatBytes(format);
+      for (int i=0; i<channels; i++)
+        bufs[i] = (void *) (buffer + (i * offset));
+      err = snd_pcm_writen(handle[0], bufs, stream_.bufferSize);
+    }
+    else
+      err = snd_pcm_writei(handle[0], buffer, stream_.bufferSize);
+
+    if (err < stream_.bufferSize) {
+      // Either an error or underrun occured.
+      if (err == -EPIPE) {
+        snd_pcm_state_t state = snd_pcm_state(handle[0]);
+        if (state == SND_PCM_STATE_XRUN) {
+          sprintf(message_, "RtApiAlsa: underrun detected.");
+          error(RtError::WARNING);
+          err = snd_pcm_prepare(handle[0]);
+          if (err < 0) {
+            sprintf(message_, "RtApiAlsa: error preparing handle after underrun: %s.",
+                    snd_strerror(err));
+            MUTEX_UNLOCK(&stream_.mutex);
+            error(RtError::DRIVER_ERROR);
+          }
+        }
+        else {
+          sprintf(message_, "RtApiAlsa: tickStream() error, current state is %s.",
+                  snd_pcm_state_name(state));
+          MUTEX_UNLOCK(&stream_.mutex);
+          error(RtError::DRIVER_ERROR);
+        }
+        goto unlock;
+      }
+      else {
+        sprintf(message_, "RtApiAlsa: audio write error for device (%s): %s.",
+                devices_[stream_.device[0]].name.c_str(), snd_strerror(err));
+        MUTEX_UNLOCK(&stream_.mutex);
+        error(RtError::DRIVER_ERROR);
+      }
+    }
   }
 
  unlock:
@@ -4794,10 +5068,10 @@ bool RtApiAsio :: probeDeviceOpen(int device, StreamMode mode, int channels,
     }
     handle->bufferInfos = 0;
     // Create a manual-reset event.
-    handle->condition = CreateEvent(NULL,  // no security
-                                    TRUE,  // manual-reset
-                                    FALSE, // non-signaled initially
-                                    NULL); // unnamed
+    handle->condition = CreateEvent( NULL,  // no security
+                                     TRUE,  // manual-reset
+                                     FALSE, // non-signaled initially
+                                     NULL ); // unnamed
     stream_.apiHandle = (void *) handle;
   }
 
@@ -4907,6 +5181,49 @@ bool RtApiAsio :: probeDeviceOpen(int device, StreamMode mode, int channels,
   asioCallbackInfo = &stream_.callbackInfo;
   stream_.callbackInfo.object = (void *) this;
 
+  // Setup the buffer conversion information structure.
+  if ( stream_.doConvertBuffer[mode] ) {
+    if (mode == INPUT) { // convert device to user buffer
+      stream_.convertInfo[mode].inJump = stream_.nDeviceChannels[1];
+      stream_.convertInfo[mode].outJump = stream_.nUserChannels[1];
+      stream_.convertInfo[mode].inFormat = stream_.deviceFormat[1];
+      stream_.convertInfo[mode].outFormat = stream_.userFormat;
+    }
+    else { // convert user to device buffer
+      stream_.convertInfo[mode].inJump = stream_.nUserChannels[0];
+      stream_.convertInfo[mode].outJump = stream_.nDeviceChannels[0];
+      stream_.convertInfo[mode].inFormat = stream_.userFormat;
+      stream_.convertInfo[mode].outFormat = stream_.deviceFormat[0];
+    }
+
+    if ( stream_.convertInfo[mode].inJump < stream_.convertInfo[mode].outJump )
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].inJump;
+    else
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].outJump;
+
+    // Set up the interleave/deinterleave offsets.
+    if ( mode == INPUT && stream_.deInterleave[1] ) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+        stream_.convertInfo[mode].inJump = 1;
+      }
+    }
+    else if (mode == OUTPUT && stream_.deInterleave[0]) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outJump = 1;
+      }
+    }
+    else {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+      }
+    }
+  }
+
   return SUCCESS;
 
  error:
@@ -4926,7 +5243,7 @@ bool RtApiAsio :: probeDeviceOpen(int device, StreamMode mode, int channels,
     stream_.userBuffer = 0;
   }
 
-  error(RtError::WARNING);
+  error(RtError::DEBUG_WARNING);
   return FAILURE;
 }
 
@@ -5108,7 +5425,7 @@ void RtApiAsio :: callbackEvent(long bufferIndex)
     bufferBytes = stream_.bufferSize * formatBytes(stream_.deviceFormat[0]);
     if (stream_.doConvertBuffer[0]) {
 
-      convertStreamBuffer(OUTPUT);
+      convertBuffer( stream_.deviceBuffer, stream_.userBuffer, stream_.convertInfo[0] );
       if ( stream_.doByteSwap[0] )
         byteSwapBuffer(stream_.deviceBuffer,
                        stream_.bufferSize * stream_.nDeviceChannels[0],
@@ -5156,7 +5473,7 @@ void RtApiAsio :: callbackEvent(long bufferIndex)
         byteSwapBuffer(stream_.deviceBuffer,
                        stream_.bufferSize * stream_.nDeviceChannels[1],
                        stream_.deviceFormat[1]);
-      convertStreamBuffer(INPUT);
+      convertBuffer( stream_.userBuffer, stream_.deviceBuffer, stream_.convertInfo[1] );
 
     }
     else { // single channel only
@@ -5178,6 +5495,11 @@ void RtApiAsio :: callbackEvent(long bufferIndex)
 
   if ( !info->usingCallback )
     SetEvent( handle->condition );
+
+  // The following call was suggested by Malte Clasen.  While the API
+  // documentation indicates it should not be required, some device
+  // drivers apparently do not function correctly without it.
+  ASIOOutputReady();
 
   MUTEX_UNLOCK(&stream_.mutex);
 }
@@ -5364,7 +5686,7 @@ void RtApiDs :: probeDeviceInfo(RtApiDevice *info)
   if ( FAILED(result) ) {
     sprintf(message_, "RtApiDs: Error performing input device id enumeration: %s.",
             getErrorString(result));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return;
   }
 
@@ -5377,7 +5699,7 @@ void RtApiDs :: probeDeviceInfo(RtApiDevice *info)
   if ( FAILED(result) ) {
     sprintf(message_, "RtApiDs: Could not create capture object (%s): %s.",
             info->name.c_str(), getErrorString(result));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     goto playback_probe;
   }
 
@@ -5388,7 +5710,7 @@ void RtApiDs :: probeDeviceInfo(RtApiDevice *info)
     input->Release();
     sprintf(message_, "RtApiDs: Could not get capture capabilities (%s): %s.",
             info->name.c_str(), getErrorString(result));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     goto playback_probe;
   }
 
@@ -5449,7 +5771,7 @@ void RtApiDs :: probeDeviceInfo(RtApiDevice *info)
   if ( FAILED(result) ) {
     sprintf(message_, "RtApiDs: Error performing output device id enumeration: %s.",
             getErrorString(result));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return;
   }
 
@@ -5463,7 +5785,7 @@ void RtApiDs :: probeDeviceInfo(RtApiDevice *info)
   if ( FAILED(result) ) {
     sprintf(message_, "RtApiDs: Could not create playback object (%s): %s.",
             info->name.c_str(), getErrorString(result));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     goto check_parameters;
   }
 
@@ -5473,7 +5795,7 @@ void RtApiDs :: probeDeviceInfo(RtApiDevice *info)
     output->Release();
     sprintf(message_, "RtApiDs: Could not get playback capabilities (%s): %s.",
             info->name.c_str(), getErrorString(result));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     goto check_parameters;
   }
 
@@ -5485,17 +5807,31 @@ void RtApiDs :: probeDeviceInfo(RtApiDevice *info)
   // if it exists.
   if ( info->sampleRates.size() == 0 ) {
     info->sampleRates.push_back( (int) out_caps.dwMinSecondarySampleRate );
-    info->sampleRates.push_back( (int) out_caps.dwMaxSecondarySampleRate );
+    if ( out_caps.dwMaxSecondarySampleRate > out_caps.dwMinSecondarySampleRate )
+      info->sampleRates.push_back( (int) out_caps.dwMaxSecondarySampleRate );
   }
   else {
-    // Check input rates against output rate range.
-    for ( int i=info->sampleRates.size()-1; i>=0; i-- ) {
-      if ( (unsigned int) info->sampleRates[i] > out_caps.dwMaxSecondarySampleRate )
-        info->sampleRates.erase( info->sampleRates.begin() + i );
+    // Check input rates against output rate range.  If there's an
+    // inconsistency (such as a duplex-capable device which reports a
+    // single output rate of 48000 Hz), we'll go with the output
+    // rate(s) since the DirectSoundCapture API is stupid and broken.
+    // Note that the probed sample rate values are NOT used when
+    // opening the device.  Thanks to Tue Andersen for reporting this.
+    if ( info->sampleRates.back() < (int) out_caps.dwMinSecondarySampleRate ) {
+      info->sampleRates.clear();
+      info->sampleRates.push_back( (int) out_caps.dwMinSecondarySampleRate );
+      if ( out_caps.dwMaxSecondarySampleRate > out_caps.dwMinSecondarySampleRate )
+        info->sampleRates.push_back( (int) out_caps.dwMaxSecondarySampleRate );
     }
-    while ( info->sampleRates.size() > 0 &&
-            ((unsigned int) info->sampleRates[0] < out_caps.dwMinSecondarySampleRate) ) {
-      info->sampleRates.erase( info->sampleRates.begin() );
+    else {
+      for ( int i=info->sampleRates.size()-1; i>=0; i-- ) {
+        if ( (unsigned int) info->sampleRates[i] > out_caps.dwMaxSecondarySampleRate )
+          info->sampleRates.erase( info->sampleRates.begin() + i );
+      }
+      while ( info->sampleRates.size() > 0 &&
+              ((unsigned int) info->sampleRates[0] < out_caps.dwMinSecondarySampleRate) ) {
+        info->sampleRates.erase( info->sampleRates.begin() );
+      }
     }
   }
 
@@ -5642,7 +5978,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
       object->Release();
       sprintf(message_, "RtApiDs: Unable to set cooperative level (%s): %s.",
               devices_[device].name.c_str(), getErrorString(result));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -5659,7 +5995,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
       object->Release();
       sprintf(message_, "RtApiDs: Unable to access primary buffer (%s): %s.",
               devices_[device].name.c_str(), getErrorString(result));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -5669,7 +6005,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
       object->Release();
       sprintf(message_, "RtApiDs: Unable to set primary buffer format (%s): %s.",
               devices_[device].name.c_str(), getErrorString(result));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -5695,7 +6031,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
         object->Release();
         sprintf(message_, "RtApiDs: Unable to create secondary DS buffer (%s): %s.",
                 devices_[device].name.c_str(), getErrorString(result));
-        error(RtError::WARNING);
+        error(RtError::DEBUG_WARNING);
         return FAILURE;
       }
     }
@@ -5713,7 +6049,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
       buffer->Release();
       sprintf(message_, "RtApiDs: Unable to lock buffer (%s): %s.",
               devices_[device].name.c_str(), getErrorString(result));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -5727,7 +6063,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
       buffer->Release();
       sprintf(message_, "RtApiDs: Unable to unlock buffer(%s): %s.",
               devices_[device].name.c_str(), getErrorString(result));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -5738,8 +6074,11 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
 
   if ( mode == INPUT ) {
 
-    if ( devices_[device].maxInputChannels < channels )
+    if ( devices_[device].maxInputChannels < channels ) {
+      sprintf(message_, "RtAudioDS: device (%s) does not support %d channels.", devices_[device].name.c_str(), channels);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
+    }
 
     // Enumerate through input devices to find the id (if it exists).
     result = DirectSoundCaptureEnumerate((LPDSENUMCALLBACK)deviceIdCallback, &dsinfo);
@@ -5765,7 +6104,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
     if ( FAILED(result) ) {
       sprintf(message_, "RtApiDs: Could not create capture object (%s): %s.",
               devices_[device].name.c_str(), getErrorString(result));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -5784,7 +6123,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
       object->Release();
       sprintf(message_, "RtApiDs: Unable to create capture buffer (%s): %s.",
               devices_[device].name.c_str(), getErrorString(result));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -5795,7 +6134,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
       buffer->Release();
       sprintf(message_, "RtApiDs: Unable to lock capture buffer (%s): %s.",
               devices_[device].name.c_str(), getErrorString(result));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -5809,7 +6148,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
       buffer->Release();
       sprintf(message_, "RtApiDs: Unable to unlock capture buffer (%s): %s.",
               devices_[device].name.c_str(), getErrorString(result));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -5907,6 +6246,49 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
   stream_.nBuffers = nBuffers;
   stream_.sampleRate = sampleRate;
 
+  // Setup the buffer conversion information structure.
+  if ( stream_.doConvertBuffer[mode] ) {
+    if (mode == INPUT) { // convert device to user buffer
+      stream_.convertInfo[mode].inJump = stream_.nDeviceChannels[1];
+      stream_.convertInfo[mode].outJump = stream_.nUserChannels[1];
+      stream_.convertInfo[mode].inFormat = stream_.deviceFormat[1];
+      stream_.convertInfo[mode].outFormat = stream_.userFormat;
+    }
+    else { // convert user to device buffer
+      stream_.convertInfo[mode].inJump = stream_.nUserChannels[0];
+      stream_.convertInfo[mode].outJump = stream_.nDeviceChannels[0];
+      stream_.convertInfo[mode].inFormat = stream_.userFormat;
+      stream_.convertInfo[mode].outFormat = stream_.deviceFormat[0];
+    }
+
+    if ( stream_.convertInfo[mode].inJump < stream_.convertInfo[mode].outJump )
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].inJump;
+    else
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].outJump;
+
+    // Set up the interleave/deinterleave offsets.
+    if ( mode == INPUT && stream_.deInterleave[1] ) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+        stream_.convertInfo[mode].inJump = 1;
+      }
+    }
+    else if (mode == OUTPUT && stream_.deInterleave[0]) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outJump = 1;
+      }
+    }
+    else {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+      }
+    }
+  }
+
   return SUCCESS;
 
  error:
@@ -5932,7 +6314,7 @@ bool RtApiDs :: probeDeviceOpen( int device, StreamMode mode, int channels,
     stream_.userBuffer = 0;
   }
 
-  error(RtError::WARNING);
+  error(RtError::DEBUG_WARNING);
   return FAILURE;
 }
 
@@ -6408,8 +6790,8 @@ void RtApiDs :: tickStream()
 
     // Setup parameters and do buffer conversion if necessary.
     if (stream_.doConvertBuffer[0]) {
-      convertStreamBuffer(OUTPUT);
       buffer = stream_.deviceBuffer;
+      convertBuffer( buffer, stream_.userBuffer, stream_.convertInfo[0] );
       buffer_bytes = stream_.bufferSize * stream_.nDeviceChannels[0];
       buffer_bytes *= formatBytes(stream_.deviceFormat[0]);
     }
@@ -6420,6 +6802,12 @@ void RtApiDs :: tickStream()
     }
 
     // No byte swapping necessary in DirectSound implementation.
+
+    // Ahhh ... windoze.  16-bit data is signed but 8-bit data is
+    // unsigned.  So, we need to convert our signed 8-bit data here to
+    // unsigned.
+    if ( stream_.deviceFormat[0] == RTAUDIO_SINT8 )
+      for ( int i=0; i<buffer_bytes; i++ ) buffer[i] = (unsigned char) (buffer[i] + 128);
 
     LPDIRECTSOUNDBUFFER dsBuffer = (LPDIRECTSOUNDBUFFER) handles[0].buffer;
     UINT nextWritePos = handles[0].bufferPointer;
@@ -6559,9 +6947,13 @@ void RtApiDs :: tickStream()
 
     // No byte swapping necessary in DirectSound implementation.
 
+    // If necessary, convert 8-bit data from unsigned to signed.
+    if ( stream_.deviceFormat[1] == RTAUDIO_SINT8 )
+      for ( int j=0; j<buffer_bytes; j++ ) buffer[j] = (signed char) (buffer[j] - 128);
+
     // Do buffer conversion if necessary.
     if (stream_.doConvertBuffer[1])
-      convertStreamBuffer(INPUT);
+      convertBuffer( stream_.userBuffer, stream_.deviceBuffer, stream_.convertInfo[1] );
   }
 
   MUTEX_UNLOCK(&stream_.mutex);
@@ -6905,7 +7297,7 @@ void RtApiAl :: probeDeviceInfo(RtApiDevice *info)
     if (result < 0) {
       sprintf(message_, "RtApiAl: error getting device (%s) channels: %s.",
               info->name.c_str(), alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
     }
     else {
       info->maxOutputChannels = value.i;
@@ -6916,7 +7308,7 @@ void RtApiAl :: probeDeviceInfo(RtApiDevice *info)
     if (result < 0) {
       sprintf(message_, "RtApiAl: error getting device (%s) rates: %s.",
               info->name.c_str(), alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
     }
     else {
       info->sampleRates.clear();
@@ -6939,7 +7331,7 @@ void RtApiAl :: probeDeviceInfo(RtApiDevice *info)
     if (result < 0) {
       sprintf(message_, "RtApiAl: error getting device (%s) channels: %s.",
               info->name.c_str(), alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
     }
     else {
       info->maxInputChannels = value.i;
@@ -6950,7 +7342,7 @@ void RtApiAl :: probeDeviceInfo(RtApiDevice *info)
     if (result < 0) {
       sprintf(message_, "RtApiAl: error getting device (%s) rates: %s.",
               info->name.c_str(), alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
     }
     else {
       // In the case of the default device, these values will
@@ -7007,7 +7399,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
   if ( !al_config ) {
     sprintf(message_,"RtApiAl: can't get AL config: %s.",
             alGetErrorString(oserror()));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -7017,7 +7409,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
     alFreeConfig(al_config);
     sprintf(message_,"RtApiAl: can't set %d channels in AL config: %s.",
             channels, alGetErrorString(oserror()));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -7039,7 +7431,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
       alFreeConfig(al_config);
       sprintf(message_,"RtApiAl: can't set buffer size (%ld) in AL config: %s.",
               buffer_size, alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
     *bufferSize = buffer_size / nBuffers;
@@ -7078,7 +7470,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
     alFreeConfig(al_config);
     sprintf(message_,"RtApiAl: error setting sample format in AL config: %s.",
             alGetErrorString(oserror()));
-    error(RtError::WARNING);
+    error(RtError::DEBUG_WARNING);
     return FAILURE;
   }
 
@@ -7094,7 +7486,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
       alFreeConfig(al_config);
       sprintf(message_,"RtApiAl: error setting device (%s) in AL config: %s.",
               devices_[device].name.c_str(), alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -7104,7 +7496,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
       alFreeConfig(al_config);
       sprintf(message_,"RtApiAl: error opening output port: %s.",
               alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -7119,7 +7511,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
       alFreeConfig(al_config);
       sprintf(message_,"RtApiAl: error setting sample rate (%d) for device (%s): %s.",
               sampleRate, devices_[device].name.c_str(), alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
   }
@@ -7135,7 +7527,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
       alFreeConfig(al_config);
       sprintf(message_,"RtApiAl: error setting device (%s) in AL config: %s.",
               devices_[device].name.c_str(), alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -7145,7 +7537,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
       alFreeConfig(al_config);
       sprintf(message_,"RtApiAl: error opening input port: %s.",
               alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
 
@@ -7160,7 +7552,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
       alFreeConfig(al_config);
       sprintf(message_,"RtApiAl: error setting sample rate (%d) for device (%s): %s.",
               sampleRate, devices_[device].name.c_str(), alGetErrorString(oserror()));
-      error(RtError::WARNING);
+      error(RtError::DEBUG_WARNING);
       return FAILURE;
     }
   }
@@ -7246,6 +7638,49 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
   stream_.bufferSize = *bufferSize;
   stream_.sampleRate = sampleRate;
 
+  // Setup the buffer conversion information structure.
+  if ( stream_.doConvertBuffer[mode] ) {
+    if (mode == INPUT) { // convert device to user buffer
+      stream_.convertInfo[mode].inJump = stream_.nDeviceChannels[1];
+      stream_.convertInfo[mode].outJump = stream_.nUserChannels[1];
+      stream_.convertInfo[mode].inFormat = stream_.deviceFormat[1];
+      stream_.convertInfo[mode].outFormat = stream_.userFormat;
+    }
+    else { // convert user to device buffer
+      stream_.convertInfo[mode].inJump = stream_.nUserChannels[0];
+      stream_.convertInfo[mode].outJump = stream_.nDeviceChannels[0];
+      stream_.convertInfo[mode].inFormat = stream_.userFormat;
+      stream_.convertInfo[mode].outFormat = stream_.deviceFormat[0];
+    }
+
+    if ( stream_.convertInfo[mode].inJump < stream_.convertInfo[mode].outJump )
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].inJump;
+    else
+      stream_.convertInfo[mode].channels = stream_.convertInfo[mode].outJump;
+
+    // Set up the interleave/deinterleave offsets.
+    if ( mode == INPUT && stream_.deInterleave[1] ) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+        stream_.convertInfo[mode].inJump = 1;
+      }
+    }
+    else if (mode == OUTPUT && stream_.deInterleave[0]) {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k * stream_.bufferSize );
+        stream_.convertInfo[mode].outJump = 1;
+      }
+    }
+    else {
+      for (int k=0; k<stream_.convertInfo[mode].channels; k++) {
+        stream_.convertInfo[mode].inOffset.push_back( k );
+        stream_.convertInfo[mode].outOffset.push_back( k );
+      }
+    }
+  }
+
   return SUCCESS;
 
  error:
@@ -7263,7 +7698,7 @@ bool RtApiAl :: probeDeviceOpen(int device, StreamMode mode, int channels,
     stream_.userBuffer = 0;
   }
 
-  error(RtError::WARNING);
+  error(RtError::DEBUG_WARNING);
   return FAILURE;
 }
 
@@ -7449,8 +7884,8 @@ void RtApiAl :: tickStream()
 
     // Setup parameters and do buffer conversion if necessary.
     if (stream_.doConvertBuffer[0]) {
-      convertStreamBuffer(OUTPUT);
       buffer = stream_.deviceBuffer;
+      convertBuffer( buffer, stream_.userBuffer, stream_.convertInfo[0] );
       channels = stream_.nDeviceChannels[0];
       format = stream_.deviceFormat[0];
     }
@@ -7491,7 +7926,7 @@ void RtApiAl :: tickStream()
 
     // Do buffer conversion if necessary.
     if (stream_.doConvertBuffer[1])
-      convertStreamBuffer(INPUT);
+      convertBuffer( stream_.userBuffer, stream_.deviceBuffer, stream_.convertInfo[1] );
   }
 
  unlock:
@@ -7608,7 +8043,7 @@ void RtApi :: error(RtError::Type type)
 void RtApi :: verifyStream()
 {
   if ( stream_.mode == UNINITIALIZED ) {
-    sprintf(message_, "RtAudio: a stream was not previously opened!");
+    sprintf(message_, "RtAudio: stream is not open!");
     error(RtError::INVALID_STREAM);
   }
 }
@@ -7666,470 +8101,424 @@ int RtApi :: formatBytes(RtAudioFormat format)
   return 0;
 }
 
-void RtApi :: convertStreamBuffer( StreamMode mode )
+void RtApi :: convertBuffer( char *outBuffer, char *inBuffer, ConvertInfo &info )
 {
-  // This method does format conversion, input/output channel compensation, and
+  // This function does format conversion, input/output channel compensation, and
   // data interleaving/deinterleaving.  24-bit integers are assumed to occupy
   // the upper three bytes of a 32-bit integer.
 
-  int j, jump_in, jump_out, channels;
-  RtAudioFormat format_in, format_out;
-  char *input, *output;
+  // Clear our device buffer when in/out duplex device channels are different
+  if ( outBuffer == stream_.deviceBuffer && stream_.mode == DUPLEX &&
+       stream_.nDeviceChannels[0] != stream_.nDeviceChannels[1] )
+    memset( outBuffer, 0, stream_.bufferSize * info.outJump * formatBytes( info.outFormat ) );
 
-  if (mode == INPUT) { // convert device to user buffer
-    input = stream_.deviceBuffer;
-    output = stream_.userBuffer;
-    jump_in = stream_.nDeviceChannels[1];
-    jump_out = stream_.nUserChannels[1];
-    format_in = stream_.deviceFormat[1];
-    format_out = stream_.userFormat;
-  }
-  else { // convert user to device buffer
-    input = stream_.userBuffer;
-    output = stream_.deviceBuffer;
-    jump_in = stream_.nUserChannels[0];
-    jump_out = stream_.nDeviceChannels[0];
-    format_in = stream_.userFormat;
-    format_out = stream_.deviceFormat[0];
-
-    // clear our device buffer when in/out duplex device channels are different
-    if ( stream_.mode == DUPLEX &&
-         stream_.nDeviceChannels[0] != stream_.nDeviceChannels[1] )
-      memset(output, 0, stream_.bufferSize * jump_out * formatBytes(format_out));
-  }
-
-  channels = (jump_in < jump_out) ? jump_in : jump_out;
-
-  // Set up the interleave/deinterleave offsets
-  std::vector<int> offset_in(channels);
-  std::vector<int> offset_out(channels);
-  if (mode == INPUT && stream_.deInterleave[1]) {
-    for (int k=0; k<channels; k++) {
-      offset_in[k] = k * stream_.bufferSize;
-      offset_out[k] = k;
-      jump_in = 1;
-    }
-  }
-  else if (mode == OUTPUT && stream_.deInterleave[0]) {
-    for (int k=0; k<channels; k++) {
-      offset_in[k] = k;
-      offset_out[k] = k * stream_.bufferSize;
-      jump_out = 1;
-    }
-  }
-  else {
-    for (int k=0; k<channels; k++) {
-      offset_in[k] = k;
-      offset_out[k] = k;
-    }
-  }
-
-  if (format_out == RTAUDIO_FLOAT64) {
+  int j;
+  if (info.outFormat == RTAUDIO_FLOAT64) {
     Float64 scale;
-    Float64 *out = (Float64 *)output;
+    Float64 *out = (Float64 *)outBuffer;
 
-    if (format_in == RTAUDIO_SINT8) {
-      signed char *in = (signed char *)input;
+    if (info.inFormat == RTAUDIO_SINT8) {
+      signed char *in = (signed char *)inBuffer;
       scale = 1.0 / 128.0;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float64) in[offset_in[j]];
-          out[offset_out[j]] *= scale;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float64) in[info.inOffset[j]];
+          out[info.outOffset[j]] *= scale;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT16) {
-      Int16 *in = (Int16 *)input;
+    else if (info.inFormat == RTAUDIO_SINT16) {
+      Int16 *in = (Int16 *)inBuffer;
       scale = 1.0 / 32768.0;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float64) in[offset_in[j]];
-          out[offset_out[j]] *= scale;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float64) in[info.inOffset[j]];
+          out[info.outOffset[j]] *= scale;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT24) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT24) {
+      Int32 *in = (Int32 *)inBuffer;
       scale = 1.0 / 2147483648.0;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float64) (in[offset_in[j]] & 0xffffff00);
-          out[offset_out[j]] *= scale;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float64) (in[info.inOffset[j]] & 0xffffff00);
+          out[info.outOffset[j]] *= scale;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT32) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT32) {
+      Int32 *in = (Int32 *)inBuffer;
       scale = 1.0 / 2147483648.0;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float64) in[offset_in[j]];
-          out[offset_out[j]] *= scale;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float64) in[info.inOffset[j]];
+          out[info.outOffset[j]] *= scale;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT32) {
-      Float32 *in = (Float32 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT32) {
+      Float32 *in = (Float32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float64) in[offset_in[j]];
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float64) in[info.inOffset[j]];
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT64) {
+    else if (info.inFormat == RTAUDIO_FLOAT64) {
       // Channel compensation and/or (de)interleaving only.
-      Float64 *in = (Float64 *)input;
+      Float64 *in = (Float64 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = in[offset_in[j]];
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = in[info.inOffset[j]];
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
   }
-  else if (format_out == RTAUDIO_FLOAT32) {
+  else if (info.outFormat == RTAUDIO_FLOAT32) {
     Float32 scale;
-    Float32 *out = (Float32 *)output;
+    Float32 *out = (Float32 *)outBuffer;
 
-    if (format_in == RTAUDIO_SINT8) {
-      signed char *in = (signed char *)input;
+    if (info.inFormat == RTAUDIO_SINT8) {
+      signed char *in = (signed char *)inBuffer;
       scale = 1.0 / 128.0;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float32) in[offset_in[j]];
-          out[offset_out[j]] *= scale;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float32) in[info.inOffset[j]];
+          out[info.outOffset[j]] *= scale;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT16) {
-      Int16 *in = (Int16 *)input;
+    else if (info.inFormat == RTAUDIO_SINT16) {
+      Int16 *in = (Int16 *)inBuffer;
       scale = 1.0 / 32768.0;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float32) in[offset_in[j]];
-          out[offset_out[j]] *= scale;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float32) in[info.inOffset[j]];
+          out[info.outOffset[j]] *= scale;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT24) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT24) {
+      Int32 *in = (Int32 *)inBuffer;
       scale = 1.0 / 2147483648.0;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float32) (in[offset_in[j]] & 0xffffff00);
-          out[offset_out[j]] *= scale;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float32) (in[info.inOffset[j]] & 0xffffff00);
+          out[info.outOffset[j]] *= scale;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT32) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT32) {
+      Int32 *in = (Int32 *)inBuffer;
       scale = 1.0 / 2147483648.0;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float32) in[offset_in[j]];
-          out[offset_out[j]] *= scale;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float32) in[info.inOffset[j]];
+          out[info.outOffset[j]] *= scale;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT32) {
+    else if (info.inFormat == RTAUDIO_FLOAT32) {
       // Channel compensation and/or (de)interleaving only.
-      Float32 *in = (Float32 *)input;
+      Float32 *in = (Float32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = in[offset_in[j]];
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = in[info.inOffset[j]];
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT64) {
-      Float64 *in = (Float64 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT64) {
+      Float64 *in = (Float64 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Float32) in[offset_in[j]];
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Float32) in[info.inOffset[j]];
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
   }
-  else if (format_out == RTAUDIO_SINT32) {
-    Int32 *out = (Int32 *)output;
-    if (format_in == RTAUDIO_SINT8) {
-      signed char *in = (signed char *)input;
+  else if (info.outFormat == RTAUDIO_SINT32) {
+    Int32 *out = (Int32 *)outBuffer;
+    if (info.inFormat == RTAUDIO_SINT8) {
+      signed char *in = (signed char *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) in[offset_in[j]];
-          out[offset_out[j]] <<= 24;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) in[info.inOffset[j]];
+          out[info.outOffset[j]] <<= 24;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT16) {
-      Int16 *in = (Int16 *)input;
+    else if (info.inFormat == RTAUDIO_SINT16) {
+      Int16 *in = (Int16 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) in[offset_in[j]];
-          out[offset_out[j]] <<= 16;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) in[info.inOffset[j]];
+          out[info.outOffset[j]] <<= 16;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT24) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT24) {
+      Int32 *in = (Int32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) in[offset_in[j]];
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) in[info.inOffset[j]];
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT32) {
+    else if (info.inFormat == RTAUDIO_SINT32) {
       // Channel compensation and/or (de)interleaving only.
-      Int32 *in = (Int32 *)input;
+      Int32 *in = (Int32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = in[offset_in[j]];
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = in[info.inOffset[j]];
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT32) {
-      Float32 *in = (Float32 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT32) {
+      Float32 *in = (Float32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) (in[offset_in[j]] * 2147483647.0);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) (in[info.inOffset[j]] * 2147483647.0);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT64) {
-      Float64 *in = (Float64 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT64) {
+      Float64 *in = (Float64 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) (in[offset_in[j]] * 2147483647.0);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) (in[info.inOffset[j]] * 2147483647.0);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
   }
-  else if (format_out == RTAUDIO_SINT24) {
-    Int32 *out = (Int32 *)output;
-    if (format_in == RTAUDIO_SINT8) {
-      signed char *in = (signed char *)input;
+  else if (info.outFormat == RTAUDIO_SINT24) {
+    Int32 *out = (Int32 *)outBuffer;
+    if (info.inFormat == RTAUDIO_SINT8) {
+      signed char *in = (signed char *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) in[offset_in[j]];
-          out[offset_out[j]] <<= 24;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) in[info.inOffset[j]];
+          out[info.outOffset[j]] <<= 24;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT16) {
-      Int16 *in = (Int16 *)input;
+    else if (info.inFormat == RTAUDIO_SINT16) {
+      Int16 *in = (Int16 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) in[offset_in[j]];
-          out[offset_out[j]] <<= 16;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) in[info.inOffset[j]];
+          out[info.outOffset[j]] <<= 16;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT24) {
+    else if (info.inFormat == RTAUDIO_SINT24) {
       // Channel compensation and/or (de)interleaving only.
-      Int32 *in = (Int32 *)input;
+      Int32 *in = (Int32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = in[offset_in[j]];
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = in[info.inOffset[j]];
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT32) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT32) {
+      Int32 *in = (Int32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) (in[offset_in[j]] & 0xffffff00);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) (in[info.inOffset[j]] & 0xffffff00);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT32) {
-      Float32 *in = (Float32 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT32) {
+      Float32 *in = (Float32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) (in[offset_in[j]] * 2147483647.0);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) (in[info.inOffset[j]] * 2147483647.0);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT64) {
-      Float64 *in = (Float64 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT64) {
+      Float64 *in = (Float64 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int32) (in[offset_in[j]] * 2147483647.0);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int32) (in[info.inOffset[j]] * 2147483647.0);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
   }
-  else if (format_out == RTAUDIO_SINT16) {
-    Int16 *out = (Int16 *)output;
-    if (format_in == RTAUDIO_SINT8) {
-      signed char *in = (signed char *)input;
+  else if (info.outFormat == RTAUDIO_SINT16) {
+    Int16 *out = (Int16 *)outBuffer;
+    if (info.inFormat == RTAUDIO_SINT8) {
+      signed char *in = (signed char *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int16) in[offset_in[j]];
-          out[offset_out[j]] <<= 8;
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int16) in[info.inOffset[j]];
+          out[info.outOffset[j]] <<= 8;
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT16) {
+    else if (info.inFormat == RTAUDIO_SINT16) {
       // Channel compensation and/or (de)interleaving only.
-      Int16 *in = (Int16 *)input;
+      Int16 *in = (Int16 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = in[offset_in[j]];
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = in[info.inOffset[j]];
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT24) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT24) {
+      Int32 *in = (Int32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int16) ((in[offset_in[j]] >> 16) & 0x0000ffff);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int16) ((in[info.inOffset[j]] >> 16) & 0x0000ffff);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT32) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT32) {
+      Int32 *in = (Int32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int16) ((in[offset_in[j]] >> 16) & 0x0000ffff);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int16) ((in[info.inOffset[j]] >> 16) & 0x0000ffff);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT32) {
-      Float32 *in = (Float32 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT32) {
+      Float32 *in = (Float32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int16) (in[offset_in[j]] * 32767.0);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int16) (in[info.inOffset[j]] * 32767.0);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT64) {
-      Float64 *in = (Float64 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT64) {
+      Float64 *in = (Float64 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (Int16) (in[offset_in[j]] * 32767.0);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (Int16) (in[info.inOffset[j]] * 32767.0);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
   }
-  else if (format_out == RTAUDIO_SINT8) {
-    signed char *out = (signed char *)output;
-    if (format_in == RTAUDIO_SINT8) {
+  else if (info.outFormat == RTAUDIO_SINT8) {
+    signed char *out = (signed char *)outBuffer;
+    if (info.inFormat == RTAUDIO_SINT8) {
       // Channel compensation and/or (de)interleaving only.
-      signed char *in = (signed char *)input;
+      signed char *in = (signed char *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = in[offset_in[j]];
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = in[info.inOffset[j]];
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    if (format_in == RTAUDIO_SINT16) {
-      Int16 *in = (Int16 *)input;
+    if (info.inFormat == RTAUDIO_SINT16) {
+      Int16 *in = (Int16 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (signed char) ((in[offset_in[j]] >> 8) & 0x00ff);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (signed char) ((in[info.inOffset[j]] >> 8) & 0x00ff);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT24) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT24) {
+      Int32 *in = (Int32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (signed char) ((in[offset_in[j]] >> 24) & 0x000000ff);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (signed char) ((in[info.inOffset[j]] >> 24) & 0x000000ff);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_SINT32) {
-      Int32 *in = (Int32 *)input;
+    else if (info.inFormat == RTAUDIO_SINT32) {
+      Int32 *in = (Int32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (signed char) ((in[offset_in[j]] >> 24) & 0x000000ff);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (signed char) ((in[info.inOffset[j]] >> 24) & 0x000000ff);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT32) {
-      Float32 *in = (Float32 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT32) {
+      Float32 *in = (Float32 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (signed char) (in[offset_in[j]] * 127.0);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (signed char) (in[info.inOffset[j]] * 127.0);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
-    else if (format_in == RTAUDIO_FLOAT64) {
-      Float64 *in = (Float64 *)input;
+    else if (info.inFormat == RTAUDIO_FLOAT64) {
+      Float64 *in = (Float64 *)inBuffer;
       for (int i=0; i<stream_.bufferSize; i++) {
-        for (j=0; j<channels; j++) {
-          out[offset_out[j]] = (signed char) (in[offset_in[j]] * 127.0);
+        for (j=0; j<info.channels; j++) {
+          out[info.outOffset[j]] = (signed char) (in[info.inOffset[j]] * 127.0);
         }
-        in += jump_in;
-        out += jump_out;
+        in += info.inJump;
+        out += info.outJump;
       }
     }
   }

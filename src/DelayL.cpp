@@ -18,102 +18,122 @@
     order Lagrange interpolators can typically
     improve (minimize) this attenuation characteristic.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "DelayL.h"
-#include <iostream>
 
-DelayL :: DelayL()
+DelayL :: DelayL() : Delay()
 {
-  doNextOut = true;
+  doNextOut_ = true;
 }
 
-DelayL :: DelayL(MY_FLOAT theDelay, long maxDelay)
+DelayL :: DelayL(StkFloat delay, unsigned long maxDelay)
 {
-  // Writing before reading allows delays from 0 to length-1. 
-  length = maxDelay+1;
+  if ( delay < 0.0 || maxDelay < 1 ) {
+    errorString_ << "DelayL::DelayL: delay must be >= 0.0, maxDelay must be > 0!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
 
-  if ( length > 4096 ) {
-    // We need to delete the previously allocated inputs.
-    delete [] inputs;
-    inputs = new MY_FLOAT[length];
+  if ( delay > (StkFloat) maxDelay ) {
+    errorString_ << "DelayL::DelayL: maxDelay must be > than delay argument!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  // Writing before reading allows delays from 0 to length-1. 
+  if ( maxDelay > inputs_.size()-1 ) {
+    inputs_.resize( maxDelay+1 );
     this->clear();
   }
 
-  inPoint = 0;
-  this->setDelay(theDelay);
-  doNextOut = true;
+  inPoint_ = 0;
+  this->setDelay(delay);
+  doNextOut_ = true;
 }
 
 DelayL :: ~DelayL()
 {
 }
 
-void DelayL :: setDelay(MY_FLOAT theDelay)
+void DelayL :: setDelay(StkFloat delay)
 {
-  MY_FLOAT outPointer;
+  StkFloat outPointer;
 
-  if (theDelay > length-1) {
-    std::cerr << "DelayL: setDelay(" << theDelay << ") too big!" << std::endl;
+  if ( delay > inputs_.size() - 1 ) { // The value is too big.
+    errorString_ << "DelayL::setDelay: argument (" << delay << ") too big ... setting to maximum!";
+    handleError( StkError::WARNING );
+
     // Force delay to maxLength
-    outPointer = inPoint + 1.0;
-    delay = length - 1;
+    outPointer = inPoint_ + 1.0;
+    delay_ = inputs_.size() - 1;
   }
-  else if (theDelay < 0 ) {
-    std::cerr << "DelayL: setDelay(" << theDelay << ") less than zero!" << std::endl;
-    outPointer = inPoint;
-    delay = 0;
+  else if (delay < 0 ) {
+    errorString_ << "DelayL::setDelay: argument (" << delay << ") less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
+
+    outPointer = inPoint_;
+    delay_ = 0;
   }
   else {
-    outPointer = inPoint - theDelay;  // read chases write
-    delay = theDelay;
+    outPointer = inPoint_ - delay;  // read chases write
+    delay_ = delay;
   }
 
   while (outPointer < 0)
-    outPointer += length; // modulo maximum length
+    outPointer += inputs_.size(); // modulo maximum length
 
-  outPoint = (long) outPointer;  // integer part
-  alpha = outPointer - outPoint; // fractional part
-  omAlpha = (MY_FLOAT) 1.0 - alpha;
+  outPoint_ = (long) outPointer;   // integer part
+  if ( outPoint_ == inputs_.size() ) outPoint_ = 0;
+  alpha_ = outPointer - outPoint_; // fractional part
+  omAlpha_ = (StkFloat) 1.0 - alpha_;
 }
 
-MY_FLOAT DelayL :: getDelay(void) const
+StkFloat DelayL :: getDelay(void) const
 {
-  return delay;
+  return delay_;
 }
 
-MY_FLOAT DelayL :: nextOut(void)
+StkFloat DelayL :: nextOut(void)
 {
-  if ( doNextOut ) {
+  if ( doNextOut_ ) {
     // First 1/2 of interpolation
-    nextOutput = inputs[outPoint] * omAlpha;
+    nextOutput_ = inputs_[outPoint_] * omAlpha_;
     // Second 1/2 of interpolation
-    if (outPoint+1 < length)
-      nextOutput += inputs[outPoint+1] * alpha;
+    if (outPoint_+1 < inputs_.size())
+      nextOutput_ += inputs_[outPoint_+1] * alpha_;
     else
-      nextOutput += inputs[0] * alpha;
-    doNextOut = false;
+      nextOutput_ += inputs_[0] * alpha_;
+    doNextOut_ = false;
   }
 
-  return nextOutput;
+  return nextOutput_;
 }
 
-MY_FLOAT DelayL :: tick(MY_FLOAT sample)
+StkFloat DelayL :: tick(StkFloat sample)
 {
-  inputs[inPoint++] = sample;
+  inputs_[inPoint_++] = sample;
 
   // Increment input pointer modulo length.
-  if (inPoint == length)
-    inPoint -= length;
+  if (inPoint_ == inputs_.size())
+    inPoint_ = 0;
 
-  outputs[0] = nextOut();
-  doNextOut = true;
+  outputs_[0] = nextOut();
+  doNextOut_ = true;
 
   // Increment output pointer modulo length.
-  if (++outPoint >= length)
-    outPoint -= length;
+  if (++outPoint_ == inputs_.size())
+    outPoint_ = 0;
 
-  return outputs[0];
+  return outputs_[0];
+}
+
+StkFloat *DelayL :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Filter::tick( vector, vectorSize );
+}
+
+StkFrames& DelayL :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Filter::tick( frames, channel );
 }

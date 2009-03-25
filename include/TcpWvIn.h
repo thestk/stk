@@ -20,18 +20,19 @@
     for a single remote connection.  The default
     data type for the incoming stream is signed
     16-bit integers, though any of the defined
-    STK_FORMATs are permissible.
+    StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__TCPWVIN_H)
-#define __TCPWVIN_H
+#ifndef STK_TCPWVIN_H
+#define STK_TCPWVIN_H
 
 #include "WvIn.h"
 #include "Socket.h"
 #include "Thread.h"
+#include "Mutex.h"
 
 typedef struct {
   bool finished;
@@ -54,32 +55,49 @@ public:
   /*!
     An StkError will be thrown a socket error or an invalid function argument.
   */
-  void listen(unsigned int nChannels = 1, Stk::STK_FORMAT format = STK_SINT16);
+  void listen(unsigned int nChannels = 1, Stk::StkFormat format = STK_SINT16);
 
-  //! Returns TRUE is an input connection exists or input data remains in the queue.
+  //! Returns true is an input connection exists or input data remains in the queue.
   /*!
-    This method will not return FALSE after an input connection has been closed until
+    This method will not return false after an input connection has been closed until
     all buffered input data has been read out.
   */
   bool isConnected(void);
 
   //! Return the average across the last output sample frame.
-  MY_FLOAT lastOut(void) const;
+  StkFloat lastOut(void) const;
 
   //! Read out the average across one sample frame of data.
-  MY_FLOAT tick(void);
+  StkFloat tick(void);
 
   //! Read out vectorSize averaged sample frames of data in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with averaged sample frames.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Return a pointer to the last output sample frame.
-  const MY_FLOAT *lastFrame(void) const;
+  const StkFloat *lastFrame(void) const;
 
   //! Return a pointer to the next sample frame of data.
-  const MY_FLOAT *tickFrame(void);
+  const StkFloat *tickFrame(void);
 
   //! Read out sample \e frames of data to \e frameVector.
-  MY_FLOAT *tickFrame(MY_FLOAT *frameVector, unsigned int frames);
+  StkFloat *tickFrame(StkFloat *frameVector, unsigned int frames);
+
+  //! Fill the StkFrames object with sample frames of data and return the same reference.
+  /*!
+    An StkError will be thrown if there is an incompatability
+    between the number of channels in the TcpWvIn object and that in
+    the StkFrames object.
+  */
+  StkFrames& tickFrame( StkFrames& frames );
 
   // Called by the thread routine to receive data via the socket connection
   // and fill the socket buffer.  This is not intended for general use but
@@ -94,19 +112,19 @@ protected:
   // Read buffered socket data into the data buffer ... will block if none available.
   int readData( void );
 
-  Socket *soket;
-  Thread *thread;
-  Mutex mutex;
-  char *buffer;
-  long bufferBytes;
-  long bytesFilled;
-  long writePoint;
-  long readPoint;
-  long counter;
-  int dataSize;
-  bool connected;
-  int fd;
-  thread_info threadInfo;
+  Socket *soket_;
+  Thread *thread_;
+  Mutex mutex_;
+  char *buffer_;
+  long bufferBytes_;
+  long bytesFilled_;
+  long writePoint_;
+  long readPoint_;
+  long counter_;
+  int dataSize_;
+  bool connected_;
+  int fd_;
+  thread_info threadInfo_;
 
 };
 

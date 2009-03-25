@@ -2,17 +2,26 @@
 /*! \class Thread
     \brief STK thread class.
 
-    This class provides a uniform interface for
-    cross-platform threads.  On unix systems,
-    the pthread library is used.  Under Windows,
-    the C runtime threadex functions are used.
+    This class provides a uniform interface for cross-platform
+    threads.  On unix systems, the pthread library is used.  Under
+    Windows, the C runtime threadex functions are used.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    Each instance of the Thread class can be used to control a single
+    thread process.  Routines are provided to signal cancelation
+    and/or joining with a thread, though it is not possible for this
+    class to know the running status of a thread once it is started.
+
+    For cross-platform compatability, thread functions should be
+    declared as follows:
+
+    THREAD_RETURN THREAD_TYPE thread_function(void *ptr)
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__THREAD_H)
-#define __THREAD_H
+#ifndef STK_THREAD_H
+#define STK_THREAD_H
 
 #include "Stk.h"
 
@@ -23,7 +32,6 @@
   typedef pthread_t THREAD_HANDLE;
   typedef void * THREAD_RETURN;
   typedef void * (*THREAD_FUNCTION)(void *);
-  typedef pthread_mutex_t MUTEX;
 
 #elif defined(__OS_WINDOWS__)
 
@@ -33,7 +41,6 @@
   typedef unsigned long THREAD_HANDLE;
   typedef unsigned THREAD_RETURN;
   typedef unsigned (__stdcall *THREAD_FUNCTION)(void *);
-  typedef CRITICAL_SECTION MUTEX;
 
 #endif
 
@@ -43,53 +50,45 @@ class Thread : public Stk
   //! Default constructor.
   Thread();
 
-  //! The class destructor waits indefinitely for the thread to end before returning.
+  //! The class destructor does not attempt to cancel or join a thread.
   ~Thread();
 
-  //! Begin execution of the thread \e routine.  Upon success, TRUE is returned.
+  //! Begin execution of the thread \e routine.  Upon success, true is returned.
   /*!
-    The thread routine can be passed an argument via \e ptr.  If
-    the thread cannot be created, the return value is FALSE.
+    A data pointer can be supplied to the thread routine via the
+    optional \e ptr argument.  If the thread cannot be created, the
+    return value is false.
   */
   bool start( THREAD_FUNCTION routine, void * ptr = NULL );
 
-  //! Wait the specified number of milliseconds for the thread to terminate.  Return TRUE on success.
+  //! Signal cancellation of a thread routine, returning \e true on success.
   /*!
-    If the specified time value is negative, the function will
-    block indefinitely.  Otherwise, the function will block up to a
-    maximum of the specified time.  A return value of FALSE indicates
-    the thread did not terminate within the specified time limit.
+    This function only signals thread cancellation.  It does not
+    wait to verify actual routine termination.  A \e true return value
+    only signifies that the cancellation signal was properly executed,
+    not thread cancellation.  A thread routine may need to make use of
+    the testCancel() function to specify a cancellation point.
   */
-  bool wait( long milliseconds = -1 );
+  bool cancel(void);
 
-  //! Test for a thread cancellation request.
-  static void test(void);
+  //! Block the calling routine indefinitely until the thread terminates.
+  /*!
+    This function suspends execution of the calling routine until the thread has terminated.  It will return immediately if the thread was already terminated.  A \e true return value signifies successful termination.  A \e false return value indicates a problem with the wait call.
+  */
+  bool wait(void);
 
- protected:
-
-  THREAD_HANDLE thread;
-
-};
-
-class Mutex : public Stk
-{
- public:
-  //! Default constructor.
-  Mutex();
-
-  //! Class destructor.
-  ~Mutex();
-
-  //! Lock the mutex.
-  void lock(void);
-
-  //! Unlock the mutex.
-  void unlock(void);
+  //! Create a cancellation point within a thread routine.
+  /*!
+    This function call checks for thread cancellation, allowing the
+    thread to be terminated if a cancellation request was previously
+    signaled.
+  */
+  void testCancel(void);
 
  protected:
 
-  MUTEX mutex;
+  THREAD_HANDLE thread_;
 
 };
 
-#endif // defined(__THREAD_H)
+#endif

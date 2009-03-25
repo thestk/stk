@@ -8,12 +8,12 @@
     frequency response while maintaining a constant
     filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__BIQUAD_H)
-#define __BIQUAD_H
+#ifndef STK_BIQUAD_H
+#define STK_BIQUAD_H
 
 #include "Filter.h"
 
@@ -31,19 +31,19 @@ public:
   void clear(void);
 
   //! Set the b[0] coefficient value.
-  void setB0(MY_FLOAT b0);
+  void setB0(StkFloat b0);
 
   //! Set the b[1] coefficient value.
-  void setB1(MY_FLOAT b1);
+  void setB1(StkFloat b1);
 
   //! Set the b[2] coefficient value.
-  void setB2(MY_FLOAT b2);
+  void setB2(StkFloat b2);
 
   //! Set the a[1] coefficient value.
-  void setA1(MY_FLOAT a1);
+  void setA1(StkFloat a1);
 
   //! Set the a[2] coefficient value.
-  void setA2(MY_FLOAT a2);
+  void setA2(StkFloat a2);
 
   //! Sets the filter coefficients for a resonance at \e frequency (in Hz).
   /*!
@@ -57,7 +57,7 @@ public:
     frequency.  The closer the poles are to the unit-circle (\e radius
     close to one), the narrower the resulting resonance width.
   */
-  void setResonance(MY_FLOAT frequency, MY_FLOAT radius, bool normalize = FALSE);
+  void setResonance(StkFloat frequency, StkFloat radius, bool normalize = false);
 
   //! Set the filter coefficients for a notch at \e frequency (in Hz).
   /*!
@@ -66,7 +66,7 @@ public:
     and \e radius from the z-plane origin.  No filter normalization
     is attempted.
   */
-  void setNotch(MY_FLOAT frequency, MY_FLOAT radius);
+  void setNotch(StkFloat frequency, StkFloat radius);
 
   //! Sets the filter zeroes for equal resonance gain.
   /*!
@@ -82,19 +82,28 @@ public:
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    */
-  void setGain(MY_FLOAT theGain);
+  void setGain(StkFloat gain);
 
   //! Return the current filter gain.
-  MY_FLOAT getGain(void) const;
+  StkFloat getGain(void) const;
 
   //! Return the last computed output value.
-  MY_FLOAT lastOut(void) const;
+  StkFloat lastOut(void) const;
 
   //! Input one sample to the filter and return one output.
-  MY_FLOAT tick(MY_FLOAT sample);
+  virtual StkFloat tick(StkFloat sample);
 
   //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Take a channel of the StkFrames object as inputs to the filter and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 };
 
 #endif

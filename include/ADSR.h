@@ -11,12 +11,12 @@
     envelope value reaches 0.0 in the
     ADSR::RELEASE state.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__ADSR_H)
-#define __ADSR_H
+#ifndef STK_ADSR_H
+#define STK_ADSR_H
 
 #include "Envelope.h"
 
@@ -40,49 +40,58 @@ class ADSR : public Envelope
   void keyOff(void);
 
   //! Set the attack rate.
-  void setAttackRate(MY_FLOAT aRate);
+  void setAttackRate(StkFloat rate);
 
   //! Set the decay rate.
-  void setDecayRate(MY_FLOAT aRate);
+  void setDecayRate(StkFloat rate);
 
   //! Set the sustain level.
-  void setSustainLevel(MY_FLOAT aLevel);
+  void setSustainLevel(StkFloat level);
 
   //! Set the release rate.
-  void setReleaseRate(MY_FLOAT aRate);
+  void setReleaseRate(StkFloat rate);
 
   //! Set the attack rate based on a time duration.
-  void setAttackTime(MY_FLOAT aTime);
+  void setAttackTime(StkFloat time);
 
   //! Set the decay rate based on a time duration.
-  void setDecayTime(MY_FLOAT aTime);
+  void setDecayTime(StkFloat time);
 
   //! Set the release rate based on a time duration.
-  void setReleaseTime(MY_FLOAT aTime);
+  void setReleaseTime(StkFloat time);
 
-  //! Set sustain level and attack, decay, and release state rates based on time durations.
-  void setAllTimes(MY_FLOAT aTime, MY_FLOAT dTime, MY_FLOAT sLevel, MY_FLOAT rTime);
+  //! Set sustain level and attach, decay, and release time durations.
+  void setAllTimes(StkFloat aTime, StkFloat dTime, StkFloat sLevel, StkFloat rTime);
 
   //! Set the target value.
-  void setTarget(MY_FLOAT aTarget);
+  void setTarget(StkFloat target);
 
   //! Return the current envelope \e state (ATTACK, DECAY, SUSTAIN, RELEASE, DONE).
   int getState(void) const;
 
   //! Set to state = ADSR::SUSTAIN with current and target values of \e aValue.
-  void setValue(MY_FLOAT aValue);
+  void setValue(StkFloat value);
 
   //! Return one envelope output value.
-  MY_FLOAT tick(void);
+  StkFloat tick(void);
 
-  //! Return \e vectorSize envelope outputs in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  //! Compute \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
  protected:  
-  MY_FLOAT attackRate;
-  MY_FLOAT decayRate;
-  MY_FLOAT sustainLevel;
-  MY_FLOAT releaseRate;
+  StkFloat attackRate_;
+  StkFloat decayRate_;
+  StkFloat sustainLevel_;
+  StkFloat releaseRate_;
 };
 
 #endif

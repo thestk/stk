@@ -10,7 +10,7 @@
   file.  The output data format is set for
   signed 16-bit integers.  However, it is
   easy to change the TcpWvOut setting to
-  any of the other defined STK_FORMATs.
+  any of the other defined StkFormats.
   If using tcpIn, it will be necessary to
   change the expected data format there
   as well.

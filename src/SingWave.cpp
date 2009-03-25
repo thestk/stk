@@ -9,120 +9,121 @@
     from pitch shifting.  It will be used as an
     excitation source for other instruments.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "SingWave.h"
  
-SingWave :: SingWave(const char *fileName, bool raw)
+SingWave :: SingWave( std::string fileName, bool raw)
 {
   // An exception could be thrown here.
-  wave = new WaveLoop( fileName, raw );
+  wave_ = new WaveLoop( fileName, raw );
 
-	rate = 1.0;
-	sweepRate = 0.001;
-	modulator = new Modulate();
-	modulator->setVibratoRate( 6.0 );
-	modulator->setVibratoGain( 0.04 );
-	modulator->setRandomGain( 0.005 );
-	envelope = new Envelope;
-	pitchEnvelope = new Envelope;
-	setFrequency( 75.0 );
-	pitchEnvelope->setRate( 1.0 );
+	rate_ = 1.0;
+	sweepRate_ = 0.001;
+	modulator_ = new Modulate();
+	modulator_->setVibratoRate( 6.0 );
+	modulator_->setVibratoGain( 0.04 );
+	modulator_->setRandomGain( 0.005 );
+	this->setFrequency( 75.0 );
+	pitchEnvelope_.setRate( 1.0 );
 	this->tick();
 	this->tick();
-	pitchEnvelope->setRate( sweepRate * rate );
+	pitchEnvelope_.setRate( sweepRate_ * rate_ );
 }
 
 SingWave :: ~SingWave()
 {
-  delete wave;
-	delete modulator;
-	delete envelope;
-	delete pitchEnvelope;
+  delete wave_;
+	delete modulator_;
 }
 
 void SingWave :: reset()
 {
-  wave->reset();
-	lastOutput = 0.0;
+  wave_->reset();
+	lastOutput_ = 0.0;
 }
 
 void SingWave :: normalize()
 {
-  wave->normalize();
+  wave_->normalize();
 }
 
-void SingWave :: normalize(MY_FLOAT newPeak)
+void SingWave :: normalize(StkFloat peak)
 {
-  wave->normalize( newPeak );
+  wave_->normalize( peak );
 }
 
-void SingWave :: setFrequency(MY_FLOAT frequency)
+void SingWave :: setFrequency(StkFloat frequency)
 {
-	MY_FLOAT temp = rate;
-	rate = wave->getSize() * frequency / Stk::sampleRate();
-	temp -= rate;
+	StkFloat temp = rate_;
+	rate_ = wave_->getSize() * frequency / Stk::sampleRate();
+	temp -= rate_;
 	if ( temp < 0) temp = -temp;
-	pitchEnvelope->setTarget( rate );
-	pitchEnvelope->setRate( sweepRate * temp );
+	pitchEnvelope_.setTarget( rate_ );
+	pitchEnvelope_.setRate( sweepRate_ * temp );
 }
 
-void SingWave :: setVibratoRate(MY_FLOAT aRate)
+void SingWave :: setVibratoRate(StkFloat rate)
 {
-	modulator->setVibratoRate( aRate );
+	modulator_->setVibratoRate( rate );
 }
 
-void SingWave :: setVibratoGain(MY_FLOAT gain)
+void SingWave :: setVibratoGain(StkFloat gain)
 {
-	modulator->setVibratoGain(gain);
+	modulator_->setVibratoGain(gain);
 }
 
-void SingWave :: setRandomGain(MY_FLOAT gain)
+void SingWave :: setRandomGain(StkFloat gain)
 {
-	modulator->setRandomGain(gain);
+	modulator_->setRandomGain(gain);
 }
 
-void SingWave :: setSweepRate(MY_FLOAT aRate)
+void SingWave :: setSweepRate(StkFloat rate)
 {
-	sweepRate = aRate;
+	sweepRate_ = rate;
 }
 
-void SingWave :: setGainRate(MY_FLOAT aRate)
+void SingWave :: setGainRate(StkFloat rate)
 {
-	envelope->setRate(aRate);
+	envelope_.setRate(rate);
 }
 
-void SingWave :: setGainTarget(MY_FLOAT target)
+void SingWave :: setGainTarget(StkFloat target)
 {
-	envelope->setTarget(target);
+	envelope_.setTarget(target);
 }
 
 void SingWave :: noteOn()
 {
-	envelope->keyOn();
+	envelope_.keyOn();
 }
 
 void SingWave :: noteOff()
 {
-	envelope->keyOff();
+	envelope_.keyOff();
 }
 
-MY_FLOAT SingWave :: tick()
+StkFloat SingWave :: tick()
 {
   // Set the wave rate.
-  MY_FLOAT newRate = pitchEnvelope->tick();
-  newRate += newRate * modulator->tick();
-  wave->setRate( newRate );
+  StkFloat newRate = pitchEnvelope_.tick();
+  newRate += newRate * modulator_->tick();
+  wave_->setRate( newRate );
 
-  lastOutput = wave->tick();
-	lastOutput *= envelope->tick();
+  lastOutput_ = wave_->tick();
+	lastOutput_ *= envelope_.tick();
     
-	return lastOutput;             
+	return lastOutput_;             
 }
 
-MY_FLOAT SingWave :: lastOut()
+StkFloat *SingWave :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-	return lastOutput;
+  return Generator::tick( vector, vectorSize );
+}
+
+StkFrames& SingWave :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Generator::tick( frames, channel );
 }

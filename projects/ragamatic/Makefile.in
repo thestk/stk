@@ -6,12 +6,12 @@ SRC_PATH = ../../src
 OBJECT_PATH = @object_path@
 vpath %.o $(OBJECT_PATH)
 
-OBJECTS	=	Stk.o Envelope.o ADSR.o Noise.o \
+OBJECTS	=	Stk.o Generator.o Noise.o Envelope.o ADSR.o \
 					Filter.o DelayA.o Delay.o \
-					OnePole.o OneZero.o SKINI.o \
+					OnePole.o OneZero.o Skini.o \
 					Tabla.o Instrmnt.o Sitar.o \
 					Drone.o VoicDrum.o WvOut.o WvIn.o \
-					Reverb.o JCRev.o Messager.o
+					Effect.o JCRev.o Messager.o
 
 INCLUDE = @include@
 ifeq ($(strip $(INCLUDE)), )
@@ -29,9 +29,8 @@ LIBRARY += @frameworks@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
-	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o Thread.o Socket.o
+	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o Thread.o Mutex.o Socket.o
 	DEFS    += @audio_apis@
-	DEFS    += @midiator@
 endif
 
 RAWWAVES = @rawwaves@
@@ -47,6 +46,9 @@ all : $(PROGRAMS)
 
 ragamat: ragamat.cpp $(OBJECTS)
 	$(CC) $(CFLAGS) $(DEFS) -o ragamat ragamat.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
+
+libragamat: ragamat.cpp Tabla.cpp Drone.cpp VoicDrum.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o ragamat Tabla.cpp Drone.cpp VoicDrum.cpp ragamat.cpp -L../../src $(LIBRARY) -lstk
 
 $(OBJECTS) : Stk.h
 

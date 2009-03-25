@@ -4,11 +4,13 @@ By Perry R. Cook and Gary P. Scavone, 1995-2004.
 
 STK Classes - See the HTML documentation in the html directory for complete information.
 
-     .- Envelope - ADSR
+
+     .- Generator - (Modulate, Noise, SingWave, Envelope)
+     |                           |                 |
+     |                        SubNoise            ADSR
+     |                                            Asymp
      |
-     |- Noise - SubNoise
-     |
-     |- Table
+     |- Function - (Table, BowTable, JetTable, ReedTable)
      |
      |- WvIn - (WaveLoop, RtWvIn, TcpWvIn)
      |
@@ -19,23 +21,13 @@ STK Classes - See the HTML documentation in the html directory for complete info
      |                              DelayL                             FormSwep
      |                              DelayA
      |
-     |- Echo, Chorus, PitShift
-     |
-     |- RtAudio, RtMidi, Socket, Thread
+     |- RtAudio, RtMidi, RtDuplex, Socket, Thread, Mutex
 Stk -|
-     |- Reverb - (PRCRev, JCRev, NRev)
+     |- Effect - (Echo, Chorus, PitShift, PRCRev, JCRev, NRev)
      |
-     |- Modulate
-     |
-     |- SingWave
-     |
-     |- Voicer
+     |- Voicer, Message, Skini, MidiFileIn, Phonemes, Sphere, Vector3D
      |
      |- Messager
-     |
-     |- SKINI
-     |
-     |- ReedTabl, JetTabl, BowTabl
      |
      |            .- FM - (HevyMetl, PercFlut, Rhodey, Wurley, TubeBell, BeeThree, FMVoices)
      |            |
@@ -66,8 +58,11 @@ Stk -|
 
 Master Class:  Stk.cpp         Sample rate, byte-swapping, error handling functionality
 
-Sources:       Envelope.cpp    Linearly Goes to Target by Rate
+Sources:       Generator.cpp   Abstract Base Class for Various Source Signal Classes
+               Function.cpp    Abstract Base Class for Various Input/Output Mapping Classes
+               Envelope.cpp    Linearly Goes to Target by Rate
                ADSR.cpp        ADSR Flavor of Envelope
+               Asymp.cpp       Exponentially Approaches Target
                Noise.cpp       Random Number Generator
                SubNoise.cpp    Random Numbers each N samples
                Table.cpp       Lookup Table (assumes given data in big-endian format)
@@ -140,7 +135,7 @@ Shakers.cpp     PhISM statistical model for shakers and real-world sound effects
 Mesh2D.cpp      Two-dimensional, rectilinear digital waveguide mesh.
 Whistle.cpp     Hybrid physical/spectral model of a police whistle.
 
-Reverb.cpp      Reverberator Effects Processor  Master Class for reverberators
+Effect.cpp      Effects Processor Base Class
 JCRev.cpp       Chowning Reverberator           3 series allpass units, 4 parallel combs, 2 stereo delays
 NRev.cpp        Another famous CCRMA Reverb	    8 allpass, 6 parallel comb filters
 PRCRev.cpp      Dirt Cheap Reverb by Cook	      2 allpass, 2 comb filters
@@ -160,7 +155,7 @@ demo.cpp        Demonstration program for most synthesis algorithms
 effects.cpp     Effects demonstration program
 ragamatic.cpp   Nirvana just waiting to happen
 
-SKINI.cpp	      SKINI file/message parser object
+Skini.cpp	      SKINI file/message parser object
 SKINI.msg	      #defines for often used and universal MIDI/SKINI symbols
 SKINI.tbl	      Table of SKINI messages
 

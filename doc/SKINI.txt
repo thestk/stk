@@ -10,7 +10,7 @@ for the Synthesis Toolkit in C++ by Perry R. Cook.
 *       A SKINI Haiku.          *
 *********************************
 
-Profound thanks to Dan Trueman, Brad Garton, and
+Profound thanks to Dan trueman, Brad Garton, and
 Gary Scavone for input on this revision.  Thanks
 also to MIDI, the NeXT MusicKit, ZIPI and all
 the creators and modifiers of these for good bases
@@ -120,7 +120,7 @@ upon/from which to build and depart.
 
 4)  C Files Used To Implement SKINI
 
-    SKINI.cpp is an object which can either open a SKINI file, and
+    Skini.cpp is an object which can either open a SKINI file, and
     successively read and parse lines of text as SKINI strings, or
     accept strings from another object and parse them.  The latter
     functionality would be used by a socket, pipe, or other connection
@@ -128,11 +128,11 @@ upon/from which to build and depart.
     but not restricted to real time.
 
     SKINI.msg should be included by anything wanting to use the
-    SKINI.cpp object.  This is not mandatory, but use of the __SK_blah_
+    Skini.cpp object.  This is not mandatory, but use of the __SK_blah_
     symbols which are defined in the .msg file will help to ensure
     clarity and consistency when messages are added and changed.
 
-    SKINI.tbl is used only by the SKINI parser object (SKINI.cpp).
+    SKINI.tbl is used only by the SKINI parser object (Skini.cpp).
     In the file SKINI.tbl, an array of structures is declared and
     assigned values which instruct the parser as to what the message
     types are, and what the fields mean for those message types.
@@ -240,7 +240,7 @@ upon/from which to build and depart.
 7)  The SKINI.tbl File, How Messages are Parsed:
 
     The SKINI.tbl file contains an array of structures which
-    are accessed by the parser object SKINI.cpp.  The struct is:
+    are accessed by the parser object Skini.cpp.  The struct is:
 
         struct SKINISpec { char messageString[32];
                    long  type;
@@ -322,70 +322,67 @@ upon/from which to build and depart.
 
 8)  Objects using SKINI
 
-    Here's a simple example of code which uses the SKINI object
+    Here's a simple example of code which uses the Skini object
     to read a SKINI file and control a single instrument.
 
+        Skini score;
+        Skini::Message message;
         instrument = new Mandolin(50.0);
-        score = new SKINI(argv[1]);
-        while(score->getType() > 0) {
-            tempDouble = score->getDelta();
-            if (tempDouble < 0)     {
-                tempDouble = - tempDouble;
-                tempDouble = tempDouble - output.getTime();
-                if (tempDouble < 0) {
-                   printf("Bad News Here!!!  Backward Absolute Time Required.\n");
-                   tempDouble = 0.0;
-                }
+        score.setFile( argv[1] );
+        while ( score.nextMessage( message ) != 0 ) {
+          tempDouble = message.time;
+          if (tempDouble < 0)     {
+            tempDouble = - tempDouble;
+            tempDouble = tempDouble - output.getTime();
+            if (tempDouble < 0) {
+              printf("Bad News Here!!!  Backward Absolute Time Required.\n");
+              tempDouble = 0.0;
             }
-            tempLong = (long) (tempDouble * Stk::sampleRate());
-            for (i=0;i<tempLong;i++)   {
-                output.tick(instrument->tick());
+          }
+          tempLong = (long) ( tempDouble * Stk::sampleRate() );
+          for ( i=0; i<tempLong; i++ ) {
+            output.tick( instrument->tick() );
+          }
+
+          tempDouble3 = message.floatValues[1] * NORM_MIDI;
+          if ( message.type == __SK_NoteOn_ ) {
+            if ( tempDouble3 == 0.0 ) {
+              tempDouble3 = 0.5;
+              instrument->noteOff( tempDouble3 );
             }
-            tempDouble3 = score->getByteThree();
-            if (score->getType()== __SK_NoteOn_ )        {
-                tempDouble3 *= NORM_MIDI;
-                if (score->getByteThree() == 0)  {
-                    tempDouble3 = 0.5;
-                    instrument->noteOff(tempDouble3);
-                }
-                else {
-                    tempLong = (int) score->getByteTwo();
-                    tempDouble2 = Midi2Pitch[tempLong];
-                    instrument->noteOn(tempDouble2,tempDouble3);
-                }
+            else {
+              tempLong = message.intValues[0];
+              tempDouble2 = Midi2Pitch[tempLong];
+              instrument->noteOn( tempDouble2, tempDouble3 );
             }
-            else if (score->getType() == __SK_NoteOff_) {
-                tempDouble3 *= NORM_MIDI;
-                instrument->noteOff(tempDouble3);
-            }
-            else if (score->getType() == __SK_ControlChange_)        {
-                tempLong = score->getByteTwoInt();
-                instrument->controlChange(tempLong,temp3.0);
-            }
-            score->nextMessage();
+          }
+          else if ( message.type == __SK_NoteOff_ ) {
+            instrument->noteOff( tempDouble3 );
+          }
+          else if ( message.type == __SK_ControlChange_ ) {
+            tempLong = message.intValues[0];
+            instrument->controlChange( tempLong, tempDouble3 );
+          }
         }
 
-    When the score (SKINI object) object is created from the
-    filename in argv[1], the first valid command line is read
-    from the file and parsed.
+    When a SKINI score is passed to a Skini object using the
+    Skini::setFile() function, valid messages are read from
+    the file and returned using the Skini::nextMessage() function.
 
-    The score->getType() retrieves the messageType.  If this is
-    -1, there are no more valid messages in the file and the
-    synthesis loop terminates.  Otherwise, the message type is
-    returned.
+    A Skini::Message structure contains all the information parsed
+    from a single SKINI message.  A returned message type of zero
+    indicates either an invalid message or the end of a scorefile.
 
-    getDelta() retrieves the deltaTime until the current message
-    should occur.  If this is greater than 0, synthesis occurs
-    until the deltaTime has elapsed.  If deltaTime is less than
-    zero, the time is interpreted as absolute time and the output
-    device is queried as to what time it is now.  That is used to
-    form a deltaTime, and if it's positive we synthesize.  If
-    it's negative, we print an error and pretend this never
-    happened and we hang around hoping to eventually catch up.
+    The "time" member of a Skini::Message is the deltaTime until the
+    current message should occur.  If this is greater than 0,
+    synthesis occurs until the deltaTime has elapsed.  If deltaTime is
+    less than zero, the time is interpreted as absolute time and the
+    output device is queried as to what time it is now.  That is used
+    to form a deltaTime, and if it's positive we synthesize.  If it's
+    negative, we print an error, pretend this never happened and we
+    hang around hoping to eventually catch up.
 
     The rest of the code sorts out message types NoteOn, NoteOff
     (including NoteOn with velocity 0), and ControlChange.  The
     code implicitly takes into account the integer type of the
     control number, but all other data is treated as double float.
-
-    The last line reads and parses the next message in the file.

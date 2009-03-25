@@ -18,12 +18,12 @@
     response, the minimum delay possible in this
     implementation is limited to a value of 0.5.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__DelayA_h)
-#define __DelayA_h
+#ifndef STK_DELAYA_H
+#define STK_DELAYA_H
 
 #include "Delay.h"
 
@@ -35,8 +35,12 @@ public:
   DelayA();
 
   //! Overloaded constructor which specifies the current and maximum delay-line lengths.
-  
-  DelayA(MY_FLOAT theDelay, long maxDelay);
+  /*!
+    An StkError will be thrown if the delay parameter is less than
+    zero, the maximum delay parameter is less than one, or the delay
+    parameter is greater than the maxDelay value.
+   */  
+  DelayA(StkFloat delay, unsigned long maxDelay);
 
   //! Class destructor.
   ~DelayA();
@@ -48,26 +52,38 @@ public:
   /*!
     The valid range for \e theDelay is from 0.5 to the maximum delay-line length.
   */
-  void setDelay(MY_FLOAT theDelay);
+  void setDelay(StkFloat delay);
 
   //! Return the current delay-line length.
-  MY_FLOAT getDelay(void);
+  StkFloat getDelay(void);
 
   //! Return the value which will be output by the next call to tick().
   /*!
     This method is valid only for delay settings greater than zero!
    */
-  MY_FLOAT nextOut(void);
+  StkFloat nextOut(void);
 
-  //! Input one sample to the delay-line and return one output.
-  MY_FLOAT tick(MY_FLOAT sample);
+  //! Input one sample to the delayline and return one output.
+  StkFloat tick(StkFloat sample);
+
+  //! Input \e vectorSize samples to the delayline and return an equal number of outputs in \e vector.
+  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Take a channel of the StkFrames object as inputs to the delayline and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
 protected:  
-  MY_FLOAT alpha;
-  MY_FLOAT coeff;
-  MY_FLOAT apInput;
-  MY_FLOAT nextOutput;
-  bool doNextOut;
+  StkFloat alpha_;
+  StkFloat coeff_;
+  StkFloat apInput_;
+  StkFloat nextOutput_;
+  bool doNextOut_;
 };
 
 #endif

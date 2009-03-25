@@ -2,78 +2,72 @@
 /*! \class Echo
     \brief STK echo effect class.
 
-    This class implements a echo effect.
+    This class implements an echo effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Echo.h"
 #include <iostream>
 
-Echo :: Echo(MY_FLOAT longestDelay)
+Echo :: Echo( unsigned long maximumDelay ) : Effect()
 {
-  length = (long) longestDelay + 2;
-  delayLine = new Delay(length>>1, length);
-  effectMix = 0.5;
+  this->setMaximumDelay( maximumDelay );
+  delayLine_.setDelay( length_ >> 1 );
+  effectMix_ = 0.5;
   this->clear();
 }
 
 Echo :: ~Echo()
 {
-  delete delayLine;
 }
 
 void Echo :: clear()
 {
-  delayLine->clear();
-  lastOutput = 0.0;
+  delayLine_.clear();
+  lastOutput_[0] = 0.0;
+  lastOutput_[1] = 0.0;
 }
 
-void Echo :: setDelay(MY_FLOAT delay)
+void Echo :: setMaximumDelay( unsigned long delay )
 {
-  MY_FLOAT size = delay;
-  if ( delay < 0.0 ) {
-    std::cerr << "Echo: setDelay parameter is less than zero!" << std::endl;
-    size = 0.0;
-  }
-  else if ( delay > length ) {
-    std::cerr << "Echo: setDelay parameter is greater than delay length!" << std::endl;
-    size = length;
+  length_ = delay;
+  if ( delay == 0 ) {
+    errorString_ << "Echo::setMaximumDelay: parameter cannot be zero ... setting to 10!";
+    handleError( StkError::WARNING );
+    length_ = 10;
   }
 
-  delayLine->setDelay((long)size);
+  delayLine_.setMaximumDelay( length_ );
 }
 
-void Echo :: setEffectMix(MY_FLOAT mix)
+void Echo :: setDelay( unsigned long delay )
 {
-  effectMix = mix;
-  if ( mix < 0.0 ) {
-    std::cerr << "Echo: setEffectMix parameter is less than zero!" << std::endl;
-    effectMix = 0.0;
+  unsigned long size = delay;
+  if ( delay > length_ ) {
+    errorString_ << "Echo::setDelay: parameter is greater than maximum delay length ... setting to max!";
+    handleError( StkError::WARNING );
+    size = length_;
   }
-  else if ( mix > 1.0 ) {
-    std::cerr << "Echo: setEffectMix parameter is greater than 1.0!" << std::endl;
-    effectMix = 1.0;
-  }
+
+  delayLine_.setDelay( size );
 }
 
-MY_FLOAT Echo :: lastOut() const
+StkFloat Echo :: tick(StkFloat input)
 {
-  return lastOutput;
+  lastOutput_[0] = effectMix_ * delayLine_.tick(input);
+  lastOutput_[0] += input * (1.0 - effectMix_);
+  lastOutput_[1] = lastOutput_[0];
+  return lastOutput_[0];
 }
 
-MY_FLOAT Echo :: tick(MY_FLOAT input)
+StkFloat *Echo :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  lastOutput = effectMix * delayLine->tick(input);
-  lastOutput += input * (1.0 - effectMix);
-  return lastOutput;
+  return Effect::tick( vector, vectorSize );
 }
 
-MY_FLOAT *Echo :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFrames& Echo :: tick( StkFrames& frames, unsigned int channel )
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick(vector[i]);
-
-  return vector;
+  return Effect::tick( frames, channel );
 }

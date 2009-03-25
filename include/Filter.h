@@ -23,14 +23,16 @@
     results in one extra multiply per computed sample,
     but allows easy control of the overall filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__FILTER_H)
-#define __FILTER_H
+#ifndef STK_FILTER_H
+#define STK_FILTER_H
 
 #include "Stk.h"
+#include <vector>
+#include <valarray>
 
 class Filter : public Stk
 {
@@ -40,72 +42,81 @@ public:
 
   //! Overloaded constructor which takes filter coefficients.
   /*!
-    An StkError can be thrown if either \e nb or \e na is less than
-    one, or if the a[0] coefficient is equal to zero.
+    An StkError can be thrown if either of the coefficient vector
+    sizes is zero, or if the a[0] coefficient is equal to zero.
   */
-  Filter(int nb, MY_FLOAT *bCoefficients, int na, MY_FLOAT *aCoefficients);
+  Filter( std::vector<StkFloat> &bCoefficients, std::vector<StkFloat> &aCoefficients );
 
   //! Class destructor.
   virtual ~Filter(void);
 
-  //! Clears all internal states of the filter.
+  //! Sets all internal states of the filter to zero.
   void clear(void);
 
   //! Set filter coefficients.
   /*!
-    An StkError can be thrown if either \e nb or \e na is less than
-    one, or if the a[0] coefficient is equal to zero.  If a[0] is not
-    equal to 1, the filter coeffcients are normalized by a[0].
+    An StkError can be thrown if either of the coefficient vector
+    sizes is zero, or if the a[0] coefficient is equal to zero.  If
+    a[0] is not equal to 1, the filter coeffcients are normalized by
+    a[0].  The internal state of the filter is cleared.
   */
-  void setCoefficients(int nb, MY_FLOAT *bCoefficients, int na, MY_FLOAT *aCoefficients);
+  void setCoefficients( std::vector<StkFloat> &bCoefficients, std::vector<StkFloat> &aCoefficients );
 
   //! Set numerator coefficients.
   /*!
-    An StkError can be thrown if \e nb is less than one.  Any
-    previously set denominator coefficients are left unaffected.
-    Note that the default constructor sets the single denominator
-    coefficient a[0] to 1.0.
+    An StkError can be thrown if coefficient vector is empty.  Any
+    previously set denominator coefficients are left unaffected.  Note
+    that the default constructor sets the single denominator
+    coefficient a[0] to 1.0.  The internal state of the filter is
+    cleared.
   */
-  void setNumerator(int nb, MY_FLOAT *bCoefficients);
+  void setNumerator( std::vector<StkFloat> &bCoefficients );
 
   //! Set denominator coefficients.
   /*!
-    An StkError can be thrown if \e na is less than one or if the
-    a[0] coefficient is equal to zero.  Previously set numerator
-    coefficients are unaffected unless a[0] is not equal to 1, in
-    which case all coeffcients are normalized by a[0].  Note that the
-    default constructor sets the single numerator coefficient b[0]
-    to 1.0.
+    An StkError can be thrown if the coefficient vector is empty or
+    if the a[0] coefficient is equal to zero.  Previously set
+    numerator coefficients are unaffected unless a[0] is not equal to
+    1, in which case all coeffcients are normalized by a[0].  Note
+    that the default constructor sets the single numerator coefficient
+    b[0] to 1.0.  The internal state of the filter is cleared.
   */
-  void setDenominator(int na, MY_FLOAT *aCoefficients);
+  void setDenominator( std::vector<StkFloat> &aCoefficients );
 
   //! Set the filter gain.
   /*!
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    */
-  virtual void setGain(MY_FLOAT theGain);
+  virtual void setGain(StkFloat gain);
 
   //! Return the current filter gain.
-  virtual MY_FLOAT getGain(void) const;
+  virtual StkFloat getGain(void) const;
 
   //! Return the last computed output value.
-  virtual MY_FLOAT lastOut(void) const;
+  virtual StkFloat lastOut(void) const;
 
   //! Input one sample to the filter and return one output.
-  virtual MY_FLOAT tick(MY_FLOAT sample);
+  virtual StkFloat tick(StkFloat sample);
 
   //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-  virtual MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Take a channel of the StkFrames object as inputs to the filter and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
 protected:
-  MY_FLOAT gain;
-  int     nB;
-  int     nA;
-  MY_FLOAT *b;
-  MY_FLOAT *a;
-  MY_FLOAT *outputs;
-  MY_FLOAT *inputs;
+  StkFloat gain_;
+  std::vector<StkFloat> b_;
+  std::vector<StkFloat> a_;
+  std::vector<StkFloat> outputs_;
+  std::vector<StkFloat> inputs_;
 
 };
 

@@ -1,7 +1,6 @@
 /**************  Effects Program  *********************/
 
-#include "RtDuplex.h"
-#include "SKINI.h"
+#include "Skini.h"
 #include "SKINI.msg"
 #include "Envelope.h"
 #include "PRCRev.h"
@@ -10,183 +9,256 @@
 #include "Echo.h"
 #include "PitShift.h"
 #include "Chorus.h"
-
-// The input control handler.
 #include "Messager.h"
+#include "RtAudio.h"
+
+#include <signal.h>
+#include <iostream>
+#include <algorithm>
+#if !defined(__OS_WINDOWS__) // Windoze bogosity for VC++ 6.0
+  using std::min;
+#endif
 
 void usage(void) {
-  /* Error function in case of incorrect command-line argument specifications */
-  printf("\nuseage: effects flags \n");
-  printf("    where flag = -s RATE to specify a sample rate,\n");
-  printf("    flag = -ip for realtime SKINI input by pipe\n");
-  printf("           (won't work under Win95/98),\n");
-  printf("    and flag = -is <port> for realtime SKINI input by socket.\n");
+  // Error function in case of incorrect command-line argument specifications
+  std::cout << "\nuseage: effects flags \n";
+  std::cout << "    where flag = -s RATE to specify a sample rate,\n";
+  std::cout << "    flag = -ip for realtime SKINI input by pipe\n";
+  std::cout << "           (won't work under Win95/98),\n";
+  std::cout << "    and flag = -is <port> for realtime SKINI input by socket.\n";
   exit(0);
 }
 
-int main(int argc,char *argv[])
+bool done;
+static void finish(int ignore){ done = true; }
+
+// The TickData structure holds all the class instances and data that
+// are shared by the various processing functions.
+struct TickData {
+  Effect  *effect;
+  PRCRev   prcrev;
+  JCRev    jcrev;
+  NRev     nrev;
+  Echo     echo;
+  PitShift shifter;
+  Chorus   chorus;
+  Envelope envelope;
+  Messager messager;
+  Skini::Message message;
+  StkFloat lastSample;
+  StkFloat t60;
+  int counter;
+  bool settling;
+  bool haveMessage;
+
+  // Default constructor.
+  TickData()
+    : effect(0), t60(1.0), counter(0),
+      settling( false ), haveMessage( false ) {}
+};
+
+#define DELTA_CONTROL_TICKS 64 // default sample frames between control input checks
+
+// The processMessage() function encapsulates the handling of control
+// messages.  It can be easily relocated within a program structure
+// depending on the desired scheduling scheme.
+void processMessage( TickData* data )
 {
+  register unsigned int value1 = data->message.intValues[0];
+  register StkFloat value2 = data->message.floatValues[1];
+  register StkFloat temp = value2 * ONE_OVER_128;
+
+  switch( data->message.type ) {
+
+  case __SK_Exit_:
+    if ( data->settling == false ) goto settle;
+    done = true;
+    return;
+
+  case __SK_NoteOn_:
+    if ( value2 == 0.0 ) // velocity is zero ... really a NoteOff
+      data->envelope.setTarget( 0.0 );
+    else // a NoteOn
+      data->envelope.setTarget( 1.0 );
+    break;
+
+  case __SK_NoteOff_:
+    data->envelope.setTarget( 0.0 );
+    break;
+
+  case __SK_ControlChange_:
+    // Change all effect values so they are "synched" to the interface.
+    switch ( value1 ) {
+
+    case 20: { // effect type change
+      int type = data->message.intValues[1];
+      if ( type == 0 )
+        data->effect = &(data->echo);
+      else if ( type == 1 )
+        data->effect = &(data->shifter);
+      else if ( type == 2 )
+        data->effect = &(data->chorus);
+      else if ( type == 3 )
+        data->effect = &(data->prcrev);
+      else if ( type == 4 )
+        data->effect = &(data->jcrev);
+      else if ( type == 5 )
+        data->effect = &(data->nrev);
+      break;
+    }
+
+    case 22: // effect parameter change 1
+      data->echo.setDelay( (unsigned long) (temp * Stk::sampleRate() * 0.95) );
+      //      data->shifter.setShift( temp * 3 + 0.25);
+      data->shifter.setShift( 1.4 * temp + 0.3);
+      data->chorus.setModFrequency( temp );
+      data->prcrev.setT60( temp * 10.0 );
+      data->jcrev.setT60( temp * 10.0 );
+      data->nrev.setT60( temp * 10.0 );
+      break;
+
+    case 23: // effect parameter change 2
+      data->chorus.setModDepth( temp * 0.2 );
+      break;
+
+    case 44: // effect mix
+      data->echo.setEffectMix( temp );
+      data->shifter.setEffectMix( temp );
+      data->chorus.setEffectMix( temp );
+      data->prcrev.setEffectMix( temp );
+      data->jcrev.setEffectMix( temp );
+      data->nrev.setEffectMix( temp );
+      break;
+
+    default:
+      break;
+    }
+
+  } // end of type switch
+
+  data->haveMessage = false;
+  return;
+
+ settle:
+  // Exit and program change messages are preceeded with a short settling period.
+  data->envelope.setTarget( 0.0 );
+  data->counter = (int) (0.3 * data->t60 * Stk::sampleRate());
+  data->settling = true;
+}
+
+// The tick() function handles sample computation and scheduling of
+// control updates.  It will be called automatically by RtAudio when
+// the system needs a new buffer of audio samples.
+int tick(char *buffer, int bufferSize, void *dataPointer)
+{
+  TickData *data = (TickData *) dataPointer;
+  register StkFloat sample, *samples = (StkFloat *) buffer;
+  int i, counter, nTicks = bufferSize;
+
+  while ( nTicks > 0 && !done ) {
+
+    if ( !data->haveMessage ) {
+      data->messager.popMessage( data->message );
+      if ( data->message.type > 0 ) {
+        data->counter = (long) (data->message.time * Stk::sampleRate());
+        data->haveMessage = true;
+      }
+      else
+        data->counter = DELTA_CONTROL_TICKS;
+    }
+
+    counter = min( nTicks, data->counter );
+    data->counter -= counter;
+    for ( i=0; i<counter; i++ ) {
+      sample = data->envelope.tick() * data->effect->tick( *samples );
+      *samples++ = sample; // two channels interleaved
+      *samples++ = sample;
+      nTicks--;
+    }
+    if ( nTicks == 0 ) break;
+
+    // Process control messages.
+    if ( data->haveMessage ) processMessage( data );
+  }
+
+  return 0;
+}
+
+
+int main( int argc, char *argv[] )
+{
+  TickData data;
+  RtAudio *adac = 0;
+  int i;
+
   if (argc < 2 || argc > 6) usage();
 
   // If you want to change the default sample rate (set in Stk.h), do
   // it before instantiating any objects!  If the sample rate is
   // specified in the command line, it will override this setting.
-  Stk::setSampleRate(22050.0);
+  Stk::setSampleRate( 44100.0 );
 
-  int port = -1;
-  int controlMask = 0;
-  for (int k=1; k<argc; k++ ) {
-    if (!strcmp(argv[k],"-is") ) {
-      controlMask |= STK_SOCKET;
-      if (k+1 < argc && argv[k+1][0] != '-' ) port = atoi(argv[++k]);
+  // Parse the command-line arguments.
+  unsigned int port = 2001;
+  for ( i=1; i<argc; i++ ) {
+    if ( !strcmp( argv[i], "-is" ) ) {
+      if ( i+1 < argc && argv[i+1][0] != '-' ) port = atoi(argv[++i]);
+      data.messager.startSocketInput( port );
     }
-    else if (!strcmp(argv[k],"-ip") )
-      controlMask |= STK_PIPE;
-    else if (!strcmp(argv[k],"-s") && (k+1 < argc) && argv[k+1][0] != '-')
-      Stk::setSampleRate( atoi(argv[++k]) );
+    else if (!strcmp( argv[i], "-ip" ) )
+      data.messager.startStdInput();
+    else if ( !strcmp( argv[i], "-s" ) && ( i+1 < argc ) && argv[i+1][0] != '-')
+      Stk::setSampleRate( atoi(argv[++i]) );
     else
       usage();
   }
 
-  bool done;
-  int effect = 0;
-  MY_FLOAT lastSample, inSample;
-  Envelope *envelope = new Envelope;
-  PRCRev *prcrev = new PRCRev(2.0);
-  JCRev *jcrev = new JCRev(2.0);
-  NRev *nrev = new NRev(2.0);
-  Echo *echo = new Echo( (long) Stk::sampleRate() );   // one second delay
-  PitShift *shifter = new PitShift();
-  Chorus *chorus = new Chorus(5000.0);
-  SKINI *score = new SKINI();
-  Messager *messager = 0;
-  RtDuplex *inout = 0;
-
+  // Allocate the adac here.
+  RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
+  int bufferSize = RT_BUFFER_SIZE;
   try {
-    // Change the nBuffers parameter to a smaller number to get better input/output latency.
-    inout = new RtDuplex(1, Stk::sampleRate(), 0, RT_BUFFER_SIZE, 10);
-
-    // Instantiate the input message controller.
-    if ( controlMask & STK_SOCKET && port >= 0 )
-      messager = new Messager( controlMask, port );
-    else
-      messager = new Messager( controlMask );
+    adac = new RtAudio(0, 2, 0, 2, format, (int)Stk::sampleRate(), &bufferSize, 4);
   }
-  catch (StkError &) {
+  catch (RtError& error) {
+    error.printMessage();
     goto cleanup;
   }
 
-  // The runtime loop begins here:
-  long i, nTicks;
-  int type;
-  lastSample = 0.0;
-  inSample = 0.0;
-  MY_FLOAT byte2, byte3;
-  done = FALSE;
-  while (!done) {
+  data.envelope.setRate( 0.001 );
+  data.effect = &(data.echo);
 
-    // Look for new messages and return a delta time (in samples).
-    type = messager->nextMessage();
-    if (type < 0)
-      done = TRUE;
+  // Install an interrupt handler function.
+	(void) signal( SIGINT, finish );
 
-    nTicks = messager->getDelta();
-
-    for (i=0; i<nTicks; i++) {
-      if (effect == 0)
-        inSample = inout->tick(envelope->tick() * echo->tick(lastSample));
-      else if (effect == 1)
-        inSample = inout->tick(envelope->tick() * shifter->tick(lastSample));
-      else if (effect == 2)
-        inSample = inout->tick(envelope->tick() * chorus->tick(lastSample));
-      else if (effect == 3)
-        inSample = inout->tick(envelope->tick() * prcrev->tick(lastSample));
-      else if (effect == 4)
-        inSample = inout->tick(envelope->tick() * jcrev->tick(lastSample));
-      else if (effect == 5)
-        inSample = inout->tick(envelope->tick() * nrev->tick(lastSample));
-      lastSample = inSample;
-    }
-
-    if (type > 0) {
-      // parse the input control message
-
-      byte2 = messager->getByteTwo();
-      byte3 = messager->getByteThree();
-
-      switch(type) {
-
-      case __SK_NoteOn_:
-        if (byte3 == 0) { // velocity is zero ... really a NoteOff
-          envelope->setRate(0.001);
-          envelope->setTarget(0.0);
-        }
-        else { // really a NoteOn
-          envelope->setRate(0.001);
-          envelope->setTarget(1.0);
-        }
-        break;
-
-      case __SK_NoteOff_:
-        envelope->setRate(0.001);
-        envelope->setTarget(0.0);
-        break;
-
-      case __SK_ControlChange_:
-        if (byte2 == 20) effect = (int) byte3;  // effect change
-        else if (byte2 == 44) { // effects mix
-          echo->setEffectMix(byte3*ONE_OVER_128);
-          shifter->setEffectMix(byte3*ONE_OVER_128);
-          chorus->setEffectMix(byte3*ONE_OVER_128);
-          prcrev->setEffectMix(byte3*ONE_OVER_128);
-          jcrev->setEffectMix(byte3*ONE_OVER_128);
-          nrev->setEffectMix(byte3*ONE_OVER_128);
-        }
-        else if (byte2 == 22) { // effect1 parameter change
-          echo->setDelay(byte3*ONE_OVER_128*Stk::sampleRate()*0.95);
-          shifter->setShift(byte3*ONE_OVER_128*3 + 0.25);
-          chorus->setModFrequency(byte3*ONE_OVER_128);
-        }
-        else if (byte2 == 23) { // effect1 parameter change
-          chorus->setModDepth(byte3*ONE_OVER_128*0.2);
-        }
-        break;
-      }
-    }
+  // If realtime output, set our callback function and start the dac.
+  try {
+    adac->setStreamCallback( &tick, (void *)&data );
+    adac->startStream();
+  }
+  catch (RtError &error) {
+    error.printMessage();
+    goto cleanup;
   }
 
-  envelope->setRate(0.001);
-  envelope->setTarget(0.0);
-  nTicks = (long) Stk::sampleRate();
-  for (i=0; i<nTicks; i++) { // let the sound settle a bit
-    if (effect == 0)
-      inSample = inout->tick(envelope->tick() * echo->tick(lastSample));
-    else if (effect == 1)
-      inSample = inout->tick(envelope->tick() * shifter->tick(lastSample));
-    else if (effect == 2)
-      inSample = inout->tick(envelope->tick() * chorus->tick(lastSample));
-    else if (effect == 3)
-      inSample = inout->tick(envelope->tick() * prcrev->tick(lastSample));
-    else if (effect == 4)
-      inSample = inout->tick(envelope->tick() * jcrev->tick(lastSample));
-    else if (effect == 5)
-      inSample = inout->tick(envelope->tick() * nrev->tick(lastSample));
-    lastSample = inSample;
+  // Setup finished.
+  while ( !done ) {
+    // Periodically check "done" status.
+    Stk::sleep( 50 );
   }
 
-  delete echo;
-  delete shifter;
-  delete chorus;
-  delete prcrev;
-  delete jcrev;
-  delete nrev;
-  delete score;
-  delete envelope;
+  // Shut down the callback and output stream.
+  try {
+    adac->cancelStreamCallback();
+    adac->closeStream();
+  }
+  catch (RtError& error) {
+    error.printMessage();
+  }
 
  cleanup:
-  delete messager;
-  delete inout;
 
-	printf("effects finished ... goodbye.\n");
+  delete adac;
+
+	std::cout << "\neffects finished ... goodbye.\n\n";
   return 0;
 }

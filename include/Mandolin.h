@@ -23,12 +23,12 @@
        - String Detuning = 1
        - Microphone Position = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__MANDOLIN_H)
-#define __MANDOLIN_H
+#ifndef STK_MANDOLIN_H
+#define STK_MANDOLIN_H
 
 #include "PluckTwo.h"
 #include "WvIn.h"
@@ -37,35 +37,46 @@ class Mandolin : public PluckTwo
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  Mandolin(MY_FLOAT lowestFrequency);
+  Mandolin(StkFloat lowestFrequency);
 
   //! Class destructor.
-  virtual ~Mandolin();
+  ~Mandolin();
 
   //! Pluck the strings with the given amplitude (0.0 - 1.0) using the current frequency.
-  void pluck(MY_FLOAT amplitude);
+  void pluck(StkFloat amplitude);
 
   //! Pluck the strings with the given amplitude (0.0 - 1.0) and position (0.0 - 1.0).
-  void pluck(MY_FLOAT amplitude,MY_FLOAT position);
+  void pluck(StkFloat amplitude,StkFloat position);
 
   //! Start a note with the given frequency and amplitude (0.0 - 1.0).
-  virtual void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Set the body size (a value of 1.0 produces the "default" size).
-  void setBodySize(MY_FLOAT size);
+  void setBodySize(StkFloat size);
 
   //! Compute one output sample.
-  virtual MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  virtual void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
   protected:  
-    WvIn *soundfile[12];
-    MY_FLOAT directBody;
-    int mic;
-    long dampTime;
-    bool waveDone;
+    WvIn *soundfile_[12];
+    int mic_;
+    long dampTime_;
+    bool waveDone_;
 };
 
 #endif

@@ -9,16 +9,16 @@
     \e keyOff messages, ramping to 1.0 on
     keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__ENVELOPE_H)
-#define __ENVELOPE_H
+#ifndef STK_ENVELOPE_H
+#define STK_ENVELOPE_H
 
-#include "Stk.h"
+#include "Generator.h"
 
-class Envelope : public Stk
+class Envelope : public Generator
 {
  public:
 
@@ -35,34 +35,40 @@ class Envelope : public Stk
   virtual void keyOff(void);
 
   //! Set the \e rate.
-  void setRate(MY_FLOAT aRate);
+  void setRate(StkFloat rate);
 
   //! Set the \e rate based on a time duration.
-  void setTime(MY_FLOAT aTime);
+  void setTime(StkFloat time);
 
   //! Set the target value.
-  virtual void setTarget(MY_FLOAT aTarget);
+  virtual void setTarget(StkFloat target);
 
   //! Set current and target values to \e aValue.
-  virtual void setValue(MY_FLOAT aValue);
+  virtual void setValue(StkFloat value);
 
   //! Return the current envelope \e state (0 = at target, 1 otherwise).
   virtual int getState(void) const;
 
   //! Return one envelope output value.
-  virtual MY_FLOAT tick(void);
+  virtual StkFloat tick(void);
 
-  //! Return \e vectorSize envelope outputs in \e vector.
-  virtual MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  //! Compute \e vectorSize outputs and return them in \e vector.
+  virtual StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
 
-  //! Return the last computed output value.
-  MY_FLOAT lastOut(void) const;
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
  protected:
-  MY_FLOAT value;
-  MY_FLOAT target;
-  MY_FLOAT rate;
-  int state;
+  StkFloat value_;
+  StkFloat target_;
+  StkFloat rate_;
+  int state_;
 };
 
 #endif

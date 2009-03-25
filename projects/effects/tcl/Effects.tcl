@@ -26,7 +26,7 @@ label .title -text "STK Effects Controller" \
 				-font {Times 14 bold} -background white \
 				-foreground darkred -relief raised
 
-label .title2 -text "by Gary P. Scavone\n Center for Computer Research in Music & Acoustics (CCRMA) \n Stanford University" \
+label .title2 -text "by Gary P. Scavone\n Music Technology, McGill University" \
 				-font {Times 12 bold} -background white \
 				-foreground darkred -relief raised
 
@@ -50,7 +50,7 @@ frame .left -bg black
 
 scale .left.effectsmix -from 0 -to 127 -length 400 \
 -command {printWhatz "ControlChange    0.0 1 " 44} \
--orient horizontal -label "Effects Mix" \
+-orient horizontal -label "Effects Mix (0% effect - 100% effect)" \
 -tickinterval 32 -showvalue true -bg grey66 \
 -variable mixlevel
 
@@ -132,7 +132,7 @@ proc changeEffect {tag value1 value2 } {
         .left.effect2 config -state disabled -label "Disabled"
     }
     if ($value2==1) {
-        .left.effect1 config -state normal -label "Pitch Shift Amount"
+        .left.effect1 config -state normal -label "Pitch Shift Amount (center = no shift)"
         .left.effect2 config -state disabled -label "Disabled"
     }
     if ($value2==2) {
@@ -140,7 +140,7 @@ proc changeEffect {tag value1 value2 } {
         .left.effect2 config -state normal -label "Chorus Modulation Depth"
     }
     if {$value2>=3 && $value2<=5} {
-        .left.effect1 config -state disabled -label "Disabled"
+        .left.effect1 config -state normal -label "T60 Decay Time ( 0 - 10 seconds)"
         .left.effect2 config -state disabled -label "Disabled"
     }
     puts $outID [format "%s %i %f" $tag $value1 $value2]

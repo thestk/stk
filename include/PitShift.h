@@ -5,17 +5,17 @@
     This class implements a simple pitch shifter
     using delay lines.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__PITSHIFT_H)
-#define __PITSHIFT_H
+#ifndef STK_PITSHIFT_H
+#define STK_PITSHIFT_H
 
-#include "Stk.h" 
+#include "Effect.h" 
 #include "DelayL.h" 
 
-class PitShift : public Stk
+class PitShift : public Effect
 {
  public:
   //! Class constructor.
@@ -28,27 +28,30 @@ class PitShift : public Stk
   void clear();
 
   //! Set the pitch shift factor (1.0 produces no shift).
-  void setShift(MY_FLOAT shift);
-
-  //! Set the mixture of input and processed levels in the output (0.0 = input only, 1.0 = processed only). 
-  void setEffectMix(MY_FLOAT mix);
-
-  //! Return the last output value.
-  MY_FLOAT lastOut() const;
+  void setShift(StkFloat shift);
 
   //! Compute one output sample.
-  MY_FLOAT tick(MY_FLOAT input);
+  StkFloat tick(StkFloat input);
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  //! Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
+  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+
+  //! Take a channel of the StkFrames object as inputs to the effect and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
  protected:  
-  DelayL *delayLine[2];
-  MY_FLOAT lastOutput;
-  MY_FLOAT delay[2];
-  MY_FLOAT env[2];
-  MY_FLOAT effectMix;
-  MY_FLOAT rate;
+  DelayL delayLine_[2];
+  StkFloat delay_[2];
+  StkFloat env_[2];
+  StkFloat rate_;
+  unsigned long delayLength;
+  unsigned long halfLength;
 
 };
 

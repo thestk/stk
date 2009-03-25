@@ -26,12 +26,12 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__FMVOICES_H)
-#define __FMVOICES_H
+#ifndef STK_FMVOICES_H
+#define STK_FMVOICES_H
 
 #include "FM.h"
 
@@ -39,27 +39,42 @@ class FMVoices : public FM
 {
  public:
   //! Class constructor.
+  /*!
+    An StkError will be thrown if the rawwave path is incorrectly set.
+  */
   FMVoices();
 
   //! Class destructor.
   ~FMVoices();
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(MY_FLOAT frequency);
+  virtual void setFrequency(StkFloat frequency);
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  virtual void controlChange(int number, MY_FLOAT value);
+  virtual void controlChange(int number, StkFloat value);
 
  protected:
-  int currentVowel;
-  MY_FLOAT tilt[3];
-  MY_FLOAT mods[3];
+  int currentVowel_;
+  StkFloat tilt_[3];
+  StkFloat mods_[3];
 };
 
 #endif

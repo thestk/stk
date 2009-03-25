@@ -8,12 +8,12 @@
     filter with a given coefficient.  Another
     method is provided to create a DC blocking filter.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__POLEZERO_H)
-#define __POLEZERO_H
+#ifndef STK_POLEZERO_H
+#define STK_POLEZERO_H
 
 #include "Filter.h"
 
@@ -31,13 +31,13 @@ class PoleZero : protected Filter
   void clear(void);
 
   //! Set the b[0] coefficient value.
-  void setB0(MY_FLOAT b0);
+  void setB0(StkFloat b0);
 
   //! Set the b[1] coefficient value.
-  void setB1(MY_FLOAT b1);
+  void setB1(StkFloat b1);
 
   //! Set the a[1] coefficient value.
-  void setA1(MY_FLOAT a1);
+  void setA1(StkFloat a1);
 
   //! Set the filter for allpass behavior using \e coefficient.
   /*!
@@ -45,7 +45,7 @@ class PoleZero : protected Filter
     which has unity gain at all frequencies.  Note that the \e
     coefficient magnitude must be less than one to maintain stability.
   */
-  void setAllpass(MY_FLOAT coefficient);
+  void setAllpass(StkFloat coefficient);
 
   //! Create a DC blocking filter with the given pole position in the z-plane.
   /*!
@@ -54,26 +54,36 @@ class PoleZero : protected Filter
     close to one to minimize low-frequency attenuation.
 
   */
-  void setBlockZero(MY_FLOAT thePole = 0.99);
+  void setBlockZero(StkFloat thePole = 0.99);
 
   //! Set the filter gain.
   /*!
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    */
-  void setGain(MY_FLOAT theGain);
+  void setGain(StkFloat gain);
 
   //! Return the current filter gain.
-  MY_FLOAT getGain(void) const;
+  StkFloat getGain(void) const;
 
   //! Return the last computed output value.
-  MY_FLOAT lastOut(void) const;
+  StkFloat lastOut(void) const;
 
   //! Input one sample to the filter and return one output.
-  MY_FLOAT tick(MY_FLOAT sample);
+  StkFloat tick(StkFloat sample);
 
   //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Take a channel of the StkFrames object as inputs to the filter and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+
 };
 
 #endif

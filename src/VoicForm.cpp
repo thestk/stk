@@ -21,7 +21,7 @@
        - Vibrato Gain = 1
        - Loudness (Spectral Tilt) = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -34,25 +34,18 @@
 VoicForm :: VoicForm() : Instrmnt()
 {
   // Concatenate the STK rawwave path to the rawwave file
-	voiced = new SingWave( (Stk::rawwavePath() + "impuls20.raw").c_str(), TRUE );
-	voiced->setGainRate( 0.001 );
-	voiced->setGainTarget( 0.0 );
+	voiced_ = new SingWave( (Stk::rawwavePath() + "impuls20.raw").c_str(), true );
+	voiced_->setGainRate( 0.001 );
+	voiced_->setGainTarget( 0.0 );
 
-	noise = new Noise;
-
-  for ( int i=0; i<4; i++ ) {
-    filters[i] = new FormSwep;
-    filters[i]->setSweepRate( 0.001 );
-  }
+  for ( int i=0; i<4; i++ )
+    filters_[i].setSweepRate( 0.001 );
     
-	onezero = new OneZero;
-	onezero->setZero( -0.9 );
-	onepole = new OnePole;
-	onepole->setPole( 0.9 );
+	onezero_.setZero( -0.9 );
+	onepole_.setPole( 0.9 );
     
-	noiseEnv = new Envelope;
-	noiseEnv->setRate( 0.001 );
-	noiseEnv->setTarget( 0.0 );
+	noiseEnv_.setRate( 0.001 );
+	noiseEnv_.setTarget( 0.0 );
     
 	this->setPhoneme( "eee" );
 	this->clear();
@@ -60,34 +53,28 @@ VoicForm :: VoicForm() : Instrmnt()
 
 VoicForm :: ~VoicForm()
 {
-	delete voiced;
-	delete noise;
-	delete onezero;
-	delete onepole;
-	delete noiseEnv;
-  for ( int i=0; i<4; i++ ) {
-    delete filters[i];
-  }
+	delete voiced_;
 }
 
 void VoicForm :: clear()
 {
-	onezero->clear();
-	onepole->clear();
+	onezero_.clear();
+	onepole_.clear();
   for ( int i=0; i<4; i++ ) {
-    filters[i]->clear();
+    filters_[i].clear();
   }
 }
 
-void VoicForm :: setFrequency(MY_FLOAT frequency)
+void VoicForm :: setFrequency(StkFloat frequency)
 {
-  MY_FLOAT freakency = frequency;
+  StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "VoicForm: setFrequency parameter is less than or equal to zero!" << std::endl;
+    errorString_ << "VoicForm::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
     freakency = 220.0;
   }
 
-	voiced->setFrequency( freakency );
+	voiced_->setFrequency( freakency );
 }
 
 bool VoicForm :: setPhoneme(const char *phoneme )
@@ -97,102 +84,118 @@ bool VoicForm :: setPhoneme(const char *phoneme )
 	while( i < 32 && !found ) {
 		if ( !strcmp( Phonemes::name(i), phoneme ) ) {
 			found = true;
-      filters[0]->setTargets( Phonemes::formantFrequency(i, 0), Phonemes::formantRadius(i, 0), pow(10.0, Phonemes::formantGain(i, 0 ) / 20.0) );
-      filters[1]->setTargets( Phonemes::formantFrequency(i, 1), Phonemes::formantRadius(i, 1), pow(10.0, Phonemes::formantGain(i, 1 ) / 20.0) );
-      filters[2]->setTargets( Phonemes::formantFrequency(i, 2), Phonemes::formantRadius(i, 2), pow(10.0, Phonemes::formantGain(i, 2 ) / 20.0) );
-      filters[3]->setTargets( Phonemes::formantFrequency(i, 3), Phonemes::formantRadius(i, 3), pow(10.0, Phonemes::formantGain(i, 3 ) / 20.0) );
-      setVoiced( Phonemes::voiceGain( i ) );
-      setUnVoiced( Phonemes::noiseGain( i ) );
+      filters_[0].setTargets( Phonemes::formantFrequency(i, 0), Phonemes::formantRadius(i, 0), pow(10.0, Phonemes::formantGain(i, 0 ) / 20.0) );
+      filters_[1].setTargets( Phonemes::formantFrequency(i, 1), Phonemes::formantRadius(i, 1), pow(10.0, Phonemes::formantGain(i, 1 ) / 20.0) );
+      filters_[2].setTargets( Phonemes::formantFrequency(i, 2), Phonemes::formantRadius(i, 2), pow(10.0, Phonemes::formantGain(i, 2 ) / 20.0) );
+      filters_[3].setTargets( Phonemes::formantFrequency(i, 3), Phonemes::formantRadius(i, 3), pow(10.0, Phonemes::formantGain(i, 3 ) / 20.0) );
+      this->setVoiced( Phonemes::voiceGain( i ) );
+      this->setUnVoiced( Phonemes::noiseGain( i ) );
 #if defined(_STK_DEBUG_)
-			cout << "VoicForm: found formant " << phoneme << " (number " << i << ")" << std::endl;
+      errorString_ << "VoicForm::setPhoneme: found formant " << phoneme << " (number " << i << ").";
+      handleError( StkError::DEBUG_WARNING );
 #endif
 		}
 		i++;
 	}
 
-	if ( !found )
-    std::cerr << "VoicForm: phoneme " << phoneme << " not found!" << std::endl;
+	if ( !found ) {
+    errorString_ << "VoicForm::setPhoneme: phoneme " << phoneme << " not found!";
+    handleError( StkError::WARNING );
+  }
 
 	return found;
 }
 
-void VoicForm :: setVoiced(MY_FLOAT vGain)
+void VoicForm :: setVoiced(StkFloat vGain)
 {
-	voiced->setGainTarget(vGain);
+	voiced_->setGainTarget(vGain);
 }
 
-void VoicForm :: setUnVoiced(MY_FLOAT nGain)
+void VoicForm :: setUnVoiced(StkFloat nGain)
 {
-	noiseEnv->setTarget(nGain);
+	noiseEnv_.setTarget(nGain);
 }
 
-void VoicForm :: setFilterSweepRate(int whichOne, MY_FLOAT rate)
+void VoicForm :: setFilterSweepRate(unsigned int whichOne, StkFloat rate)
 {
   if ( whichOne < 0 || whichOne > 3 ) {
-    std::cerr << "VoicForm: setFilterSweepRate filter argument outside range 0-3!" << std::endl;
+    errorString_ << "VoicForm::setFilterSweepRate: filter select argument outside range 0-3!";
+    handleError( StkError::WARNING );
     return;
   }
 
-	filters[whichOne]->setSweepRate(rate);
+	filters_[whichOne].setSweepRate(rate);
 }
 
-void VoicForm :: setPitchSweepRate(MY_FLOAT rate)
+void VoicForm :: setPitchSweepRate(StkFloat rate)
 {
-	voiced->setSweepRate(rate);
+	voiced_->setSweepRate(rate);
 }
 
 void VoicForm :: speak()
 {
-	voiced->noteOn();
+	voiced_->noteOn();
 }
 
 void VoicForm :: quiet()
 {
-	voiced->noteOff();
-	noiseEnv->setTarget( 0.0 );
+	voiced_->noteOff();
+	noiseEnv_.setTarget( 0.0 );
 }
 
-void VoicForm :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void VoicForm :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-	setFrequency(frequency);
-	voiced->setGainTarget(amplitude);
-	onepole->setPole( 0.97 - (amplitude * 0.2) );
+	this->setFrequency( frequency );
+	voiced_->setGainTarget( amplitude );
+	onepole_.setPole( 0.97 - (amplitude * 0.2) );
 }
 
-void VoicForm :: noteOff(MY_FLOAT amplitude)
+void VoicForm :: noteOff(StkFloat amplitude)
 {
 	this->quiet();
 }
 
-MY_FLOAT VoicForm :: tick()
+StkFloat VoicForm :: tick()
 {
-	MY_FLOAT temp;
-	temp = onepole->tick( onezero->tick( voiced->tick() ) );
-	temp += noiseEnv->tick() * noise->tick();
-	lastOutput = filters[0]->tick(temp);
-	lastOutput += filters[1]->tick(temp);
-	lastOutput += filters[2]->tick(temp);
-	lastOutput += filters[3]->tick(temp);
+	StkFloat temp;
+	temp = onepole_.tick( onezero_.tick( voiced_->tick() ) );
+	temp += noiseEnv_.tick() * noise_.tick();
+	lastOutput_ = filters_[0].tick(temp);
+	lastOutput_ += filters_[1].tick(temp);
+	lastOutput_ += filters_[2].tick(temp);
+	lastOutput_ += filters_[3].tick(temp);
   /*
-	temp  += noiseEnv->tick() * noise->tick();
-	lastOutput  = filters[0]->tick(temp);
-	lastOutput  = filters[1]->tick(lastOutput);
-	lastOutput  = filters[2]->tick(lastOutput);
-	lastOutput  = filters[3]->tick(lastOutput);
+	temp  += noiseEnv_.tick() * noise_.tick();
+	lastOutput_  = filters_[0].tick(temp);
+	lastOutput_  = filters_[1].tick(lastOutput_);
+	lastOutput_  = filters_[2].tick(lastOutput_);
+	lastOutput_  = filters_[3].tick(lastOutput_);
   */
-	return lastOutput;
+	return lastOutput_;
+}
+
+StkFloat *VoicForm :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& VoicForm :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
 }
  
-void VoicForm :: controlChange(int number, MY_FLOAT value)
+void VoicForm :: controlChange(int number, StkFloat value)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "VoicForm: Control value less than zero!" << std::endl;
+    errorString_ << "VoicForm::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "VoicForm: Control value greater than 128.0!" << std::endl;
+    errorString_ << "VoicForm::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
 	if (number == __SK_Breath_)	{ // 2
@@ -200,7 +203,7 @@ void VoicForm :: controlChange(int number, MY_FLOAT value)
 		this->setUnVoiced( 0.01 * norm );
 	}
 	else if (number == __SK_FootControl_)	{ // 4
-    MY_FLOAT temp = 0.0;
+    StkFloat temp = 0.0;
 		unsigned int i = (int) value;
 		if (i < 32)	{
       temp = 0.9;
@@ -221,25 +224,28 @@ void VoicForm :: controlChange(int number, MY_FLOAT value)
       i = 0;
       temp = 1.4;
 		}
-    filters[0]->setTargets( temp * Phonemes::formantFrequency(i, 0), Phonemes::formantRadius(i, 0), pow(10.0, Phonemes::formantGain(i, 0 ) / 20.0) );
-    filters[1]->setTargets( temp * Phonemes::formantFrequency(i, 1), Phonemes::formantRadius(i, 1), pow(10.0, Phonemes::formantGain(i, 1 ) / 20.0) );
-    filters[2]->setTargets( temp * Phonemes::formantFrequency(i, 2), Phonemes::formantRadius(i, 2), pow(10.0, Phonemes::formantGain(i, 2 ) / 20.0) );
-    filters[3]->setTargets( temp * Phonemes::formantFrequency(i, 3), Phonemes::formantRadius(i, 3), pow(10.0, Phonemes::formantGain(i, 3 ) / 20.0) );
-    setVoiced( Phonemes::voiceGain( i ) );
-    setUnVoiced( Phonemes::noiseGain( i ) );
+    filters_[0].setTargets( temp * Phonemes::formantFrequency(i, 0), Phonemes::formantRadius(i, 0), pow(10.0, Phonemes::formantGain(i, 0 ) / 20.0) );
+    filters_[1].setTargets( temp * Phonemes::formantFrequency(i, 1), Phonemes::formantRadius(i, 1), pow(10.0, Phonemes::formantGain(i, 1 ) / 20.0) );
+    filters_[2].setTargets( temp * Phonemes::formantFrequency(i, 2), Phonemes::formantRadius(i, 2), pow(10.0, Phonemes::formantGain(i, 2 ) / 20.0) );
+    filters_[3].setTargets( temp * Phonemes::formantFrequency(i, 3), Phonemes::formantRadius(i, 3), pow(10.0, Phonemes::formantGain(i, 3 ) / 20.0) );
+    this->setVoiced( Phonemes::voiceGain( i ) );
+    this->setUnVoiced( Phonemes::noiseGain( i ) );
 	}
 	else if (number == __SK_ModFrequency_) // 11
-		voiced->setVibratoRate( norm * 12.0);  // 0 to 12 Hz
+		voiced_->setVibratoRate( norm * 12.0);  // 0 to 12 Hz
 	else if (number == __SK_ModWheel_) // 1
-		voiced->setVibratoGain( norm * 0.2);
+		voiced_->setVibratoGain( norm * 0.2);
 	else if (number == __SK_AfterTouch_Cont_)	{ // 128
-		setVoiced( norm );
-		onepole->setPole( 0.97 - ( norm * 0.2) );
+		this->setVoiced( norm );
+		onepole_.setPole( 0.97 - ( norm * 0.2) );
 	}
-  else
-    std::cerr << "VoicForm: Undefined Control Number (" << number << ")!!" << std::endl;
+  else {
+    errorString_ << "VoicForm::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "VoicForm: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "VoicForm::controlChange: number = " << number << ", value = " << value << '.';
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }

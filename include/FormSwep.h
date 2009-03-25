@@ -8,12 +8,12 @@
     It provides methods for controlling the sweep
     rate and target frequency.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__FORMSWEP_H)
-#define __FORMSWEP_H
+#ifndef STK_FORMSWEP_H
+#define STK_FORMSWEP_H
 
 #include "BiQuad.h"
 
@@ -39,13 +39,13 @@ class FormSwep : public BiQuad
     the unit-circle (\e radius close to one), the narrower the
     resulting resonance width.
   */
-  void setResonance(MY_FLOAT aFrequency, MY_FLOAT aRadius);
+  void setResonance(StkFloat frequency, StkFloat radius);
 
   //! Set both the current and target resonance parameters.
-  void setStates(MY_FLOAT aFrequency, MY_FLOAT aRadius, MY_FLOAT aGain = 1.0);
+  void setStates(StkFloat frequency, StkFloat radius, StkFloat gain = 1.0);
 
   //! Set target resonance parameters.
-  void setTargets(MY_FLOAT aFrequency, MY_FLOAT aRadius, MY_FLOAT aGain = 1.0);
+  void setTargets(StkFloat frequency, StkFloat radius, StkFloat gain = 1.0);
 
   //! Set the sweep rate (between 0.0 - 1.0).
   /*!
@@ -56,7 +56,7 @@ class FormSwep : public BiQuad
     target values.  A sweep rate of 0.0 will produce no
     change in resonance parameters.  
   */
-  void setSweepRate(MY_FLOAT aRate);    
+  void setSweepRate(StkFloat rate);    
 
   //! Set the sweep rate in terms of a time value in seconds.
   /*!
@@ -64,29 +64,38 @@ class FormSwep : public BiQuad
     given time for the formant parameters to reach
     their target values.
   */
-  void setSweepTime(MY_FLOAT aTime);    
+  void setSweepTime(StkFloat time);    
 
   //! Input one sample to the filter and return one output.
-  MY_FLOAT tick(MY_FLOAT sample);
+  StkFloat tick(StkFloat sample);
 
   //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Take a channel of the StkFrames object as inputs to the filter and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
  protected:  
-  bool dirty;
-  MY_FLOAT frequency;
-  MY_FLOAT radius;
-  MY_FLOAT startFrequency;
-  MY_FLOAT startRadius;
-  MY_FLOAT startGain;
-  MY_FLOAT targetFrequency;
-  MY_FLOAT targetRadius;
-  MY_FLOAT targetGain;
-  MY_FLOAT deltaFrequency;
-  MY_FLOAT deltaRadius;
-  MY_FLOAT deltaGain;
-  MY_FLOAT sweepState;
-  MY_FLOAT sweepRate;
+  bool dirty_;
+  StkFloat frequency_;
+  StkFloat radius_;
+  StkFloat startFrequency_;
+  StkFloat startRadius_;
+  StkFloat startGain_;
+  StkFloat targetFrequency_;
+  StkFloat targetRadius_;
+  StkFloat targetGain_;
+  StkFloat deltaFrequency_;
+  StkFloat deltaRadius_;
+  StkFloat deltaGain_;
+  StkFloat sweepState_;
+  StkFloat sweepRate_;
 
 };
 

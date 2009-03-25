@@ -1,33 +1,40 @@
 /***************************************************/
 /*! \class RtDuplex
-    \brief STK realtime audio input/output class.
+    \brief STK realtime audio (blocking) input/output class.
 
     This class provides a simplified interface to
     RtAudio for realtime audio input/output.  It
-    is also possible to achieve duplex operation
-    using separate RtWvIn and RtWvOut classes, but
-    this class ensures better input/output
-    syncronization.
+    may also be possible to achieve duplex
+    operation using separate RtWvIn and RtWvOut
+    classes, but this class ensures better
+    input/output synchronization.
+
+    Because this class makes use of RtAudio's
+    blocking input/output routines, its
+    performance is less robust on systems where
+    the audio API is callback-based (Macintosh
+    CoreAudio and Windows ASIO).
 
     RtDuplex supports multi-channel data in
     interleaved format.  It is important to
     distinguish the tick() methods, which output
-    single samples to all channels in a sample frame
-    and return samples produced by averaging across
-    sample frames, from the tickFrame() methods, which
-    take/return pointers to multi-channel sample frames.
+    single samples to all channels in a sample
+    frame and return samples produced by averaging
+    across sample frames, from the tickFrame()
+    methods, which take/return pointers to
+    multi-channel sample frames.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "RtDuplex.h"
 
-RtDuplex :: RtDuplex(int nChannels, MY_FLOAT sampleRate, int device, int bufferFrames, int nBuffers )
+RtDuplex :: RtDuplex(int nChannels, StkFloat sampleRate, int device, int bufferFrames, int nBuffers )
 {
   channels_ = nChannels;
   bufferSize_ = bufferFrames;
-  RtAudioFormat format = ( sizeof(MY_FLOAT) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
+  RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
 
   audio_ = 0;
   try {
@@ -41,13 +48,13 @@ RtDuplex :: RtDuplex(int nChannels, MY_FLOAT sampleRate, int device, int bufferF
   try {
     audio_->openStream(device, channels_, device, channels_, format,
                       (int)sampleRate, &bufferSize_, nBuffers);
-    data_ = (MY_FLOAT *) audio_->getStreamBuffer();
+    data_ = (StkFloat *) audio_->getStreamBuffer();
   }
   catch (RtError &error) {
     handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
   }
 
-  lastOutput_ = (MY_FLOAT *) new MY_FLOAT[channels_];
+  lastOutput_ = (StkFloat *) new StkFloat[channels_];
   for (unsigned int i=0; i<channels_; i++) lastOutput_[i] = 0.0;
   counter_ = 0;
   stopped_ = true;
@@ -78,19 +85,19 @@ void RtDuplex :: stop()
   }
 }
 
-MY_FLOAT RtDuplex :: lastOut(void) const
+StkFloat RtDuplex :: lastOut(void) const
 {
   if ( channels_ == 1 )
     return *lastOutput_;
 
-  MY_FLOAT output = 0.0;
+  StkFloat output = 0.0;
   for (unsigned int i=0; i<channels_; i++ ) {
     output += lastOutput_[i];
   }
   return output / channels_;
 }
 
-MY_FLOAT RtDuplex :: tick(const MY_FLOAT sample)
+StkFloat RtDuplex :: tick(const StkFloat sample)
 {
   if ( stopped_ )
     start();
@@ -117,7 +124,7 @@ MY_FLOAT RtDuplex :: tick(const MY_FLOAT sample)
   return lastOut();
 }
 
-MY_FLOAT *RtDuplex :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *RtDuplex :: tick(StkFloat *vector, unsigned int vectorSize)
 {
   for ( unsigned int i=0; i<vectorSize; i++ )
     vector[i] = tick(vector[i]);
@@ -125,12 +132,40 @@ MY_FLOAT *RtDuplex :: tick(MY_FLOAT *vector, unsigned int vectorSize)
   return vector;
 }
 
-const MY_FLOAT *RtDuplex :: lastFrame() const
+StkFrames& RtDuplex :: tick( StkFrames& frames, unsigned int channel )
+{
+  if ( channel == 0 || frames.channels() < channel ) {
+    errorString_ << "RtDuplex::tick(): channel argument (" << channel << ") is zero or > channels in StkFrames argument!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  if ( frames.channels() == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      frames[i] = tick( frames[i] );
+  }
+  else if ( frames.interleaved() ) {
+    unsigned int hop = frames.channels();
+    unsigned int index = channel - 1;
+    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+      frames[index] = tick( frames[index] );
+      index += hop;
+    }
+  }
+  else {
+    unsigned int iStart = (channel - 1) * frames.frames();
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      frames[iStart + i] = tick( frames[iStart + i] );
+  }
+
+  return frames;
+}
+
+const StkFloat *RtDuplex :: lastFrame() const
 {
   return lastOutput_;
 }
 
-MY_FLOAT *RtDuplex :: tickFrame(MY_FLOAT *frameVector, unsigned int frames)
+StkFloat *RtDuplex :: tickFrame(StkFloat *frameVector, unsigned int frames)
 {
   if ( stopped_ )
     start();
@@ -160,4 +195,51 @@ MY_FLOAT *RtDuplex :: tickFrame(MY_FLOAT *frameVector, unsigned int frames)
   }
 
   return frameVector;
+}
+
+StkFrames& RtDuplex :: tickFrame( StkFrames& frames )
+{
+  if ( channels_ != frames.channels() ) {
+    errorString_ << "RtDuplex::tickFrame(): incompatible channel value in StkFrames argument!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  if ( stopped_ )
+    start();
+
+  unsigned long j, index = 0;
+  unsigned long k, hop = frames.frames();
+  for (unsigned int i=0; i<frames.frames(); i++ ) {
+    if (counter_ == 0) {
+      try {
+        audio_->tickStream();
+      }
+      catch (RtError &error) {
+        handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
+      }
+    }
+
+    if ( channels_ > 1 && frames.interleaved() == false ) {
+      k = i;
+      for (j=0; j<channels_; j++) {
+        lastOutput_[j] = data_[index];
+        data_[index++] = frames[k];
+        frames[k] = lastOutput_[j];
+        k += hop;
+      }
+    }
+    else {
+      for (j=0; j<channels_; j++) {
+        lastOutput_[j] = data_[index];
+        data_[index] = frames[index];
+        frames[index++] = lastOutput_[j];
+      }
+    }
+
+    counter_++;
+    if (counter_ >= (long) bufferSize_)
+      counter_ = 0;
+  }
+
+  return frames;
 }

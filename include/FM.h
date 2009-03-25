@@ -19,12 +19,12 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__FM_H)
-#define __FM_H
+#ifndef STK_FM_H
+#define STK_FM_H
 
 #include "Instrmnt.h"
 #include "ADSR.h"
@@ -35,7 +35,10 @@ class FM : public Instrmnt
 {
  public:
   //! Class constructor, taking the number of wave/envelope operators to control.
-  FM( int operators = 4 );
+  /*!
+    An StkError will be thrown if the rawwave path is incorrectly set.
+  */
+  FM( unsigned int operators = 4 );
 
   //! Class destructor.
   virtual ~FM();
@@ -47,25 +50,25 @@ class FM : public Instrmnt
   void loadWaves(const char **filenames);
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(MY_FLOAT frequency);
+  virtual void setFrequency(StkFloat frequency);
 
   //! Set the frequency ratio for the specified wave.
-  void setRatio(int waveIndex, MY_FLOAT ratio);
+  void setRatio(unsigned int waveIndex, StkFloat ratio);
 
   //! Set the gain for the specified wave.
-  void setGain(int waveIndex, MY_FLOAT gain);
+  void setGain(unsigned int waveIndex, StkFloat gain);
 
   //! Set the modulation speed in Hz.
-  void setModulationSpeed(MY_FLOAT mSpeed);
+  void setModulationSpeed(StkFloat mSpeed);
 
   //! Set the modulation depth.
-  void setModulationDepth(MY_FLOAT mDepth);
+  void setModulationDepth(StkFloat mDepth);
 
   //! Set the value of control1.
-  void setControl1(MY_FLOAT cVal);
+  void setControl1(StkFloat cVal);
 
   //! Set the value of control1.
-  void setControl2(MY_FLOAT cVal);
+  void setControl2(StkFloat cVal);
 
   //! Start envelopes toward "on" targets.
   void keyOn();
@@ -74,29 +77,41 @@ class FM : public Instrmnt
   void keyOff();
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Pure virtual function ... must be defined in subclasses.
-  virtual MY_FLOAT tick() = 0;
+  virtual StkFloat tick() = 0;
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize) = 0;
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 ) = 0;
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  virtual void controlChange(int number, MY_FLOAT value);
+  virtual void controlChange(int number, StkFloat value);
 
  protected:  
-  ADSR     **adsr; 
-  WaveLoop **waves;
-  WaveLoop *vibrato;
-  TwoZero  *twozero;
-  int nOperators;
-  MY_FLOAT baseFrequency;
-  MY_FLOAT *ratios;
-  MY_FLOAT *gains;
-  MY_FLOAT modDepth;
-  MY_FLOAT control1;
-  MY_FLOAT control2;
-  MY_FLOAT __FM_gains[100];
-  MY_FLOAT __FM_susLevels[16];
-  MY_FLOAT __FM_attTimes[32];
+  std::vector<ADSR *> adsr_; 
+  std::vector<WaveLoop *> waves_;
+  WaveLoop *vibrato_;
+  TwoZero  twozero_;
+  unsigned int nOperators_;
+  StkFloat baseFrequency_;
+  std::vector<StkFloat> ratios_;
+  std::vector<StkFloat> gains_;
+  StkFloat modDepth_;
+  StkFloat control1_;
+  StkFloat control2_;
+  StkFloat fmGains_[100];
+  StkFloat fmSusLevels_[16];
+  StkFloat fmAttTimes_[32];
 
 };
 

@@ -15,7 +15,7 @@ Both the DirectSound and Steinberg ASIO audio APIs are supported for realtime au
 
 When using the DirectSound API for audio input, latency is typically pretty horrendous (should we be surprised?).  Also, there is a slight chance you don't have DirectSoundCapture support on your computer.  If not, you should download the DirectX 6.0 (or higher) runtime libraries from Microsoft's WWW site (http://www.microsoft.com/directx/download.asp) in order to run the pre-compiled STK executables for Windoze.  The last time I checked, there was no DirectSoundCapture support for WindowsNT ... you'll have to switch to Windows 2000 or XP or use an ASIO driver.  I stopped supporting the WinMM audio output code with release 3.2.
 
-Realtime MIDI input is supported using the winmm.lib API.
+Realtime MIDI input/output is supported by RtMidi using the winmm.lib API and requires the __WINDOWS_MM__ preprocessor definition.
 
 Visual C++ 6.0 workspaces have been created for the various STK projects.  Everything has already been configured for you.  The intermediate .obj files will be written to either the "Release" or "Debug" directories, but the executable files will be written to the main project directories (where they need to be for proper execution).  If you should somehow lose or hose the VC++ workspace file for a project, then you will have to do a LOT of configuring to recreate it ... it's probably easier just to download the distribution again from our WWW sites.  Anyway, for your benefit and mine, here is a list of things that need to be added to the various "Project Settings":
 
@@ -27,7 +27,7 @@ Visual C++ 6.0 workspaces have been created for the various STK projects.  Every
 
 4. Under C/C++ > Preprocessor: Add "../../include" directory to the "extra include" field.
 
-5. Under C/C++ > Preprocessor: Add "__WINDOWS_DS__" to the definitions field.
+5. Under C/C++ > Preprocessor: Add "__WINDOWS_DS__", "__WINDOWS_MM__", and "__LITTLE_ENDIAN__ to the definitions field.
 
 6. Add all the necessary files to the project.
 
@@ -49,7 +49,7 @@ WINDOWS 95/98:
 
 PLAY SKINI SCOREFILES IN REALTIME:
 
-	demo Clarinet -or < scores/streetsf.ski
+	demo Clarinet -or -if scores/streetsf.ski
 
 USE TCL/TK GUIs FOR REALTIME CONTROL:
 

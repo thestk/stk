@@ -3,22 +3,25 @@
   Definition of SKINI Message Types and Special Symbols
      Synthesis toolKit Instrument Network Interface
 
-  These symbols should have the form __SK_<name>_
+  These symbols should have the form:
 
-  Where <name> is the string used in the SKINI stream.
+   \c __SK_<name>_
 
-  by Perry R. Cook, 1995 - 2002.
+  where <name> is the string used in the SKINI stream.
+
+  by Perry R. Cook, 1995 - 2004.
 */
 /*********************************************************/
 
-/***** MIDI COMPATIBLE MESSAGES *****/
-/***** Status Bytes Have Channel=0 **/
+#define NOPE        -32767
+#define YEP         1
+#define SK_DBL      -32766
+#define SK_INT      -32765
+#define SK_STR      -32764
+#define __SK_Exit_  999
 
-#define NOPE    -32767
-#define YEP     1
-#define SK_DBL  -32766
-#define SK_INT  -32765
-#define SK_STR  -32764
+/***** MIDI COMPATIBLE MESSAGES *****/
+/*** (Status bytes for channel=0) ***/
 
 #define __SK_NoteOff_                128
 #define __SK_NoteOn_                 144

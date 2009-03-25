@@ -6,16 +6,16 @@
     C rand() function.  The quality of the rand()
     function varies from one OS to another.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__NOISE_H)
-#define __NOISE_H
+#ifndef STK_NOISE_H
+#define STK_NOISE_H
 
-#include "Stk.h"
+#include "Generator.h"
 
-class Noise : public Stk
+class Noise : public Generator
 {
 public:
 
@@ -40,17 +40,21 @@ public:
   void setSeed( unsigned int seed = 0 );
 
   //! Return a random number between -1.0 and 1.0 using rand().
-  virtual MY_FLOAT tick();
+  virtual StkFloat tick();
 
-  //! Return \e vectorSize random numbers between -1.0 and 1.0 in \e vector.
-  virtual MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  //! Compute \e vectorSize outputs and return them in \e vector.
+  virtual StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
 
-  //! Return the last computed value.
-  MY_FLOAT lastOut() const;
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
-protected:  
-
-  MY_FLOAT lastOutput;
+protected:
 
 };
 

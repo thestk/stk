@@ -13,105 +13,119 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Plucked.h"
 
-Plucked :: Plucked(MY_FLOAT lowestFrequency)
+Plucked :: Plucked(StkFloat lowestFrequency)
 {
-  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
-  loopGain = (MY_FLOAT) 0.999;
-  delayLine = new DelayA( (MY_FLOAT)(length / 2.0), length );
-  loopFilter = new OneZero;
-  pickFilter = new OnePole;
-  noise = new Noise;
+  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  loopGain_ = 0.999;
+  delayLine_.setMaximumDelay( length_ );
+  delayLine_.setDelay( 0.5 * length_ );
   this->clear();
 }
 
 Plucked :: ~Plucked()
 {
-  delete delayLine;
-  delete loopFilter;
-  delete pickFilter;
-  delete noise;
 }
 
 void Plucked :: clear()
 {
-  delayLine->clear();
-  loopFilter->clear();
-  pickFilter->clear();
+  delayLine_.clear();
+  loopFilter_.clear();
+  pickFilter_.clear();
 }
 
-void Plucked :: setFrequency(MY_FLOAT frequency)
+void Plucked :: setFrequency(StkFloat frequency)
 {
-  MY_FLOAT freakency = frequency;
+  StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "Plucked: setFrequency parameter is less than or equal to zero!" << std::endl;
+    errorString_ << "Plucked::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
     freakency = 220.0;
   }
 
   // Delay = length - approximate filter delay.
-  MY_FLOAT delay = (Stk::sampleRate() / freakency) - (MY_FLOAT) 0.5;
-  if (delay <= 0.0) delay = 0.3;
-  else if (delay > length) delay = length;
-  delayLine->setDelay(delay);
-  loopGain = 0.995 + (freakency * 0.000005);
-  if ( loopGain >= 1.0 ) loopGain = (MY_FLOAT) 0.99999;
+  StkFloat delay = (Stk::sampleRate() / freakency) - 0.5;
+  if ( delay <= 0.0 )
+    delay = 0.3;
+  else if ( delay > length_ )
+    delay = length_;
+  delayLine_.setDelay( delay );
+
+  loopGain_ = 0.995 + (freakency * 0.000005);
+  if ( loopGain_ >= 1.0 ) loopGain_ = 0.99999;
 }
 
-void Plucked :: pluck(MY_FLOAT amplitude)
+void Plucked :: pluck(StkFloat amplitude)
 {
-  MY_FLOAT gain = amplitude;
+  StkFloat gain = amplitude;
   if ( gain > 1.0 ) {
-    std::cerr << "Plucked: pluck amplitude greater than 1.0!" << std::endl;
+    errorString_ << "Plucked::pluck: amplitude is greater than 1.0 ... setting to 1.0!";
+    handleError( StkError::WARNING );
     gain = 1.0;
   }
   else if ( gain < 0.0 ) {
-    std::cerr << "Plucked: pluck amplitude less than zero!" << std::endl;
+    errorString_ << "Plucked::pluck: amplitude is < 0.0  ... setting to 0.0!";
+    handleError( StkError::WARNING );
     gain = 0.0;
   }
 
-  pickFilter->setPole((MY_FLOAT) 0.999 - (gain * (MY_FLOAT) 0.15));
-  pickFilter->setGain(gain * (MY_FLOAT) 0.5);
-  for (long i=0; i<length; i++)
+  pickFilter_.setPole( 0.999 - (gain * 0.15) );
+  pickFilter_.setGain( gain * 0.5 );
+  for (unsigned long i=0; i<length_; i++)
     // Fill delay with noise additively with current contents.
-    delayLine->tick( 0.6 * delayLine->lastOut() + pickFilter->tick( noise->tick() ) );
+    delayLine_.tick( 0.6 * delayLine_.lastOut() + pickFilter_.tick( noise_.tick() ) );
 }
 
-void Plucked :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Plucked :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  this->setFrequency(frequency);
-  this->pluck(amplitude);
+  this->setFrequency( frequency );
+  this->pluck( amplitude );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Plucked: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Plucked::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Plucked :: noteOff(MY_FLOAT amplitude)
+void Plucked :: noteOff(StkFloat amplitude)
 {
-  loopGain = (MY_FLOAT) 1.0 - amplitude;
-  if ( loopGain < 0.0 ) {
-    std::cerr << "Plucked: noteOff amplitude greater than 1.0!" << std::endl;
-    loopGain = 0.0;
+  loopGain_ = 1.0 - amplitude;
+  if ( loopGain_ < 0.0 ) {
+    errorString_ << "Plucked::noteOff: amplitude is greater than 1.0 ... setting to 1.0!";
+    handleError( StkError::WARNING );
+    loopGain_ = 0.0;
   }
-  else if ( loopGain > 1.0 ) {
-    std::cerr << "Plucked: noteOff amplitude less than or zero!" << std::endl;
-    loopGain = (MY_FLOAT) 0.99999;
+  else if ( loopGain_ > 1.0 ) {
+    errorString_ << "Plucked::noteOff: amplitude is < 0.0  ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    loopGain_ = (StkFloat) 0.99999;
   }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Plucked: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "Plucked::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT Plucked :: tick()
+StkFloat Plucked :: tick()
 {
   // Here's the whole inner loop of the instrument!!
-  lastOutput = delayLine->tick( loopFilter->tick( delayLine->lastOut() * loopGain ) ); 
-  lastOutput *= (MY_FLOAT) 3.0;
-  return lastOutput;
+  lastOutput_ = delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ ) ); 
+  lastOutput_ *= 3.0;
+  return lastOutput_;
+}
+
+StkFloat *Plucked :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Plucked :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
 }

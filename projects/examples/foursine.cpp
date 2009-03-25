@@ -16,7 +16,7 @@ int main()
   // Define and load the sine waves
   try {
     for ( i=0; i<4; i++ ) {
-      inputs[i] = new WaveLoop( "rawwaves/sinewave.raw", TRUE );
+      inputs[i] = new WaveLoop( "rawwaves/sinewave.raw", true );
       inputs[i]->setFrequency( 220.0 * (i+1) );
     }
   }
@@ -33,7 +33,7 @@ int main()
   }
 
   // Write two seconds of four sines to the output file
-  MY_FLOAT frame[4];
+  StkFloat frame[4];
   for ( j=0; j<88200; j++ ) {
     for ( i=0; i<4; i++ )
       frame[i] = inputs[i]->tick();

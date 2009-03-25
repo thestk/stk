@@ -19,7 +19,7 @@ static LONG findDrvPath (char *clsidstr,char *dllpath,int dllpathsize)
 	DWORD			index;
 	OFSTRUCT		ofs;
 	HFILE			hfile;
-	BOOL			found = FALSE;
+	BOOL			found = false;
 
 	CharLowerBuff(clsidstr,strlen(clsidstr));
 	if ((cr = RegOpenKey(HKEY_CLASSES_ROOT,COM_CLSID,&hkEnum)) == ERROR_SUCCESS) {
@@ -44,7 +44,7 @@ static LONG findDrvPath (char *clsidstr,char *dllpath,int dllpathsize)
 						}
 						RegCloseKey(hksub);
 					}
-					found = TRUE;	// break out 
+					found = true;	// break out 
 				}
 			}
 		}				
@@ -134,7 +134,7 @@ AsioDriverList::AsioDriverList ()
 	LPASIODRVSTRUCT	pdl;
 	LONG 			cr;
 	DWORD			index = 0;
-	BOOL			fin = FALSE;
+	BOOL			fin = false;
 
 	numdrv		= 0;
 	lpdrvlist	= 0;
@@ -144,7 +144,7 @@ AsioDriverList::AsioDriverList ()
 		if ((cr = RegEnumKey(hkEnum,index++,(LPTSTR)keyname,MAXDRVNAMELEN))== ERROR_SUCCESS) {
 			lpdrvlist = newDrvStruct (hkEnum,keyname,0,lpdrvlist);
 		}
-		else fin = TRUE;
+		else fin = true;
 	}
 	if (hkEnum) RegCloseKey(hkEnum);
 

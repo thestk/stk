@@ -26,41 +26,34 @@
 
 #include "Mesh2D.h"
 #include "SKINI.msg"
-#include <stdlib.h>
 
 Mesh2D :: Mesh2D(short nX, short nY)
 {
   this->setNX(nX);
   this->setNY(nY);
 
-  MY_FLOAT pole = 0.05;
+  StkFloat pole = 0.05;
 
   short i;
   for (i=0; i<NYMAX; i++) {
-    filterY[i] = new OnePole(pole);
-    filterY[i]->setGain(0.99);
+    filterY_[i].setPole( pole );
+    filterY_[i].setGain( 0.99 );
   }
 
   for (i=0; i<NXMAX; i++) {
-    filterX[i] = new OnePole(pole);
-    filterX[i]->setGain(0.99);
+    filterX_[i].setPole( pole );
+    filterX_[i].setGain( 0.99 );
   }
 
   this->clearMesh();
 
-  counter=0;
-  xInput = 0;
-  yInput = 0;
+  counter_=0;
+  xInput_ = 0;
+  yInput_ = 0;
 }
 
 Mesh2D :: ~Mesh2D()
 {
-  short i;
-  for (i=0; i<NYMAX; i++)
-    delete filterY[i];
-
-  for (i=0; i<NXMAX; i++)
-    delete filterX[i];
 }
 
 void Mesh2D :: clear()
@@ -68,13 +61,13 @@ void Mesh2D :: clear()
   this->clearMesh();
 
   short i;
-  for (i=0; i<NY; i++)
-    filterY[i]->clear();
+  for (i=0; i<NY_; i++)
+    filterY_[i].clear();
 
-  for (i=0; i<NX; i++)
-    filterX[i]->clear();
+  for (i=0; i<NX_; i++)
+    filterX_[i].clear();
 
-  counter=0;
+  counter_=0;
 }
 
 void Mesh2D :: clearMesh()
@@ -82,57 +75,57 @@ void Mesh2D :: clearMesh()
   int x, y;
   for (x=0; x<NXMAX-1; x++) {
     for (y=0; y<NYMAX-1; y++) {
-      v[x][y] = 0;
+      v_[x][y] = 0;
     }
   }
   for (x=0; x<NXMAX; x++) {
     for (y=0; y<NYMAX; y++) {
 
-      vxp[x][y] = 0;
-      vxm[x][y] = 0;
-      vyp[x][y] = 0;
-      vym[x][y] = 0;
+      vxp_[x][y] = 0;
+      vxm_[x][y] = 0;
+      vyp_[x][y] = 0;
+      vym_[x][y] = 0;
 
-      vxp1[x][y] = 0;
-      vxm1[x][y] = 0;
-      vyp1[x][y] = 0;
-      vym1[x][y] = 0;
+      vxp1_[x][y] = 0;
+      vxm1_[x][y] = 0;
+      vyp1_[x][y] = 0;
+      vym1_[x][y] = 0;
     }
   }
 }
 
-MY_FLOAT Mesh2D :: energy()
+StkFloat Mesh2D :: energy()
 {
   // Return total energy contained in wave variables Note that some
   // energy is also contained in any filter delay elements.
 
   int x, y;
-  MY_FLOAT t;
-  MY_FLOAT e = 0;
-  if ( counter & 1 ) { // Ready for Mesh2D::tick1() to be called.
-    for (x=0; x<NX; x++) {
-      for (y=0; y<NY; y++) {
-        t = vxp1[x][y];
+  StkFloat t;
+  StkFloat e = 0;
+  if ( counter_ & 1 ) { // Ready for Mesh2D::tick1() to be called.
+    for (x=0; x<NX_; x++) {
+      for (y=0; y<NY_; y++) {
+        t = vxp1_[x][y];
         e += t*t;
-        t = vxm1[x][y];
+        t = vxm1_[x][y];
         e += t*t;
-        t = vyp1[x][y];
+        t = vyp1_[x][y];
         e += t*t;
-        t = vym1[x][y];
+        t = vym1_[x][y];
         e += t*t;
       }
     }
   }
   else { // Ready for Mesh2D::tick0() to be called.
-    for (x=0; x<NX; x++) {
-      for (y=0; y<NY; y++) {
-        t = vxp[x][y];
+    for (x=0; x<NX_; x++) {
+      for (y=0; y<NY_; y++) {
+        t = vxp_[x][y];
         e += t*t;
-        t = vxm[x][y];
+        t = vxm_[x][y];
         e += t*t;
-        t = vyp[x][y];
+        t = vyp_[x][y];
         e += t*t;
-        t = vym[x][y];
+        t = vym_[x][y];
         e += t*t;
       }
     }
@@ -143,161 +136,173 @@ MY_FLOAT Mesh2D :: energy()
 
 void Mesh2D :: setNX(short lenX)
 {
-  NX = lenX;
+  NX_ = lenX;
   if ( lenX < 2 ) {
-    std::cerr << "Mesh2D::setNX(" << lenX << "): Minimum length is 2!" << std::endl;
-    NX = 2;
+    errorString_ << "Mesh2D::setNX(" << lenX << "): Minimum length is 2!";
+    handleError( StkError::WARNING );
+    NX_ = 2;
   }
   else if ( lenX > NXMAX ) {
-    std::cerr << "Mesh2D::setNX(" << lenX << "): Maximum length is " << NXMAX << "!" << std::endl;
-    NX = NXMAX;
+    errorString_ << "Mesh2D::setNX(" << lenX << "): Maximum length is " << NXMAX << '!';;
+    handleError( StkError::WARNING );
+    NX_ = NXMAX;
   }
 }
 
 void Mesh2D :: setNY(short lenY)
 {
-  NY = lenY;
+  NY_ = lenY;
   if ( lenY < 2 ) {
-    std::cerr << "Mesh2D::setNY(" << lenY << "): Minimum length is 2!" << std::endl;
-    NY = 2;
+    errorString_ << "Mesh2D::setNY(" << lenY << "): Minimum length is 2!";
+    handleError( StkError::WARNING );
+    NY_ = 2;
   }
   else if ( lenY > NYMAX ) {
-    std::cerr << "Mesh2D::setNY(" << lenY << "): Maximum length is " << NYMAX << "!" << std::endl;
-    NY = NYMAX;
+    errorString_ << "Mesh2D::setNY(" << lenY << "): Maximum length is " << NXMAX << '!';;
+    handleError( StkError::WARNING );
+    NY_ = NYMAX;
   }
 }
 
-void Mesh2D :: setDecay(MY_FLOAT decayFactor)
+void Mesh2D :: setDecay(StkFloat decayFactor)
 {
-  MY_FLOAT gain = decayFactor;
+  StkFloat gain = decayFactor;
   if ( decayFactor < 0.0 ) {
-    std::cerr << "Mesh2D::setDecay decayFactor value is less than 0.0!" << std::endl;
+    errorString_ << "Mesh2D::setDecay: decayFactor value is less than 0.0!";
+    handleError( StkError::WARNING );
     gain = 0.0;
   }
   else if ( decayFactor > 1.0 ) {
-    std::cerr << "Mesh2D::setDecay decayFactor value is greater than 1.0!" << std::endl;
+    errorString_ << "Mesh2D::setDecay decayFactor value is greater than 1.0!";
+    handleError( StkError::WARNING );
     gain = 1.0;
   }
 
   int i;
   for (i=0; i<NYMAX; i++)
-    filterY[i]->setGain(gain);
+    filterY_[i].setGain( gain );
 
   for (i=0; i<NXMAX; i++)
-    filterX[i]->setGain(gain);
+    filterX_[i].setGain( gain );
 }
 
-void Mesh2D :: setInputPosition(MY_FLOAT xFactor, MY_FLOAT yFactor)
+void Mesh2D :: setInputPosition(StkFloat xFactor, StkFloat yFactor)
 {
   if ( xFactor < 0.0 ) {
-    std::cerr << "Mesh2D::setInputPosition xFactor value is less than 0.0!" << std::endl;
-    xInput = 0;
+    errorString_ << "Mesh2D::setInputPosition xFactor value is less than 0.0!";
+    handleError( StkError::WARNING );
+    xInput_ = 0;
   }
   else if ( xFactor > 1.0 ) {
-    std::cerr << "Mesh2D::setInputPosition xFactor value is greater than 1.0!" << std::endl;
-    xInput = NX - 1;
+    errorString_ << "Mesh2D::setInputPosition xFactor value is greater than 1.0!";
+    handleError( StkError::WARNING );
+    xInput_ = NX_ - 1;
   }
   else
-    xInput = (short) (xFactor * (NX - 1));
+    xInput_ = (short) (xFactor * (NX_ - 1));
 
   if ( yFactor < 0.0 ) {
-    std::cerr << "Mesh2D::setInputPosition yFactor value is less than 0.0!" << std::endl;
-    yInput = 0;
+    errorString_ << "Mesh2D::setInputPosition yFactor value is less than 0.0!";
+    handleError( StkError::WARNING );
+    yInput_ = 0;
   }
   else if ( yFactor > 1.0 ) {
-    std::cerr << "Mesh2D::setInputPosition yFactor value is greater than 1.0!" << std::endl;
-    yInput = NY - 1;
+    errorString_ << "Mesh2D::setInputPosition yFactor value is greater than 1.0!";
+    handleError( StkError::WARNING );
+    yInput_ = NY_ - 1;
   }
   else
-    yInput = (short) (yFactor * (NY - 1));
+    yInput_ = (short) (yFactor * (NY_ - 1));
 }
 
-void Mesh2D :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Mesh2D :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
   // Input at corner.
-  if ( counter & 1 ) {
-    vxp1[xInput][yInput] += amplitude;
-    vyp1[xInput][yInput] += amplitude;
+  if ( counter_ & 1 ) {
+    vxp1_[xInput_][yInput_] += amplitude;
+    vyp1_[xInput_][yInput_] += amplitude;
   }
   else {
-    vxp[xInput][yInput] += amplitude;
-    vyp[xInput][yInput] += amplitude;
+    vxp_[xInput_][yInput_] += amplitude;
+    vyp_[xInput_][yInput_] += amplitude;
   }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Mesh2D: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Mesh2D::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Mesh2D :: noteOff(MY_FLOAT amplitude)
+void Mesh2D :: noteOff(StkFloat amplitude)
 {
 #if defined(_STK_DEBUG_)
-  std::cerr << "Mesh2D: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "Mesh2D::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT Mesh2D :: tick(MY_FLOAT input)
+StkFloat Mesh2D :: tick(StkFloat input)
 {
-  if ( counter & 1 ) {
-    vxp1[xInput][yInput] += input;
-    vyp1[xInput][yInput] += input;
-    lastOutput = tick1();
+  if ( counter_ & 1 ) {
+    vxp1_[xInput_][yInput_] += input;
+    vyp1_[xInput_][yInput_] += input;
+    lastOutput_ = tick1();
   }
   else {
-    vxp[xInput][yInput] += input;
-    vyp[xInput][yInput] += input;
-    lastOutput = tick0();
+    vxp_[xInput_][yInput_] += input;
+    vyp_[xInput_][yInput_] += input;
+    lastOutput_ = tick0();
   }
 
-  counter++;
-  return lastOutput;
+  counter_++;
+  return lastOutput_;
 }
 
-MY_FLOAT Mesh2D :: tick()
+StkFloat Mesh2D :: tick()
 {
-  lastOutput = ((counter & 1) ? this->tick1() : this->tick0());
-  counter++;
-  return lastOutput;
+  lastOutput_ = ((counter_ & 1) ? this->tick1() : this->tick0());
+  counter_++;
+  return lastOutput_;
 }
 
-#define VSCALE ((MY_FLOAT) (0.5))
+const StkFloat VSCALE = 0.5;
 
-MY_FLOAT Mesh2D :: tick0()
+StkFloat Mesh2D :: tick0()
 {
   int x, y;
-  MY_FLOAT outsamp = 0;
+  StkFloat outsamp = 0;
 
   // Update junction velocities.
-  for (x=0; x<NX-1; x++) {
-    for (y=0; y<NY-1; y++) {
-      v[x][y] = ( vxp[x][y] + vxm[x+1][y] + 
-		  vyp[x][y] + vym[x][y+1] ) * VSCALE;
+  for (x=0; x<NX_-1; x++) {
+    for (y=0; y<NY_-1; y++) {
+      v_[x][y] = ( vxp_[x][y] + vxm_[x+1][y] + 
+		  vyp_[x][y] + vym_[x][y+1] ) * VSCALE;
     }
   }    
 
   // Update junction outgoing waves, using alternate wave-variable buffers.
-  for (x=0; x<NX-1; x++) {
-    for (y=0; y<NY-1; y++) {
-      MY_FLOAT vxy = v[x][y];
+  for (x=0; x<NX_-1; x++) {
+    for (y=0; y<NY_-1; y++) {
+      StkFloat vxy = v_[x][y];
       // Update positive-going waves.
-      vxp1[x+1][y] = vxy - vxm[x+1][y];
-      vyp1[x][y+1] = vxy - vym[x][y+1];
+      vxp1_[x+1][y] = vxy - vxm_[x+1][y];
+      vyp1_[x][y+1] = vxy - vym_[x][y+1];
       // Update minus-going waves.
-      vxm1[x][y] = vxy - vxp[x][y];
-      vym1[x][y] = vxy - vyp[x][y];
+      vxm1_[x][y] = vxy - vxp_[x][y];
+      vym1_[x][y] = vxy - vyp_[x][y];
     }
   }    
 
   // Loop over velocity-junction boundary faces, update edge
   // reflections, with filtering.  We're only filtering on one x and y
   // edge here and even this could be made much sparser.
-  for (y=0; y<NY-1; y++) {
-    vxp1[0][y] = filterY[y]->tick(vxm[0][y]);
-    vxm1[NX-1][y] = vxp[NX-1][y];
+  for (y=0; y<NY_-1; y++) {
+    vxp1_[0][y] = filterY_[y].tick(vxm_[0][y]);
+    vxm1_[NX_-1][y] = vxp_[NX_-1][y];
   }
-  for (x=0; x<NX-1; x++) {
-    vyp1[x][0] = filterX[x]->tick(vym[x][0]);
-    vym1[x][NY-1] = vyp[x][NY-1];
+  for (x=0; x<NX_-1; x++) {
+    vyp1_[x][0] = filterX_[x].tick(vym_[x][0]);
+    vym1_[x][NY_-1] = vyp_[x][NY_-1];
   }
 
   // Output = sum of outgoing waves at far corner.  Note that the last
@@ -305,84 +310,97 @@ MY_FLOAT Mesh2D :: tick0()
   // coordinate indices at their next-to-last values.  This is because
   // the "unit strings" attached to each velocity node to terminate
   // the mesh are not themselves connected together.
-  outsamp = vxp[NX-1][NY-2] + vyp[NX-2][NY-1];
+  outsamp = vxp_[NX_-1][NY_-2] + vyp_[NX_-2][NY_-1];
 
   return outsamp;
 }
 
-MY_FLOAT Mesh2D :: tick1()
+StkFloat Mesh2D :: tick1()
 {
   int x, y;
-  MY_FLOAT outsamp = 0;
+  StkFloat outsamp = 0;
 
   // Update junction velocities.
-  for (x=0; x<NX-1; x++) {
-    for (y=0; y<NY-1; y++) {
-      v[x][y] = ( vxp1[x][y] + vxm1[x+1][y] + 
-		  vyp1[x][y] + vym1[x][y+1] ) * VSCALE;
+  for (x=0; x<NX_-1; x++) {
+    for (y=0; y<NY_-1; y++) {
+      v_[x][y] = ( vxp1_[x][y] + vxm1_[x+1][y] + 
+		  vyp1_[x][y] + vym1_[x][y+1] ) * VSCALE;
     }
   }
 
   // Update junction outgoing waves, 
   // using alternate wave-variable buffers.
-  for (x=0; x<NX-1; x++) {
-    for (y=0; y<NY-1; y++) {
-      MY_FLOAT vxy = v[x][y];
+  for (x=0; x<NX_-1; x++) {
+    for (y=0; y<NY_-1; y++) {
+      StkFloat vxy = v_[x][y];
 
       // Update positive-going waves.
-      vxp[x+1][y] = vxy - vxm1[x+1][y];
-      vyp[x][y+1] = vxy - vym1[x][y+1];
+      vxp_[x+1][y] = vxy - vxm1_[x+1][y];
+      vyp_[x][y+1] = vxy - vym1_[x][y+1];
 
       // Update minus-going waves.
-      vxm[x][y] = vxy - vxp1[x][y];
-      vym[x][y] = vxy - vyp1[x][y];
+      vxm_[x][y] = vxy - vxp1_[x][y];
+      vym_[x][y] = vxy - vyp1_[x][y];
     }
   }
 
   // Loop over velocity-junction boundary faces, update edge
   // reflections, with filtering.  We're only filtering on one x and y
   // edge here and even this could be made much sparser.
-  for (y=0; y<NY-1; y++) {
-    vxp[0][y] = filterY[y]->tick(vxm1[0][y]);
-    vxm[NX-1][y] = vxp1[NX-1][y];
+  for (y=0; y<NY_-1; y++) {
+    vxp_[0][y] = filterY_[y].tick(vxm1_[0][y]);
+    vxm_[NX_-1][y] = vxp1_[NX_-1][y];
   }
-  for (x=0; x<NX-1; x++) {
-    vyp[x][0] = filterX[x]->tick(vym1[x][0]);
-    vym[x][NY-1] = vyp1[x][NY-1];
+  for (x=0; x<NX_-1; x++) {
+    vyp_[x][0] = filterX_[x].tick(vym1_[x][0]);
+    vym_[x][NY_-1] = vyp1_[x][NY_-1];
   }
 
   // Output = sum of outgoing waves at far corner.
-  outsamp = vxp1[NX-1][NY-2] + vyp1[NX-2][NY-1];
+  outsamp = vxp1_[NX_-1][NY_-2] + vyp1_[NX_-2][NY_-1];
 
   return outsamp;
 }
 
-void Mesh2D :: controlChange(int number, MY_FLOAT value)
+StkFloat *Mesh2D :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Mesh2D :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void Mesh2D :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "Mesh2D: Control value less than zero!" << std::endl;
+    errorString_ << "Mesh2D::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "Mesh2D: Control value greater than 128.0!" << std::endl;
+    errorString_ << "Mesh2D::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == 2) // 2
-    setNX( (short) (norm * (NXMAX-2) + 2) );
+    this->setNX( (short) (norm * (NXMAX-2) + 2) );
   else if (number == 4) // 4
-    setNY( (short) (norm * (NYMAX-2) + 2) );
+    this->setNY( (short) (norm * (NYMAX-2) + 2) );
   else if (number == 11) // 11
-    setDecay( 0.9 + (norm * 0.1) );
+    this->setDecay( 0.9 + (norm * 0.1) );
   else if (number == __SK_ModWheel_) // 1
-    setInputPosition(norm, norm);
-  else if (number == __SK_AfterTouch_Cont_) // 128
-    ;
-  else
-    std::cerr << "Mesh2D: Undefined Control Number (" << number << ")!!" << std::endl;
+    this->setInputPosition( norm, norm );
+  else {
+    errorString_ << "Mesh2D::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Mesh2D: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "Mesh2D::controlChange: number = " << number << ", value = " << value << ".";
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }

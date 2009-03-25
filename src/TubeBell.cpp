@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -36,67 +36,78 @@ TubeBell :: TubeBell()
   : FM()
 {
   // Concatenate the STK rawwave path to the rawwave files
-  for ( int i=0; i<3; i++ )
-    waves[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
-  waves[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), TRUE );
+  for ( unsigned int i=0; i<3; i++ )
+    waves_[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  waves_[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), true );
 
   this->setRatio(0, 1.0   * 0.995);
   this->setRatio(1, 1.414 * 0.995);
   this->setRatio(2, 1.0   * 1.005);
   this->setRatio(3, 1.414 * 1.000);
 
-  gains[0] = __FM_gains[94];
-  gains[1] = __FM_gains[76];
-  gains[2] = __FM_gains[99];
-  gains[3] = __FM_gains[71];
+  gains_[0] = fmGains_[94];
+  gains_[1] = fmGains_[76];
+  gains_[2] = fmGains_[99];
+  gains_[3] = fmGains_[71];
 
-  adsr[0]->setAllTimes( 0.005, 4.0, 0.0, 0.04);
-  adsr[1]->setAllTimes( 0.005, 4.0, 0.0, 0.04);
-  adsr[2]->setAllTimes( 0.001, 2.0, 0.0, 0.04);
-  adsr[3]->setAllTimes( 0.004, 4.0, 0.0, 0.04);
+  adsr_[0]->setAllTimes( 0.005, 4.0, 0.0, 0.04);
+  adsr_[1]->setAllTimes( 0.005, 4.0, 0.0, 0.04);
+  adsr_[2]->setAllTimes( 0.001, 2.0, 0.0, 0.04);
+  adsr_[3]->setAllTimes( 0.004, 4.0, 0.0, 0.04);
 
-  twozero->setGain( 0.5 );
-  vibrato->setFrequency( 2.0 );
+  twozero_.setGain( 0.5 );
+  vibrato_->setFrequency( 2.0 );
 }  
 
 TubeBell :: ~TubeBell()
 {
 }
 
-void TubeBell :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void TubeBell :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  gains[0] = amplitude * __FM_gains[94];
-  gains[1] = amplitude * __FM_gains[76];
-  gains[2] = amplitude * __FM_gains[99];
-  gains[3] = amplitude * __FM_gains[71];
-  this->setFrequency(frequency);
+  gains_[0] = amplitude * fmGains_[94];
+  gains_[1] = amplitude * fmGains_[76];
+  gains_[2] = amplitude * fmGains_[99];
+  gains_[3] = amplitude * fmGains_[71];
+  this->setFrequency( frequency );
   this->keyOn();
 
 #if defined(_STK_DEBUG_)
-  cerr << "TubeBell: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  errorString_ << "TubeBell::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT TubeBell :: tick()
+StkFloat TubeBell :: tick()
 {
-  MY_FLOAT temp, temp2;
+  StkFloat temp, temp2;
 
-  temp = gains[1] * adsr[1]->tick() * waves[1]->tick();
-  temp = temp * control1;
+  temp = gains_[1] * adsr_[1]->tick() * waves_[1]->tick();
+  temp = temp * control1_;
 
-  waves[0]->addPhaseOffset(temp);
-  waves[3]->addPhaseOffset(twozero->lastOut());
-  temp = gains[3] * adsr[3]->tick() * waves[3]->tick();
-  twozero->tick(temp);
+  waves_[0]->addPhaseOffset( temp );
+  waves_[3]->addPhaseOffset( twozero_.lastOut() );
+  temp = gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
+  twozero_.tick( temp );
 
-  waves[2]->addPhaseOffset(temp);
-  temp = ( 1.0 - (control2 * 0.5)) * gains[0] * adsr[0]->tick() * waves[0]->tick();
-  temp += control2 * 0.5 * gains[2] * adsr[2]->tick() * waves[2]->tick();
+  waves_[2]->addPhaseOffset( temp );
+  temp = ( 1.0 - (control2_ * 0.5)) * gains_[0] * adsr_[0]->tick() * waves_[0]->tick();
+  temp += control2_ * 0.5 * gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
 
   // Calculate amplitude modulation and apply it to output.
-  temp2 = vibrato->tick() * modDepth;
+  temp2 = vibrato_->tick() * modDepth_;
   temp = temp * (1.0 + temp2);
     
-  lastOutput = temp * 0.5;
-  return lastOutput;
+  lastOutput_ = temp * 0.5;
+  return lastOutput_;
+}
+
+StkFloat *TubeBell :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& TubeBell :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
 }

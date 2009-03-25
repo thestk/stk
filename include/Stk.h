@@ -8,30 +8,36 @@
     this class provides error handling and
     byte-swapping functions.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__STK_H)
-#define __STK_H
+#ifndef STK_STK_H
+#define STK_STK_H
 
 #include <string>
+#include <iostream>
+#include <sstream>
+#include <valarray>
 
 // Most data in STK is passed and calculated with the
 // following user-definable floating-point type.  You
 // can change this to "float" if you prefer or perhaps
 // a "long double" in the future.
-typedef double MY_FLOAT;
+typedef double StkFloat;
 
-// The "MY_FLOAT" type will be deprecated in STK
-// versions higher than 4.1.2 and replaced with the variable
-// "StkFloat".
-//typedef double StkFloat;
-//#if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__)
-//  #pragma deprecated(MY_FLOAT)
-//#else
-//  typedef StkFloat MY_FLOAT __attribute__ ((deprecated));
-//#endif
+// The "MY_FLOAT" type was deprecated in STK
+// versions higher than 4.1.3 and replaced with the variable
+// "StkFloat".  
+#if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__)
+  typedef StkFloat MY_FLOAT;
+  #pragma deprecated(MY_FLOAT)
+#elif defined(__GXX__) 
+  typedef StkFloat MY_FLOAT __attribute__ ((deprecated));
+#else
+  typedef StkFloat MY_FLOAT; // temporary
+#endif
+
 
 //! STK error handling class.
 /*!
@@ -42,7 +48,8 @@ typedef double MY_FLOAT;
 class StkError
 {
 public:
-  enum TYPE { 
+  enum Type {
+    STATUS,
     WARNING,
     DEBUG_WARNING,
     FUNCTION_ARGUMENT,
@@ -58,24 +65,27 @@ public:
   };
 
 protected:
-  char message[256];
-  TYPE type;
+  std::string message_;
+  Type type_;
 
 public:
   //! The constructor.
-  StkError(const char *p, TYPE tipe = StkError::UNSPECIFIED);
+  StkError(const std::string& message, Type type = StkError::UNSPECIFIED) : message_(message), type_(type) {}
 
   //! The destructor.
-  virtual ~StkError(void);
+  virtual ~StkError(void) {};
 
-  //! Prints "thrown" error message to stdout.
-  virtual void printMessage(void);
+  //! Prints thrown error message to stderr.
+  virtual void printMessage(void) { std::cerr << '\n' << message_ << "\n\n"; }
 
-  //! Returns the "thrown" error message TYPE.
-  virtual const TYPE& getType(void) { return type; }
+  //! Returns the thrown error message type.
+  virtual const Type& getType(void) { return type_; }
 
-  //! Returns the "thrown" error message string.
-  virtual const char *getMessage(void) const { return message; }
+  //! Returns the thrown error message string.
+  virtual const std::string& getMessage(void) { return message_; }
+
+  //! Returns the thrown error message as a C string.
+  virtual const char *getMessageCString(void) { return message_.c_str(); }
 };
 
 
@@ -83,15 +93,16 @@ class Stk
 {
 public:
 
-  typedef unsigned long STK_FORMAT;
-  static const STK_FORMAT STK_SINT8;   /*!< -128 to +127 */
-  static const STK_FORMAT STK_SINT16;  /*!< -32768 to +32767 */
-  static const STK_FORMAT STK_SINT32;  /*!< -2147483648 to +2147483647. */
-  static const STK_FORMAT MY_FLOAT32; /*!< Normalized between plus/minus 1.0. */
-  static const STK_FORMAT MY_FLOAT64; /*!< Normalized between plus/minus 1.0. */
+  typedef unsigned long StkFormat;
+  static const StkFormat STK_SINT8;   /*!< -128 to +127 */
+  static const StkFormat STK_SINT16;  /*!< -32768 to +32767 */
+  static const StkFormat STK_SINT24;  /*!< Upper 3 bytes of 32-bit signed integer. */
+  static const StkFormat STK_SINT32;  /*!< -2147483648 to +2147483647. */
+  static const StkFormat STK_FLOAT32; /*!< Normalized between plus/minus 1.0. */
+  static const StkFormat STK_FLOAT64; /*!< Normalized between plus/minus 1.0. */
 
   //! Static method which returns the current STK sample rate.
-  static MY_FLOAT sampleRate(void);
+  static StkFloat sampleRate(void) { return srate_; }
 
   //! Static method which sets the STK sample rate.
   /*!
@@ -102,13 +113,13 @@ public:
     is different from the default rate, it is imperative that it be
     set \e BEFORE STK objects are instantiated.
   */
-  static void setSampleRate(MY_FLOAT newRate);
+  static void setSampleRate(StkFloat rate) { if (rate > 0.0) srate_ = rate; }
 
   //! Static method which returns the current rawwave path.
-  static std::string rawwavePath(void);
+  static std::string rawwavePath(void) { return rawwavepath_; }
 
   //! Static method which sets the STK rawwave path.
-  static void setRawwavePath(std::string newPath);
+  static void setRawwavePath(std::string path);
 
   //! Static method which byte-swaps a 16-bit data type.
   static void swap16(unsigned char *ptr);
@@ -122,11 +133,19 @@ public:
   //! Static cross-platform method to sleep for a number of milliseconds.
   static void sleep(unsigned long milliseconds);
 
+  //! Static function for error reporting and handling using c-strings.
+  static void handleError( const char *message, StkError::Type type );
+
+  //! Static function for error reporting and handling using c++ strings.
+  static void handleError( std::string message, StkError::Type type );
+
 private:
-  static MY_FLOAT srate;
-  static std::string rawwavepath;
+  static StkFloat srate_;
+  static std::string rawwavepath_;
 
 protected:
+
+  std::ostringstream errorString_;
 
   //! Default constructor.
   Stk(void);
@@ -134,10 +153,84 @@ protected:
   //! Class destructor.
   virtual ~Stk(void);
 
-  //! Function for error reporting and handling.
-  static void handleError( const char *message, StkError::TYPE type );
+  //! Internal function for error reporting which assumes message in \c errorString_ variable.
+  void handleError( StkError::Type type );
+};
+
+
+/***************************************************/
+/*! \class StkFrames
+    \brief An STK class to handle vectorized audio data.
+
+    This class can hold single- or multi-channel audio data in either
+    interleaved or non-interleaved formats.  The data type is always
+    StkFloat.
+
+    Possible future improvements in this class could include static
+    functions to inter- or de-interleave the data and to convert to
+    and return other data types.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+*/
+/***************************************************/
+
+class StkFrames
+{
+public:
+
+  //! The default constructor initializes the frame data structure to size zero.
+  StkFrames( unsigned int nFrames = 0, unsigned int nChannels = 1, bool interleaved = true );
+
+  //! Overloaded constructor which initializes the frame data to the specified size with \c value.
+  StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels, bool interleaved = true );
+
+  //! Subscript operator which returns a reference to element \c n of self.
+  /*!
+    The result can be used as an lvalue . This reference is valid
+    until the resize function is called or the array is destroyed. The
+    index \c n must be between 0 and size less one.  No range checking
+    is performed.
+  */
+  StkFloat& operator[]( size_t n ) { return data_[n]; };
+
+  //! Subscript operator which returns the value at element \c n of self.
+  /*!
+    The index \c n must be between 0 and size less one.  No range
+    checking is performed.
+  */
+  StkFloat operator[]( size_t n ) const { return data_[n]; };
+
+  //! Returns the total number of audio samples represented by the object.
+  size_t size() const { return size_; }; 
+
+  //! Resize self to represent the specified number of channels and frames.
+  /*!
+    Changes the size of self based on the number of frames and
+    channels, and assigns \c value to every element.
+  */
+  void resize( unsigned int nFrames, unsigned int nChannels = 1, StkFloat value = 0.0 );
+
+  //! Return the number of channels represented by the data.
+  unsigned int channels( void ) const { return nChannels_; };
+
+  //! Return the number of sample frames represented by the data.
+  unsigned int frames( void ) const { return nFrames_; };
+
+  //! Returns \c true if the data is in interleaved format, \c false if the data is non-interleaved.
+  bool interleaved( void ) const { return interleaved_; };
+
+  //! Set the flag to indicate whether the internal data is in interleaved (\c true) or non-interleaved (\c false) format.
+  void setInterleaved( bool isInterleaved ) { interleaved_ = isInterleaved; };
+
+private:
+  std::valarray<StkFloat> data_;
+  unsigned int nFrames_;
+  unsigned int nChannels_;
+  size_t size_;
+  bool interleaved_;
 
 };
+
 
 // Here are a few other useful typedefs.
 typedef signed short SINT16;
@@ -145,18 +238,14 @@ typedef signed int SINT32;
 typedef float FLOAT32;
 typedef double FLOAT64;
 
-// Boolean values
-#define FALSE 0
-#define TRUE 1
-
 // The default sampling rate.
-#define SRATE (MY_FLOAT) 44100.0
+const StkFloat SRATE = 44100.0;
 
 // The default real-time audio input and output buffer size.  If
 // clicks are occuring in the input and/or output sound stream, a
 // larger buffer size may help.  Larger buffer sizes, however, produce
 // more latency.
-#define RT_BUFFER_SIZE 512
+const unsigned int RT_BUFFER_SIZE = 512;
 
 // The default rawwave path value is set with the preprocessor
 // definition RAWWAVE_PATH.  This can be specified as an argument to
@@ -171,10 +260,9 @@ typedef double FLOAT64;
   #define RAWWAVE_PATH "../../rawwaves/"
 #endif
 
-#define PI (MY_FLOAT) 3.14159265359
-#define TWO_PI (MY_FLOAT) (MY_FLOAT) (2 * PI)
-
-#define ONE_OVER_128 (MY_FLOAT) 0.0078125
+const StkFloat PI           = 3.14159265359;
+const StkFloat TWO_PI       = 2 * PI;
+const StkFloat ONE_OVER_128 = 0.0078125;
 
 #if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__)
   #define __OS_WINDOWS__

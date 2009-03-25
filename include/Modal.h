@@ -7,12 +7,12 @@
     (non-sweeping BiQuad filters), where N is set
     during instantiation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__MODAL_H)
-#define __MODAL_H
+#ifndef STK_MODAL_H
+#define STK_MODAL_H
 
 #include "Instrmnt.h"
 #include "Envelope.h"
@@ -24,7 +24,10 @@ class Modal : public Instrmnt
 {
 public:
   //! Class constructor, taking the desired number of modes to create.
-  Modal( int modes = 4 );
+  /*!
+    An StkError will be thrown if the rawwave path is incorrectly set.
+  */
+  Modal( unsigned int modes = 4 );
 
   //! Class destructor.
   virtual ~Modal();
@@ -33,54 +36,67 @@ public:
   void clear();
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(MY_FLOAT frequency);
+  virtual void setFrequency(StkFloat frequency);
 
   //! Set the ratio and radius for a specified mode filter.
-  void setRatioAndRadius(int modeIndex, MY_FLOAT ratio, MY_FLOAT radius);
+  void setRatioAndRadius(unsigned int modeIndex, StkFloat ratio, StkFloat radius);
 
   //! Set the master gain.
-  void setMasterGain(MY_FLOAT aGain);
+  void setMasterGain(StkFloat aGain);
 
   //! Set the direct gain.
-  void setDirectGain(MY_FLOAT aGain);
+  void setDirectGain(StkFloat aGain);
 
   //! Set the gain for a specified mode filter.
-  void setModeGain(int modeIndex, MY_FLOAT gain);
+  void setModeGain(unsigned int modeIndex, StkFloat gain);
 
   //! Initiate a strike with the given amplitude (0.0 - 1.0).
-  virtual void strike(MY_FLOAT amplitude);
+  virtual void strike(StkFloat amplitude);
 
   //! Damp modes with a given decay factor (0.0 - 1.0).
-  void damp(MY_FLOAT amplitude);
+  void damp(StkFloat amplitude);
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  virtual MY_FLOAT tick();
+  virtual StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  virtual void controlChange(int number, MY_FLOAT value) = 0;
+  virtual void controlChange(int number, StkFloat value) = 0;
 
 protected:  
-  Envelope *envelope; 
-  WvIn     *wave;
-  BiQuad   **filters;
-  OnePole  *onepole;
-  WaveLoop *vibrato;
-  int nModes;
-  MY_FLOAT vibratoGain;
-  MY_FLOAT masterGain;
-  MY_FLOAT directGain;
-  MY_FLOAT stickHardness;
-  MY_FLOAT strikePosition;
-  MY_FLOAT baseFrequency;
-  MY_FLOAT *ratios;
-  MY_FLOAT *radii;
+  Envelope envelope_; 
+  WvIn    *wave_;
+  BiQuad **filters_;
+  OnePole  onepole_;
+  WaveLoop *vibrato_;
 
+  unsigned int nModes_;
+  std::vector<StkFloat> ratios_;
+  std::vector<StkFloat> radii_;
+
+  StkFloat vibratoGain_;
+  StkFloat masterGain_;
+  StkFloat directGain_;
+  StkFloat stickHardness_;
+  StkFloat strikePosition_;
+  StkFloat baseFrequency_;
 };
 
 #endif

@@ -2,6 +2,28 @@ The Synthesis ToolKit in C++ (STK)
 
 By Perry R. Cook and Gary P. Scavone, 1995-2004.
 
+v4.2.0: (4 October 2004)
+- simultaneous multiple audio APIs supported at compile time
+- fixed hidden overloaded virtual functions
+- new Asymp exponential envelope class
+- various changes to better conform to standard C++ programming practices
+- MY_FLOAT type converted to StkFloat and changed throughout (use treesed utility to search/replace in old files)
+- most example programs rewritten to use an audio callback paradigm (which works better in OS-X)
+- new StkFrames class for vectorized multichannel data and associated new tick() functions making use of StkFrames
+- new RtMidi class with MIDI output capabilities (API changes)
+- new MidiFileIn class for reading MIDI files
+- revised Filter classes to use std::vectors for coefficients (API changes)
+- revised Messager class (now queues messages for retrieval) (API changes)
+- new abstract parent Effect class for various effects
+- added setT60 function to all reverbs
+- new abstract parent Generator class for various signal sources
+- new abstract parent Function class for tables and various non-linear functions
+- Skini class completely rewritten (simplified) using the C++ STL (API changes)
+- WvOut classes now clip to -1.0 to +1.0 and report out of range
+- new Mutex class
+- turned Nagle algorithm off by default in Socket class
+- error reporting standardized in all classes
+
 v4.1.3: (22 March 2004)
 - bug fix in RtAudio for Windows DirectSound output only support
 
@@ -108,7 +130,7 @@ v3.0: (10 October 1999)
 - added RawWvOut class
 - new WvIn class with RawWvIn, SndWvIn, WavWvIn, MatWvIn, and RTWvIn subclasses
 - removed RawWave, RawShot, RawInterp, and RawLoop classes (supplanted by RawWvIn)
-- multi-channel data support in WvIn and WvOut classes using MY_MULTI data type (pointer to MY_FLOAT) and the methods mtick() and mlastOutput()
+- multi-channel data support in WvIn and WvOut classes using MY_MULTI data type (pointer to StkFloat) and the methods mtick() and mlastOutput()
 - now writing to primary buffer under Windoze when allowed by hardware
 - cleaned up Object.h a bit
 - pulled various utility and thread functions out of syntmono.cpp (to aid readability of the code)

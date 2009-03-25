@@ -8,21 +8,19 @@
     provides error handling and byte-swapping
     functions.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Stk.h"
-#include <stdio.h>
-#include <string.h>
 
-MY_FLOAT Stk :: srate = (MY_FLOAT) SRATE;
-std::string Stk :: rawwavepath = RAWWAVE_PATH;
-const Stk::STK_FORMAT Stk :: STK_SINT8 = 1;
-const Stk::STK_FORMAT Stk :: STK_SINT16 = 2;
-const Stk::STK_FORMAT Stk :: STK_SINT32 = 8;
-const Stk::STK_FORMAT Stk :: MY_FLOAT32 = 16;
-const Stk::STK_FORMAT Stk :: MY_FLOAT64 = 32;
+StkFloat Stk :: srate_ = (StkFloat) SRATE;
+std::string Stk :: rawwavepath_ = RAWWAVE_PATH;
+const Stk::StkFormat Stk :: STK_SINT8   = 0x1;
+const Stk::StkFormat Stk :: STK_SINT16  = 0x2;
+const Stk::StkFormat Stk :: STK_SINT32  = 0x8;
+const Stk::StkFormat Stk :: STK_FLOAT32 = 0x10;
+const Stk::StkFormat Stk :: STK_FLOAT64 = 0x20;
 
 Stk :: Stk(void)
 {
@@ -32,30 +30,14 @@ Stk :: ~Stk(void)
 {
 }
 
-MY_FLOAT Stk :: sampleRate(void)
+void Stk :: setRawwavePath( std::string path )
 {
-  return srate;
-}
-
-void Stk :: setSampleRate(MY_FLOAT newRate)
-{
-  if (newRate > 0)
-    srate = newRate;
-}
-
-std::string Stk :: rawwavePath(void)
-{
-  return rawwavepath;
-}
-
-void Stk :: setRawwavePath(std::string newPath)
-{
-  if ( !newPath.empty() )
-    rawwavepath = newPath;
+  if ( !path.empty() )
+    rawwavepath_ = path;
 
   // Make sure the path includes a "/"
-  if ( rawwavepath[rawwavepath.length()-1] != '/' )
-    rawwavepath += "/";
+  if ( rawwavepath_[rawwavepath_.length()-1] != '/' )
+    rawwavepath_ += "/";
 }
 
 void Stk :: swap16(unsigned char *ptr)
@@ -127,33 +109,74 @@ void Stk :: sleep(unsigned long milliseconds)
 #endif
 }
 
-void Stk :: handleError( const char *message, StkError::TYPE type )
+void Stk :: handleError( StkError::Type type )
 {
-  if (type == StkError::WARNING)
-    fprintf(stderr, "\n%s\n\n", message);
+  handleError( errorString_.str(), type );
+  errorString_.str( std::string() ); // reset the ostringstream buffer
+}
+
+void Stk :: handleError( const char *message, StkError::Type type )
+{
+  std::string msg( message );
+  handleError( msg, type );
+}
+
+void Stk :: handleError( std::string message, StkError::Type type )
+{
+  if (type == StkError::WARNING || type == StkError::STATUS )
+    std::cerr << '\n' << message << '\n' << std::endl;
   else if (type == StkError::DEBUG_WARNING) {
 #if defined(_STK_DEBUG_)
-    fprintf(stderr, "\n%s\n\n", message);
+    std::cerr << '\n' << message << '\n' << std::endl;
 #endif
   }
   else {
     // Print error message before throwing.
-    fprintf(stderr, "\n%s\n\n", message);
+    std::cerr << '\n' << message << '\n' << std::endl;
     throw StkError(message, type);
   }
 }
 
-StkError :: StkError(const char *p, TYPE tipe)
-  : type(tipe)
+StkFrames :: StkFrames( unsigned int nFrames, unsigned int nChannels, bool interleaved )
+  : nFrames_( nFrames ), nChannels_( nChannels ), interleaved_( interleaved )
 {
-  strncpy(message, p, 256);
+  if ( nChannels == 0 ) {
+    std::string message = "StkFrames::StkFrames: nChannels argument should be 1 or greater (even if nFrames = 0) ... correcting to one channel!";
+    Stk::handleError( message, StkError::WARNING );
+    nChannels_ = 1;
+  }
+
+  size_ = nFrames_ * nChannels_;
+  if ( size_ > 0 ) data_.resize( size_, 0.0 );
 }
 
-StkError :: ~StkError(void)
+StkFrames :: StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels, bool interleaved )
+  : nFrames_( nFrames ), nChannels_( nChannels ), interleaved_( interleaved )
 {
+  if ( nChannels == 0 ) {
+    std::string message = "StkFrames::StkFrames: nChannels argument should be 1 or greater (even if nFrames = 0) ... correcting to one channel!";
+    Stk::handleError( message, StkError::WARNING );
+    nChannels_ = 1;
+  }
+
+  size_ = nFrames_ * nChannels_;
+  if ( size_ > 0 ) data_.resize( size_, value );
 }
 
-void StkError :: printMessage(void)
+void StkFrames :: resize( unsigned int nFrames, unsigned int nChannels, StkFloat value )
 {
-  printf("\n%s\n\n", message);
+  nFrames_ = nFrames;
+  nChannels_ = nChannels;
+
+  if ( nChannels == 0 ) {
+    std::string message = "StkFrames::resize(): nChannels argument should be 1 or greater (even if nFrames = 0) ... correcting to one channel!";
+    Stk::handleError( message, StkError::WARNING );
+    nChannels_ = 1;
+  }
+
+  size_t newSize = nFrames_ * nChannels_;
+  if ( size_ != newSize ) {
+    size_ = newSize;
+    data_.resize( size_, value );
+  }
 }

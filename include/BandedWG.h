@@ -24,19 +24,19 @@
          - Glass Harmonica = 2
          - Tibetan Bowl = 3
 
-    by Georg Essl, 1999 - 2002.
+    by Georg Essl, 1999 - 2004.
     Modified for Stk 4.0 by Gary Scavone.
 */
 /***************************************************/
 
-#if !defined(__BANDEDWG_H)
-#define __BANDEDWG_H
+#ifndef STK_BANDEDWG_H
+#define STK_BANDEDWG_H
 
-#define MAX_BANDED_MODES 20
+const int MAX_BANDED_MODES = 20;
 
 #include "Instrmnt.h"
 #include "DelayL.h"
-#include "BowTabl.h"
+#include "BowTable.h"
 #include "ADSR.h"
 #include "BiQuad.h"
 
@@ -53,59 +53,71 @@ class BandedWG : public Instrmnt
   void clear();
 
   //! Set strike position (0.0 - 1.0).
-  void setStrikePosition(MY_FLOAT position);
+  void setStrikePosition(StkFloat position);
 
   //! Select a preset.
   void setPreset(int preset);
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(MY_FLOAT frequency);
+  void setFrequency(StkFloat frequency);
 
   //! Apply bow velocity/pressure to instrument with given amplitude and rate of increase.
-  void startBowing(MY_FLOAT amplitude, MY_FLOAT rate);
+  void startBowing(StkFloat amplitude, StkFloat rate);
 
   //! Decrease bow velocity/breath pressure with given rate of decrease.
-  void stopBowing(MY_FLOAT rate);
+  void stopBowing(StkFloat rate);
 
   //! Pluck the instrument with given amplitude.
-  void pluck(MY_FLOAT amp);
+  void pluck(StkFloat amp);
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
  protected:
 
-  bool doPluck;
-  bool trackVelocity;
-  int nModes;
-  int presetModes;
-  BowTabl *bowTabl;
-  ADSR *adsr;
-  BiQuad *bandpass;
-  DelayL *delay;
-  MY_FLOAT maxVelocity;
-  MY_FLOAT modes[MAX_BANDED_MODES];
-  MY_FLOAT freakency;
-  MY_FLOAT baseGain;
-  MY_FLOAT gains[MAX_BANDED_MODES];
-  MY_FLOAT basegains[MAX_BANDED_MODES];
-  MY_FLOAT excitation[MAX_BANDED_MODES];
-  MY_FLOAT integrationConstant;
-  MY_FLOAT velocityInput;
-  MY_FLOAT bowVelocity;
-  MY_FLOAT bowTarget;
-  MY_FLOAT bowPosition;
-  MY_FLOAT strikeAmp;
-  int strikePosition;
+  bool doPluck_;
+  bool trackVelocity_;
+  int nModes_;
+  int presetModes_;
+  BowTable bowTable_;
+  ADSR     adsr_;
+  BiQuad   bandpass_[MAX_BANDED_MODES];
+  DelayL   delay_[MAX_BANDED_MODES];
+  StkFloat maxVelocity_;
+  StkFloat modes_[MAX_BANDED_MODES];
+  StkFloat frequency_;
+  StkFloat baseGain_;
+  StkFloat gains_[MAX_BANDED_MODES];
+  StkFloat basegains_[MAX_BANDED_MODES];
+  StkFloat excitation_[MAX_BANDED_MODES];
+  StkFloat integrationConstant_;
+  StkFloat velocityInput_;
+  StkFloat bowVelocity_;
+  StkFloat bowTarget_;
+  StkFloat bowPosition_;
+  StkFloat strikeAmp_;
+  int strikePosition_;
 
 };
 

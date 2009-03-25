@@ -1,5 +1,5 @@
 /***************************************************/
-/*! \class ReedTabl
+/*! \class ReedTable
     \brief STK reed table class.
 
     This class implements a simple one breakpoint,
@@ -13,23 +13,23 @@
     Smith (1986), Hirschman, Cook, Scavone, and
     others for more information.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__REEDTABL_H)
-#define __REEDTABL_H
+#ifndef STK_REEDTABLE_H
+#define STK_REEDTABLE_H
 
-#include "Stk.h"
+#include "Function.h"
 
-class ReedTabl : public Stk
+class ReedTable : public Function
 {
 public:
   //! Default constructor.
-  ReedTabl();
+  ReedTable();
 
   //! Class destructor.
-  ~ReedTabl();
+  ~ReedTable();
 
   //! Set the table offset value.
   /*!
@@ -37,7 +37,7 @@ public:
     of the initial reed tip opening (a greater offset
     represents a smaller opening).
   */
-  void setOffset(MY_FLOAT aValue);
+  void setOffset(StkFloat offset);
 
   //! Set the table slope value.
   /*!
@@ -45,25 +45,30 @@ public:
    stiffness (a greater slope represents a harder
    reed).
   */
-  void setSlope(MY_FLOAT aValue);
-
-  //! Return the last output value.
-  MY_FLOAT lastOut() const;
+  void setSlope(StkFloat slope);
 
   //! Return the function value for \e input.
   /*!
     The function input represents the differential
     pressure across the reeds.
   */
-  MY_FLOAT tick(MY_FLOAT input);
+  StkFloat tick(StkFloat input);
 
-  //! Take \e vectorSize inputs and return the corresponding function values in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  //! Take \e vectorSize inputs from \e vector and replace them with corresponding outputs.
+  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+
+  //! Take a channel of the StkFrames object as inputs to the function and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
 protected:  
-  MY_FLOAT offSet;
-  MY_FLOAT slope;
-  MY_FLOAT lastOutput;
+  StkFloat offset_;
+  StkFloat slope_;
 
 };
 

@@ -1,14 +1,38 @@
 /*! \page download Download and Release Notes
 
-<B>Version 4.1.3, 22 March 2004</B><P>
+<B>Version 4.2.0, 4 October 2004</B><P>
 <UL>
-<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.3.tar.gz">Source distribution</A></LI>
-<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.3.binaries.tar.gz">Source with precompiled Windows binaries</A></LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.2.0.tar.gz">Source distribution</A></LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.2.0.binaries.tar.gz">Source with precompiled Windows binaries</A></LI>
 <LI><A HREF="http://www-ccrma.stanford.edu/planetccrma/software/">Linux RPMs from Planet CCRMA</A></LI>
 </UL>
 
 
 \section notes Release Notes:
+
+\subsection v4dot2dot0 Version 4.2.0
+
+<ul>
+<li>Simultaneous multiple audio APIs supported at compile time.</li>
+<li>Various changes to better conform to standard C++ programming practices.</li>
+<li>Fixed hidden overloaded virtual functions.</li>
+<li>New Asymp exponential envelope class.</li>
+<li><tt>MY_FLOAT</tt> type converted to <tt>StkFloat</tt> and changed throughout (use \c treesed utility to search/replace in old files).</li>
+<li>Most example programs rewritten to use an audio callback paradigm (which works better in OS-X).</li>
+<li>New StkFrames class for vectorized multichannel data and associated new tick() functions making use of StkFrames.</li>
+<li>New RtMidi class with MIDI output capabilities (API changes).</li>
+<li>New MidiFileIn class for reading MIDI files.</li>
+<li>Revised Filter classes to use std::vectors for coefficients (API changes).</li>
+<li>Revised Messager class (API changes).</li>
+<li>New abstract parent Effect class for various effects.</li>
+<li>New abstract parent Generator class for various signal sources.</li>
+<li>New abstract parent Function class for tables and various non-linear functions.</li>
+<li>Skini class completely rewritten (simplified) using the C++ STL (API changes).</li>
+<li>WvOut classes now clip to -1.0 to +1.0 and report out of range.</li>
+<li>New Mutex class.</li>
+<li>Turned Nagle algorithm off by default in Socket class.</li>
+<li>Error reporting standardized in all classes.</li>
+</ul>
 
 \subsection v4dot1dot3 Version 4.1.3
 
@@ -30,7 +54,7 @@
 <li>Update to the contentsAt() method of Delay class.</li>
 <li>WAV file fixes (8-bit) in WvIn and WvOut classes.</li>
 <li>Configure script changes.</li>
-<li>Updated <iostream> include statements and appended "std::" as necessary throughout for compatibility with gcc 3.</li>
+<li>Updated \<iostream\> include statements and appended "std::" as necessary throughout for compatibility with gcc 3.</li>
 </UL>
 
 \subsection v4dot1dot1 Version 4.1.1
@@ -138,7 +162,7 @@
 <LI>Added RawWvOut class.</LI>
 <LI>New WvIn class with RawWvIn, SndWvIn, WavWvIn, MatWvIn, and RTWvIn subclasses.</LI>
 <LI>Removed RawWave, RawShot, RawInterp, and RawLoop classes (supplanted by RawWvIn).</LI>
-<LI>Multi-channel data support in WvIn and WvOut classes using MY_MULTI data type (pointer to MY_FLOAT) and the methods mtick() and mlastOutput().</LI>
+<LI>Multi-channel data support in WvIn and WvOut classes using MY_MULTI data type (pointer to StkFloat) and the methods mtick() and mlastOutput().</LI>
 <LI>Now writing to primary buffer under Windoze when allowed by hardware.</LI>
 <LI>Cleaned up Object.h a bit.</LI>
 <LI>Pulled various utility and thread functions out of syntmono.cpp (to aid readability of the code).</LI>
@@ -160,11 +184,11 @@
 <UL>
 <LI>Unification of the capabilities of STK across the various platforms.  All of the previous SGI functionality has been ported to Linux and Windows, including realtime sound output and MIDI input.</LI>
 <LI>MIDI input (with optional time-stamping) supported on SGI, Linux (OSS device drivers only), and Windows operating systems.  Time stamping under IRIX and Windows is quantized to milliseconds and under Linux to hundredths of a second.</LI>
-<LI>Various Sound Output Options - .wav, .snd, and .mat (Matlab MAT-file) soundfile outputs are supported on all operating systems.  I hacked out the MAT-file structure, so you don't have to include any platform-specific libraries.  Realtime sound output is provided as well, except under NeXTStep. </LI>
+<LI>Various Sound Output Options - .wav, .snd, and .mat (Matlab MAT-file) soundfile outputs are supported on all operating systems.  I hacked out the MAT-file structure, so you don't have to include any platform-specific libraries.  Realtime sound output is provided as well, except under NeXTStep.</LI>
 <LI>Multiple Reverberator Implementations - Reverb subclasses of JCRev and NRev (popular reverberator implementations from CCRMA) have been written.  Perry's original reverb implementation still exists as PRCRev.  All reverberators now take a T60 initializer argument.</LI>
-<LI>MD2SKINI - A program which parses a MIDI input stream and spits out SKINI code.  The output of MD2SKINI is typically piped into an STK instrument executable (eg. <FONT FACE="Geneva">MD2SKINI | syntmono Clarinet -r -i</FONT>).  In addition, you can supply a filename argument to MD2SKINI and have it simultaneously record a SKINI score file for future reuse.
-<LI>Modifications to <I>Object.h</I> for OS_TYPE compilation dependencies.  <I>Makefile</I> automatically determines OS_TYPE when invoked (if you have the GNU makefile utilities installed on your system).
-<LI>A single distribution for all platforms.  The Unix and Windows versions have been merged into a single set of classes.  Makefiles and Visual C++ workspace/project files are provided for compiling.
+<LI>MD2SKINI - A program which parses a MIDI input stream and spits out SKINI code.  The output of MD2SKINI is typically piped into an STK instrument executable (eg. <tt>MD2SKINI | syntmono Clarinet -r -i</tt>).  In addition, you can supply a filename argument to MD2SKINI and have it simultaneously record a SKINI score file for future reuse.</LI>
+<LI>Modifications to <I>Object.h</I> for OS_TYPE compilation dependencies.  <I>Makefile</I> automatically determines OS_TYPE when invoked (if you have the GNU makefile utilities installed on your system).</LI>
+<LI>A single distribution for all platforms.  The Unix and Windows versions have been merged into a single set of classes.  Makefiles and Visual C++ workspace/project files are provided for compiling.</LI>
 </UL>
 
 */

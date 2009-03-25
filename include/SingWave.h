@@ -9,26 +9,26 @@
     from pitch shifting.  It will be used as an
     excitation source for other instruments.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__SINGWAVE_H)
-#define __SINGWAVE_H
+#ifndef STK_SINGWAVE_H
+#define STK_SINGWAVE_H
 
 #include "WaveLoop.h"
 #include "Modulate.h"
 #include "Envelope.h"
 
-class SingWave : public Stk
+class SingWave : public Generator
 {
  public:
   //! Class constructor taking filename argument.
   /*!
     An StkError will be thrown if the file is not found, its format is
-    unknown, or a read error occurs.
+    unknown, a read error occurs, or the rawwave path is incorrectly set.
   */
-  SingWave(const char *fileName, bool raw=FALSE);
+  SingWave( std::string fileName, bool raw=false);
 
   //! Class destructor.
   ~SingWave();
@@ -40,28 +40,28 @@ class SingWave : public Stk
   void normalize();
 
   //! Normalize the file to a maximum of \e +- peak.
-  void normalize(MY_FLOAT peak);
+  void normalize(StkFloat peak);
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(MY_FLOAT frequency);
+  void setFrequency(StkFloat frequency);
 
   //! Set the vibrato frequency in Hz.
-  void setVibratoRate(MY_FLOAT aRate);
+  void setVibratoRate(StkFloat rate);
 
   //! Set the vibrato gain.
-  void setVibratoGain(MY_FLOAT gain);
+  void setVibratoGain(StkFloat gain);
 
   //! Set the random-ness amount.
-  void setRandomGain(MY_FLOAT gain);
+  void setRandomGain(StkFloat gain);
 
   //! Set the sweep rate.
-  void setSweepRate(MY_FLOAT aRate);
+  void setSweepRate(StkFloat rate);
 
   //! Set the gain rate.
-  void setGainRate(MY_FLOAT aRate);    
+  void setGainRate(StkFloat rate);    
 
   //! Set the gain target value.
-  void setGainTarget(MY_FLOAT target);
+  void setGainTarget(StkFloat target);
 
   //! Start a note.
   void noteOn();
@@ -69,21 +69,29 @@ class SingWave : public Stk
   //! Stop a note.
   void noteOff();
 
-  //! Return the last output value.
-  MY_FLOAT lastOut();
-
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Compute \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
  protected:
 
-  WaveLoop *wave;
-  Modulate *modulator;
-  Envelope *envelope;
-  Envelope *pitchEnvelope;
-  MY_FLOAT rate;
-  MY_FLOAT sweepRate;
-  MY_FLOAT lastOutput;
+  WaveLoop *wave_;
+  Modulate *modulator_;
+  Envelope envelope_;
+  Envelope pitchEnvelope_;
+  StkFloat rate_;
+  StkFloat sweepRate_;
 
 };
 

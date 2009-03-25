@@ -21,12 +21,12 @@
        - Vibrato Gain = 1
        - Loudness (Spectral Tilt) = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__VOICFORM_H)
-#define __VOICFORM_H
+#ifndef STK_VOICFORM_H
+#define STK_VOICFORM_H
 
 #include "Instrmnt.h"
 #include "Envelope.h"
@@ -39,7 +39,10 @@
 class VoicForm : public Instrmnt
 {
   public:
-  //! Class constructor, taking the lowest desired playing frequency.
+  //! Class constructor.
+  /*!
+    An StkError will be thrown if the rawwave path is incorrectly set.
+  */
   VoicForm();
 
   //! Class destructor.
@@ -49,22 +52,22 @@ class VoicForm : public Instrmnt
   void clear();
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(MY_FLOAT frequency);
+  void setFrequency(StkFloat frequency);
 
-  //! Set instrument parameters for the given phoneme.  Returns FALSE if phoneme not found.
+  //! Set instrument parameters for the given phoneme.  Returns false if phoneme not found.
   bool setPhoneme(const char* phoneme);
 
   //! Set the voiced component gain.
-  void setVoiced(MY_FLOAT vGain);
+  void setVoiced(StkFloat vGain);
 
   //! Set the unvoiced component gain.
-  void setUnVoiced(MY_FLOAT nGain);
+  void setUnVoiced(StkFloat nGain);
 
   //! Set the sweep rate for a particular formant filter (0-3).
-  void setFilterSweepRate(int whichOne, MY_FLOAT rate);
+  void setFilterSweepRate(unsigned int whichOne, StkFloat rate);
 
   //! Set voiced component pitch sweep rate.
-  void setPitchSweepRate(MY_FLOAT rate);
+  void setPitchSweepRate(StkFloat rate);
 
   //! Start the voice.
   void speak();
@@ -73,24 +76,36 @@ class VoicForm : public Instrmnt
   void quiet();
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
 protected:
-  SingWave *voiced;
-  Noise    *noise;
-  Envelope *noiseEnv;
-  FormSwep  *filters[4];
-  OnePole  *onepole;
-  OneZero  *onezero;
+  SingWave *voiced_;
+  Noise    noise_;
+  Envelope noiseEnv_;
+  FormSwep filters_[4];
+  OnePole  onepole_;
+  OneZero  onezero_;
 
 };
 
