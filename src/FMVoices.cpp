@@ -32,7 +32,7 @@
 
 #include "FMVoices.h"
 #include "SKINI.msg"
-#include "phontabl.tbl"
+#include "Phonemes.h"
 #include <string.h>
 
 FMVoices :: FMVoices()
@@ -45,10 +45,10 @@ FMVoices :: FMVoices()
   for ( i=0; i<4; i++ )
     strcpy( files[i], RAWWAVE_PATH);
 
-  strcat(files[0], "rawwaves/sinewave.raw");
-  strcat(files[1], "rawwaves/sinewave.raw");
-  strcat(files[2], "rawwaves/sinewave.raw");
-  strcat(files[3], "rawwaves/fwavblnk.raw");
+  strcat(files[0], "sinewave.raw");
+  strcat(files[1], "sinewave.raw");
+  strcat(files[2], "sinewave.raw");
+  strcat(files[3], "fwavblnk.raw");
 
   for ( i=0; i<4; i++ )
     waves[i] = new WaveLoop( files[i], TRUE );
@@ -82,40 +82,37 @@ FMVoices :: ~FMVoices()
 {
 }
 
-extern double phonGains[32][2];
-extern double phonParams[32][4][3];
-extern char phonemes[32][4];
-
 void FMVoices :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT temp, temp2 = 0.0;
-  int tempi, tempi2 = 0;
+  int tempi = 0;
+  unsigned int i = 0;
 
   if (currentVowel < 32)	{
-    tempi2 = currentVowel;
+    i = currentVowel;
     temp2 = (MY_FLOAT) 0.9;
   }
   else if (currentVowel < 64)	{
-    tempi2 = currentVowel - 32;
+    i = currentVowel - 32;
     temp2 = (MY_FLOAT) 1.0;
   }
   else if (currentVowel < 96)	{
-    tempi2 = currentVowel - 64;
+    i = currentVowel - 64;
     temp2 = (MY_FLOAT) 1.1;
   }
   else if (currentVowel <= 128)	{
-    tempi2 = currentVowel - 96;
+    i = currentVowel - 96;
     temp2 = (MY_FLOAT) 1.2;
   }
 
   baseFrequency = frequency;
-  temp = (temp2 * (MY_FLOAT)  phonParams[tempi2][0][0] / baseFrequency) + 0.5;
+  temp = (temp2 * Phonemes::formantFrequency(i, 0) / baseFrequency) + 0.5;
   tempi = (int) temp;
   this->setRatio(0,(MY_FLOAT) tempi);
-  temp = (temp2 * (MY_FLOAT)  phonParams[tempi2][1][0] / baseFrequency) + 0.5;
+  temp = (temp2 * Phonemes::formantFrequency(i, 1) / baseFrequency) + 0.5;
   tempi = (int) temp;
   this->setRatio(1,(MY_FLOAT) tempi);
-  temp = (temp2 * (MY_FLOAT)  phonParams[tempi2][2][0] / baseFrequency) + 0.5;
+  temp = (temp2 * Phonemes::formantFrequency(i, 2) / baseFrequency) + 0.5;
   tempi = (int) temp;
   this->setRatio(2, (MY_FLOAT) tempi);    
   gains[0] = 1.0;
@@ -174,7 +171,7 @@ void FMVoices :: controlChange(int number, MY_FLOAT value)
 
 
   if (number == __SK_Breath_) // 2
-    gains[3] = __FM_gains[(int) ( norm * 100.0 )];
+    gains[3] = __FM_gains[(int) ( norm * 99.9 )];
   else if (number == __SK_FootControl_)	{ // 4
     currentVowel = (int) (norm * 128.0);
     this->setFrequency(baseFrequency);

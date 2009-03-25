@@ -33,11 +33,152 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <iostream.h>
 
 #define MIDI_BUFFER_SIZE 256
 int writeIndex;
 
-#if defined(__OS_IRIX__)
+#if defined(__MACOSX_CORE__)
+
+#include <CoreMIDI/CoreMIDI.h>
+#include <CoreAudio/HostTime.h>
+
+MIDIClientRef client;
+MIDIPortRef port;
+
+typedef unsigned char byte;
+
+/* MIDI System Messages */
+#define MD_SYSTEM_MSG   ((byte)0xF0)
+#define MD_PITCH_BEND		((byte)0xE0)
+#define MessageType(MSG)  (byte)((MSG) & ((byte)0xF0))
+
+typedef struct { 
+    byte data[3]; 
+    float delta_time; 
+} MIDIMESSAGE;
+
+MIDIMESSAGE *midiBuffer;
+UInt64 lastTime = 0;
+
+void midiInputCallback( const MIDIPacketList *list, void *procRef, void *srcRef )
+{
+  MIDIMESSAGE newMessage;
+  UInt64 deltaTime;
+
+  const MIDIPacket *packet = &list->packet[0];
+  for (unsigned int i=0; i<list->numPackets; ++i){
+
+    // Block unwanted messages.
+    if ( packet->length > 3 ) continue;
+    if (MessageType(packet->data[0]) == MD_SYSTEM_MSG) continue;
+
+    memcpy( newMessage.data, packet->data, packet->length );
+    deltaTime = packet->timeStamp - lastTime;
+    deltaTime = AudioConvertHostTimeToNanos( deltaTime );
+    newMessage.delta_time = deltaTime * 0.000000001;
+
+    // Put newMessage in the circular buffer
+    midiBuffer[writeIndex] = newMessage;
+    writeIndex++;
+
+    if( writeIndex >= MIDI_BUFFER_SIZE )
+      writeIndex = 0;
+
+    packet = MIDIPacketNext(packet);
+  }
+}
+
+RtMidi :: RtMidi(int device)
+{
+  char msg[256];
+
+  int nSrc = MIDIGetNumberOfSources();
+  if (nSrc < 1) {
+    sprintf(msg, "RtMidi: No OS X MIDI input devices available.");
+    handleError(msg, StkError::MIDI_SYSTEM);
+  }
+
+  OSStatus result = MIDIClientCreate( CFSTR("Stk MIDI Input Client"), NULL, NULL, &client );
+  if ( result != noErr ) {
+    sprintf(msg, "RtMidi: OSX error creating MIDI client object.");
+    handleError(msg, StkError::MIDI_SYSTEM);
+  }
+
+  result = MIDIInputPortCreate( client, CFSTR("Stk MIDI Input Port"), midiInputCallback, (void *)this, &port );
+  if ( result != noErr ) {
+    MIDIClientDispose( client );
+    sprintf(msg, "RtMidi: OSX error creating MIDI input port.");
+    handleError(msg, StkError::MIDI_SYSTEM);
+  }
+
+  // Set up the circular buffer for the Midi input messages.
+  midiBuffer = new MIDIMESSAGE[MIDI_BUFFER_SIZE];
+  readIndex = 0;
+  writeIndex = 0;
+
+  // If specified device is bogus, print a list of available devices.
+  int iSrc = device;
+  MIDIEndpointRef src;
+  if ( device < 0 || device >= nSrc ) {
+    CFStringRef nameRef;
+    char name[128];
+    printf("\n");
+    for (int i=0; i<nSrc;++i){
+      src = MIDIGetSource(i);
+      MIDIObjectGetStringProperty( src, kMIDIPropertyName, &nameRef );
+      CFStringGetCString( nameRef, name, sizeof(name), 0);
+      CFRelease( nameRef );
+      printf("MIDI interface %d: %s\n", i, name);
+    }
+    char choice[16];
+    iSrc = -1;
+    while ( iSrc < 0 || iSrc >= nSrc ) {
+      printf("\nType a MIDI interface number from above: ");
+      fgets(choice, 16, stdin);
+      iSrc = atoi(choice);
+    }
+    printf("\n");
+  }
+
+  // Open the source.
+  src = MIDIGetSource(iSrc);
+  MIDIPortConnectSource(port, src, NULL );
+
+  lastTime = AudioGetCurrentHostTime();
+}
+
+RtMidi :: ~RtMidi()
+{
+  MIDIClientDispose( client );
+  MIDIPortDispose( port );
+  delete [] midiBuffer;
+}
+
+int RtMidi::nextMessage()
+{
+  MIDIMESSAGE lastEvent;
+
+  if ( readIndex == writeIndex ) return 0;
+
+  lastEvent = midiBuffer[readIndex];
+
+  readIndex++;
+  if ( readIndex >= MIDI_BUFFER_SIZE ) readIndex = 0;
+
+  messageType = (int) (lastEvent.data[0] & 0xf0);
+  channel = (int) (lastEvent.data[0] & 0x0f);
+  byteTwo = (float) lastEvent.data[1];
+  if (messageType == (int) MD_PITCH_BEND)
+    byteTwo = (float) lastEvent.data[2] + (byteTwo / 128.0);
+  else
+    byteThree = (float) lastEvent.data[2];
+  deltaTime = (float) lastEvent.delta_time;
+
+  return messageType;
+}
+
+#elif defined(__OS_IRIX__)
 
 #include <pthread.h>
 #include <dmedia/midi.h>
@@ -319,7 +460,6 @@ void *midiInputThread(void *)
   }
   return 0;
 }
-
 
 
 #if defined(__MIDIATOR__)

@@ -32,10 +32,10 @@
 #if !defined(__BANDEDWG_H)
 #define __BANDEDWG_H
 
-#define MAX_BANDED_MODES 17
+#define MAX_BANDED_MODES 20
 
 #include "Instrmnt.h"
-#include "Delay.h"
+#include "DelayL.h"
 #include "BowTabl.h"
 #include "ADSR.h"
 #include "BiQuad.h"
@@ -91,16 +91,20 @@ class BandedWG : public Instrmnt
   BowTabl *bowTabl;
   ADSR *adsr;
   BiQuad *bandpass;
-  Delay *delay;
+  DelayL *delay;
   MY_FLOAT maxVelocity;
   MY_FLOAT modes[MAX_BANDED_MODES];
   MY_FLOAT freakency;
   MY_FLOAT baseGain;
   MY_FLOAT gains[MAX_BANDED_MODES];
+  MY_FLOAT basegains[MAX_BANDED_MODES];
+  MY_FLOAT excitation[MAX_BANDED_MODES];
   MY_FLOAT integrationConstant;
+  MY_FLOAT velocityInput;
   MY_FLOAT bowVelocity;
   MY_FLOAT bowTarget;
   MY_FLOAT bowPosition;
+  MY_FLOAT strikeAmp;
   int strikePosition;
 
 };

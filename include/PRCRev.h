@@ -22,11 +22,11 @@
 
 class PRCRev : public Reverb
 {
- public:
-  // Class constructor taking a T60 decay time argument.
+public:
+  //! Class constructor taking a T60 decay time argument.
   PRCRev(MY_FLOAT T60);
 
-  // Class destructor.
+  //! Class destructor.
   ~PRCRev();
 
   //! Reset and clear all internal state.
@@ -35,11 +35,11 @@ class PRCRev : public Reverb
   //! Compute one output sample.
   MY_FLOAT tick(MY_FLOAT input);
 
-  protected:  
-    Delay *allpassDelays[2];
-    Delay *combDelays[2];
-    MY_FLOAT allpassCoefficient;
-    MY_FLOAT combCoefficient[2];
+protected:  
+  Delay *allpassDelays[2];
+  Delay *combDelays[2];
+  MY_FLOAT allpassCoefficient;
+  MY_FLOAT combCoefficient[2];
 
 };
 

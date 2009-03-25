@@ -1,0 +1,40 @@
+The Synthesis ToolKit in C++ (STK)
+
+By Perry R. Cook and Gary P. Scavone, 1995-2002.
+
+The Synthesis ToolKit in C++ can be used in a variety of ways, depending on your particular needs.  Some people just choose the classes they need for a particular project and copy those to their project directory.  Others like to compile and link to a library of object files.  STK was not designed with one particular style of use in mind.
+
+To configure and compile (on Unix systems):
+
+1. Unpack the STK distribution (tar -xzf stk-4.x.tar.gz).
+2. From within the directory containing this file, run configure:
+
+   ./configure
+
+3. From within each project directory, type "make".
+4. To compile a library of objects, type "make" from within the src directory.
+
+Several options can be passed to configure, including:
+
+  --disable-realtime = only compile generic non-realtime classes
+  --enable-debug = enable various debug output
+  --with-alsa = choose native ALSA API support (linux only)
+  --enable-midiator = enable native MS-124W MIDI support (linux only)
+
+Typing "./configure --help" will display all the available options.  In addition, it is possible to specify the RAWWAVES and INCLUDE paths to configure as (ex. to set to /home/gary/rawwaves and /home/gary/include):
+
+  ./configure RAWWAVE_PATH="/home/gary/rawwaves/"
+  ./configure INCLUDE_PATH="/home/gary/include/"
+
+The ending "/" is required for the RAWWAVES path.  The default behavior will set a relative path that works for the project files included with the distribution (assuming they are not moved).
+
+If you wish to use a different compiler than that selected by configure, specify that compiler in the command line (ex. to use CC):
+
+  ./configure CXX=CC
+
+In addition, a linux RPM is available from the STK WWW site (http://www-ccrma.stanford.edu/software/stk/).
+
+
+For Windows Users:
+
+An STK distribution is available which contains precompiled executables.  In addition, Visual C++ project files are included for each of the example STK projects.

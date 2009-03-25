@@ -21,9 +21,9 @@ Chorus :: Chorus(MY_FLOAT baseDelay)
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char path[128];
   strcpy(path, RAWWAVE_PATH);
-  mods[0] = new WaveLoop( strcat(path,"rawwaves/sinewave.raw"), TRUE );
+  mods[0] = new WaveLoop( strcat(path,"sinewave.raw"), TRUE );
   strcpy(path, RAWWAVE_PATH);
-  mods[1] = new WaveLoop( strcat(path,"rawwaves/sinewave.raw"), TRUE );
+  mods[1] = new WaveLoop( strcat(path,"sinewave.raw"), TRUE );
   mods[0]->setFrequency(0.2);
   mods[1]->setFrequency(0.222222);
   modDepth = 0.05;

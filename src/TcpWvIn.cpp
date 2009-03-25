@@ -31,8 +31,10 @@
 #define N_BUFFERS 10
 
 // Do OS dependent includes
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
   #include <sys/types.h>
+  #include <unistd.h>
+  #include <string.h>
 #endif
 
 extern "C" THREAD_RETURN THREAD_TYPE inputThread(void * ptr)

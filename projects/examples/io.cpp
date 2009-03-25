@@ -38,6 +38,11 @@ main(int argc, char *argv[])
   unsigned int channels = (unsigned int) atoi(argv[1]);
   float time = atof(argv[2]);
 
+  // If you want to change the default sample rate (set in Stk.h), do
+  // it before instantiating any objects!  If the sample rate is
+  // specified in the command line, it will override this setting.
+  Stk::setSampleRate( 44100.0 );
+
   // Open the realtime duplex device.
   RtDuplex *inout = 0;
   try {

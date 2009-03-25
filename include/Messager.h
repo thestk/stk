@@ -41,6 +41,9 @@
 
 #define MESSAGE_LENGTH  128
 #define MAX_MESSAGES 25
+#define STK_MIDI        0x0001
+#define STK_PIPE        0x0002
+#define STK_SOCKET      0x0004
 
 #if defined(__STK_REALTIME__)
 
@@ -48,13 +51,9 @@
 #include "Socket.h"
 #include "RtMidi.h"
 
-#define STK_MIDI        0x0001
-#define STK_PIPE        0x0002
-#define STK_SOCKET      0x0004
-
 extern "C" THREAD_RETURN THREAD_TYPE stdinHandler(void * ptr);
 
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
   #include <sys/types.h>
   #include <sys/time.h>
 #endif
@@ -64,15 +63,16 @@ extern "C" THREAD_RETURN THREAD_TYPE stdinHandler(void * ptr);
 class Messager : public Stk
 {
  public:
-  //! Constructor performs initialization based on an input mask.
+  //! Constructor performs initialization based on an input mask and an optional socket port.
   /*!
     The default constructor is set to read input from a SKINI
     scorefile.  The flags STK_MIDI, STK_PIPE, and STK_SOCKET can be
     OR'ed together in any combination for multiple "realtime" input
-    source parsing.  For realtime input types, an StkError can be
-    thrown during instantiation.
+    source parsing.  An optional socket port number can be specified
+    for use when the STK_SOCKET flag is set.  For realtime input
+    types, an StkError can be thrown during instantiation.
   */
-  Messager(int inputMask = 0);
+  Messager(int inputMask = 0, int port = 2001);
 
   //! Class destructor.
   ~Messager();

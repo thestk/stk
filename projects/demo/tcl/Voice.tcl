@@ -9,7 +9,7 @@ set cont4 64.0
 set cont11 64.0
 set outID "stdout"
 set commtype "stdout"
-set patchnum 16
+set patchnum 17
 
 # Configure main window
 wm title . "STK Voice Model Controller"
@@ -31,9 +31,9 @@ menu .menu.communication -tearoff 0
 frame .instChoice -bg black
 
 radiobutton .instChoice.fm -text "FMVoice" -bg grey66  \
-				-command { patchChange 14 } -value 14 -variable patchnum
+				-command { patchChange 17 } -value 17 -variable patchnum
 radiobutton .instChoice.form -text "Formant" -bg grey66 \
-				-command { patchChange 15 } -value 15 -variable patchnum
+				-command { patchChange 18 } -value 18 -variable patchnum
 
 pack .instChoice.fm -side left -padx 5
 pack .instChoice.form -side left -padx 5 -pady 10
@@ -46,9 +46,8 @@ if {[file isdirectory bitmaps]} {
 } else {
 		set bitmappath tcl/bitmaps
 }
-button .pretty -bitmap @$bitmappath/prcFunny.xbm \
+button .pretty -bitmap @$bitmappath/KVoiceFM.xbm \
 				-background white -foreground black
-.pretty config -bitmap @$bitmappath/prc.xbm
 pack .pretty -padx 5 -pady 10
 
 # Configure "note-on" buttons
@@ -115,8 +114,7 @@ pack .right -side right
 bind . <Destroy> +myExit
 
 proc myExit {} {
-    global pitch
-    global outID
+    global pitch outID
     puts $outID [format "ExitProgram"]
     flush $outID
     close $outID
@@ -125,24 +123,19 @@ proc myExit {} {
 
 proc noteOn {pitchVal pressVal} {
     global outID
-    puts $outID [format "NoteOn           -1.0 1 %f %f" $pitchVal $pressVal]
+    puts $outID [format "NoteOn           0.0 1 %f %f" $pitchVal $pressVal]
     flush $outID
 }
 
 proc noteOff {pitchVal pressVal} {
     global outID
-    puts $outID [format "NoteOff          -1.0 1 %f %f" $pitchVal $pressVal]
+    puts $outID [format "NoteOff          0.0 1 %f %f" $pitchVal $pressVal]
     flush $outID
 }
 
 proc patchChange {value} {
-		global outID
-		global bitmappath
-    global cont1
-    global cont2
-    global cont4
-    global cont11
-    puts $outID [format "ProgramChange    -1.0 1 %i" $value]
+		global outID bitmappath cont1 cont2 cont4 cont11
+    puts $outID [format "ProgramChange    0.0 1 %i" $value]
     if {$value==16}	{
 				.pretty config -bitmap @$bitmappath/KVoiceFM.xbm
     }
@@ -164,13 +157,13 @@ proc printWhatz {tag value1 value2 } {
 
 proc changePress {value} {
     global outID
-    puts $outID [format "AfterTouch       -1.0 1 %f" $value]
+    puts $outID [format "AfterTouch       0.0 1 %f" $value]
     flush $outID
 }
 
 proc changePitch {value} {
     global outID
-    puts $outID [format "PitchBend        -1.0 1 %.3f" $value]
+    puts $outID [format "PitchChange      0.0 1 %.3f" $value]
     flush $outID
 }
 

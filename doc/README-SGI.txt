@@ -2,11 +2,11 @@ The Synthesis ToolKit in C++ (STK)
 
 By Perry R. Cook and Gary P. Scavone, 1995-2002.
 
-Please read the file README for more general STK information.
+Please read the file README and INSTALL for more general STK information.
 
-When using the Makefiles provided, first try invoking "gmake" (for GNU make).  If that doesn't work, try to download the GNU Makefile utilities from the Internet and use STK's default Makefile.  If this is not possible, try using Makefile.sgi (make -f Makefile.sgi).
+The project Makefiles are created by configure.  If you have trouble running "make", try invoking "gmake" (for GNU make).  If that doesn't work, try to download the GNU Makefile utilities from the Internet.
 
-Another issue that has crept up with this release is proper compiler support for C++ error handling.  If you experience problems, you probably don't have a recent version of the C++ compiler.  Otherwise, STK should compile and run on SGI platforms without any problems.  Release 4.0 of STK is confirmed to compile without difficulty using CC version 7.30.
+Another issue that has crept up with this release is proper compiler support for C++ error handling.  If you experience problems, you probably don't have a recent version of the C++ compiler.  Otherwise, STK should compile and run on SGI platforms without any problems.  Release 4.0 of STK is confirmed to compile (with various warnings) using CC version 7.30.
 
 NOTE REGARDING PTHREADS:
 

@@ -1,0 +1,68 @@
+### STK examples Makefile - for various flavors of unix
+
+PROGRAMS = sine play record io tcpIn tcpOut Moogy
+RM = /bin/rm
+SRC_PATH = ../../src
+OBJECT_PATH = @object_path@
+vpath %.o $(OBJECT_PATH)
+
+INCLUDE = @include@
+ifeq ($(strip $(INCLUDE)), )
+	INCLUDE = ../../include
+endif
+vpath %.h $(INCLUDE)
+
+CC       = @CXX@
+DEFS     = @byte_order@
+DEFS    += @debug@
+CFLAGS   = @cflags@
+CFLAGS  += @warn@ -I$(INCLUDE)
+LIBRARY = @LIBS@
+LIBRARY += @frameworks@
+
+REALTIME = @realtime@
+ifeq ($(REALTIME),yes)
+	DEFS    += @sound_api@
+	DEFS    += @midiator@
+endif
+
+RAWWAVES = @rawwaves@
+ifeq ($(strip $(RAWWAVES)), )
+	RAWWAVES = ../../rawwaves/
+endif
+DEFS    += -DRAWWAVE_PATH=\"$(RAWWAVES)\"
+
+%.o : $(SRC_PATH)/%.cpp
+	$(CC) $(CFLAGS) $(DEFS) -c $(<) -o $(OBJECT_PATH)/$@
+
+all : $(PROGRAMS)
+
+$(OBJECTS) : Stk.h
+
+clean : 
+	-rm $(OBJECT_PATH)/*.o
+	-rm $(PROGRAMS)
+
+strip : 
+	strip $(PROGRAMS)
+
+play: play.cpp Stk.o WvIn.o WvOut.o RtWvOut.o RtAudio.o
+	$(CC) $(CFLAGS) $(DEFS) -o play play.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/WvIn.o $(OBJECT_PATH)/WvOut.o $(OBJECT_PATH)/RtWvOut.o $(OBJECT_PATH)/RtAudio.o $(LIBRARY)
+
+record: record.cpp Stk.o WvIn.o WvOut.o RtWvIn.o RtAudio.o
+	$(CC) $(CFLAGS) $(DEFS) -o record record.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/WvIn.o $(OBJECT_PATH)/WvOut.o $(OBJECT_PATH)/RtWvIn.o $(OBJECT_PATH)/RtAudio.o $(LIBRARY)
+
+sine: sine.cpp Stk.o WvIn.o WvOut.o WaveLoop.o
+	$(CC) $(CFLAGS) $(DEFS) -o sine sine.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/WvIn.o $(OBJECT_PATH)/WvOut.o $(OBJECT_PATH)/WaveLoop.o $(LIBRARY)
+
+io: io.cpp Stk.o RtAudio.o RtDuplex.o
+	$(CC) $(CFLAGS) $(DEFS) -o io io.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/RtAudio.o $(OBJECT_PATH)/RtDuplex.o $(LIBRARY)
+
+tcpIn: tcpIn.cpp Stk.o WvIn.o TcpWvIn.o WvOut.o RtWvOut.o RtAudio.o Socket.o Thread.o
+	$(CC) $(CFLAGS) $(DEFS) -o tcpIn tcpIn.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/WvIn.o $(OBJECT_PATH)/Socket.o $(OBJECT_PATH)/Thread.o $(OBJECT_PATH)/TcpWvIn.o $(OBJECT_PATH)/WvOut.o $(OBJECT_PATH)/RtWvOut.o $(OBJECT_PATH)/RtAudio.o $(LIBRARY)
+
+tcpOut: tcpOut.cpp Stk.o WvIn.o WvOut.o TcpWvOut.o Socket.o Thread.o
+	$(CC) $(CFLAGS) $(DEFS) -o tcpOut tcpOut.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/WvIn.o $(OBJECT_PATH)/WvOut.o $(OBJECT_PATH)/Socket.o $(OBJECT_PATH)/Thread.o $(OBJECT_PATH)/TcpWvOut.o $(LIBRARY)
+
+Moogy: Moogy.cpp Stk.o WvIn.o WaveLoop.o WvOut.o RtWvOut.o RtAudio.o Instrmnt.o Sampler.o FormSwep.o Filter.o BiQuad.o Envelope.o ADSR.o OnePole.o Moog.o 
+	$(CC) $(CFLAGS) $(DEFS) -o Moogy Moogy.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/WvIn.o $(OBJECT_PATH)/WaveLoop.o $(OBJECT_PATH)/WvOut.o $(OBJECT_PATH)/RtWvOut.o $(OBJECT_PATH)/RtAudio.o $(OBJECT_PATH)/Instrmnt.o $(OBJECT_PATH)/Sampler.o $(OBJECT_PATH)/FormSwep.o $(OBJECT_PATH)/Filter.o $(OBJECT_PATH)/BiQuad.o $(OBJECT_PATH)/Envelope.o $(OBJECT_PATH)/ADSR.o $(OBJECT_PATH)/OnePole.o $(OBJECT_PATH)/Moog.o $(LIBRARY)

@@ -16,28 +16,37 @@
 
 void usage(void) {
   /* Error function in case of incorrect command-line argument specifications */
-  printf("\nuseage: effects flag \n");
-  printf("    where flag = -ip for realtime SKINI input by pipe\n");
-  printf("                 (won't work under Win95/98),\n");
-  printf("    and flag = -is for realtime SKINI input by socket.\n");
+  printf("\nuseage: effects flags \n");
+  printf("    where flag = -s RATE to specify a sample rate,\n");
+  printf("    flag = -ip for realtime SKINI input by pipe\n");
+  printf("           (won't work under Win95/98),\n");
+  printf("    and flag = -is <port> for realtime SKINI input by socket.\n");
   exit(0);
 }
 
 int main(int argc,char *argv[])
 {
-  if (argc != 2) usage();
-
-  int controlMask = 0;
-  if (!strcmp(argv[1],"-is") )
-    controlMask |= STK_SOCKET;
-  else if (!strcmp(argv[1],"-ip") )
-    controlMask |= STK_PIPE;
-  else
-    usage();
+  if (argc < 2 || argc > 6) usage();
 
   // If you want to change the default sample rate (set in Stk.h), do
-  // it before instantiating any objects!!
+  // it before instantiating any objects!  If the sample rate is
+  // specified in the command line, it will override this setting.
   Stk::setSampleRate(22050.0);
+
+  int port = -1;
+  int controlMask = 0;
+  for (int k=1; k<argc; k++ ) {
+    if (!strcmp(argv[k],"-is") ) {
+      controlMask |= STK_SOCKET;
+      if (k+1 < argc && argv[k+1][0] != '-' ) port = atoi(argv[++k]);
+    }
+    else if (!strcmp(argv[k],"-ip") )
+      controlMask |= STK_PIPE;
+    else if (!strcmp(argv[k],"-s") && (k+1 < argc) && argv[k+1][0] != '-')
+      Stk::setSampleRate( atoi(argv[++k]) );
+    else
+      usage();
+  }
 
   bool done;
   int effect = 0;
@@ -58,7 +67,10 @@ int main(int argc,char *argv[])
     inout = new RtDuplex(1, Stk::sampleRate(), 0, RT_BUFFER_SIZE, 10);
 
     // Instantiate the input message controller.
-    messager = new Messager( controlMask );
+    if ( controlMask & STK_SOCKET && port >= 0 )
+      messager = new Messager( controlMask, port );
+    else
+      messager = new Messager( controlMask );
   }
   catch (StkError &) {
     goto cleanup;

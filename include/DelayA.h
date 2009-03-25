@@ -53,13 +53,21 @@ public:
   //! Return the current delay-line length.
   MY_FLOAT getDelay(void);
 
+  //! Return the value which will be output by the next call to tick().
+  /*!
+    This method is valid only for delay settings greater than zero!
+   */
+  MY_FLOAT nextOut(void);
+
   //! Input one sample to the delay-line and return one output.
   MY_FLOAT tick(MY_FLOAT sample);
 
 protected:  
-    MY_FLOAT alpha;
-    MY_FLOAT coeff;
-    MY_FLOAT apInput;
+  MY_FLOAT alpha;
+  MY_FLOAT coeff;
+  MY_FLOAT apInput;
+  MY_FLOAT nextOutput;
+  bool doNextOut;
 };
 
 #endif

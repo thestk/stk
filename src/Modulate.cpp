@@ -18,7 +18,7 @@ Modulate :: Modulate()
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE );
+  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
   vibrato->setFrequency( 6.0 );
   vibratoGain = 0.04;
 
@@ -57,12 +57,20 @@ void Modulate :: setRandomGain(MY_FLOAT aGain)
   filter->setGain( randomGain );
 }
 
-MY_FLOAT Modulate ::  tick()
+MY_FLOAT Modulate :: tick()
 {
   // Compute periodic and random modulations.
   lastOutput = vibratoGain * vibrato->tick();
   lastOutput += filter->tick( noise->tick() );
   return lastOutput;                        
+}
+
+MY_FLOAT *Modulate :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick();
+
+  return vector;
 }
 
 MY_FLOAT Modulate :: lastOut() const

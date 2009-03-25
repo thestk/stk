@@ -27,6 +27,10 @@ Stk -|
      |
      |- Modulate
      |
+     |- SingWave
+     |
+     |- Voicer
+     |
      |- Messager
      |
      |- SKINI
@@ -36,6 +40,8 @@ Stk -|
      |            .- FM - (HevyMetl, PercFlut, Rhodey, Wurley, TubeBell, BeeThree, FMVoices)
      |            |
      |            |- Modal - ModalBar
+     |            |
+     |            |- VoicForm
      |            |
      |            |- Sampler - Moog
      |            |
@@ -51,7 +57,9 @@ Stk -|
                   |
                   |- BandedWG
                   |
-                  .- Mesh2D
+                  |- Mesh2D
+                  |
+                  .- Whistle
 
 
 ***********   UNIT GENERATORS   **************
@@ -91,6 +99,7 @@ Non-Linear:    JetTabl.cpp     Cubic Jet Non-Linearity
                ReedTabl.cpp    One Breakpoint Saturating Reed Non-Linearity
                                 
 Derived:       Modulate.cpp    Periodic and Random Vibrato: RawWvIn, SubNoise, OnePole
+               SingWave.cpp    Looping wave table with randomness: Modulate, WaveLoop, Envelope
 
 
 ********** INSTRUMENTS AND ALGORITHMS **************
@@ -121,6 +130,7 @@ Rhodey.cpp      Rhodes-Like Electric Piano     2 Parallel Simple FMs
 Wurley.cpp      Wurlitzer Electric Piano       2 Parallel Simple FMs
 TubeBell.cpp    Classic FM Bell                2 Parallel Simple FMs
 FMVoices.cpp    3 Formant FM Voice             3 Carriers Share 1 Modulator
+VoicForm.cpp    4 Formant Voice Synthesis      FormSwep, SingWave, OnePole, OneZero, Envelope, Noise
 BeeThree.cpp    Cheezy Additive Organ          4 Oscillators Additive
 Sampler.cpp     Sampling Synthesizer           5 each ADSR, WvIn, WaveLoop, OnePole
 Moog.cpp        Swept Filter                   Sampler with Swept Filter
@@ -128,6 +138,7 @@ Resonate.cpp    Filtered Noise                 ADSR, BiQuad, Noise
 Drummer.cpp     Drum Synthesizer               Bunch of WvIns, and OnePole
 Shakers.cpp     PhISM statistical model for shakers and real-world sound effects
 Mesh2D.cpp      Two-dimensional, rectilinear digital waveguide mesh.
+Whistle.cpp     Hybrid physical/spectral model of a police whistle.
 
 Reverb.cpp      Reverberator Effects Processor  Master Class for reverberators
 JCRev.cpp       Chowning Reverberator           3 series allpass units, 4 parallel combs, 2 stereo delays
@@ -143,6 +154,7 @@ PitShift.cpp    Cheap Pitch Shifter             DelayL
 RtAudio.cpp     Multi-OS/API audio I/O routines
 RtMidi.cpp      Multi-OS/API MIDI I/O routines
 Messager.cpp    Pipe, socket, and MIDI control message handling
+Voicer.cpp      Multi-instrument voice manager
 
 demo.cpp        Demonstration program for most synthesis algorithms
 effects.cpp     Effects demonstration program

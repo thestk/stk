@@ -29,6 +29,13 @@ PitShift :: ~PitShift()
   delete delayLine[1];
 }
 
+void PitShift :: clear()
+{
+  delayLine[0]->clear();
+  delayLine[1]->clear();
+  lastOutput = 0.0;
+}
+
 void PitShift :: setEffectMix(MY_FLOAT mix)
 {
   effectMix = mix;

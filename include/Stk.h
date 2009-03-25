@@ -68,7 +68,7 @@ public:
 
 class Stk
 {
- public:
+public:
 
   typedef unsigned long STK_FORMAT;
   static const STK_FORMAT STK_SINT8;   /*!< -128 to +127 */
@@ -88,7 +88,7 @@ class Stk
     during instantiation.  Therefore, if you wish to use a rate which
     is different from the default rate, it is imperative that it be
     set \e BEFORE STK objects are instantiated.
-   */
+  */
   static void setSampleRate(MY_FLOAT newRate);
 
   //! Static method which byte-swaps a 16-bit data type.
@@ -103,10 +103,10 @@ class Stk
   //! Static cross-platform method to sleep for a number of milliseconds.
   static void sleep(unsigned long milliseconds);
 
- private:
+private:
   static MY_FLOAT srate;
 
- protected:
+protected:
 
   //! Default constructor.
   Stk(void);
@@ -143,9 +143,12 @@ typedef double FLOAT64;
 // (ex. Clarinet.cpp).  If you wish to move the rawwaves directory to
 // a different location in your file system, you will need to set this
 // path definition appropriately.  The current definition is a
-// relative reference that will work "out of the box" for the STK
-// distribution.
-#define RAWWAVE_PATH "../../"
+// relative reference that will work for the programs in the STK
+// projects directory.  The path can also be specified to configure and
+// set via the Makefiles.
+#if !defined(RAWWAVE_PATH)
+  #define RAWWAVE_PATH "../../rawwaves/"
+#endif
 
 #define PI (MY_FLOAT) 3.14159265359
 #define TWO_PI (MY_FLOAT) (MY_FLOAT) (2 * PI)
@@ -160,6 +163,9 @@ typedef double FLOAT64;
   #define __STK_REALTIME__
 #elif defined(__IRIX_AL__)
   #define __OS_IRIX__
+  #define __STK_REALTIME__
+#elif defined(__MACOSX_CORE__)
+  #define __OS_MACOSX__
   #define __STK_REALTIME__
 #endif
 

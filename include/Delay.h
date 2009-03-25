@@ -60,6 +60,12 @@ public:
   //! Return the last computed output value.
   MY_FLOAT lastOut(void) const;
 
+  //! Return the value which will be output by the next call to tick().
+  /*!
+    This method is valid only for delay settings greater than zero!
+   */
+  virtual MY_FLOAT nextOut(void) const;
+
   //! Input one sample to the delay-line and return one output.
   virtual MY_FLOAT tick(MY_FLOAT sample);
 

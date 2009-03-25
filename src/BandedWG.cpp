@@ -38,7 +38,7 @@ BandedWG :: BandedWG()
 {
   doPluck = true;
 
-  delay = new Delay[MAX_BANDED_MODES];
+  delay = new DelayL[MAX_BANDED_MODES];
   bandpass = new BiQuad[MAX_BANDED_MODES];
   
   bowTabl = new BowTabl;
@@ -58,6 +58,8 @@ BandedWG :: BandedWG()
 
   bowVelocity = 0.0;
   bowTarget = 0.0;
+
+  strikeAmp = 0.0;
 }
 
 BandedWG :: ~BandedWG()
@@ -88,8 +90,10 @@ void BandedWG :: setPreset(int preset)
     modes[2] = (MY_FLOAT) 10.7184986595;
     modes[3] = (MY_FLOAT) 18.0697050938;
 
-    for (i=0; i<presetModes; i++)
-      gains[i] = (MY_FLOAT) pow(0.999,(double) i);
+    for (i=0; i<presetModes; i++) {
+      basegains[i] = (MY_FLOAT) pow(0.999,(double) i+1);
+      excitation[i] = 1.0;
+    }
 
     break;
 
@@ -102,40 +106,58 @@ void BandedWG :: setPreset(int preset)
     modes[4] = (MY_FLOAT) 9.38;
     // modes[5] = (MY_FLOAT) 12.22;
 
-    for (i=0; i<presetModes; i++)
-      gains[i] = (MY_FLOAT) pow(0.999,(double) i);
+    for (i=0; i<presetModes; i++) {
+      basegains[i] = (MY_FLOAT) pow(0.999,(double) i+1);
+      excitation[i] = 1.0;
+    }
     /*
-    baseGain = (MY_FLOAT) 0.99999;
-    for (i=0; i<presetModes; i++) 
+      baseGain = (MY_FLOAT) 0.99999;
+      for (i=0; i<presetModes; i++) 
       gains[i]= (MY_FLOAT) pow(baseGain, delay[i].getDelay()+i);
     */
 
     break;
+   
+  case 3: // Tibetan Prayer Bowl (ICMC'02)
+    presetModes = 12;
+    modes[0]=0.996108344;
+    basegains[0]=0.999925960128219;
+    excitation[0]=11.900357/10.0;
+    modes[1]=1.0038916562;
+    basegains[1]=0.999925960128219;
+    excitation[1]=11.900357/10.;
+    modes[2]=2.979178;
+    basegains[2]=0.999982774366897;
+    excitation[2]=10.914886/10.;
+    modes[3]=2.99329767;
+    basegains[3]=0.999982774366897;
+    excitation[3]=10.914886/10.;
+    modes[4]=5.704452;
+    basegains[4]=1.0; //0.999999999999999999987356406352;
+    excitation[4]=42.995041/10.;
+    modes[5]=5.704452;
+    basegains[5]=1.0; //0.999999999999999999987356406352;
+    excitation[5]=42.995041/10.;
+    modes[6]=8.9982;
+    basegains[6]=1.0; //0.999999999999999999996995497558225;
+    excitation[6]=40.063034/10.;
+    modes[7]=9.01549726;
+    basegains[7]=1.0; //0.999999999999999999996995497558225;
+    excitation[7]=40.063034/10.;
+    modes[8]=12.83303;
+    basegains[8]=0.999965497558225;
+    excitation[8]=7.063034/10.;
+    modes[9]=12.807382;
+    basegains[9]=0.999965497558225;
+    excitation[9]=7.063034/10.;
+    modes[10]=17.2808219;
+    basegains[10]=0.9999999999999999999965497558225;
+    excitation[10]=57.063034/10.;
+    modes[11]=21.97602739726;
+    basegains[11]=0.999999999999999965497558225;
+    excitation[11]=57.063034/10.;
 
-  case 3: // Tibetan Prayer Bowl
-    presetModes = 17;
-    modes[0] = (MY_FLOAT) 1.0;
-    modes[1] = (MY_FLOAT) 1.135;
-    modes[2] = (MY_FLOAT) 2.329;
-    modes[3] = (MY_FLOAT) 3.210;
-    modes[4] = (MY_FLOAT) 6.046;
-    modes[5] = (MY_FLOAT) 6.106;
-    modes[6] = (MY_FLOAT) 6.419;
-    modes[7] = (MY_FLOAT) 9.689;
-    modes[8] = (MY_FLOAT) 12.212;
-    modes[9] = (MY_FLOAT) 13.869;
-    modes[10] = (MY_FLOAT) 15.735;
-    modes[11] = (MY_FLOAT) 15.795;
-    modes[12] = (MY_FLOAT) 18.601;
-    modes[13] = (MY_FLOAT) 18.661;
-    modes[14] = (MY_FLOAT) 19.363;
-    modes[15] = (MY_FLOAT) 23.901;
-    modes[16] = (MY_FLOAT) 32.470;
-  
-    for (i=0; i<presetModes; i++)
-      gains[i]=0.9995;
-
-    break;
+    break;	
 
   default: // Uniform Bar
     presetModes = 4;
@@ -144,8 +166,10 @@ void BandedWG :: setPreset(int preset)
     modes[2] = (MY_FLOAT) 5.404;
     modes[3] = (MY_FLOAT) 8.933;
 
-    for (i=0; i<presetModes; i++)
-      gains[i] = (MY_FLOAT) pow(0.9,(double) i);
+    for (i=0; i<presetModes; i++) {
+      basegains[i] = (MY_FLOAT) pow(0.9,(double) i+1);
+      excitation[i] = 1.0;
+    }
 
     break;
   }
@@ -165,19 +189,24 @@ void BandedWG :: setFrequency(MY_FLOAT frequency)
 
   MY_FLOAT radius;
   MY_FLOAT base = Stk::sampleRate() / freakency;
-  int length;
+  MY_FLOAT length;
   for (int i=0; i<presetModes; i++) {
     // Calculate the delay line lengths for each mode.
-    length = (int) (base / modes[i]);
-    if ( length > 2)
+    length = (int)(base / modes[i]);
+    if ( length > 2.0) {
       delay[i].setDelay( length );
+      gains[i]=basegains[i];
+      //	  gains[i]=(MY_FLOAT) pow(basegains[i], 1/((MY_FLOAT)delay[i].getDelay()));
+      //	  cerr << gains[i];
+    }
     else	{
       nModes = i;
       break;
     }
+    //	cerr << endl;
 
     // Set the bandpass filter resonances
-    radius = 1.0 - PI * freakency * modes[i] / Stk::sampleRate();
+    radius = 1.0 - PI * 32 / Stk::sampleRate(); //freakency * modes[i] / Stk::sampleRate()/32;
     if ( radius < 0.0 ) radius = 0.0;
     bandpass[i].setResonance(freakency * modes[i], radius, true);
 
@@ -191,7 +220,7 @@ void BandedWG :: setFrequency(MY_FLOAT frequency)
 
 void BandedWG :: setStrikePosition(MY_FLOAT position)
 {
-  strikePosition = (int)(delay[0].getDelay() * position / 2);
+  strikePosition = (int)(delay[0].getDelay() * position / 2.0);
 }
 
 void BandedWG :: startBowing(MY_FLOAT amplitude, MY_FLOAT rate)
@@ -209,8 +238,13 @@ void BandedWG :: stopBowing(MY_FLOAT rate)
 
 void BandedWG :: pluck(MY_FLOAT amplitude)
 {
+  int j;
+  MY_FLOAT min_len = delay[nModes-1].getDelay();
   for (int i=0; i<nModes; i++)
-    delay[i].tick( amplitude / nModes );
+    for(j=0; j<(int)(delay[i].getDelay()/min_len); j++)
+      delay[i].tick( excitation[i]*amplitude / nModes /*/ (delay[i].getDelay()/min_len)*/);
+
+  /*	strikeAmp += amplitude;*/
 }
 
 void BandedWG :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
@@ -240,11 +274,13 @@ void BandedWG :: noteOff(MY_FLOAT amplitude)
 MY_FLOAT BandedWG :: tick()
 {
   int k;
-  MY_FLOAT velocityInput = 0.0;
 
   MY_FLOAT input = 0.0;
-  if ( doPluck )
+  if ( doPluck ) {
     input = 0.0;
+    //  input = strikeAmp/nModes;
+    //  strikeAmp = 0.0;
+  }
   else {
     if (integrationConstant == 0.0)
       velocityInput = 0.0;
@@ -315,9 +351,12 @@ void BandedWG :: controlChange(int number, MY_FLOAT value)
     adsr->setTarget(norm);
   }      
   else if (number == __SK_ModWheel_) { // 1
-    baseGain = 0.9989999999 + (0.001 * norm );
+    //    baseGain = 0.9989999999 + (0.001 * norm );
+	  baseGain = 0.8999999999999999 + (0.1 * norm);
+    //	cerr << "Yuck!" << endl;
     for (int i=0; i<nModes; i++)
-      gains[i]=(MY_FLOAT) pow(baseGain, delay[i].getDelay()+i);
+      gains[i]=(MY_FLOAT) basegains[i]*baseGain;
+    //      gains[i]=(MY_FLOAT) pow(baseGain, (int)((MY_FLOAT)delay[i].getDelay()+i));
   }
   else if (number == __SK_ModFrequency_) // 11
     integrationConstant = norm;
@@ -330,7 +369,7 @@ void BandedWG :: controlChange(int number, MY_FLOAT value)
     else trackVelocity = true;
   }
   else if (number == __SK_ProphesyRibbon_) // 16
-		this->setPreset((int) value);  
+    this->setPreset((int) value);  
   else
     cerr << "BandedWG: Undefined Control Number (" << number << ")!!" << endl;
 

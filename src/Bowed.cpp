@@ -39,7 +39,7 @@ Bowed :: Bowed(MY_FLOAT lowestFrequency)
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE );
+  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
   vibrato->setFrequency((MY_FLOAT) 6.12723);
   vibratoGain = (MY_FLOAT) 0.0;
 
@@ -55,6 +55,9 @@ Bowed :: Bowed(MY_FLOAT lowestFrequency)
   adsr->setAllTimes((MY_FLOAT) 0.02,(MY_FLOAT) 0.005,(MY_FLOAT) 0.9,(MY_FLOAT) 0.01);
     
   betaRatio = (MY_FLOAT) 0.127236;
+
+  // Necessary to initialize internal variables.
+  setFrequency( 220.0 );
 }
 
 Bowed :: ~Bowed()

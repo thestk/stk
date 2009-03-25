@@ -1,33 +1,38 @@
 // demo.cpp
 //
-// An STK program for monophonic voice playback and control.
+// An example STK program for voice playback and control.
 
 #include "SKINI.msg"
-#include "Messager.h"
 #include "WvOut.h"
 #include "Instrmnt.h"
 #include "PRCRev.h"
+#include "Voicer.h"
 
 // Miscellaneous command-line parsing and instrument allocation
 // functions are defined in utilites.cpp ... specific to this program.
 #include "utilities.h"
 
 #include <stdlib.h>
+#include <signal.h>
 #include <math.h>
 #include <iostream.h>
 
+bool done;
+static void finish(int ignore){ done = true; }
+
 int main(int argc, char *argv[])
 {
-  bool done;
-  Instrmnt *instrument = 0;
-  Messager *messager = 0;
+  Instrmnt **instrument = 0;
   WvOut **output = 0;
+  Messager *messager = 0;
   Reverb *reverb = 0;
-  MY_FLOAT pitch = 220.0;
+  Voicer *voicer = 0;
+  int i, nVoices = 1;
   MY_FLOAT t60 = 1.0;  // in seconds
 
   // If you want to change the default sample rate (set in Stk.h), do
-  // it before instantiating any objects!!
+  // it before instantiating any objects!  If the sample rate is
+  // specified in the command line, it will override this setting.
   Stk::setSampleRate( 22050.0 );
 
   // Check the command-line arguments for errors and to determine
@@ -35,15 +40,28 @@ int main(int argc, char *argv[])
   int nOutputs = checkArgs(argc, argv);
   output = (WvOut **) calloc(nOutputs, sizeof(WvOut *));
 
-  // Instantiate the instrument from the command-line argument.
-  int voice = voiceByName(argv[1], &instrument);
-  if ( voice < 0 ) usage(argv[0]);
+  // Instantiate the instrument(s) type from the command-line argument
+  // (in utilities.cpp).
+  nVoices = countVoices(argc, argv);
+  instrument = (Instrmnt **) calloc(nVoices, sizeof(Instrmnt *));
+  int voice = voiceByName(argv[1], &instrument[0]);
+  if ( voice < 0 ) {
+    free( output );
+    free( instrument );
+    usage(argv[0]);
+  }
+  // If there was no error allocating the first voice, we should be fine for more.
+  for ( i=1; i<nVoices; i++ )
+    voiceByName(argv[1], &instrument[i]);
 
-  // Parse the command-line flags, instantiate WvOut objects, and instantiate
-  // the input message controller (in utilities.cpp).
+  voicer = (Voicer *) new Voicer(nVoices);
+  for ( i=0; i<nVoices; i++ )
+    voicer->addInstrument( instrument[i] );
+
+  // Parse the command-line flags, instantiate WvOut objects, and
+  // instantiate the input message controller (in utilities.cpp).
   try {
-    int controlMask = parseArgs(argc, argv, output);
-    messager = new Messager( controlMask );
+    parseArgs(argc, argv, output, &messager);
   }
   catch (StkError &) {
     goto cleanup;
@@ -52,10 +70,13 @@ int main(int argc, char *argv[])
   reverb = new PRCRev( t60 );
   reverb->setEffectMix(0.2);
 
+  // Install an interrupt handler function.
+	(void) signal(SIGINT, finish);
+
   // The runtime loop begins here:
   done = FALSE;
-  int nTicks, type, j, i;
-  MY_FLOAT temp, byte2, byte3, sample;
+  int nTicks, type, j;
+  MY_FLOAT byte2, byte3, sample;
   while (!done) {
 
     // Look for new messages and return a delta time (in samples).
@@ -64,9 +85,8 @@ int main(int argc, char *argv[])
       done = TRUE;
 
     nTicks = messager->getDelta();
-
     for ( i=0; i<nTicks; i++ ) {
-      sample = reverb->tick( instrument->tick() );
+      sample = reverb->tick( voicer->tick() );
       for ( j=0; j<nOutputs; j++ ) output[j]->tick(sample);
     }
 
@@ -79,51 +99,50 @@ int main(int argc, char *argv[])
 
       case __SK_NoteOn_:
         if (byte3 == 0.0) // velocity is zero ... really a NoteOff
-          instrument->noteOff( 0.5 );
-        else { // a NoteOn
-          if ( byte2 < 0.0 || byte2 > 128.0 ) continue;
-          pitch = Midi2Pitch[(unsigned int) byte2];
-          instrument->noteOn(pitch, byte3 * ONE_OVER_128);
-        }
+          voicer->noteOff( byte2, 64.0 );
+        else // a NoteOn
+          voicer->noteOn( byte2, byte3 );
         break;
 
       case __SK_NoteOff_:
-        instrument->noteOff(byte3 * ONE_OVER_128);
+        voicer->noteOff( byte2, byte3 );
         break;
 
       case __SK_ControlChange_:
         if (byte2 == 44.0)
           reverb->setEffectMix(byte3  * ONE_OVER_128);
         else
-          instrument->controlChange( (int)byte2, byte3 );
+          voicer->controlChange( (int) byte2, byte3 );
         break;
 
       case __SK_AfterTouch_:
-        instrument->controlChange( 128, byte2 );
+        voicer->controlChange( 128, byte2 );
+        break;
+
+      case __SK_PitchChange_:
+        voicer->setFrequency( byte2 );
         break;
 
       case __SK_PitchBend_:
-        if ( byte2 < 0.0 || byte2 > 128.0 ) continue;
-        temp = byte2 - (int)byte2;   // floating-point remainder
-        pitch = Midi2Pitch[(unsigned int)byte2] * pow(2.0, temp/12.0);
-        instrument->setFrequency(pitch);
+        voicer->pitchBend( byte2 );
         break;
 
       case __SK_ProgramChange_:
-        if (voice != (int)byte2) {
-          instrument->noteOff(1.0);
-          // Let the instrument settle a bit.
-          for (i=0; i<4096; i++)    {
-            sample = reverb->tick( instrument->tick() );
+        if ( voice != (int) byte2 ) {
+          voicer->silence();
+          // Let the instrument(s) settle a bit.
+          for ( i=0; i<4096; i++ ) {
+            sample = reverb->tick( voicer->tick() );
             for ( j=0; j<nOutputs; j++ ) output[j]->tick(sample);
           }
-          delete instrument;
-          voice = voiceByNumber( (int)byte2, &instrument );
-          if ( voice < 0 ) {
-            // Default instrument = 0
-            voice = voiceByNumber( 0, &instrument );
+          for ( i=0; i<nVoices; i++ ) {
+            voicer->removeInstrument( instrument[i] );
+            delete instrument[i];
+            voice = voiceByNumber( (int)byte2, &instrument[i] );
+            if ( voice < 0 )
+              voice = voiceByNumber( 0, &instrument[i] );
+            voicer->addInstrument( instrument[i] );
           }
-          instrument->noteOn(pitch, 0.2);
         }
       }
     }
@@ -132,7 +151,7 @@ int main(int argc, char *argv[])
   // Let the reverb settle a bit.
   nTicks = (long) (t60 * Stk::sampleRate());
   for ( i=0; i<nTicks; i++) {
-    sample = reverb->tick( instrument->tick() );
+    sample = reverb->tick( voicer->tick() );
     for ( j=0; j<nOutputs; j++ ) output[j]->tick(sample);
   }
 
@@ -142,8 +161,14 @@ int main(int argc, char *argv[])
   free(output);
 
   delete messager;
-  delete instrument;
+  delete reverb;
+  delete voicer;
 
-	cout << "\ndemo finished ... goodbye.\n" << endl;
+  for ( i=0; i<nVoices; i++ ) delete instrument[i];
+  free(instrument);
+
+	cout << "\nStk demo finished ... goodbye.\n" << endl;
   return 0;
 }
+
+

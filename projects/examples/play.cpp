@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
   // Try to load the soundfile.
   try {
-    input = new WvIn( (char *)argv[1] );
+    input = new WvIn( argv[1] );
   }
   catch (StkError &) {
     exit(0);

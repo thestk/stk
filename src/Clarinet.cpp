@@ -40,7 +40,7 @@ Clarinet :: Clarinet(MY_FLOAT lowestFrequency)
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char path[128];
   strcpy(path, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(path,"rawwaves/sinewave.raw"), TRUE );
+  vibrato = new WaveLoop( strcat(path,"sinewave.raw"), TRUE );
   vibrato->setFrequency((MY_FLOAT) 5.735);
   outputGain = (MY_FLOAT) 1.0;
   noiseGain = (MY_FLOAT) 0.2;

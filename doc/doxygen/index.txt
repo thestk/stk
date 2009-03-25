@@ -10,6 +10,7 @@ The <B>Synthesis ToolKit in C++ (STK)</B> is a set of audio signal processing an
 - \ref usage
 - \ref maillist
 - \ref system
+- \ref links
 - \ref tutorial
 
 */

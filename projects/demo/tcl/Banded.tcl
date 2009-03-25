@@ -168,7 +168,7 @@ proc changePress {value} {
 
 proc changePitch {value} {
     global outID
-    puts $outID [format "PitchBend        0.0 1 %.3f" $value]
+    puts $outID [format "PitchChange      0.0 1 %.3f" $value]
     flush $outID
 }
 

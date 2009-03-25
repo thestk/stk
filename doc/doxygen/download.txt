@@ -1,11 +1,34 @@
 /*! \page download Download and Release Notes
 
-<B>Version 4.0, 30 April 2002</B><P>
-<A HREF="Release/stk-4.0.tar.gz">STK Version 4.0: Source distribution</A> (1.64 MB tar/gzipped)<BR>
-<A HREF="Release/stk-4.0.binaries.tar.gz">STK Version 4.0: Source distribution with precompiled windows binaries</A> (2.26 MB tar/gzipped)<BR>
+<B>Version 4.1, 8 October 2002</B><P>
+<A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.tar.gz">STK Version 4.1: Source distribution</A> (1.2 MB tar/gzipped)<BR>
+<A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.binaries.tar.gz">STK Version 4.1: Source distribution with precompiled windows binaries</A> (1.7 MB tar/gzipped)<BR>
+<A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1-1.i386.rpm">STK Version 4.1: Linux RPM using ALSA API</A> (1.2 MB)<BR>
+<A HREF="http://www-ccrma.stanford.edu/software/stk/release/stkmanual.pdf">STK Manual (PDF)</A> (1.2 MB) Note: HTML version in /doc/html/ directory of distribution<BR>
 <P>
 
 \section notes Release Notes:
+
+\subsection v4dot1 Version 4.1
+
+<UL>
+<LI>Macintosh OS X support added.</LI>
+<LI>New Whistle class.</LI>
+<LI>Added Voicer, SingWave, and VoicForm classes.</LI>
+<LI>Improvements/fixes to the banded waveguide instruments.</LI>
+<LI>Demo program now uses Voicer, allowing polyphony.</LI>
+<LI>Demo tcl/tk scripts changed to use SKINI PitchChange instead of PitchBend.</LI>
+<LI>Demo program response to PitchBend modified to octave up/down.</LI>
+<LI>Several RtAudio fixes and improvements (OS X and Windows ASIO support added).</LI>
+<LI>Added nextOut() method to Delay classes.</LI>
+<LI>Documentation fixes for Reverb classes.</LI>
+<LI>RAWWAVE_PATH changed to include the "rawwave" directory.</LI>
+<LI>"configure" support added for unix systems.</LI>
+<LI>Multivoice flag (-n NUMBER) added as command line option to demo program.</LI>
+<LI>Sample rate flag added as command line option to example programs.</LI>
+<LI>Socket port number added as command line option to example programs.</LI>
+
+</UL>
 
 \subsection v4 Version 4.0
 
