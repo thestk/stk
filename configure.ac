@@ -132,6 +132,7 @@ if test $realtime = yes; then
       AC_CHECK_LIB(asound, snd_pcm_open, , AC_MSG_ERROR(ALSA support requires the asound library!))
     fi
 
+    AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR(RtAudio requires the pthread library!))
     ;;
 
     *-apple*)
