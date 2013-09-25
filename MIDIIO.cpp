@@ -163,6 +163,7 @@ int MIDIIO ::  nextMessage()
 #include <sys/types.h>
 #include <sys/soundcard.h>       
 #include <pthread.h>
+//#include <pthread/mit/pthread.h>
 
 int _seqfd;
 

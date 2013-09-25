@@ -13,7 +13,7 @@
 
 Marimba :: Marimba() : Modal4()
 {
-    wave = new RawWave("rawwaves/marmstk1.raw");
+    wave = new RawInterp("rawwaves/marmstk1.raw");
     wave->normalize();
     wave->setRate((MY_FLOAT) 0.5);                      /*  normal stick  */
     this->setRatioAndReson(0, (MY_FLOAT) 1.00,(MY_FLOAT) 0.9996);  /*  Set all       132.0  */
@@ -105,7 +105,7 @@ void Marimba :: controlChange(int number, MY_FLOAT value)
 MY_FLOAT Marimba :: tick()
 {
     if (multiStrike>0)
-        if (wave->isAllDone()) {
+        if (wave->isFinished()) {
 	    wave->reset();
 	    multiStrike -= 1;
 	}

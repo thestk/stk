@@ -16,7 +16,7 @@
 
 AgogoBel :: AgogoBel() : Modal4()
 {
-  wave = new RawWave("rawwaves/britestk.raw");
+  wave = new RawInterp("rawwaves/britestk.raw");
   wave->normalize();
   wave->setRate((MY_FLOAT) 7.0);     		/* hardstick */
   this->setRatioAndReson(0, (MY_FLOAT) 1.00,(MY_FLOAT) 0.999);    /*  Set our      */

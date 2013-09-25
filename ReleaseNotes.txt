@@ -1,0 +1,39 @@
+STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
+
+By Perry R. Cook, 1995-98
+and Gary P. Scavone, 1997-98
+
+I'll call this latest release STK98v2.02.  There was a v2.01 release shortly after the initial v2.0 release in July 1998, to correct a few SGI/Win return character incompatibilities.  Since I am just creating this set of release notes with v2.02, I'll just gloss over the past changes.  Hopefully, I'll be able to keep this document updated with future releases.
+
+--Gary Scavone
+
+
+v2.02:
+- 16 November 1998
+- created RawWave abstract class, with subclasses of RawLoop (looping rawwave oscillator), RawShot (non-looping, non-interpolating rawwave player ... used to be RawWvIn), and RawInterp (looping or non-looping, interpolating rawwave player ... used to be RawWave).
+- modified DrumSynt to correctly handle sample rates different than 22050 Hz.
+- modified syntmono parsing vs. tick routine so that some ticking occurs between each message.  When multiple messages are waiting to be processed, the time between message updates is inversely proportional to the number of messages in the buffer.
+- fixed DirectSound playback bug in Win distribution.  Sound was being played at 8-bit, 22 kHz in all cases.  Playback is now 16-bit and dependent on SRATE.
+- fixed bug in MD2SKINI which prevented some NoteOff statements from being output.
+
+
+v2.01:
+- 27 July 1998
+- Corrected extraneous ^M line return characters that were incompatible with SGI.
+
+
+v2.0:
+- 20 July 1998
+- The first true release by Gary, with unified capabilities across SGI, Linux, and Win platforms.  See WWW pages (http://www-ccrma.stanford.edu/CCRMA/Software/STK/) for more info.
+
+
+v1.1:
+- More linux support and other changes that happened so long ago that I can't remember anymore.  Never officially released.
+
+
+v1.0:
+- Linux support added with the help of Tim Stilson.  Never officially released.
+
+
+v0.8:
+- One of (if not THE) original distributions for SGI, NeXTStep, and basic Win support.  I think this came out in 1996.

@@ -6,7 +6,7 @@
 OS = $(shell uname)
 
 O_FILES		=	Object.o Envelope.o ADSR.o Noise.o SubNoise.o \
-				RawWave.o RawWvIn.o RawLoop.o \
+				RawWave.o RawShot.o RawLoop.o RawInterp.o \
 				Modulatr.o Filter.o OneZero.o  \
 				OnePole.o TwoZero.o TwoPole.o DCBlock.o \
 				BiQuad.o DLineA.o DLineL.o DLineN.o VoicMang.o \
@@ -43,6 +43,7 @@ ifeq ($(OS),Linux) # These are for Linux
 	CC = gcc -O3 # -g -pg -O3
 	O_FILES += RTWvOut.o RTSoundIO.o MIDIIO.o
 	LIBRARY = -lpthread -lm
+#	LIBRARY = /lib/libpthread.so.0 -lm
 endif
 
 .SUFFIXES:	.cpp

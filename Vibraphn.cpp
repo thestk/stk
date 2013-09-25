@@ -13,7 +13,7 @@
 
 Vibraphn :: Vibraphn() : Modal4()
 {
-    wave = new RawWave("rawwaves/marmstk1.raw");
+    wave = new RawInterp("rawwaves/marmstk1.raw");
     wave->normalize();
     wave->setRate((MY_FLOAT) 13.33);
     vibr->setFreq((MY_FLOAT) 4.0);

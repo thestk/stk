@@ -13,17 +13,17 @@ SourcSink Filters  Reverb  Non-Lin   ModalSyn    FM      Physical  Sampling   Ph
 Object-----------------------------------Instrmnt----------.  
   |     |    |       |        |    |                       |
 Envelope| Filter   Reverb  BowTabl |    .------------------|---------------------.
-  |     |    |       |     JetTabl |    |    |    |     |   |         |    |    |
-ADSR    | OneZero  PRCRev  ReedTabl| Modal4  | FM4Op---.|   |         |    | Shakers
-        | OnePole  JCRev           |    |    |    |    ||   |         |    |    |
-  ._____| TwoZero  NRev       .____| Marimba | FM4Alg3 || Plucked  Sampler | Maraca
-  |     | TwoPole             |      Vibraphn|    |    || Clarinet    |    | Sekere
-Noise   | DCBlock          LipFilt   AgogoBel| HeavyMtl|| Brass    SamplFlt| Cabasa
-  |     | BiQuad                             |         || Flute       |    | Bamboo
-SubNoise| DlineL                        .____|    .____|| Bowed     Moog1  | Water Drops
-        | DLineA                        |         |    ||                  | Tambourine
-  ._____| DLineN                     VoicForm  FM4Alg4 ||____.             | SleighBells
-  |     | FormSwep                                |    |     |             | Guiro
+  |     |    |       |     JetTabl |    |    |    |     |   |         |    |     |
+ADSR    | OneZero  PRCRev  ReedTabl| Modal4  | FM4Op---.|   |         |    |  Shakers
+        | OnePole  JCRev           |    |    |    |    ||   |         |    |     |
+  ._____| TwoZero  NRev       .____| Marimba | FM4Alg3 || Plucked  Sampler |  Maraca
+  |     | TwoPole             |      Vibraphn|    |    || Clarinet    |    |  Sekere
+Noise   | DCBlock          LipFilt   AgogoBel| HeavyMtl|| Brass    SamplFlt|  Cabasa
+  |     | BiQuad                             |         || Flute       |    |  Bamboo
+SubNoise| DlineL                        .____|    .____|| Bowed     Moog1  |  Water Drops
+        | DLineA                        |         |    ||                  |  Tambourine
+  ._____| DLineN                     VoicForm  FM4Alg4 ||____.             |  SleighBells
+  |     | FormSwep                                |    |     |             |  Guiro
 RawWave |                                      PercFlut|  Plucked2         |
         |                                              |     |             |
   ._____|                                         .____|  Mandolin    .____|
@@ -63,7 +63,7 @@ Bowed.cpp       Not Hideous Bowed String  DlineL,BowTabl,OnePole,BiQuad,RawWave,
 Brass.cpp       Not So Bad Brass Inst.    DLineA,LipFilt,DCBlock,ADSR,RawLoop
 Clarinet.cpp    Pretty Good Clarinet      DLineL,ReedTabl,OneZero,Envelope,Noise,RawLoop
 Flute.cpp       Pretty Good Flute         JetTabl,DLineL,OnePole,DCBlock,Noise,ADSR,RawLoop
-Modal4.cpp      4 Resonances  	          Envelope,RawWave,RawLoop,BiQuad,OnePole
+Modal4.cpp      4 Resonances              Envelope,RawWave,RawLoop,BiQuad,OnePole
 Marimba.cpp                               <<flavor of MODAL4>>
 Vibraphn.cpp                              <<flavor of MODAL4>>
 Agogobel.cpp                              <<flavor of MODAL4>>
@@ -78,12 +78,12 @@ PercFlut.cpp    Perc. Flute               <<flavor of FM4Alg4>>
 Rhodey.cpp      Rhodes-Like Elec. Piano   <<flavor of FM4Alg5>>
 Wurley.cpp      Wurlitz. Elec. Piano      <<flavor of FM4Alg5>>
 TubeBell.cpp    Classic FM Bell           <<flavor of FM4Alg5>>
-FMVoices.cpp	3-Formant Voice Synth.	  <<flavor of FM4Alg6>>
-BeeThree.cpp	Cheezy Organ for Paul	  <<flavor of FM4Alg8>>
+FMVoices.cpp    3-Formant Voice Synth.    <<flavor of FM4Alg6>>
+BeeThree.cpp    Cheezy Organ for Paul     <<flavor of FM4Alg8>>
 Sampler.cpp     Sampling Synth.           4 each ADSR, RawWave (att), RawLoop (loop), OnePole
 SamplFlt.cpp    Sampler with Swept Filter <<flavor of Sampler>>
 Moog1.cpp       Swept filter flavor of    <<flavor of SamplFlt>>   
-VoicForm.cpp    Source/Filter Voice   	  Envelope,Noise,SingWave,FormSwep,OnePole,OneZero
+VoicForm.cpp    Source/Filter Voice       Envelope,Noise,SingWave,FormSwep,OnePole,OneZero
 DrumSynt.cpp    Drum Synthesizer          bunch of RawWvIn, and OnePole
 Shakers.cpp     Stochastic Event Models
 
@@ -122,7 +122,7 @@ Filters:        Filter.cpp      Filter Master Class
 Reverb:         Reverb.cpp      Reverb Master Class
                 PRCRev.cpp      2 series allpass units, 2 parallel comb filters
                 JCRev.cpp       3 series allpass units, 4 parallel comb filters
-                NReb.cpp        6 parallel comb filters, 3 series allpass units, ...
+                NRev.cpp        6 parallel comb filters, 3 series allpass units, ...
 
 NonLin&Lookup:  JetTabl.cpp     Cubic Jet NonLinearity
                 BowTabl.cpp     1/x^3-like Bow NonLinearity

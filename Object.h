@@ -22,6 +22,8 @@ class Object
     virtual ~Object();
 };
 
+/* Uncomment your OS type below! */
+
 /* #define __OS_NeXT_ */
 #define __OS_IRIX_
 /* #define __OS_Linux_ */
@@ -58,21 +60,21 @@ class Object
 #define MAX_IN_STRINGS 25
 
 /* SRATE here is 44100, others are derived accordingly  */
-
+/*
 #define SRATE (MY_FLOAT) 44100.0
 #define SRATE_OVER_TWO (MY_FLOAT) 22050.0
 #define ONE_OVER_SRATE (MY_FLOAT) 0.00002267573696
 #define RATE_NORM (MY_FLOAT) 0.5
 #define TWO_PI_OVER_SRATE (MY_FLOAT) 0.0001424758573
-
+*/
 /* SRATE here is 22050, others are derived accordingly   */
-/*
+
 #define SRATE (MY_FLOAT)  22050.0
 #define SRATE_OVER_TWO (MY_FLOAT)  11025.0
 #define ONE_OVER_SRATE (MY_FLOAT)  0.00004535147392
 #define RATE_NORM (MY_FLOAT)  1.0
 #define TWO_PI_OVER_SRATE (MY_FLOAT) 0.0002849517146
-*/
+
 /* SRATE here is 16000, others are derived accordingly   */
 /*
 #define SRATE (MY_FLOAT)  16000.0
@@ -81,7 +83,6 @@ class Object
 #define RATE_NORM (MY_FLOAT)  1.375
 #define TWO_PI_OVER_SRATE (MY_FLOAT) 0.000392699
 */
-
 /* SRATE here is 8k, others are derived accordingly   */
 /*
 #define SRATE (MY_FLOAT) 8000.0

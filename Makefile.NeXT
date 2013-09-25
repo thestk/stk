@@ -1,7 +1,7 @@
 # STK98 Makefile - NeXTStep solo version
 
 O_FILES		=	Object.o Envelope.o ADSR.o Noise.o SubNoise.o \
-				RawWave.o RawWvIn.o RawLoop.o \
+				RawWave.o RawShot.o RawLoop.o RawInterp.o \
 				Modulatr.o Filter.o OneZero.o  \
 				OnePole.o TwoZero.o TwoPole.o DCBlock.o \
 				BiQuad.o DLineA.o DLineL.o DLineN.o VoicMang.o \

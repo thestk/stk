@@ -90,7 +90,6 @@ void errorf(void) {
 void main(int argc,char *argv[])
 {
   long j;
-  int oneOn = 0;
   MY_FLOAT byte2, byte3;
   int channel;
   int firstMessage = 1;
@@ -203,31 +202,23 @@ void main(int argc,char *argv[])
       switch(controller->getType()) {
       case __SK_NoteOn_:
         if (byte3 < 1.0) {
-          if (oneOn == 1) {
-            sprintf(s,"NoteOff\t\t%.3f  %d  %.1f  %.1f\n",0.0,channel,byte2,64.0);
-            if (writeFileOut) {
-              fprintf(fileOut,"NoteOff\t\t%.3f  %d  %.1f  %.1f\n",dt,channel,byte2,64.0);
-            } 	 
+          sprintf(s,"NoteOff\t\t%.3f  %d  %.1f  %.1f\n",0.0,channel,byte2,64.0);
+          if (writeFileOut) {
           }
-          oneOn -= 1;
         } else {
           sprintf(s,"NoteOn\t\t%.3f  %d  %.1f  %.1f\n",0.0,channel,byte2,byte3);
           if (writeFileOut) {
             fprintf(fileOut,"NoteOn\t\t%.3f  %d  %.1f  %.1f\n",dt,channel,byte2,byte3);
           } 	 
-          oneOn += 1;
         }
         break;
 			
       case __SK_NoteOff_:
         if (byte3 < 2.0) byte3 = 64.0;
-        if (oneOn == 1) {
-          sprintf(s,"NoteOff\t\t%.3f  %d  %.1f  %.1f\n",0.0,channel,byte2,byte3);
-        }
+        sprintf(s,"NoteOff\t\t%.3f  %d  %.1f  %.1f\n",0.0,channel,byte2,byte3);
         if (writeFileOut) {
           fprintf(fileOut,"NoteOff\t\t%.3f  %d  %.1f  %.1f\n",dt,channel,byte2,byte3);
         } 	 
-        oneOn -= 1;
         break;
 
       case __SK_PolyPressure_:

@@ -11,7 +11,7 @@
 
 #include "Instrmnt.h"
 #include "Envelope.h"
-#include "RawWave.h"
+#include "RawInterp.h"
 #include "RawLoop.h"
 #include "BiQuad.h"
 #include "OnePole.h"
@@ -20,7 +20,7 @@ class Modal4 : public Instrmnt
 {
   protected:  
     Envelope *envelope; 
-    RawWave  *wave;
+    RawInterp  *wave;
     BiQuad   *filters[4];
     OnePole  *onepole;
     RawLoop  *vibr;

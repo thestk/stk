@@ -20,12 +20,12 @@
 #define __Mandolin_h
 
 #include "Plucked2.h"
-#include "RawWave.h"
+#include "RawInterp.h"
 
 class Mandolin : public Plucked2
 {
   protected:  
-    RawWave *soundfile[12];
+    RawInterp *soundfile[12];
     MY_FLOAT directBody;
     int mic;
     long dampTime;

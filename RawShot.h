@@ -1,5 +1,5 @@
 /*******************************************/
-/*  NonInterpolating One-Shot Raw Sound-   */
+/*  Non-Interpolating One-Shot Raw Sound-  */
 /*  file Class, by Perry R. Cook, 1995-96  */ 
 /*  This Object can open a raw 16bit data  */
 /*  (signed integers) file, and play back  */
@@ -13,12 +13,13 @@
 /*  applications).                         */
 /*******************************************/
 
-#if !defined(__RawWvIn_h)
-#define __RawWvIn_h
+#if !defined(__RawShot_h)
+#define __RawShot_h
 
 #include "Object.h"
+#include "RawWave.h"
 
-class RawWvIn : public Object
+class RawShot : public RawWave
 {
   protected:  
     long length;
@@ -32,13 +33,14 @@ class RawWvIn : public Object
     MY_FLOAT gain;
     MY_FLOAT lastOutput;
   public:
-    RawWvIn(char *fileName);
-    ~RawWvIn();
+    RawShot(char *fileName);
+    ~RawShot();
     void reset();
     void normalize();
     void normalize(MY_FLOAT newPeak);
     void setRate(MY_FLOAT aRate);
     void finish();
+    int isFinished();
     MY_FLOAT tick();
     int informTick();
     MY_FLOAT lastOut();

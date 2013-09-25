@@ -452,6 +452,14 @@ SOURCE=.\PRCRev.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\RawInterp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\RawInterp.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\RawLoop.cpp
 # End Source File
 # Begin Source File
@@ -460,19 +468,19 @@ SOURCE=.\RawLoop.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\RawShot.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\RawShot.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\RawWave.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\RawWave.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\RawWvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\RawWvIn.h
 # End Source File
 # Begin Source File
 

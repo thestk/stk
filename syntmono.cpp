@@ -67,7 +67,7 @@ void newString(void *)
 {
   int inOne = 0;
   while (notDone) {
-    fgets(inputString[inOne],128,stdin);
+    fgets(inputString[inOne],INSTR_LEN,stdin);
     if (inputString[inOne][0] == 'E' && inputString[inOne][1] == 'x') {
       notDone = 0;
     }
@@ -86,6 +86,7 @@ void newString(void *)
 #elif defined(__USS_REALTIME_)
 
 #include <pthread.h>
+//#include <pthread/mit/pthread.h>
 
 char inputString[MAX_IN_STRINGS][INSTR_LEN];
 pthread_t string_thread;
@@ -94,7 +95,7 @@ void *newString(void *)
 {
   int inOne = 0;
   while (notDone) {
-    fgets(inputString[inOne],128,stdin);
+    fgets(inputString[inOne],INSTR_LEN,stdin);
     if (inputString[inOne][0] == 'E' && inputString[inOne][1] == 'x') {
       notDone = 0;
     }
@@ -434,12 +435,14 @@ void main(int argc,char *argv[])
     instrument->noteOn(200.0,0.1);
   }
 #endif
-  
+
   /* Finally ... the runtime loop begins! */
   notDone = 1;
+  synlength = RT_BUFFER_SIZE;
   while(notDone || numStrings)  {
     if (rtInput) {
-      synlength = RT_BUFFER_SIZE;
+      if (numStrings > 1) synlength = (long) RT_BUFFER_SIZE / numStrings;
+      else synlength = RT_BUFFER_SIZE;
       for ( i=0; i<synlength; i++ )  {
         if (numOuts > 1) {
           outSample = reverb->tick(instrument->tick());
@@ -455,22 +458,21 @@ void main(int argc,char *argv[])
         numStrings++;
       } 
     }
-    while (numStrings) {
+    if (numStrings) {
       score->parseThis(inputString[outOne]);
       type = score->getType();
-      if (type > 0)       {
-        synlength = (long) (score->getDelta() * SRATE);
-#if defined(_debug_)
-        if (!rtInput) printf("Time = %f:   ",output.getTime());
-#endif
-        for ( i=0; i<synlength; i++ )  {
-          if (numOuts > 1) {
-            outSample = reverb->tick(instrument->tick());
-            for ( j=0; j<numOuts; j++ ) output[j]->tick(outSample);
+      if (type > 0) {
+        if (temp = score->getDelta()) { /* SKINI score file */
+          synlength = (long) (temp * SRATE);
+          for ( i=0; i<synlength; i++ )  {
+            if (numOuts > 1) {
+              outSample = reverb->tick(instrument->tick());
+              for ( j=0; j<numOuts; j++ ) output[j]->tick(outSample);
+            }
+            else output[0]->tick(reverb->tick(instrument->tick()));
           }
-          else output[0]->tick(reverb->tick(instrument->tick()));
+          synlength = 0;
         }
-        synlength = 0;
         if (type == __SK_NoteOn_ )       {
           if (( byte3 = score->getByteThree() ) == 0)
             instrument->noteOff(byte3*NORM_7);
@@ -578,7 +580,8 @@ void main(int argc,char *argv[])
       numStrings--;
     }
   }
-  for (i=0;i<2*reverbTime*SRATE;i++) { /* let the reverb settle a little */
+
+  for (i=0;i<reverbTime*SRATE;i++) { /* let the reverb settle a little */
     if (numOuts > 1) {
       outSample = reverb->tick(instrument->tick());
       for ( j=0; j<numOuts; j++ ) output[j]->tick(outSample);
@@ -596,5 +599,5 @@ void main(int argc,char *argv[])
 #if defined(__SGI_REALTIME_)
   if (rtInput) kill(string_thread, SIGKILL);
 #endif
-	printf("syntmono finished ... au revoir.\n");
+	printf("syntmono finished ... goodbye.\n");
 }

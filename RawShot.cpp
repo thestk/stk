@@ -1,5 +1,5 @@
 /*******************************************/
-/*  NonInterpolating One-Shot Raw Sound-   */
+/*  Non-Interpolating One-Shot Raw Sound-  */
 /*  file Class, by Perry R. Cook, 1995-96  */ 
 /*  This Object can open a raw 16bit data  */
 /*  (signed integers) file, and play back  */
@@ -13,15 +13,17 @@
 /*  applications).                         */
 /*******************************************/
 
-#include "RawWvIn.h"
-#include "swapstuf.h"
+#include "RawShot.h"
 
-RawWvIn :: RawWvIn(char *fileName)
+#ifdef __LITTLE_ENDIAN__
+  #include "swapstuf.h"
+#endif
+
+RawShot :: RawShot(char *fileName)
 {
 	long i;
-    
+
 	strcpy(fileNm,fileName);
-    
 	myFile = fopen(fileNm,"rb");
 	if (!myFile)   {
 		printf("Couldn't find soundfile %s  !!!!!!!!\n",fileName);
@@ -32,6 +34,7 @@ RawWvIn :: RawWvIn(char *fileName)
 	while (fread(&data,2,1,myFile)) i++;
 	length = i;
 	fseek(myFile,0,0);
+
 	time = (MY_FLOAT) 0.0;
 	rate = (MY_FLOAT) 1.0;
 	lastTime = 0;
@@ -40,12 +43,12 @@ RawWvIn :: RawWvIn(char *fileName)
 	lastOutput = (MY_FLOAT) 0.0;
 }
 
-RawWvIn :: ~RawWvIn()
+RawShot :: ~RawShot()
 {
 	this->finish();
 }
 
-void RawWvIn :: reset()
+void RawShot :: reset()
 {
 	if (finished)     {
 		myFile = fopen(fileNm,"rb");
@@ -62,19 +65,17 @@ void RawWvIn :: reset()
 	lastOutput = (MY_FLOAT) 0.0;
 }
 
-void RawWvIn :: normalize()
+void RawShot :: normalize()
 {
 	this->normalize((MY_FLOAT) 1.0);
 }
 
-void RawWvIn :: normalize(MY_FLOAT newPeak)
+void RawShot :: normalize(MY_FLOAT newPeak)
 {
 	long i;
 	FILE *fd;
-	extern short SwapShort(short);
 
 	gain = (MY_FLOAT) 0.0;
-    
 	fd = fopen(fileNm,"rb");
 	for (i=0;i<length;i++)    {
 		fread(&data,2,1,fd);
@@ -84,18 +85,18 @@ void RawWvIn :: normalize(MY_FLOAT newPeak)
 		if (fabs(data) > gain) 
 	    gain = (MY_FLOAT) fabs((double) data);
 	}
-	if (gain > 0.0)       {
+	if (gain > 0.0) {
 		gain = newPeak / gain;
 	}
 	fclose(fd);
 }
 
-void RawWvIn :: setRate(MY_FLOAT aRate)
+void RawShot :: setRate(MY_FLOAT aRate)
 {
 	rate = aRate;
 }
 
-void RawWvIn :: finish()
+void RawShot :: finish()
 {
 	finished = 1;
 	lastOutput = (MY_FLOAT) 0.0;
@@ -105,47 +106,47 @@ void RawWvIn :: finish()
 	}
 }
 
-MY_FLOAT RawWvIn ::  tick()
+int RawShot :: isFinished()
+{
+  return finished;
+}
+
+MY_FLOAT RawShot ::  tick()
 {
 	this->informTick();
 	return lastOutput;
 }
 
-int RawWvIn :: informTick()
+int RawShot :: informTick()
 {
   long temp;
-  extern short SwapShort(short);
 
-  if (!finished)
-		{
-			time += rate;        /* Update current time */
-									  
-			if (time >= length)  /* Check for end of sound */
-				{
-					time = (MY_FLOAT) length - 1;   /* stick at end */
-					finished = 1;                   /* Information for one-shot use */
-					fclose(myFile);
-					myFile = 0;
-				}
-			else
-				{
-					temp = (long) time;   /* Integer part of time address */
-					if (temp > lastTime)  /* If we cross next sample time */
-						{
-							lastTime = temp;
-							fread(&data,2,1,myFile);  /* Snarf next sample from file */
+  if (!finished) {
+    time += rate;          /* Update current time */
+
+    if (time >= length) {  /* Check for end of sound */
+      time = (MY_FLOAT) length - 1;   /* stick at end */
+      finished = 1;                   /* Information for one-shot use */
+      fclose(myFile);
+      myFile = 0;
+    }
+    else {
+      temp = (long) time;    /* Integer part of time address */
+      if (temp > lastTime) { /* If we cross next sample time */
+        lastTime = temp;
+        fread(&data,2,1,myFile);  /* Snarf next sample from file */
 #ifdef __LITTLE_ENDIAN__
-							data = SwapShort(data);
+        data = SwapShort(data);
 #endif
-							lastOutput = data * gain; /* And save as non-interpolated data */
-						}
-				}
-		}
+        lastOutput = data * gain; /* And save as non-interpolated data */
+      }
+    }
+  }
 
   return finished;                        
 }
 
-MY_FLOAT RawWvIn :: lastOut()
+MY_FLOAT RawShot :: lastOut()
 {
 	return lastOutput;
 }
@@ -154,7 +155,7 @@ MY_FLOAT RawWvIn :: lastOut()
 /*
 void main()
 {
-    RawWvIn oneShot("rawwaves/mandpluk.raw");
+    RawShot oneShot("rawwaves/mandpluk.raw");
     FILE *fd;
     short data;
     long i;

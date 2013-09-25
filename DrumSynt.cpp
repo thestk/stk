@@ -2,12 +2,19 @@
 /*  Master Class for Drum Synthesizer      */
 /*  by Perry R. Cook, 1995-96              */ 
 /*  This instrument contains a bunch of    */
-/*  NI1sWave objects (Non-Interpolating,   */
-/*  1 shot players), run through a bunch   */
-/*  of one-pole filters.  You can specify  */
-/*  the maximum Polyphony (maximum number  */
-/*  of simultaneous voices) in a #define   */
-/*  in the .h file.  			   */
+/*  RawWave objects, run through a bunch   */
+/*  of one-pole filters.  All the          */
+/*  corresponding rawwave files have been  */
+/*  sampled at 22050 Hz.  Thus, if the     */
+/*  compile-time SRATE = 22050, then       */
+/*  RawShot objects are used.  Otherwise,  */
+/*  RawInterp objects are used.  You can   */
+/*  specify the maximum Polyphony (maximum */
+/*  number of simultaneous voices) in a    */
+/*  #define in the .h file.                */
+/*                                         */
+/*  Modified for RawWave abstract class    */
+/*  by Gary P. Scavone (11/11/98)          */
 /*******************************************/
 
 #include "DrumSynt.h"
@@ -48,25 +55,40 @@ char waveNames[DRUM_NUMWAVES][16] = {
 DrumSynt :: DrumSynt() : Instrmnt()
 {
   int i;
-    
+
   for (i=0;i<DRUM_POLYPHONY;i++)   {
     filters[i] = new OnePole;
     sounding[i] = -1;
-  }                 
-  numSounding = 0;      /*  This counts the number */
-  /*  of sounding voices     */
-}  
+  }
+  /* This counts the number of sounding voices */
+  numSounding = 0;
+
+  /* Print warning about aliasing if SRATE < 22050 */
+  if (SRATE < 22050) {
+    printf("\nWarning: DrumSynt is designed for sampling rates of\n");
+    printf("22050 Hz or greater.  You will likely encounter aliasing\n");
+    printf("at the current sampling rate of %.0f Hz.\n\n", SRATE);
+  }
+}
+
+DrumSynt :: ~DrumSynt()
+{
+  int i;
+  for ( i=0; i<numSounding-1; i++ ) delete waves[i];
+  for ( i=0; i<DRUM_POLYPHONY; i++ ) delete filters[i];
+}
 
 void DrumSynt :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
 {
-  int i,notDone;
+  int i, notDone;
   int noteNum;
   int vel;
   char tempString[64];
-  RawWvIn *tempWv;
+  RawWave *tempWv;
   OnePole *tempFilt;
 
-  noteNum = (int) ((12*log(freq/220)/log(2)) + 57.01);	 // Yes I know, this is tres kludgey
+  /* Yes I know, this is tres kludgey */
+  noteNum = (int) ((12*log(freq/220)/log(2)) + 57.01);
   vel = (int) (amp * 127);
 
 #if defined(_debug_)
@@ -77,33 +99,37 @@ void DrumSynt :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
   for (i=0;i<DRUM_POLYPHONY;i++)      {        /* Check first to see     */
     if (sounding[i] == noteNum) notDone = i;   /* if there's already     */
   }                                            /* one like this sounding */
-    
-  if (notDone<0)        {                      /* If not, then           */
-    if (numSounding == DRUM_POLYPHONY)   {     /* If we're already   */
+
+  if (notDone<0) {                             /* If not, then       */
+    if (numSounding == DRUM_POLYPHONY) {       /* If we're already   */
       delete waves[0];                         /* at max polyphony,  */
       filters[0]->clear();                     /* then               */
       tempWv = waves[0];
       tempFilt = filters[0];
-      for (i=0;i<DRUM_POLYPHONY-1;i++)   {     /* preempt oldest     */
-        waves[i] = waves[i+1];                 /* voice and   	   */
+      for (i=0;i<DRUM_POLYPHONY-1;i++) {       /* preempt oldest     */
+        waves[i] = waves[i+1];                 /* voice and   	     */
         filters[i] = filters[i+1];             /* ripple all down    */
       }
       waves[DRUM_POLYPHONY-1] = tempWv;
       filters[DRUM_POLYPHONY-1] = tempFilt;
-    }    
-    else    {
-      numSounding += 1;                    /* otherwise just add one */
+    } else {
+      numSounding += 1;                     /* otherwise just add one */
     }
 
     sounding[numSounding-1] = noteNum;           /* allocate new wave  */
     strcpy(tempString,"rawwaves/");
     strcat(tempString,waveNames[genMIDIMap[noteNum]]);
-    waves[numSounding-1] = new RawWvIn(tempString);
-    waves[numSounding-1]->normalize((MY_FLOAT) 0.2);        
+    if (SRATE == 22050) {
+      waves[numSounding-1] = new RawShot(tempString);
+    } else {
+      waves[numSounding-1] = new RawInterp(tempString);
+      waves[numSounding-1]->setRate((MY_FLOAT) (22050.0/SRATE));
+    }
+    waves[numSounding-1]->normalize((MY_FLOAT) 0.4);
     filters[numSounding-1]->setPole((MY_FLOAT) 0.999 - ((MY_FLOAT) vel * NORM_7 * 0.6));
     filters[numSounding-1]->setGain(vel / (MY_FLOAT) 128.0);
   }
-  else        {
+  else {
     waves[notDone]->reset();
     filters[notDone]->setPole((MY_FLOAT) 0.999 - ((MY_FLOAT) vel * NORM_7 * 0.6));
     filters[notDone]->setGain(vel / (MY_FLOAT) 128.0);
@@ -118,23 +144,13 @@ void DrumSynt :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
 
 MY_FLOAT DrumSynt :: tick()
 {
-  int i, j, notDone;
-  MY_FLOAT output;
+  int j, i = 0;
+  MY_FLOAT output = 0.0;
   OnePole *tempFilt;
-    
-  i = 0;
-  notDone = 1;
-  output = (MY_FLOAT) 0.0;
-    
-  if (numSounding == 0) notDone = 0;
-  while (notDone && (i < numSounding))     {
-        
+
+  while (i < numSounding) {
     output += filters[i]->tick(waves[i]->lastOut());
-        
-    if (waves[i]->informTick() == 1)     {
-#if defined(_debug_)
-      printf("Wave %i %i down here\n",i,sounding[i]);
-#endif
+    if (waves[i]->informTick() == 1) {
       delete waves[i];
 	    tempFilt = filters[i];
     
@@ -147,37 +163,9 @@ MY_FLOAT DrumSynt :: tick()
       filters[j]->clear();
       sounding[j] = -1;
       numSounding -= 1;
-      if (numSounding == 0) notDone = 0;
       i -= 1;
     }
     i++;
   }    
-    
-  return output * 2;
+  return output;
 }
-
-/**************  Test Main Program  *********************/
-/*
-#include "miditabl.h"
-#include "RawWvOut.h"
-#include "Reverb.h"
-#include "Noise.h"
-
-void main()
-{
-    long i,j;
-    DrumSynt instrument;    
-    RawWvOut output("test.snd");
-    Reverb reverb((MY_FLOAT) 2137);
-    Noise noise;
-
-    for (j=0;j<100;j++) {
-        i = (int) (fabs(noise.tick()) * DRUM_NUMWAVES);
-	instrument.noteOn(i,1.0);
-        for (i=0;i<2000;i++) output.tick(reverb.tick(instrument.tick()));
-    }
-
-    for (i=0;i<22000;i++) output.tick(reverb.tick(instrument.tick()));
-
-}
-*/

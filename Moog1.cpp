@@ -14,7 +14,7 @@
 
 Moog1 :: Moog1() : SamplFlt()
 {
-    attacks[0] = new RawWave("rawwaves/mandpluk.raw");
+    attacks[0] = new RawInterp("rawwaves/mandpluk.raw");
     loops[0] = new RawLoop("rawwaves/impuls20.raw");
     loops[1] = new RawLoop("rawwaves/sinewave.raw"); /* Steal one for vibrato */
     attacks[0]->normalize();

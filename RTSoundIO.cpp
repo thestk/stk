@@ -205,12 +205,17 @@ RTSoundIO :: RTSoundIO(MY_FLOAT srate, int channels)
   HWND hWnd;
   DWORD dwDataLen;
   WAVEFORMATEX  wfFormat;
-  DSBUFFERDESC  dsbdDesc;
+  DSBUFFERDESC  dsbdDesc, primarydsbDesc;
+  LPDIRECTSOUNDBUFFER m_pDSPrimeBuffer;
   BYTE *pDSBuffData;
+
+  /* Number of buffers of size RT_BUFFER_SIZE to make secondary DS buffer */
+  int nBufs = 16;
 
   /* Initialize pointers to NULL */
   m_pDirectSound = NULL;
   m_pDSBuffer = NULL;
+  m_pDSPrimeBuffer = NULL;
 
   /* Create the DS object */
   if ((result = DirectSoundCreate(NULL, &m_pDirectSound, NULL)) != DS_OK)
@@ -225,8 +230,6 @@ RTSoundIO :: RTSoundIO(MY_FLOAT srate, int channels)
       exit(0);
     }
 
-  /* Initialize the DS buffer */
-
   /* Define the wave format structure */
   wfFormat.wFormatTag = WAVE_FORMAT_PCM;
   wfFormat.nChannels = channels;
@@ -236,15 +239,38 @@ RTSoundIO :: RTSoundIO(MY_FLOAT srate, int channels)
   wfFormat.nAvgBytesPerSec = wfFormat.nSamplesPerSec * wfFormat.nBlockAlign;
   wfFormat.cbSize = 0;
 
-  /* Setup the DS buffer description */
-  m_cbBufSize = RT_BUFFER_SIZE * sizeof(short) * 8;
+  /* Setup the primary DS buffer description */
+  ZeroMemory(&primarydsbDesc, sizeof(DSBUFFERDESC));
+  primarydsbDesc.dwSize = sizeof(DSBUFFERDESC);
+  primarydsbDesc.dwFlags = DSBCAPS_PRIMARYBUFFER;
+  primarydsbDesc.dwBufferBytes = 0;
+  primarydsbDesc.lpwfxFormat = NULL;
+
+  /* Create the primary DS buffer */
+  if ((result = m_pDirectSound->CreateSoundBuffer(&primarydsbDesc,
+				&m_pDSPrimeBuffer, NULL)) != DS_OK)
+    {
+      fprintf(stderr,"Cannot get the primary DS buffer address!\n");
+      exit(0);
+    }
+
+  /* Set the primary DS buffer sound format.  We have to do this because
+     the default primary buffer is 8-bit, 22kHz! */
+  if ((result = m_pDSPrimeBuffer->SetFormat(&wfFormat)) != DS_OK)
+    {
+      fprintf(stderr,"Cannot set the primary DS buffer to proper sound format!\n");
+      exit(0);
+    }
+
+  /* Setup the secondary DS buffer description */
+  m_cbBufSize = RT_BUFFER_SIZE * sizeof(short) * nBufs;
   ZeroMemory(&dsbdDesc, sizeof(DSBUFFERDESC));
   dsbdDesc.dwSize = sizeof(DSBUFFERDESC);
   dsbdDesc.dwFlags = DSBCAPS_GLOBALFOCUS;
   dsbdDesc.dwBufferBytes = m_cbBufSize;
   dsbdDesc.lpwfxFormat = &wfFormat;
 
-  /* Create the DS buffer */
+  /* Create the secondary DS buffer */
   if ((result = m_pDirectSound->CreateSoundBuffer(&dsbdDesc,
 												  &m_pDSBuffer, NULL)) != DS_OK)
     {

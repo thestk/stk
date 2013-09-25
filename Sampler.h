@@ -11,7 +11,7 @@
 
 #include "Instrmnt.h"
 #include "ADSR.h"
-#include "RawWave.h"
+#include "RawInterp.h"
 #include "RawLoop.h"
 #include "OnePole.h"
 
@@ -19,7 +19,7 @@ class Sampler : public Instrmnt
 {
   protected:  
     ADSR     *adsr; 
-    RawWave  *attacks[5];
+    RawInterp  *attacks[5];
     RawLoop  *loops[5];
     OnePole  *filter;
     MY_FLOAT baseFreq;
