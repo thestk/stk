@@ -1,2 +1,0 @@
-cd ..
-wish < TCLSpecs/TCLVoice.tcl | syntmono FMVoices -r -i

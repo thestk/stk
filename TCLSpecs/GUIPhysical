@@ -1,2 +1,0 @@
-cd ..
-wish < TCLSpecs/TCLPhys.tcl | syntmono Clarinet -r -i

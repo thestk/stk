@@ -1,11 +1,32 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
+Release 3.0
 
-By Perry R. Cook, 1995-98
-and Gary P. Scavone, 1997-98
+By Perry R. Cook, 1995-99
+and Gary P. Scavone, 1997-99
 
-I'll call this latest release STK98v2.02.  There was a v2.01 release shortly after the initial v2.0 release in July 1998, to correct a few SGI/Win return character incompatibilities.  Since I am just creating this set of release notes with v2.02, I'll just gloss over the past changes.  Hopefully, I'll be able to keep this document updated with future releases.
-
---Gary Scavone
+v3.0
+- new #define flags for OS and realtime dependencies (this will probably cause problems for most everyone, but it was necessary to make future ports easier)
+- fixed Linux MIDI input bug
+- fixed MIDI status masking problem in Windows
+- OS type defines now in Makefile
+- new RAWWAVE_PATH define in Object.h
+- syntmono pulled out to separate directory and cleaned up
+- socketing capabilities under Unix, as well as Windoze
+- multiple simultaneous socket client connections to STK servers now possible
+- MD2SKINI now can merge MIDI and piped messages under Irix and Linux (for TCL->MD2SKINI->syntmono control)
+- defined INT16 and INT32 types and fixed various WvIn and WvOut classes
+- updated MatWvIn and MatWvOut for new MAT-file documentation from Matlab
+- new demo GUI
+- minor fixes to FM behavior
+- added record/duplex capabilities to RTSoundIO (Linux, SGI, and Windoze)
+- fixed bugs in WavWvOut and MatWvOut header specifications
+- added RawWvOut class
+- new WvIn class with RawWvIn, SndWvIn, WavWvIn, MatWvIn, and RTWvIn subclasses
+- removed RawWave, RawShot, RawInterp, and RawLoop classes (supplanted by RawWvIn)
+- multi-channel data support in WvIn and WvOut classes using MY_MULTI data type (pointer to MY_FLOAT) and the methods mtick() and mlastOutput()
+- now writing to primary buffer under Windoze when allowed by hardware
+- cleaned up Object.h a bit
+- pulled various utility and thread functions out of syntmono.cpp (to aid readability of the code)
 
 
 v2.02:

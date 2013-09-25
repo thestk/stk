@@ -1,2 +1,0 @@
-cd ..
-wish < TCLSpecs/TCLDrums.tcl | syntmono DrumSynt -r -i

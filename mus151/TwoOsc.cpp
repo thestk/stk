@@ -13,8 +13,12 @@ TwoOsc :: TwoOsc()
 
   envelope = new Envelope;  /* Envelope to avoid clicks */
 
+  // Concatenate the STK RAWWAVE_PATH to the rawwave file
+  char file[128];
+  strcpy(file, RAWWAVE_PATH);
   for (i=0; i<2; i++) {
-    osc[i] = new RawLoop("../rawwaves/sinewave.raw");
+    osc[i] = new RawWvIn(strcat(file,"rawwaves/sinewave.raw"),"looping");
+    strcpy(file, RAWWAVE_PATH);
     osc[i]->normalize();
     osc[i]->setFreq((MY_FLOAT) 200.0);
     amps[i] = 0.2;

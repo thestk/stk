@@ -1,3 +1,7 @@
+# Tcl/Tk Demo GUI for the Synthesis Toolkit (STK)
+# by Gary P. Scavone, CCRMA, Stanford University, 1999.
+
+# Set initial control values
 set pitch 64.0
 set osc1on 1
 set osc2on 1
@@ -93,6 +97,9 @@ checkbutton .onOff.2 -text "Play Osc 2" -variable osc2on -relief flat \
 pack .onOff.1 .onOff.2 -padx 5
 pack .onOff -side right -padx 5 -pady 10
 
+# Bind an X windows "close" event with the Exit routine
+bind . <Destroy> +myExit
+
 proc myExit {} {
     global outID
     puts $outID [format "NoteOff          0.0 1 64 127" ]
@@ -149,7 +156,9 @@ proc setPlayStatus {controlNum value } {
 set d .socketdialog
 
 proc setComm {} {
-		global outID commtype d
+		global outID
+		global commtype
+		global d
 		if {$commtype == "stdout"} {
 				if { [string compare "stdout" $outID] } {
 						set i [tk_dialog .dialog "Break Socket Connection?" {You are about to break an existing socket connection ... is this what you want to do?} "" 0 Cancel OK]
@@ -161,21 +170,30 @@ proc setComm {} {
 				}
 		} elseif { ![string compare "stdout" $outID] } {
 				set sockport 2001
+        set sockhost localhost
 				toplevel $d
 				wm title $d "STK Client Socket Connection"
 				wm resizable $d 0 0
 				grab $d
-				label $d.message -text "Specify a socket port number below (if different than the STK default of 2001) and then click the \"Connect\" button to invoke a socket-client connection attempt to the STK socket server." \
+				label $d.message -text "Specify a socket host and port number below (if different than the STK defaults shown) and then click the \"Connect\" button to invoke a socket-client connection attempt to the STK socket server." \
 								-background white -font {Helvetica 10 bold} \
 								-wraplength 3i -justify left
+				frame $d.sockhost
+				entry $d.sockhost.entry -width 15
+				label $d.sockhost.text -text "Socket Host:" \
+								-font {Helvetica 10 bold}
 				frame $d.sockport
-				entry $d.sockport.entry -width 6
-				label $d.sockport.text -text "Socket Port Number:" \
+				entry $d.sockport.entry -width 15
+				label $d.sockport.text -text "Socket Port:" \
 								-font {Helvetica 10 bold}
 				pack $d.message -side top -padx 5 -pady 10
-				pack $d.sockport.text -side left -padx 1 -pady 10
-				pack $d.sockport.entry -side right -padx 5 -pady 10
-				pack $d.sockport -side top -padx 5 -pady 10
+				pack $d.sockhost.text -side left -padx 1 -pady 2
+				pack $d.sockhost.entry -side right -padx 5 -pady 2
+				pack $d.sockhost -side top -padx 5 -pady 2
+				pack $d.sockport.text -side left -padx 1 -pady 2
+				pack $d.sockport.entry -side right -padx 5 -pady 2
+				pack $d.sockport -side top -padx 5 -pady 2
+				$d.sockhost.entry insert 0 $sockhost
 				$d.sockport.entry insert 0 $sockport
 				frame $d.buttons
 				button $d.buttons.cancel -text "Cancel" -bg grey66 \
@@ -184,8 +202,10 @@ proc setComm {} {
 				                   destroy $d }
 				button $d.buttons.connect -text "Connect" -bg grey66 \
 								-command {
+						set sockhost [$d.sockhost.entry get]
 						set sockport [$d.sockport.entry get]
-					  set err [catch {socket localhost $sockport} outID]
+					  set err [catch {socket $sockhost $sockport} outID]
+
 						if {$err == 0} {
 								destroy $d
 						} else {

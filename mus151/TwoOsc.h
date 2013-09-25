@@ -8,16 +8,14 @@
 #if !defined(__TwoOsc_h)
 #define __TwoOsc_h
 
-//#include "../Instrmnt.h"
-#include "../Envelope.h"
-#include "../RawLoop.h"
-
+#include "../STK/Envelope.h"
+#include "../STK/RawWvIn.h"
 
 class TwoOsc : public Object
 {
  protected:
   Envelope *envelope;
-  RawLoop *osc[2];
+  RawWvIn *osc[2];
   MY_FLOAT lastOutput;
   MY_FLOAT amps[2];
 

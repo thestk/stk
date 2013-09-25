@@ -1,1 +1,1 @@
-wish < tcl/TwoWaves.tcl | MUS151 TwoOsc -r
+wish < tcl/TwoWaves.tcl | MUS151 TwoOsc -ip
