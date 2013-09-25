@@ -10,6 +10,9 @@ AR = ar -rsc
 RM = /bin/rm
 LN = /bin/ln
 OBJECT_PATH = @object_path@
+LIBDIR = @libdir@
+PREFIX = @prefix@
+INCLUDEDIR = @includedir@
 vpath %.o $(OBJECT_PATH)
 
 OBJECTS	=	Stk.o Generator.o Noise.o Blit.o BlitSaw.o BlitSquare.o Granulate.o \
@@ -79,6 +82,17 @@ $(SHAREDLIB) : $(OBJECTS)
 	$(CC) $(LDFLAGS) -fPIC @libflags@ $(OBJECT_PATH)/*.o $(LIBS)
 	$(LN) -s @sharedname@ $(SHAREDLIB)
 #	$(LN) -s @sharedname@ $(SHAREDLIB).$(MAJOR)
+
+install-headers:
+	install -d $(DESTDIR)$(PREFIX)$(INCLUDEDIR)/stk
+	cp -r ../include/*.h $(DESTDIR)$(PREFIX)$(INCLUDEDIR)/stk
+
+install: $(SHAREDLIB) install-headers
+	install -d $(DESTDIR)$(PREFIX)$(LIBDIR)
+	install -m 644 $(SHAREDLIB).$(RELEASE) $(DESTDIR)$(PREFIX)$(LIBDIR)
+	ln -sf $(SHAREDLIB).$(RELEASE) $(DESTDIR)$(PREFIX)$(LIBDIR)/$(SHAREDLIB)
+	ln -sf $(SHAREDLIB).$(RELEASE) $(DESTDIR)$(PREFIX)$(LIBDIR)/$(SHAREDLIB).$(MAJOR)
+
 
 $(OBJECTS) : Stk.h
 

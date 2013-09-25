@@ -28,3 +28,6 @@ distclean: clean
 	cd projects/eguitar && $(MAKE) distclean
 	cd projects/examples && $(MAKE) distclean
 
+install:
+	$(MAKE) -C src install
+
