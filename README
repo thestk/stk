@@ -1,21 +1,20 @@
-The Synthesis ToolKit in C++ (STK)
-
-By Perry R. Cook and Gary P. Scavone, 1995-2012.
+% The Synthesis ToolKit in C++ (STK)
+% By Perry R. Cook and Gary P. Scavone, 1995-2012.
 
 This distribution of the Synthesis ToolKit in C++ (STK) contains the following:
 
-include:  STK class header files
-src:      STK class source files
-rawwaves: STK audio files (1-channel, 16-bit, big-endian)
-doc:      STK documentation
-projects: example STK projects and programs
+* `include`:  STK class header files
+* `src`:      STK class source files
+* `rawwaves`: STK audio files (1-channel, 16-bit, big-endian)
+* `doc`:      STK documentation
+* `projects`: example STK projects and programs
 
 Please read the Legal and Ethical notes near the bottom of this document.
 
-For compiling and installing STK, see the INSTALL file in this directory.
+For compiling and installing STK, see the INSTALL.md file in this directory.
 
 
-OVERVIEW:
+# OVERVIEW
 
 The Synthesis ToolKit in C++ (STK) is a set of open source audio
 signal processing and algorithmic synthesis classes written in the C++
@@ -63,7 +62,7 @@ and SKINI (Synthesis ToolKit Instrument Network Interface, a MIDI-like
 text message synthesis control format).
 
 
-SYSTEM REQUIREMENTS:
+# SYSTEM REQUIREMENTS
 
 See the individual README's (eg. README-linux) in the /doc directory
 for platform specific information and system requirements.  In
@@ -73,7 +72,7 @@ example programs.  To use the Tcl/Tk GUIs, you will need Tcl/Tk
 version 8.0 or higher.
 
 
-WHAT'S NEW (AND NOT SO NEW):
+# WHAT'S NEW (AND NOT SO NEW)
 
 Despite being available in one form or another since 1996, we still
 consider STK to be alpha software.  We attempt to maintain backward
@@ -113,7 +112,7 @@ configure script generates a Makefile in the src directory that will
 accomplish that.
 
 
-DISCLAIMER:
+# DISCLAIMER
 
 You probably already guessed this, but just to be sure, we don't
 guarantee anything works.  :-) It's free ... what do you expect?  If
@@ -122,7 +121,7 @@ can also make suggestions, but again, no guarantees.  Send email to
 the mail list.
 
 
-LEGAL AND ETHICAL:
+# LEGAL AND ETHICAL
 
 This software was designed and created to be made publicly available
 for free, primarily for academic purposes, so if you use it, pass it
@@ -140,11 +139,12 @@ public domain.  To avoid subtle legal issues, we'll not state what's
 freely useable here, but we'll try to note within the various classes
 where certain things are likely to be protected by patents.
 
-LICENSE:
+# LICENSE
 
-STK WWW site: http://ccrma.stanford.edu/software/stk/
+STK WWW site: <http://ccrma.stanford.edu/software/stk/>
 
 The Synthesis ToolKit in C++ (STK)
+
 Copyright (c) 1995-2012 Perry R. Cook and Gary P. Scavone
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -172,7 +172,7 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-FURTHER READING:
+# FURTHER READING
 
 For complete documentation on this ToolKit, the classes, etc., see the
 doc directory of the distribution or surf to
@@ -180,7 +180,7 @@ http://ccrma.stanford.edu/software/stk/.  Also check the platform
 specific README's for specific system requirements.
 
 
-PERRY'S NOTES FROM THE ORIGINAL DISTRIBUTION:
+# PERRY'S NOTES FROM THE ORIGINAL DISTRIBUTION
 
 This whole world was created with no particular hardware in mind.
 These examples are intended to be tutorial in nature, as a platform
@@ -203,11 +203,11 @@ The answers lie below.
 
 3) The classic difficulties most people have in trying to implement physical models are:
 
-   A) They have trouble understanding the papers, and/or in turning the theory into practice.
+    A) They have trouble understanding the papers, and/or in turning the theory into practice.
 
-   B) The Physical Model instruments are a pain to get to oscillate, and coming up with stable and meaningful parameter values is required to get the models to work at all.
+    B) The Physical Model instruments are a pain to get to oscillate, and coming up with stable and meaningful parameter values is required to get the models to work at all.
 
-   This set of C++ unit generators and instruments might help to diminish the scores of emails I get asking what to do with those block diagrams I put in my papers.
+This set of C++ unit generators and instruments might help to diminish the scores of emails I get asking what to do with those block diagrams I put in my papers.
 
 4) I wanted to try some new stuff with modal synthesis, and implement some classic FM patches as well.
 
