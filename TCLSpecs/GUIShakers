@@ -1,0 +1,2 @@
+cd ..
+wish < TCLSpecs/TCLShakers.tcl | syntmono Maraca -r -i

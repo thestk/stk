@@ -14,12 +14,13 @@
 /*******************************************/
 
 #include "FM4Op.h"
+#include "SKINI11.msg"
 
 FM4Op :: FM4Op()
 {
     int i;
     MY_FLOAT temp;
-    MY_FLOAT tempCoeffs[2] = {0.0, -1.0};
+    MY_FLOAT tempCoeffs[2] = {(MY_FLOAT) 0.0, (MY_FLOAT) -1.0};
     adsr[0] = new ADSR;
     adsr[1] = new ADSR;
     adsr[2] = new ADSR;
@@ -27,37 +28,37 @@ FM4Op :: FM4Op()
     twozero = new TwoZero;    
     vibWave = new RawLoop("rawwaves/sinewave.raw");    
     vibWave->normalize();
-    vibWave->setFreq(6.0);                /* should make this random?? */
-    modDepth = 0.0;
+    vibWave->setFreq((MY_FLOAT) 6.0);                /* should make this random?? */
+    modDepth = (MY_FLOAT) 0.0;
         /*  We don't make the waves here yet, because    */
         /*  we don't know what they will be.             */
-    baseFreq = 440.0;
-    ratios[0] = 1.0;
-    ratios[1] = 1.0;
-    ratios[2] = 1.0;
-    ratios[3] = 1.0;
-    gains[0] = 1.0;
-    gains[1] = 1.0;
-    gains[2] = 1.0;
-    gains[3] = 1.0;
+    baseFreq = (MY_FLOAT) 440.0;
+    ratios[0] = (MY_FLOAT) 1.0;
+    ratios[1] = (MY_FLOAT) 1.0;
+    ratios[2] = (MY_FLOAT) 1.0;
+    ratios[3] = (MY_FLOAT) 1.0;
+    gains[0] = (MY_FLOAT) 1.0;
+    gains[1] = (MY_FLOAT) 1.0;
+    gains[2] = (MY_FLOAT) 1.0;
+    gains[3] = (MY_FLOAT) 1.0;
     twozero->setZeroCoeffs(tempCoeffs);
-    twozero->setGain(0.0);
-    control1 = 1.0;
-    control2 = 1.0;
-    temp = 1.0;
+    twozero->setGain((MY_FLOAT) 0.0);
+    control1 = (MY_FLOAT) 1.0;
+    control2 = (MY_FLOAT) 1.0;
+    temp = (MY_FLOAT) 1.0;
     for (i=99;i>=0;i--)	{
         __FM4Op_gains[i] = temp;
-        temp *= 0.933033;
+        temp *= (MY_FLOAT) 0.933033;
     }
-    temp = 1.0;
+    temp = (MY_FLOAT) 1.0;
     for (i=15;i>=0;i--)	{
         __FM4Op_susLevels[i] = temp;
-        temp *= 0.707101;
+        temp *= (MY_FLOAT) 0.707101;
     }
-    temp = 8.498186;
+    temp = (MY_FLOAT) 8.498186;
     for (i=0;i<32;i++)	{
         __FM4Op_attTimes[i] = temp;
-        temp *= 0.707101;
+        temp *= (MY_FLOAT) 0.707101;
     }
 }  
 
@@ -145,12 +146,12 @@ void FM4Op :: setModulationDepth(MY_FLOAT mDepth)
 
 void FM4Op :: setControl1(MY_FLOAT cVal)
 {
-    control1 = cVal*2.0;
+    control1 = cVal * (MY_FLOAT) 2.0;
 }
 
 void FM4Op :: setControl2(MY_FLOAT cVal)
 {
-    control2 = cVal*2.0;
+    control2 = cVal * (MY_FLOAT) 2.0;
 }
 
 void FM4Op :: controlChange(int number, MY_FLOAT value)
@@ -158,15 +159,15 @@ void FM4Op :: controlChange(int number, MY_FLOAT value)
 #if defined(_debug_)        
     printf("FM4Op : ControlChange: Number=%i Value=%f\n",number,value);
 #endif    
-    if (number == MIDI_control1)
+    if (number == __SK_Breath_)
         this->setControl1(value * NORM_7);
-    else if (number == MIDI_control2)
+    else if (number == __SK_FootControl_)
         this->setControl2(value * NORM_7);
-    else if (number == MIDI_control3)
-        this->setModulationSpeed(value * NORM_7 * 12.0);  /* 0 to 12 Hz */
-    else if (number == MIDI_mod_wheel)
+    else if (number == __SK_ModFrequency_)
+        this->setModulationSpeed(value * NORM_7 * (MY_FLOAT) 12.0);  /* 0 to 12 Hz */
+    else if (number == __SK_ModWheel_)
         this->setModulationDepth(value * NORM_7);
-    else if (number == MIDI_after_touch)	{
+    else if (number == __SK_AfterTouch_Cont_)	{
         adsr[0]->setTarget(value * NORM_7);
         adsr[1]->setTarget(value * NORM_7);
         adsr[2]->setTarget(value * NORM_7);

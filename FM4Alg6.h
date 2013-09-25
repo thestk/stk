@@ -28,6 +28,7 @@ class FM4Alg6 : public FM4Op
     MY_FLOAT mods[3];
   public:
     FM4Alg6();
+    virtual ~FM4Alg6();
     MY_FLOAT tick();
     virtual void controlChange(int number, MY_FLOAT value);
 };

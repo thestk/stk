@@ -22,7 +22,7 @@ DLineA :: DLineA(long max_length)
     long i;
     length = max_length;
     inputs = (MY_FLOAT *) malloc(length * MY_FLOAT_SIZE);
-    for (i=0;i<length;i++) inputs[i] = 0;
+    for (i=0;i<length;i++) inputs[i] = (MY_FLOAT) 0;
     this->clear();
     inPoint = 0;
     outPoint = length >> 1;
@@ -36,9 +36,9 @@ DLineA :: ~DLineA()
 void DLineA :: clear()
 {
     long i;
-    for (i=0;i<length;i++) inputs[i] = 0.0;
-    lastIn = 0;
-    lastOutput = 0;
+    for (i=0;i<length;i++) inputs[i] = (MY_FLOAT) 0.0;
+    lastIn = (MY_FLOAT) 0;
+    lastOutput = (MY_FLOAT) 0;
 }
 
 void DLineA :: setDelay(MY_FLOAT lag)  
@@ -48,14 +48,15 @@ void DLineA :: setDelay(MY_FLOAT lag)
 					/*   + 2 for interp and other     */
     while (outputPointer<0)                                               
 	outputPointer += length;        /* modulo table length            */
-    outPoint = (long) outputPointer;    /* Integer part of delay          */
-    alpha = 1.0 + outPoint - outputPointer;   /* fractional part of delay       */
+    outPoint = (long) outputPointer; /* Integer part of delay          */
+    alpha = (MY_FLOAT) 1.0 + outPoint - outputPointer;   /* fractional part of delay       */
     if (alpha<0.1) {
-	outputPointer += 1.0;           /*  Hack to avoid pole/zero       */
+	outputPointer += (MY_FLOAT) 1.0;/*  Hack to avoid pole/zero       */
 	outPoint += 1;                  /*  cancellation.  Keeps allpass  */
-	alpha += 1.0;                   /*  delay in range of .1 to 1.1   */
+	alpha += (MY_FLOAT) 1.0;        /*  delay in range of .1 to 1.1   */
     }
-    coeff = (1.0 - alpha) / (1.0 + alpha); /* coefficient for all pass    */
+    coeff = ((MY_FLOAT) 1.0 - alpha) / 
+			((MY_FLOAT) 1.0 + alpha); /* coefficient for all pass    */
 }
 
 MY_FLOAT DLineA :: tick(MY_FLOAT sample)   /*   Take sample, yield sample */

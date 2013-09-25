@@ -21,7 +21,7 @@ class SamplFlt : public Sampler
     TwoZero  *twozeroes[2];
   public:
     SamplFlt();
-    ~SamplFlt();
+    virtual ~SamplFlt();
     virtual MY_FLOAT tick();
     virtual void controlChange(int number, MY_FLOAT value);
 };

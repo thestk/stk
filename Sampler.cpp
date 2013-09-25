@@ -13,10 +13,10 @@ Sampler :: Sampler()
     adsr = new ADSR;
                     /*  We don't make the waves here yet, because */
                     /*  we don't know what they will be.          */
-    baseFreq = 440.0;
+    baseFreq = (MY_FLOAT) 440.0;
     filter = new OnePole;
-    attackGain = 0.25;
-    loopGain = 0.25;
+    attackGain = (MY_FLOAT) 0.25;
+    loopGain = (MY_FLOAT) 0.25;
     whichOne = 0;
 }  
 

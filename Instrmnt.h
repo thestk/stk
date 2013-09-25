@@ -14,6 +14,7 @@ class Instrmnt : public Object
     MY_FLOAT lastOutput;
   public:
     Instrmnt();
+    virtual ~Instrmnt();
     MY_FLOAT lastOut();
     virtual void noteOn(MY_FLOAT freq, MY_FLOAT amp);
     virtual void noteOff(MY_FLOAT amp);

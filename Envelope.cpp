@@ -16,9 +16,9 @@
 
 Envelope :: Envelope() : Object()
 {    
-    target = 0.0;
-    value = 0.0;
-    rate = 0.001;
+    target = (MY_FLOAT) 0.0;
+    value = (MY_FLOAT) 0.0;
+    rate = (MY_FLOAT) 0.001;
     state = 0;
 }
 
@@ -28,13 +28,13 @@ Envelope :: ~Envelope()
 
 void Envelope :: keyOn()
 {
-    target = 1.0;
+    target = (MY_FLOAT) 1.0;
     if (value != target) state = 1;
 }
 
 void Envelope :: keyOff()
 {
-    target = 0.0;
+    target = (MY_FLOAT) 0.0;
     if (value != target) state = 1;
 }
 
@@ -45,7 +45,15 @@ void Envelope :: setRate(MY_FLOAT aRate)
         rate = -aRate;
     }
     else rate = aRate;
-    rate = rate * RATE_NORM;	/*  SEE Object.h  */
+}
+
+void Envelope :: setTime(MY_FLOAT aTime)
+{
+    if (aTime < 0.0) {
+        printf("negative times not allowed!!, correcting\n");
+        rate = ONE_OVER_SRATE / -aTime ;
+    }
+    else rate = ONE_OVER_SRATE / aTime ;
 }
 
 void Envelope :: setTarget(MY_FLOAT aTarget)

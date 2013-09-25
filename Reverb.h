@@ -1,41 +1,31 @@
-/******************************************/  
-/*  Reverb Effect Applied to Soundfile    */
-/*  by Perry Cook, 1996                   */
-/*					  */
-/*  This is based on some of the famous   */
-/*  Stanford CCRMA reverbs (NRev, KipRev) */
-/*  all based on the the Chowning/Moorer/ */
-/*  Schroeder reverberators, which use    */
-/*  networks of simple allpass and comb   */
-/*  delay filters.                        */
-/******************************************/
+/********************************************/
+/*  Reverb Abstract Class,                  */
+/*  by Tim Stilson, 1998                    */
+/*                                          */
+/*  Integrated into STK by Gary Scavone     */
+/*  with T60 argument.                      */
+/********************************************/
+
+#include "Object.h"
 
 #if !defined(__Reverb_h)
 #define __Reverb_h
 
-#include "Object.h" 
-#include "DLineN.h" 
-
 class Reverb : public Object
 {
-  protected:  
-    DLineN *delayLine[4];
-    MY_FLOAT allPassCoeff;
-    MY_FLOAT combCoeff1;
-    MY_FLOAT combCoeff2;
-    MY_FLOAT lastOutL;
-    MY_FLOAT lastOutR;
-    MY_FLOAT effectMix;
   public:
-    Reverb(MY_FLOAT longestDelay);
-    ~Reverb();
-    void clear();
-    void setEffectMix(MY_FLOAT mix);
-    MY_FLOAT lastOutput();
-    MY_FLOAT lastOutputL();
-    MY_FLOAT lastOutputR();
-    MY_FLOAT tick(MY_FLOAT input);
+	Reverb();
+    virtual MY_FLOAT tick(MY_FLOAT sample);
+    virtual void setEffectMix(MY_FLOAT mix);
+	int isprime(int val);
 };
 
-#endif
+#endif // defined(__Reverb_h)
 
+/* CLM also had JLRev and JLLRev variations on the JCRev: JLRev had
+   longer combs and alpasses, JLLRev further placed the comb coefs
+   closer to 1.0.  In my modified testMono.cpp, I allowed for a
+   "JLRev" argument, though JLRev.cpp/.h doesn't exist, testMono
+   simply uses a JCRev but passes a longer base comb length.  I also
+   have comments in JCRev.cpp for the JLLRev coefs. 
+*/

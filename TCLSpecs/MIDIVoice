@@ -1,2 +1,2 @@
 cd ..
-testMIDI | testTextIn FMVoices
+MD2SKINI | syntmono FMVoices -r -i

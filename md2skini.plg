@@ -1,0 +1,28 @@
+--------------------Configuration: MD2SKINI - Win32 Release--------------------
+Begining build with project "D:\gary\Research\STK98v2\MD2SKINI.DSP", at root.
+Active configuration is Win32 (x86) Console Application (based on Win32 (x86) Console Application)
+
+Project's tools are:
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MT /W3 /GX /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"Release/MD2SKINI.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c "
+			"Win32 Resource Compiler" with flags "/l 0x409 /d "NDEBUG" "
+			"Browser Database Maker" with flags "/nologo /o"MD2SKINI.bsc" "
+			"COFF Linker for 80x86" with flags "kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib dsound.lib Wsock32.lib /nologo /subsystem:console /incremental:no /pdb:"MD2SKINI.pdb" /machine:I386 /out:"MD2SKINI.exe" "
+			"Custom Build" with flags ""
+			"<Component 0xa>" with flags ""
+
+Creating temp file "c:\windows\TEMP\RSPD220.TMP" with contents </nologo /MT /W3 /GX /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"Release/MD2SKINI.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\gary\Research\STK98v2\MD2SKINI.cpp"
+>
+Creating command line "cl.exe @c:\windows\TEMP\RSPD220.TMP" 
+Creating temp file "c:\windows\TEMP\RSPD221.TMP" with contents <kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib winmm.lib dsound.lib Wsock32.lib /nologo /subsystem:console /incremental:no /pdb:"MD2SKINI.pdb" /machine:I386 /out:"MD2SKINI.exe" 
+.\Release\MD2SKINI.obj
+.\Release\MIDIIO.obj
+.\Release\Object.obj>
+Creating command line "link.exe @c:\windows\TEMP\RSPD221.TMP" 
+Compiling...
+MD2SKINI.cpp
+Linking...
+
+
+
+MD2SKINI.exe - 0 error(s), 0 warning(s)

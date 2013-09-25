@@ -14,20 +14,20 @@ Wurley :: Wurley() : FM4Alg5()
                     "rawwaves/sinewave.raw",
                     "rawwaves/fwavblnk.raw");
     
-    this->setRatio(0,1.0);
-    this->setRatio(1,4.0);
-    this->setRatio(2,-510.0);
-    this->setRatio(3,-510.0);
+    this->setRatio(0,(MY_FLOAT) 1.0);
+    this->setRatio(1,(MY_FLOAT) 4.0);
+    this->setRatio(2,(MY_FLOAT) -510.0);
+    this->setRatio(3,(MY_FLOAT) -510.0);
     gains[0] = __FM4Op_gains[99];
     gains[1] = __FM4Op_gains[82];
     gains[2] = __FM4Op_gains[92];
     gains[3] = __FM4Op_gains[68];   /* Originally 78, but sounded stinky */
-    twozero->setGain(2.0);
-    adsr[0]->setAll(0.05,0.00003,0.0,0.02);
-    adsr[1]->setAll(0.05,0.00003,0.0,0.02);
-    adsr[2]->setAll(0.05,0.0002,0.0,0.02);
-    adsr[3]->setAll(0.05,0.0003,0.0,0.02);
-    vibWave->setFreq(8.0);
+    twozero->setGain((MY_FLOAT)  2.0);
+    adsr[0]->setAllTimes((MY_FLOAT) 0.001,(MY_FLOAT) 1.50,(MY_FLOAT) 0.0,(MY_FLOAT) 0.04);
+    adsr[1]->setAllTimes((MY_FLOAT) 0.001,(MY_FLOAT) 1.50,(MY_FLOAT) 0.0,(MY_FLOAT) 0.04);
+    adsr[2]->setAllTimes((MY_FLOAT) 0.001,(MY_FLOAT) 0.25,(MY_FLOAT) 0.0,(MY_FLOAT) 0.04);
+    adsr[3]->setAllTimes((MY_FLOAT) 0.001,(MY_FLOAT) 0.15,(MY_FLOAT) 0.0,(MY_FLOAT) 0.04);
+    vibWave->setFreq((MY_FLOAT) 8.0);
 }  
 
 void Wurley :: setFreq(MY_FLOAT frequency)

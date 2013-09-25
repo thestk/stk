@@ -15,8 +15,8 @@ class Noise : public Object
      MY_FLOAT lastOutput;
   public:
     Noise();
-    ~Noise();
-    virtual MY_FLOAT tick();
+    virtual ~Noise();
+    MY_FLOAT tick();
     MY_FLOAT lastOut();
 };
 

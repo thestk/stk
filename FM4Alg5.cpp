@@ -25,6 +25,10 @@ FM4Alg5 :: FM4Alg5() : FM4Op()
     /*  we still don't know what they will be.             */
 }  
 
+FM4Alg5 :: ~FM4Alg5()
+{
+}
+
 MY_FLOAT FM4Alg5 :: tick()
 {
     MY_FLOAT temp,temp2;
@@ -36,13 +40,14 @@ MY_FLOAT FM4Alg5 :: tick()
     temp = gains[3] * adsr[3]->tick() * waves[3]->tick();
     twozero->tick(temp);
     waves[2]->addPhaseOffset(temp);
-    temp = (1.0 - (control2 * 0.5)) * gains[0] * adsr[0]->tick() * waves[0]->tick();
-    temp += control2 * 0.5 * gains[2] * adsr[2]->tick() * waves[2]->tick();
+    temp = ((MY_FLOAT) 1.0 - (control2 * (MY_FLOAT) 0.5)) * 
+					gains[0] * adsr[0]->tick() * waves[0]->tick();
+    temp += control2 * (MY_FLOAT) 0.5 * gains[2] * adsr[2]->tick() * waves[2]->tick();
     
     temp2 = vibWave->tick() * modDepth;         /*  Calculate amplitude mod  */
-    temp = temp * (1.0 + temp2);                /*  and apply it to output   */
+    temp = temp * ((MY_FLOAT) 1.0 + temp2);     /*  and apply it to output   */
     
-    lastOutput = temp * 0.5;
+    lastOutput = temp * (MY_FLOAT) 0.5;
     return lastOutput;
 }
 

@@ -6,7 +6,7 @@
 /*  Make one of these by telling it the   */
 /*  maximum number of voices you'll want, */
 /*  and also what flavor instrument       */
-/*  group it will be mangling.  Pipe TSIDI*/
+/*  group it will be mangling.  Pipe SKINI*/
 /*  messages into it and it will return   */
 /*  the mixed channel signal each tick.   */
 /*  For multi-channel (multi-timbral),    */
@@ -19,21 +19,22 @@
 /*  unique instances of instruments       */
 /*  within an ensemble.                   */
 /*                                        */
-/*  TSIDI (ToolKit Synthesis Instrument   */
-/*  Digital Interfaceis like MIDI, but    */
+/*  SKINI (Synthesis toolKit Instrument   */
+/*  Network Interface) is like MIDI, but  */
 /*  allows for floating point control     */
 /*  changes, note numbers, etc. Example:  */
-/*  noteOn(1,60.01,111.132) plays a sharp */      
+/*  noteOn 60.01 111.132 plays a sharp    */      
 /*  middle C with a velocity of 111.132   */
+/*  See SKINI09.txt for more information  */
 /*                                        */
 /******************************************/
 
 #include "VoicMang.h"
+#include "Mandolin.h"
 #include "Marimba.h"
 #include "Vibraphn.h"
 #include "AgogoBel.h"
 #include "Plucked.h"
-#include "Mandolin.h"
 #include "Clarinet.h"
 #include "Flute.h"
 #include "Brass.h"
@@ -54,7 +55,12 @@ VoicMang :: VoicMang(int maxVoices, char *instrType)
 	printf("You ask for too many voices, setting to %i\n",__VMang_MAX_);
 	max_voices = __VMang_MAX_;
     }
-    if      (!strcmp(instrType,"Marimba"))      {
+    if (!strcmp(instrType,"Mandolin"))     {
+	for (i=0;i<max_voices;i++)
+	    instrument[i] = new Mandolin((MY_FLOAT) 50.0);
+		mute_time = 1000;
+    }
+    else if      (!strcmp(instrType,"Marimba"))      {
 	for (i=0;i<max_voices;i++)
 	    instrument[i] = new Marimba;
 	mute_time = 1000;
@@ -72,11 +78,6 @@ VoicMang :: VoicMang(int maxVoices, char *instrType)
     else if (!strcmp(instrType,"Plucked"))      {
 	for (i=0;i<max_voices;i++)
 	    instrument[i] = new Plucked(50.0);
-	mute_time = 1000;
-    }
-    else if (!strcmp(instrType,"Mandolin"))     {
-	for (i=0;i<max_voices;i++)
-	    instrument[i] = new Mandolin(50.0);
 	mute_time = 1000;
     }
     else if (!strcmp(instrType,"Clarinet"))     {
@@ -134,13 +135,14 @@ VoicMang :: VoicMang(int maxVoices, char *instrType)
 	    instrument[i] = new Moog1;
 	mute_time = 1000;
     }
-    pitch_bend = 1.0;
+    
+    pitch_bend = (MY_FLOAT) 1.0;
     newTag = 1;
     for (i=0;i<max_voices;i++)  {
 	notesOn[i] = -1;
 	voicesOn[i] = 0;
-	freqBases[i] = 1.0;
-	frequencies[i] = 0.0;
+	freqBases[i] = (MY_FLOAT) 1.0;
+	frequencies[i] = (MY_FLOAT) 0.0;
     }    
 }
 
@@ -151,32 +153,29 @@ VoicMang :: ~VoicMang()
 	    delete instrument[i];
 }
 
-long VoicMang :: noteOnF(MY_FLOAT freq, MY_FLOAT amp)
+long VoicMang :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
 {
-    MY_FLOAT temp;
-    temp = freq / 220.0;
-    temp = log(temp) / log(2.0);
-    temp = (temp * 12.0) + 57;
+    MY_FLOAT temp = 0.0;
+    temp = freq / (MY_FLOAT) 220.0;
+    temp = (MY_FLOAT) (log(temp) / log(2.0));
+    temp = (temp * (MY_FLOAT) 12.0) + 57;
     return this->noteOn(temp,amp);
 }
 
 #define ONE_OVER_12 0.083333
 
-long VoicMang :: noteOn(MY_FLOAT note_num, MY_FLOAT amp)
+long VoicMang :: noteOnN(MY_FLOAT note_num, MY_FLOAT amp)
 {
-    int i,gotOne;    
-    int temp1;
-    long temp2;
-    MY_FLOAT temp3,temp4;
+    int i,gotOne;
     MY_FLOAT freq;
-    freq = 220.0*pow(2.0,(note_num-57.0) * ONE_OVER_12);
+    freq = (MY_FLOAT) 220.0 * pow(2.0,(note_num - 57.0) * ONE_OVER_12);
     gotOne = 0;
     for (i=0;i<max_voices;i++) {
 	if (notesOn[i] < 0)    {      /* find a dormant instrument */
 	    voicesOn[i] = newTag;
 	    newTag += 1;
-	    notesOn[i] = (int) (note_num + 0.5);         /* Nearest Neighbor MIDI Note# */
-	    instrument[i]->noteOn(freq,amp*NORM_7);
+	    notesOn[i] = (int) (note_num + (MY_FLOAT) 0.5);  /* Nearest Neighbor MIDI Note# */
+	    instrument[i]->noteOn(freq,amp*(MY_FLOAT) NORM_7);
 	    frequencies[i] = freq;
 	    gotOne = 1;
 	    i = max_voices;
@@ -191,41 +190,39 @@ long VoicMang :: noteOn(MY_FLOAT note_num, MY_FLOAT amp)
 long VoicMang :: oldestVoice()
 {
     int i;
-    long temp,temp2,gotOne;
-    temp = newTag;
+    long temp2,gotOne;
+    temp2 = newTag;
     gotOne = -1;
     for (i=0;i<max_voices;i++)  {
 	temp2 = voicesOn[i];
 	if (temp2 > 0 && temp2 < newTag)  {
-	    temp = temp2;
 	    gotOne = temp2;
 	}
     }
     return gotOne;
 }
 
-int VoicMang :: noteOffN(int note_num, MY_FLOAT amp)
+long VoicMang :: noteOffN(int note_num, MY_FLOAT amp)
 {
     int i,gotOne;
-    MY_FLOAT temp;
     gotOne = -1;
     for (i=0;i<max_voices;i++)  {
-	if (notesOn[i]==note_num)       {
-	    instrument[i]->noteOff(amp*NORM_7); 
-	    voicesOn[i] = -mute_time;
-	    gotOne = 1;
-	}
+	    if (notesOn[i]==note_num)       {
+		instrument[i]->noteOff(amp * (MY_FLOAT) NORM_7); 
+		gotOne = voicesOn[i];
+		voicesOn[i] = -mute_time - 2;
+	    }
     }
     return gotOne;
 }
 
-void VoicMang :: noteOff(long tag, MY_FLOAT amp)
+void VoicMang :: noteOffT(long tag, MY_FLOAT amp)
 {
     int i;
     for (i=0;i<max_voices;i++)  {
 	if (voicesOn[i]==tag)       {
-	    instrument[i]->noteOff(amp*NORM_7); 
-	    voicesOn[i] = -mute_time;
+	    instrument[i]->noteOff(amp * (MY_FLOAT) NORM_7); 
+	    voicesOn[i] = -mute_time - 2;
 	}
     }
 }
@@ -235,7 +232,7 @@ void VoicMang :: kill(long tag)
     int i;
     for (i=0;i<max_voices;i++)  {
 	if (voicesOn[i]==tag)       {
-	    instrument[i]->noteOff(1.0); 
+	    instrument[i]->noteOff((MY_FLOAT) 1.0); 
 	    voicesOn[i] = 0;
 	    notesOn[i] = -1;
 	}
@@ -252,7 +249,7 @@ void VoicMang :: pitchBend(MY_FLOAT value)
     }
 }
 
-void VoicMang :: pitchBend(long tag, MY_FLOAT value)
+void VoicMang :: pitchBendT(long tag, MY_FLOAT value)
 {
     int i;
     for (i=0;i<max_voices;i++)  { 
@@ -266,19 +263,19 @@ void VoicMang :: pitchBend(long tag, MY_FLOAT value)
 
 MY_FLOAT VoicMang :: tick()
 {
-    int i,j;
+    int i;
     MY_FLOAT temp;
-    temp = 0.0;
+    temp = (MY_FLOAT) 0.0;
     for (i=0;i<max_voices;i++)  {
-	if (voicesOn[i] != 0) 	{
+	if (voicesOn[i] != 0)   {
 	    temp += instrument[i]->tick();
 	}
 	if (voicesOn[i] < 0) {
 	    voicesOn[i] += 1;
 	    if (voicesOn[i] == 0)       {
 		notesOn[i] = -1;
-		frequencies[i] = 0.0;
-		freqBases[i] = 1.0;
+		frequencies[i] = (MY_FLOAT) 0.0;
+		freqBases[i] = (MY_FLOAT) 1.0;
 	    }
 	}        
     }
@@ -293,7 +290,7 @@ void VoicMang :: controlChange(int number, MY_FLOAT value)
     }
 }
 
-void VoicMang :: controlChange(long tag, int number, MY_FLOAT value)
+void VoicMang :: controlChangeT(long tag, int number, MY_FLOAT value)
 {
     int i;
     for (i=0;i<max_voices;i++)  { 

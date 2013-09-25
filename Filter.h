@@ -21,7 +21,7 @@ class Filter : public Object
     MY_FLOAT lastOutput;
   public:
     Filter();
-    ~Filter();
+    virtual ~Filter();
     MY_FLOAT lastOut();
 };
 

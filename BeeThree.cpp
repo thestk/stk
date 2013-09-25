@@ -13,19 +13,19 @@ BeeThree :: BeeThree() : FM4Alg8()
                     "rawwaves/sinewave.raw",
                     "rawwaves/sinewave.raw",
                     "rawwaves/sinewave.raw");
-    this->setRatio(0,0.999);
-    this->setRatio(1,1.997);
-    this->setRatio(2,3.006);
-    this->setRatio(3,6.009);
+    this->setRatio(0,(MY_FLOAT) 0.999);
+    this->setRatio(1,(MY_FLOAT) 1.997);
+    this->setRatio(2,(MY_FLOAT) 3.006);
+    this->setRatio(3,(MY_FLOAT) 6.009);
     gains[0] = __FM4Op_gains[95];
     gains[1] = __FM4Op_gains[95];
     gains[2] = __FM4Op_gains[99];
     gains[3] = __FM4Op_gains[95];
-    adsr[0]->setAll(0.05,0.03,1.0,0.04);
-    adsr[1]->setAll(0.05,0.03,1.0,0.04);
-    adsr[2]->setAll(0.05,0.03,1.0,0.04);
-    adsr[3]->setAll(0.05,0.001,0.4,0.06);
-    twozero->setGain(0.1);
+    adsr[0]->setAllTimes((MY_FLOAT) 0.005,(MY_FLOAT) 0.003,(MY_FLOAT) 1.0,(MY_FLOAT) 0.01);
+    adsr[1]->setAllTimes((MY_FLOAT) 0.005,(MY_FLOAT) 0.003,(MY_FLOAT) 1.0,(MY_FLOAT) 0.01);
+    adsr[2]->setAllTimes((MY_FLOAT) 0.005,(MY_FLOAT) 0.003,(MY_FLOAT) 1.0,(MY_FLOAT) 0.01);
+    adsr[3]->setAllTimes((MY_FLOAT) 0.005,(MY_FLOAT) 0.001,(MY_FLOAT) 0.4,(MY_FLOAT) 0.03);
+    twozero->setGain((MY_FLOAT) 0.1);
 } 
 
 BeeThree :: ~BeeThree()
@@ -46,7 +46,7 @@ MY_FLOAT BeeThree :: tick()
 {
     MY_FLOAT temp;
     if (modDepth > 0.0)	{
-        temp = 1.0 + (modDepth * vibWave->tick() * 0.1);
+        temp = (MY_FLOAT) 1.0 + (modDepth * vibWave->tick() * (MY_FLOAT) 0.1);
         waves[0]->setFreq(baseFreq * ratios[0] * temp);
         waves[1]->setFreq(baseFreq * ratios[1] * temp);
         waves[2]->setFreq(baseFreq * ratios[2] * temp);

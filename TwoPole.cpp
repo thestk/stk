@@ -11,9 +11,9 @@
 TwoPole :: TwoPole() : Filter()
 {
     outputs = (MY_FLOAT *) malloc(2 * MY_FLOAT_SIZE);
-    poleCoeffs[0] = 0.0;
-    poleCoeffs[1] = 0.0;
-    gain = 1.0;
+    poleCoeffs[0] = (MY_FLOAT) 0.0;
+    poleCoeffs[1] = (MY_FLOAT) 0.0;
+    gain = (MY_FLOAT) 1.0;
     this->clear();
 }
 
@@ -25,9 +25,9 @@ TwoPole :: ~TwoPole()
 
 void TwoPole :: clear()
 {
-    outputs[0] = 0.0;
-    outputs[1] = 0.0;
-    lastOutput = 0.0;
+    outputs[0] = (MY_FLOAT) 0.0;
+    outputs[1] = (MY_FLOAT) 0.0;
+    lastOutput = (MY_FLOAT) 0.0;
 }
 
 void TwoPole :: setPoleCoeffs(MY_FLOAT *coeffs)
@@ -39,7 +39,7 @@ void TwoPole :: setPoleCoeffs(MY_FLOAT *coeffs)
 void TwoPole :: setFreqAndReson(MY_FLOAT freq, MY_FLOAT reson)
 {
     poleCoeffs[1] = - (reson * reson);
-    poleCoeffs[0] = 2.0 * reson * cos(TWO_PI * freq / SRATE);
+    poleCoeffs[0] = (MY_FLOAT) 2.0 * reson * cos(TWO_PI * (double) freq / SRATE);
 }
 
 void TwoPole :: setGain(MY_FLOAT aValue)

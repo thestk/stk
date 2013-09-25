@@ -10,8 +10,8 @@
 
 ReedTabl :: ReedTabl() : Object()
 {
-    offSet = 0.6;    /* Offset is a bias, related to reed rest position  */
-    slope = -0.8;    /* Slope corresponds loosely to reed stiffness      */
+    offSet = (MY_FLOAT) 0.6;    /* Offset is a bias, related to reed rest position  */
+    slope = (MY_FLOAT) -0.8;    /* Slope corresponds loosely to reed stiffness      */
 }
 
 ReedTabl :: ~ReedTabl()
@@ -19,23 +19,23 @@ ReedTabl :: ~ReedTabl()
 
 }
 
-void ReedTabl :: setOffset(double aValue)
+void ReedTabl :: setOffset(MY_FLOAT aValue)
 {
     offSet = aValue;     /* Offset is a bias, related to reed rest position */
 }
 
-void ReedTabl :: setSlope(double aValue)
+void ReedTabl :: setSlope(MY_FLOAT aValue)
 {
     slope = aValue;      /* Slope corresponds loosely to reed stiffness  */
 }
 
-MY_FLOAT ReedTabl :: lookup(double deltaP)    
+MY_FLOAT ReedTabl :: lookup(MY_FLOAT deltaP)    
     /*   Perform "Table Lookup" by direct clipped  */
     /*   linear function calculation               */
 {   /*   deltaP is differential reed pressure      */
     lastOutput = offSet + (slope * deltaP); /* compute basic non-linearity     */
-    if (lastOutput > 1.0) lastOutput = 1.0;     /* if other way, reed slams shut   */
-    if (lastOutput < -1.0) lastOutput = -1.0;   /* if all the way open, acts like open end */
+    if (lastOutput > 1.0) lastOutput = (MY_FLOAT) 1.0;     /* if other way, reed slams shut   */
+    if (lastOutput < -1.0) lastOutput = (MY_FLOAT) -1.0;   /* if all the way open, acts like open end */
     return lastOutput;
 }
 

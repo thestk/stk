@@ -12,6 +12,7 @@
 #include "Instrmnt.h"
 #include "ADSR.h"
 #include "RawWave.h"
+#include "RawLoop.h"
 #include "OnePole.h"
 
 class Sampler : public Instrmnt
@@ -19,7 +20,7 @@ class Sampler : public Instrmnt
   protected:  
     ADSR     *adsr; 
     RawWave  *attacks[5];
-    RawWave  *loops[5];
+    RawLoop  *loops[5];
     OnePole  *filter;
     MY_FLOAT baseFreq;
     MY_FLOAT attackRatios[5];
@@ -29,7 +30,7 @@ class Sampler : public Instrmnt
     int whichOne;
   public:
     Sampler();
-    ~Sampler();
+    virtual ~Sampler();
     void clear();
     virtual void setFreq(MY_FLOAT frequency);
     void keyOn();

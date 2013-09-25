@@ -39,6 +39,7 @@ class FormSwep : public Filter
     void setStates(MY_FLOAT aFreq, MY_FLOAT aReson, MY_FLOAT aGain);
     void setTargets(MY_FLOAT aFreq, MY_FLOAT aReson, MY_FLOAT aGain);
     void setSweepRate(MY_FLOAT aRate);    
+    void setSweepTime(MY_FLOAT aTime);    
     MY_FLOAT tick(MY_FLOAT sample);
 };
 

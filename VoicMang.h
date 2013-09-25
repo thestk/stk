@@ -6,7 +6,7 @@
 /*  Make one of these by telling it the   */
 /*  maximum number of voices you'll want, */
 /*  and also what flavor instrument       */
-/*  group it will be mangling.  Pipe TSIDI*/
+/*  group it will be mangling.  Pipe SKINI*/
 /*  messages into it and it will return   */
 /*  the mixed channel signal each tick.   */
 /*  For multi-channel (multi-timbral),    */
@@ -19,12 +19,13 @@
 /*  unique instances of instruments       */
 /*  within an ensemble.                   */
 /*                                        */
-/*  TSIDI (ToolKit Synthesis Instrument   */
-/*  Digital Interfaceis like MIDI, but    */
+/*  SKINI (Synthesis toolKit Instrument   */
+/*  Network Interface) is like MIDI, but  */
 /*  allows for floating point control     */
 /*  changes, note numbers, etc. Example:  */
-/*  noteOn(1,60.01,111.132) plays a sharp */      
+/*  noteOn 60.01 111.132 plays a sharp    */      
 /*  middle C with a velocity of 111.132   */
+/*  See SKINI09.txt for more information  */
 /*                                        */
 /******************************************/
 
@@ -53,16 +54,16 @@ class VoicMang : public Object
   public:
     VoicMang(int maxVoices, char *instrType);
     ~VoicMang();
-    long noteOn(MY_FLOAT noteNum, MY_FLOAT amp);
-    long noteOnF(MY_FLOAT freq, MY_FLOAT amp);
-    void noteOff(long tag, MY_FLOAT amp);
-    int noteOffN(int note_num, MY_FLOAT amp);
+    long noteOnN(MY_FLOAT noteNum, MY_FLOAT amp);
+    long noteOn(MY_FLOAT freq, MY_FLOAT amp);
+    void noteOffT(long tag, MY_FLOAT amp);
+    long noteOffN(int note_num, MY_FLOAT amp);
     long oldestVoice();
     void kill(long tag);
     void controlChange(int number, MY_FLOAT value);
-    void controlChange(long tag, int number, MY_FLOAT value);
+    void controlChangeT(long tag, int number, MY_FLOAT value);
     void pitchBend(MY_FLOAT value);
-    void pitchBend(long tag, MY_FLOAT value);
+    void pitchBendT(long tag, MY_FLOAT value);
     MY_FLOAT tick();
 };
 

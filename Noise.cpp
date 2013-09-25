@@ -5,40 +5,41 @@
 /*******************************************/
 
 #include "Noise.h"    
+#ifdef __NeXT_
+  #include <libc.h>
+#endif
+
+#if defined(__OS_Win_) /* For Windows95 or NT */
+  #define ONE_OVER_RANDLIMIT 0.00006103516
+#else /* This is for Linux, NeXT and SGI */
+  #define ONE_OVER_RANDLIMIT 0.00000000093132258
+#endif
 
 Noise :: Noise() : Object()
 {    
-    lastOutput = 0.0;
+  lastOutput = (MY_FLOAT) 0.0;
 }
 
 Noise :: ~Noise()
 {
-
 }
-
-/*     THIS IS FOR TURBO C                      */
-/*    Constant = 1.0 / 16384.0                  */
-/*    #define ONE_OVER_RANDLIMIT 0.00006103516  */
-
-
-/*     THIS IS FOR UNIX, NeXT and SGI    */
-    #define ONE_OVER_RANDLIMIT 0.00000000093132258
 
 MY_FLOAT Noise :: tick()
 {
-/*        THIS ONE IS TURBO C  */
-/*      lastOutput = (MY_FLOAT) random(32767) - 16384.0;  */
+/*     THIS ONE IS WIN95  			*/
+#if defined(__OS_Win_) /* For Windows95 or NT */
+  lastOutput = (MY_FLOAT) (rand() - 16383);
+#else /* This is for Linux, NeXT and SGI */
+  lastOutput = (MY_FLOAT) random() - 1073741823.0;
+#endif
 
-/*     THIS IS FOR UNIX, NeXT and SGI    */
-
-    lastOutput = (MY_FLOAT) random() - 1073741823.0;
-    lastOutput *= ONE_OVER_RANDLIMIT;
-    return lastOutput;
+  lastOutput *= (MY_FLOAT) ONE_OVER_RANDLIMIT;
+  return lastOutput;
 }
 
 MY_FLOAT Noise :: lastOut()
 {
-    return lastOutput;
+  return lastOutput;
 }
 
 /************  Test Main  ************************/

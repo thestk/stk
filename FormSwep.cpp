@@ -11,22 +11,22 @@
 FormSwep :: FormSwep() : Filter()
 {
     outputs = (MY_FLOAT *) malloc(2 * MY_FLOAT_SIZE);
-    poleCoeffs[0] = 0.0;
-    poleCoeffs[1] = 0.0;
-    gain = 1.0;
-    freq = 0.0;
-    reson = 0.0;
-    currentGain = 1.0;
-    currentFreq = 0.0;
-    currentReson = 0.0;
-    targetGain = 1.0;
-    targetFreq = 0.0;
-    targetReson = 0.0;
-    deltaGain = 0.0;
-    deltaFreq = 0.0;
-    deltaReson = 0.0;
-    sweepState = 0;
-    sweepRate = 0.002;
+    poleCoeffs[0] = (MY_FLOAT) 0.0;
+    poleCoeffs[1] = (MY_FLOAT) 0.0;
+    gain = (MY_FLOAT) 1.0;
+    freq = (MY_FLOAT) 0.0;
+    reson = (MY_FLOAT) 0.0;
+    currentGain = (MY_FLOAT) 1.0;
+    currentFreq = (MY_FLOAT) 0.0;
+    currentReson = (MY_FLOAT) 0.0;
+    targetGain = (MY_FLOAT) 1.0;
+    targetFreq = (MY_FLOAT) 0.0;
+    targetReson = (MY_FLOAT) 0.0;
+    deltaGain = (MY_FLOAT) 0.0;
+    deltaFreq = (MY_FLOAT) 0.0;
+    deltaReson = (MY_FLOAT) 0.0;
+    sweepState = (MY_FLOAT)  0.0;
+    sweepRate = (MY_FLOAT) 0.002;
     dirty = 0;
     this->clear();
 }
@@ -38,8 +38,8 @@ FormSwep :: ~FormSwep()
 
 void FormSwep :: clear()
 {
-    outputs[0] = 0.0;
-    outputs[1] = 0.0;
+    outputs[0] = (MY_FLOAT) 0.0;
+    outputs[1] = (MY_FLOAT) 0.0;
 }
 
 void FormSwep :: setPoleCoeffs(MY_FLOAT *coeffs)
@@ -57,7 +57,7 @@ void FormSwep :: setFreqAndReson(MY_FLOAT aFreq, MY_FLOAT aReson)
     currentReson = aReson;
     currentFreq = aFreq;
     poleCoeffs[1] = - (reson * reson);
-    poleCoeffs[0] = 2.0 * reson * cos(TWO_PI * freq / SRATE);
+    poleCoeffs[0] = (MY_FLOAT) 2.0 * reson * (MY_FLOAT)  cos(TWO_PI * freq / SRATE);
 }
 
 void FormSwep :: setStates(MY_FLOAT aFreq, MY_FLOAT aReson, MY_FLOAT aGain)
@@ -83,12 +83,17 @@ void FormSwep :: setTargets(MY_FLOAT aFreq, MY_FLOAT aReson, MY_FLOAT aGain)
     deltaFreq = aFreq - currentFreq;
     deltaReson = aReson - currentReson;
     deltaGain = aGain - currentGain;
-    sweepState = 0.0;
+    sweepState = (MY_FLOAT) 0.0;
 }
 
 void FormSwep :: setSweepRate(MY_FLOAT aRate)
 {
     sweepRate = aRate;
+}
+
+void FormSwep :: setSweepTime(MY_FLOAT aTime)
+{
+    sweepRate = ONE_OVER_SRATE / aTime;
 }
 
 void FormSwep :: setGain(MY_FLOAT aValue)
@@ -103,7 +108,7 @@ MY_FLOAT FormSwep :: tick(MY_FLOAT sample)   /*   Perform Filter Operation */
     if (dirty)  {
         sweepState += sweepRate;
         if (sweepState>= 1.0)   {
-            sweepState = 1.0;
+            sweepState = (MY_FLOAT) 1.0;
             dirty = 0;
             currentReson = targetReson;
             reson        = targetReson;
@@ -118,7 +123,8 @@ MY_FLOAT FormSwep :: tick(MY_FLOAT sample)   /*   Perform Filter Operation */
             currentGain = gain + (deltaGain * sweepState);
         }
         poleCoeffs[1] = - (currentReson * currentReson);
-        poleCoeffs[0] = 2.0 * currentReson * cos(TWO_PI * currentFreq / SRATE);
+        poleCoeffs[0] = (MY_FLOAT) 2.0 * currentReson * 
+					(MY_FLOAT)  cos(TWO_PI * currentFreq / SRATE);
     }
 
     temp = currentGain * sample;

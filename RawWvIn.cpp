@@ -14,125 +14,140 @@
 /*******************************************/
 
 #include "RawWvIn.h"
+#include "swapstuf.h"
 
 RawWvIn :: RawWvIn(char *fileName)
 {
-    long i;
+	long i;
     
-    strcpy(fileNm,fileName);
+	strcpy(fileNm,fileName);
     
-    myFile = fopen(fileNm,"rb");
-    if (!myFile)   {
-	printf("Couldn't find soundfile %s  !!!!!!!!\n",fileName);
-	exit(0);
-    }
+	myFile = fopen(fileNm,"rb");
+	if (!myFile)   {
+		printf("Couldn't find soundfile %s  !!!!!!!!\n",fileName);
+		exit(0);
+	}
     
-    i = 0;
-    while (fread(&data,2,1,myFile)) i++;
-    length = i;
-    fseek(myFile,0,0);
-    time = 0.0;
-    rate = 1.0;
-    lastTime = 0;
-    finished = 0;
-    gain = 1.0;
-    lastOutput = 0.0;
+	i = 0;
+	while (fread(&data,2,1,myFile)) i++;
+	length = i;
+	fseek(myFile,0,0);
+	time = (MY_FLOAT) 0.0;
+	rate = (MY_FLOAT) 1.0;
+	lastTime = 0;
+	finished = 0;
+	gain = (MY_FLOAT) 1.0;
+	lastOutput = (MY_FLOAT) 0.0;
 }
 
 RawWvIn :: ~RawWvIn()
 {
-    this->finish();
+	this->finish();
 }
 
 void RawWvIn :: reset()
 {
-    if (finished)     {
-	myFile = fopen(fileNm,"rb");
-    }
-    fseek(myFile,0,0); 
+	if (finished)     {
+		myFile = fopen(fileNm,"rb");
+	}
+	fseek(myFile,0,0); 
 
-    printf("Resetting\n");
-    time = 0.0;
-    lastTime = 0;
-    finished = 0;
-    lastOutput = 0.0;
+#if defined(_debug_)        
+	printf("Resetting\n");
+#endif    
+
+	time = (MY_FLOAT) 0.0;
+	lastTime = 0;
+	finished = 0;
+	lastOutput = (MY_FLOAT) 0.0;
 }
 
 void RawWvIn :: normalize()
 {
-    this->normalize(1.0);
+	this->normalize((MY_FLOAT) 1.0);
 }
 
 void RawWvIn :: normalize(MY_FLOAT newPeak)
 {
-    long i;
-    FILE *fd;
+	long i;
+	FILE *fd;
+	extern short SwapShort(short);
 
-    gain = 0.0;
+	gain = (MY_FLOAT) 0.0;
     
-    fd = fopen(fileNm,"rb");
-    for (i=0;i<length;i++)    {
-	fread(&data,2,1,fd);
-	if (fabs(data) > gain) 
-	    gain = fabs(data);
-    }
-    if (gain > 0.0)       {
-	gain = newPeak / gain;
-    }
-    fclose(fd);
+	fd = fopen(fileNm,"rb");
+	for (i=0;i<length;i++)    {
+		fread(&data,2,1,fd);
+#ifdef __LITTLE_ENDIAN_
+		data = SwapShort(data);
+#endif
+		if (fabs(data) > gain) 
+	    gain = (MY_FLOAT) fabs((double) data);
+	}
+	if (gain > 0.0)       {
+		gain = newPeak / gain;
+	}
+	fclose(fd);
 }
 
 void RawWvIn :: setRate(MY_FLOAT aRate)
 {
-    rate = aRate;
+	rate = aRate;
 }
 
 void RawWvIn :: finish()
 {
-    finished = 1;
-    lastOutput = 0.0;
-    if (myFile)   {
-	fclose(myFile);
-	myFile = 0;
-    }
+	finished = 1;
+	lastOutput = (MY_FLOAT) 0.0;
+	if (myFile)   {
+		fclose(myFile);
+		myFile = 0;
+	}
 }
 
 MY_FLOAT RawWvIn ::  tick()
 {
-    this->informTick();
-    return lastOutput;
+	this->informTick();
+	return lastOutput;
 }
 
 int RawWvIn :: informTick()
 {
-    long temp;
-    
-    if (!finished)        {
-	
-      time += rate;                 /*  Update current time               */
-									  
-      if (time >= length)  {        /*  Check for end of sound            */
-	time = length - 1;          /*  stick at end                      */
-	finished = 1;               /*  Information for one-shot use      */
-	fclose(myFile);
-	myFile = 0;
-      }
-      else    {
-	temp = (long) time;         /*  Integer part of time address      */
-	if (temp > lastTime)   {    /*  If we cross next sample time      */
-	  lastTime = temp;
-	  fread(&data,2,1,myFile);  /*  Snarf next sample from file       */
-	  lastOutput = data * gain; /*  And save as non-interpolated data */
-	}
-      }
-    }
+  long temp;
+  extern short SwapShort(short);
 
-    return finished;                        
+  if (!finished)
+		{
+			time += rate;        /* Update current time */
+									  
+			if (time >= length)  /* Check for end of sound */
+				{
+					time = (MY_FLOAT) length - 1;   /* stick at end */
+					finished = 1;                   /* Information for one-shot use */
+					fclose(myFile);
+					myFile = 0;
+				}
+			else
+				{
+					temp = (long) time;   /* Integer part of time address */
+					if (temp > lastTime)  /* If we cross next sample time */
+						{
+							lastTime = temp;
+							fread(&data,2,1,myFile);  /* Snarf next sample from file */
+#ifdef __LITTLE_ENDIAN__
+							data = SwapShort(data);
+#endif
+							lastOutput = data * gain; /* And save as non-interpolated data */
+						}
+				}
+		}
+
+  return finished;                        
 }
 
 MY_FLOAT RawWvIn :: lastOut()
 {
-    return lastOutput;
+	return lastOutput;
 }
 
 /************   Test Main Program   *****************/
@@ -160,4 +175,3 @@ void main()
     fclose(fd);
 }
 */
-

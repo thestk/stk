@@ -15,143 +15,167 @@
 
 ADSR :: ADSR() : Envelope()
 {    
-    target = 0.0;
-    value = 0.0;
-    attackRate = 0.001;
-    decayRate = 0.001;
-    sustainLevel = 0.5;
-    releaseRate = 0.01;
-    state = 0;
+  target = (MY_FLOAT) 0.0;
+  value = (MY_FLOAT) 0.0;
+  attackRate = (MY_FLOAT) 0.001;
+  decayRate = (MY_FLOAT) 0.001;
+  sustainLevel = (MY_FLOAT) 0.5;
+  releaseRate = (MY_FLOAT) 0.01;
+  state = 0;
 }
 
 ADSR :: ~ADSR()
 {    
-    /* Nothing to do here */
+  /* Nothing to do here */
 }
 
 void ADSR :: keyOn()
 {
-    target = 1.0;
-    rate = attackRate;
-    state = 0;
+  target = (MY_FLOAT) 1.0;
+  rate = attackRate;
+  state = 0;
 }
 
 void ADSR :: keyOff()
 {
-    target = 0.0;
-    rate = releaseRate;
-    state = 3;
+  target = (MY_FLOAT) 0.0;
+  rate = releaseRate;
+  state = 3;
 }
 
 void ADSR :: setAttackRate(MY_FLOAT aRate)
 {
-    if (aRate < 0.0) {
-        printf("negative rates not allowed!!, correcting\n");
-        attackRate = -aRate;
-    }
-    else attackRate = aRate;
-    attackRate = attackRate * RATE_NORM;  /*  SEE Object.h  */
+  if (aRate < 0.0) {
+    printf("negative rates not allowed!!, correcting\n");
+    attackRate = -aRate;
+  }
+  else attackRate = aRate;
 }
 
 void ADSR :: setDecayRate(MY_FLOAT aRate)
 {
-    if (aRate < 0.0) {
-        printf("negative rates not allowed!!, correcting\n");
-        decayRate = -aRate;
-    }
-    else decayRate = aRate;
-    decayRate = decayRate * RATE_NORM;	/*  SEE Object.h  */
+  if (aRate < 0.0) {
+    printf("negative rates not allowed!!, correcting\n");
+    decayRate = -aRate;
+  }
+  else decayRate = aRate;
 }
 
 void ADSR :: setSustainLevel(MY_FLOAT aLevel)
 {
-    if (aLevel < 0.0 ) {
-        printf("Sustain level out of range!!, correcting\n");
-        sustainLevel = 0.0;
-    }
-    else sustainLevel = aLevel;
+  if (aLevel < 0.0 ) {
+    printf("Sustain level out of range!!, correcting\n");
+    sustainLevel = (MY_FLOAT)  0.0;
+  }
+  else sustainLevel = aLevel;
 }
 
 void ADSR :: setReleaseRate(MY_FLOAT aRate)
 {
-    if (aRate < 0.0) {
-        printf("negative rates not allowed!!, correcting\n");
-        releaseRate = -aRate;
-    }
-    else releaseRate = aRate;
-    releaseRate = releaseRate * RATE_NORM;	/*  SEE Object.h  */
+  if (aRate < 0.0) {
+    printf("negative rates not allowed!!, correcting\n");
+    releaseRate = -aRate;
+  }
+  else releaseRate = aRate;
 }
 
-void ADSR :: setAll(MY_FLOAT attRate, MY_FLOAT decRate, MY_FLOAT susLevel, MY_FLOAT relRate)
+void ADSR :: setAttackTime(MY_FLOAT aTime)
 {
-    this->setAttackRate(attRate);
-    this->setDecayRate(decRate);
-    this->setSustainLevel(susLevel);
-    this->setReleaseRate(relRate);
+  if (aTime < 0.0) {
+    printf("negative times not allowed!!, correcting\n");
+    attackRate = ONE_OVER_SRATE / -aTime;
+  }
+  else attackRate = ONE_OVER_SRATE / aTime;
+}
+
+void ADSR :: setDecayTime(MY_FLOAT aTime)
+{
+  if (aTime < 0.0) {
+    printf("negative times not allowed!!, correcting\n");
+    decayRate = ONE_OVER_SRATE / -aTime;
+  }
+  else decayRate = ONE_OVER_SRATE / aTime;
+}
+
+void ADSR :: setReleaseTime(MY_FLOAT aTime)
+{
+  if (aTime < 0.0) {
+    printf("negative times not allowed!!, correcting\n");
+    releaseRate = ONE_OVER_SRATE / -aTime;
+  }
+  else releaseRate = ONE_OVER_SRATE / aTime;
+}
+
+void ADSR :: setAllTimes(MY_FLOAT attTime, MY_FLOAT decTime, MY_FLOAT susLevel, MY_FLOAT relTime)
+{
+  this->setAttackTime(attTime);
+  this->setDecayTime(decTime);
+  this->setSustainLevel(susLevel);
+  this->setReleaseTime(relTime);
 }
 
 void ADSR :: setTarget(MY_FLOAT aTarget)
 {
-    target = aTarget;
-    if (value < target) {
-	state = ATTACK;
-	this->setSustainLevel(target);
-	rate = attackRate;
-    }
-    if (value > target) {
-	this->setSustainLevel(target);
-	state = DECAY;
-	rate = decayRate;
-    }
+  target = aTarget;
+  if (value < target) {
+    state = ATTACK;
+    this->setSustainLevel(target);
+    rate = attackRate;
+  }
+  if (value > target) {
+    this->setSustainLevel(target);
+    state = DECAY;
+    rate = decayRate;
+  }
 }
 
 void ADSR :: setValue(MY_FLOAT aValue)
 {
-    state = SUSTAIN;
-    target = aValue;
-    value = aValue;
-    this->setSustainLevel(aValue);
-    rate = 0.0;
+  state = SUSTAIN;
+  target = aValue;
+  value = aValue;
+  this->setSustainLevel(aValue);
+  rate = (MY_FLOAT)  0.0;
 }
 
 MY_FLOAT ADSR :: tick()
 {
-    if (state==ATTACK)  {
-        value += rate;
-	if (value >= target)    {
-            value = target;
-            rate = decayRate;
-            target = sustainLevel;
+  if (state==ATTACK)  {
+    value += rate;
+    if (value >= target)    {
+      value = target;
+      rate = decayRate;
+      target = sustainLevel;
 	    state = DECAY;
-        }
-    }    
-    else if (state==DECAY)  {
-        value -= decayRate;
-        if (value <= sustainLevel)    {
-            value = sustainLevel;
-            rate = 0.0;
-            state = SUSTAIN;
-        }
     }
-    else if (state==RELEASE)  {
-        value -= releaseRate;
-        if (value <= 0.0)       {
-            value = 0.0;
-            state = 4;
-        }
+  }    
+  else if (state==DECAY)  {
+    value -= decayRate;
+    if (value <= sustainLevel)    {
+      value = sustainLevel;
+      rate = (MY_FLOAT) 0.0;
+      state = SUSTAIN;
     }
-    return value;
+  }
+  else if (state==RELEASE)  {
+    value -= releaseRate;
+    if (value <= 0.0)       {
+      value = (MY_FLOAT) 0.0;
+      state = 4;
+    }
+  }
+  return value;
 }
 
 int ADSR :: informTick()
 {
-    this->tick();
-    return state;
+  this->tick();
+  return state;
 }
 
 MY_FLOAT ADSR :: lastOut()
 {
-    return value;
+  return value;
 }
 
 /************  Test Main  ************************/

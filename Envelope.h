@@ -26,10 +26,11 @@ class Envelope : public Object
     int state;
   public:
     Envelope();
-    ~Envelope();
+    virtual ~Envelope();
     void keyOn();
     void keyOff();
     void setRate(MY_FLOAT aRate);
+    void setTime(MY_FLOAT aTime);
     void setTarget(MY_FLOAT aTarget);
     void setValue(MY_FLOAT aValue);
     MY_FLOAT tick();

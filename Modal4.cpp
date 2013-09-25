@@ -21,33 +21,32 @@ Modal4 :: Modal4()
 
     vibr = new RawLoop("rawwaves/sinewave.raw");
     vibr->normalize();
-    vibr->setFreq(6.0);
-    vibrGain = 0.05;
+    vibr->setFreq((MY_FLOAT) 6.0);
+    vibrGain = (MY_FLOAT) 0.05;
     
-    directGain = 0.0;
-    masterGain = 1.0;
-    baseFreq = 440.0;
-    this->setRatioAndReson(0,1.00,0.9997);    /*  Set some      */
-    this->setRatioAndReson(1,1.30,0.9997);    /*  silly         */
-    this->setRatioAndReson(2,1.77,0.9997);    /*  default       */
-    this->setRatioAndReson(3,2.37,0.9997);    /*  values here   */
-    this->setFiltGain(0,0.01);
-    this->setFiltGain(1,0.01);
-    this->setFiltGain(2,0.01);
-    this->setFiltGain(3,0.01);
+    directGain = (MY_FLOAT) 0.0;
+    masterGain = (MY_FLOAT) 1.0;
+    baseFreq = (MY_FLOAT) 440.0;
+    this->setRatioAndReson(0,(MY_FLOAT) 1.00,(MY_FLOAT) 0.9997);    /*  Set some      */
+    this->setRatioAndReson(1,(MY_FLOAT) 1.30,(MY_FLOAT) 0.9997);    /*  silly         */
+    this->setRatioAndReson(2,(MY_FLOAT) 1.77,(MY_FLOAT) 0.9997);    /*  default       */
+    this->setRatioAndReson(3,(MY_FLOAT) 2.37,(MY_FLOAT) 0.9997);    /*  values here   */
+    this->setFiltGain(0,(MY_FLOAT) 0.01);
+    this->setFiltGain(1,(MY_FLOAT) 0.01);
+    this->setFiltGain(2,(MY_FLOAT) 0.01);
+    this->setFiltGain(3,(MY_FLOAT) 0.01);
     this->clear();
     filters[0]->setEqualGainZeroes();
     filters[1]->setEqualGainZeroes();
     filters[2]->setEqualGainZeroes();
     filters[3]->setEqualGainZeroes();
-    stickHardness = 0.5;
-    strikePosition = 0.561;
+    stickHardness = (MY_FLOAT) 0.5;
+    strikePosition = (MY_FLOAT) 0.561;
 }  
 
 Modal4 :: ~Modal4()
 {
     delete envelope; 
-    delete wave;
     delete filters[0];
     delete filters[1];
     delete filters[2];
@@ -84,7 +83,7 @@ void Modal4 :: setRatioAndReson(int whichOne, MY_FLOAT ratio,MY_FLOAT reson)
     }
     else {
         temp = ratio;
-        while (temp*baseFreq > SRATE_OVER_TWO) temp *= 0.5;
+        while (temp*baseFreq > SRATE_OVER_TWO) temp *= (MY_FLOAT) 0.5;
         ratios[whichOne] = temp;
 #if defined(_debug_)        
     printf("Modal4 : Aliasing would occur here, correcting.\n");
@@ -117,9 +116,9 @@ void Modal4 :: strike(MY_FLOAT amplitude)
 {
     int i;
     MY_FLOAT temp;
-    envelope->setRate(1.0);
+    envelope->setRate((MY_FLOAT) 1.0);
     envelope->setTarget(amplitude);
-    onepole->setPole(1.0 - amplitude);
+    onepole->setPole((MY_FLOAT) 1.0 - amplitude);
     envelope->tick();
     wave->reset();
     for (i=0;i<4;i++)   {
@@ -142,7 +141,7 @@ void Modal4 :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
 
 void Modal4 :: noteOff(MY_FLOAT amp) /*  This calls damp, but inverts the    */
 {                                    /*  meaning of amplitude.               */
-    this->damp(1.0 - (amp * 0.03));  /*  (high amplitude means fast damping) */
+    this->damp((MY_FLOAT) 1.0 - (amp * (MY_FLOAT) 0.03));  /*  (high amplitude means fast damping) */
 #if defined(_debug_)        
     printf("Modal4 : NoteOff: Amp=%lf\n",amp);
 #endif    
@@ -177,11 +176,11 @@ MY_FLOAT Modal4 :: tick()
     temp2 += directGain * temp;
 
     if (vibrGain != 0.0)	{
-        temp = 1.0 + (vibr->tick() * vibrGain);     /*  Calculate AM             */
+        temp = (MY_FLOAT) 1.0 + (vibr->tick() * vibrGain);     /*  Calculate AM             */
         temp2 = temp * temp2;              		/*  and apply to master out */
     }
     
-    lastOutput = temp2 * 2.0;
+    lastOutput = temp2 * (MY_FLOAT) 2.0;
     return lastOutput;
 }
  

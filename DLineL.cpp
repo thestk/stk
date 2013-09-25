@@ -28,8 +28,8 @@ DLineL :: ~DLineL()
 void DLineL :: clear()
 {
     long i;
-    for (i=0;i<length;i++) inputs[i] = 0.0;
-    lastOutput = 0;
+    for (i=0;i<length;i++) inputs[i] = (MY_FLOAT) 0.0;
+    lastOutput = (MY_FLOAT) 0;
 }
 
 void DLineL :: setDelay(MY_FLOAT lag)
@@ -37,10 +37,10 @@ void DLineL :: setDelay(MY_FLOAT lag)
     MY_FLOAT outputPointer;
     outputPointer = inPoint - lag;       /* read chases write, add 1 for interp.   */
     while (outputPointer<0)
-	outputPointer += length;         /* modulo maximum length                  */
-    outPoint = (long) outputPointer;     /* integer part                           */
-    alpha = outputPointer - outPoint;    /* fractional part                        */
-    omAlpha = 1.0 - alpha;               /* 1.0 - fractional part (more efficient) */
+	outputPointer += length;           /* modulo maximum length                  */
+    outPoint = (long) outputPointer;   /* integer part                           */
+    alpha = outputPointer - outPoint;  /* fractional part                        */
+    omAlpha = (MY_FLOAT) 1.0 - alpha;  /* 1.0 - fractional part (more efficient) */
 }
 
 MY_FLOAT DLineL :: tick(MY_FLOAT sample)        /*   Take one, yield one           */

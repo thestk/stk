@@ -14,6 +14,7 @@
 /******************************************/
 
 #include "Brass.h"
+#include "SKINI11.msg"
 
 Brass :: Brass(MY_FLOAT lowestFreq)
 {
@@ -22,13 +23,15 @@ Brass :: Brass(MY_FLOAT lowestFreq)
     lipFilter = new LipFilt;
     dcBlock = new DCBlock;
     adsr = new ADSR;
-    adsr->setAll(0.02, 0.05, 1.0, 0.001);
+    adsr->setAllTimes((MY_FLOAT) 0.005, (MY_FLOAT) 0.001, (MY_FLOAT) 1.0, (MY_FLOAT) 0.010);
     vibr = new RawLoop("rawwaves/sinewave.raw");
     this->clear();
 
     vibr->normalize();
-    vibr->setFreq(6.137);
-    vibrGain = 0.05;            /* breath periodic vibrato component  */
+    vibr->setFreq((MY_FLOAT)  6.137);
+    vibrGain = (MY_FLOAT)  0.05;            /* breath periodic vibrato component  */
+
+	maxPressure = (MY_FLOAT) 0.0;
 }
 
 Brass :: ~Brass()
@@ -45,12 +48,11 @@ void Brass :: clear()
     delayLine->clear();
     lipFilter->clear();
     dcBlock->clear();
-/*    adsr->reset();     */
 }
 
 void Brass :: setFreq(MY_FLOAT frequency)
 {
-    slideTarget = ((MY_FLOAT) SRATE / frequency * 2.0) + 3.0;
+    slideTarget = (SRATE / frequency * (MY_FLOAT) 2.0) + (MY_FLOAT) 3.0;
 			/* fudge correction for filter delays */
     delayLine->setDelay(slideTarget);   /*  we'll play a harmonic  */
     lipTarget = frequency;
@@ -78,7 +80,7 @@ void Brass :: stopBlowing(MY_FLOAT rate)
 void Brass :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
 {
     this->setFreq(freq);
-    this->startBlowing(amp, amp * 0.001);
+    this->startBlowing(amp, amp * (MY_FLOAT) 0.001);
 #if defined(_debug_)        
     printf("Brass : NoteOn: Freq=%lf Amp=%lf\n",freq,amp);
 #endif    
@@ -86,7 +88,7 @@ void Brass :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
 
 void Brass :: noteOff(MY_FLOAT amp)
 {
-    this->stopBlowing(amp * 0.005);
+    this->stopBlowing(amp * (MY_FLOAT) 0.005);
 #if defined(_debug_)        
     printf("Brass : NoteOff: Amp=%lf\n",amp);
 #endif    
@@ -100,8 +102,8 @@ MY_FLOAT Brass :: tick()
     breathPressure += vibrGain * vibr->tick();
     lastOutput = delayLine->tick(                       /* bore delay  */
 		dcBlock->tick(                          /* block DC    */
-		  lipFilter->tick(0.3 * breathPressure, /* mouth input */
-			0.85 * delayLine->lastOut()))); /* and bore reflection */
+		  lipFilter->tick((MY_FLOAT) 0.3 * breathPressure, /* mouth input */
+			(MY_FLOAT) 0.85 * delayLine->lastOut()))); /* and bore reflection */
     return lastOutput;
 }
 
@@ -111,17 +113,17 @@ void Brass :: controlChange(int number, MY_FLOAT value)
 #if defined(_debug_)        
     printf("Brass : ControlChange: Number=%i Value=%f\n",number,value);
 #endif    
-    if (number == MIDI_control1)	{
-        temp = lipTarget * pow(4.0,(2.0*value*NORM_7) - 1.0);
+    if (number == __SK_LipTension_)	{
+        temp = lipTarget * (MY_FLOAT) pow(4.0,(2.0*value*NORM_7) - 1.0);
 	this->setLip(temp);
     }
-    else if (number == MIDI_control2)
-        delayLine->setDelay(slideTarget * (0.5 + (value * NORM_7)));  
-    else if (number == MIDI_control3)
-	vibr->setFreq((value * NORM_7 * 12.0));
-    else if (number == MIDI_mod_wheel)
-	vibrGain = (value * NORM_7 * 0.4);
-    else if (number == MIDI_after_touch)
+    else if (number == __SK_SlideLength_)
+        delayLine->setDelay(slideTarget * ((MY_FLOAT) 0.5 + (value * NORM_7)));  
+    else if (number == __SK_ModFrequency_)
+		vibr->setFreq((value * NORM_7 * (MY_FLOAT) 12.0));
+    else if (number == __SK_ModWheel_ )
+		vibrGain = (value * NORM_7 * (MY_FLOAT) 0.4);
+    else if (number == __SK_AfterTouch_Cont_)
         adsr->setTarget(value * NORM_7);
     else    {        
         printf("Brass : Undefined Control Number!!\n");

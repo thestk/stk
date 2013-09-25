@@ -11,17 +11,17 @@
 
 SamplFlt :: SamplFlt() : Sampler()
 {
-    MY_FLOAT tempCoeffs[2] = {0.0,-1.0};
+    MY_FLOAT tempCoeffs[2] = {(MY_FLOAT) 0.0,(MY_FLOAT) -1.0};
     twozeroes[0] = new TwoZero;    
     twozeroes[0]->setZeroCoeffs(tempCoeffs);
-    twozeroes[0]->setGain(1.0);
+    twozeroes[0]->setGain((MY_FLOAT) 1.0);
     twozeroes[1] = new TwoZero;    
     twozeroes[1]->setZeroCoeffs(tempCoeffs);
-    twozeroes[1]->setGain(1.0);
+    twozeroes[1]->setGain((MY_FLOAT) 1.0);
     filters[0] = new FormSwep;
-    filters[0]->setTargets(0.0,0.7,0.5);
+    filters[0]->setTargets((MY_FLOAT) 0.0,(MY_FLOAT) 0.7,(MY_FLOAT) 0.5);
     filters[1] = new FormSwep;
-    filters[1]->setTargets(0.0,0.7,0.5);
+    filters[1]->setTargets((MY_FLOAT) 0.0,(MY_FLOAT) 0.7,(MY_FLOAT) 0.5);
 }  
 
 SamplFlt :: ~SamplFlt()

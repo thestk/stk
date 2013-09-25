@@ -14,20 +14,20 @@ TubeBell :: TubeBell() : FM4Alg5()
                     "rawwaves/sinewave.raw",
                     "rawwaves/sinewave.raw");
     
-    this->setRatio(0,1.0   * 0.995);
-    this->setRatio(1,1.414 * 0.995);
-    this->setRatio(2,1.0   * 1.005);
-    this->setRatio(3,1.414        );
+    this->setRatio(0,(MY_FLOAT) (1.0   * 0.995));
+    this->setRatio(1,(MY_FLOAT) (1.414 * 0.995));
+    this->setRatio(2,(MY_FLOAT) (1.0   * 1.005));
+    this->setRatio(3,(MY_FLOAT) (1.414 * 1.000));
     gains[0] = __FM4Op_gains[94];
     gains[1] = __FM4Op_gains[76];
     gains[2] = __FM4Op_gains[99];
     gains[3] = __FM4Op_gains[71];
-    adsr[0]->setAll(0.03,0.00001,0.0,0.02);
-    adsr[1]->setAll(0.03,0.00001,0.0,0.02);
-    adsr[2]->setAll(0.07,0.00002,0.0,0.02);
-    adsr[3]->setAll(0.04,0.00001,0.0,0.02);
-    twozero->setGain(0.5);
-    vibWave->setFreq(2.0);
+    adsr[0]->setAllTimes((MY_FLOAT) 0.005,(MY_FLOAT) 4.0,(MY_FLOAT) 0.0,(MY_FLOAT) 0.04);
+    adsr[1]->setAllTimes((MY_FLOAT) 0.005,(MY_FLOAT) 4.0,(MY_FLOAT) 0.0,(MY_FLOAT) 0.04);
+    adsr[2]->setAllTimes((MY_FLOAT) 0.001,(MY_FLOAT) 2.0,(MY_FLOAT) 0.0,(MY_FLOAT) 0.04);
+    adsr[3]->setAllTimes((MY_FLOAT) 0.004,(MY_FLOAT) 4.0,(MY_FLOAT) 0.0,(MY_FLOAT) 0.04);
+    twozero->setGain((MY_FLOAT) 0.5);
+    vibWave->setFreq((MY_FLOAT) 2.0);
 }  
 
 void TubeBell :: setFreq(MY_FLOAT frequency)

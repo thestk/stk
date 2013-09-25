@@ -5,20 +5,19 @@
 /*  natural human modulation function.     */  
 /*******************************************/
 
-#define POLE_POS  0.999
-#define RND_SCALE 10.0
+#define POLE_POS  (MY_FLOAT) 0.999
+#define RND_SCALE (MY_FLOAT) 10.0
 
 #include "Modulatr.h"
 
 Modulatr :: Modulatr()
 {
-    vibwave = new RawWave("rawwaves/sinewave.raw");
+    vibwave = new RawLoop("rawwaves/sinewave.raw");
     vibwave->normalize();
-    vibwave->setFreq(6.0);
-    vibwave->setLooping(1);
-    vibAmt = 0.04;
+    vibwave->setFreq((MY_FLOAT) 6.0);
+    vibAmt = (MY_FLOAT)  0.04;
     noise = new SubNoise(330);
-    rndAmt = 0.005;
+    rndAmt = (MY_FLOAT)  0.005;
     onepole = new OnePole;
     onepole->setPole(POLE_POS);
     onepole->setGain(rndAmt * RND_SCALE);
@@ -33,33 +32,33 @@ Modulatr :: ~Modulatr()
 
 void Modulatr :: reset()
 {
-    lastOutput = 0.0;
+    lastOutput = (MY_FLOAT)  0.0;
 }
 
-void Modulatr :: setVibFreq(double vibFreq)
+void Modulatr :: setVibFreq(MY_FLOAT vibFreq)
 {
     vibwave->setFreq(vibFreq);
 }
 
-void Modulatr :: setVibAmt(double vibAmount)
+void Modulatr :: setVibAmt(MY_FLOAT vibAmount)
 {
     vibAmt = vibAmount;
 }
 
-void Modulatr :: setRndAmt(double rndAmount)
+void Modulatr :: setRndAmt(MY_FLOAT rndAmount)
 {
     rndAmt = rndAmount;
     onepole->setGain(RND_SCALE * rndAmt);
 }
 
-double Modulatr ::  tick()
+MY_FLOAT Modulatr ::  tick()
 {
     lastOutput = vibAmt * vibwave->tick();       /*  Compute periodic and */
     lastOutput += onepole->tick(noise->tick());  /*   random modulations  */
     return lastOutput;                        
 }
 
-double Modulatr :: lastOut()
+MY_FLOAT Modulatr :: lastOut()
 {
     return lastOutput;
 }

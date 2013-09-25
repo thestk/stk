@@ -1,3 +1,4 @@
+
 /*******************************************/
 /*  Raw Looped Soundfile Class,            */
 /*  by Perry R. Cook, 1995-96              */ 
@@ -8,6 +9,8 @@
 /*******************************************/
 
 #include "RawLoop.h"
+
+#include "swapstuf.h"
 
 RawLoop :: RawLoop(char *fileName)
 {
@@ -26,14 +29,17 @@ RawLoop :: RawLoop(char *fileName)
     data = (MY_FLOAT *) malloc(MY_FLOAT_SIZE * (length + 1));
     i = 0;
     while (fread(&temp,2,1,fd))   {
+        #ifdef __LITTLE_ENDIAN__
+            temp = SwapShort (temp);
+        #endif
 	data[i] = temp;
 	i++;
     }
     data[length] = data[0];
     fclose(fd);
-    time = 0.0;
-    phaseOffset = 0.0;
-    rate = 1.0;
+    time = (MY_FLOAT) 0.0;
+    phaseOffset = (MY_FLOAT) 0.0;
+    rate = (MY_FLOAT) 1.0;
 }
 
 RawLoop :: ~RawLoop()
@@ -43,24 +49,24 @@ RawLoop :: ~RawLoop()
 
 void RawLoop :: reset()
 {
-    time = 0.0;
-    lastOutput = 0.0;
+    time = (MY_FLOAT) 0.0;
+    lastOutput = (MY_FLOAT) 0.0;
 }
 
 void RawLoop :: normalize()
 {
-    this->normalize(1.0);
+    this->normalize((MY_FLOAT) 1.0);
 }
 
 void RawLoop :: normalize(MY_FLOAT newPeak)
 {
     long i;
-    MY_FLOAT max = 0.0;
+    MY_FLOAT max = (MY_FLOAT) 0.0;
     for (i=0;i<=length;i++)
 	if (fabs(data[i]) > max) 
-	    max = fabs(data[i]);
+	    max = (MY_FLOAT) fabs((double) data[i]);
     if (max > 0.0)       {
-	max = 1.0 / max;
+	max = (MY_FLOAT) 1.0 / max;
 	max *= newPeak;
 	for (i=0;i<=length;i++)
 	    data[i] *= max;

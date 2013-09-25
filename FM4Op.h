@@ -39,7 +39,7 @@ class FM4Op : public Instrmnt
     MY_FLOAT __FM4Op_attTimes[32];
   public:
     FM4Op();
-    ~FM4Op();
+    virtual ~FM4Op();
     void loadWaves(char* wave1, char* wave2, char* wave3, char* wave4);
     void clear();
     void setFreq(MY_FLOAT frequency);

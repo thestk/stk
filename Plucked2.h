@@ -33,7 +33,7 @@ class Plucked2 : public Instrmnt
     MY_FLOAT pluckPos;
   public:
     Plucked2(MY_FLOAT lowestFreq);
-    ~Plucked2();
+    virtual ~Plucked2();
     void clear();
     virtual void setFreq(MY_FLOAT frequency);
     void setDetune(MY_FLOAT detune);

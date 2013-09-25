@@ -28,3 +28,4 @@ class DLineN : public Filter
 };
 
 #endif
+

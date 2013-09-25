@@ -11,9 +11,9 @@
 TwoZero :: TwoZero() : Filter()
 {
     inputs = (MY_FLOAT *) malloc(2 * MY_FLOAT_SIZE);
-    zeroCoeffs[0] = 0.0;
-    zeroCoeffs[1] = 0.0;
-    gain = 1.0;
+    zeroCoeffs[0] = (MY_FLOAT) 0.0;
+    zeroCoeffs[1] = (MY_FLOAT) 0.0;
+    gain = (MY_FLOAT) 1.0;
     this->clear();
 }
 
@@ -24,9 +24,9 @@ TwoZero :: ~TwoZero()
 
 void TwoZero :: clear()
 {
-    inputs[0] = 0.0;
-    inputs[1] = 0.0;
-    lastOutput = 0.0;
+    inputs[0] = (MY_FLOAT) 0.0;
+    inputs[1] = (MY_FLOAT) 0.0;
+    lastOutput = (MY_FLOAT) 0.0;
 }
 
 void TwoZero :: setZeroCoeffs(MY_FLOAT *coeffs)

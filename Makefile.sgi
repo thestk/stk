@@ -1,0 +1,49 @@
+# STK98 Makefile - SGI solo version
+
+O_FILES		=	Object.o Envelope.o ADSR.o Noise.o SubNoise.o \
+				RawWave.o RawWvIn.o RawLoop.o \
+				Modulatr.o Filter.o OneZero.o  \
+				OnePole.o TwoZero.o TwoPole.o DCBlock.o \
+				BiQuad.o DLineA.o DLineL.o DLineN.o VoicMang.o \
+				FormSwep.o BowTabl.o JetTabl.o ReedTabl.o \
+				LipFilt.o Modal4.o FM4Op.o FM4Alg3.o FM4Alg4.o \
+				FM4Alg5.o FM4Alg6.o FM4Alg8.o Plucked2.o \
+				SamplFlt.o Sampler.o SKINI11.o Simple.o \
+				SingWave.o VoicForm.o FMVoices.o swapstuf.o \
+				\
+				Instrmnt.o Marimba.o Vibraphn.o AgogoBel.o Shakers.o \
+				Plucked.o Mandolin.o Clarinet.o Flute.o Moog1.o \
+				Brass.o Bowed.o Rhodey.o Wurley.o TubeBell.o \
+				HeavyMtl.o PercFlut.o BeeThree.o DrumSynt.o \
+				\
+				WvOut.o SndWvOut.o WavWvOut.o MatWvOut.o \
+				Reverb.o PRCRev.o JCRev.o NRev.o \
+				RTWvOut.o RTSoundIO.o MIDIIO.o
+
+RM = /bin/rm 
+
+INSTR = MD2SKINI syntmono
+CC = CC -O # -g -fullwarn -D__SGI_CC__
+LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm
+
+.SUFFIXES:	.cpp
+.cpp.o: Object.h
+		$(CC) -c $*.cpp
+
+all: $(INSTR)
+
+syntmono: syntmono.cpp $(O_FILES)
+	$(CC) $(INCLUDE) -o syntmono syntmono.cpp $(O_FILES) $(LIBRARY)
+
+MD2SKINI: MD2SKINI.cpp $(O_FILES)
+	$(CC) -o MD2SKINI MD2SKINI.cpp $(O_FILES) $(LIBRARY)
+
+clean : 
+	rm *.o
+	rm $(INSTR)
+
+cleanIns : 
+	rm $(INSTR)
+
+strip : 
+	strip $(INSTR)

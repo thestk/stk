@@ -1,2 +1,2 @@
 cd ..
-wish < TCLSpecs/TCLStruk.tcl | testTextIn Mandolin
+wish < TCLSpecs/TCLStruk.tcl | syntmono Mandolin -r -i

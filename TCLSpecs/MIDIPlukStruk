@@ -1,2 +1,2 @@
 cd ..
-testMIDI | testTextIn Mandolin
+MD2SKINI | syntmono Mandolin -r -i

@@ -12,7 +12,7 @@
 Plucked :: Plucked(MY_FLOAT lowestFreq)
 {
     length = (long) (SRATE / lowestFreq + 1);
-    loopGain = 0.999;
+    loopGain = (MY_FLOAT) 0.999;
     delayLine = new DLineA(length);
     loopFilt = new OneZero;
     pickFilt = new OnePole;
@@ -38,19 +38,19 @@ void Plucked :: clear()
 void Plucked :: setFreq(MY_FLOAT frequency)
 {
     MY_FLOAT delay;
-    delay = ((MY_FLOAT) SRATE / frequency) - 0.5;   /* length - delays */
+    delay = (SRATE / frequency) - (MY_FLOAT) 0.5;   /* length - delays */
     delayLine->setDelay(delay);
-    loopGain = 0.995 + (frequency * 0.000005);
-    if (loopGain>1.0) loopGain = 0.99999;
+    loopGain = (MY_FLOAT) 0.995 + (frequency * (MY_FLOAT)  0.000005);
+    if (loopGain>1.0) loopGain = (MY_FLOAT) 0.99999;
 }
 
 void Plucked :: pluck(MY_FLOAT amplitude)
 {
     long i;
-    pickFilt->setPole(0.999 - (amplitude*0.15));
-    pickFilt->setGain(amplitude * 0.5);
+    pickFilt->setPole((MY_FLOAT) 0.999 - (amplitude * (MY_FLOAT) 0.15));
+    pickFilt->setGain(amplitude * (MY_FLOAT) 0.5);
     for (i=0;i<length;i++)                          
-	delayLine->tick(delayLine->lastOut() * 0.6  /* fill delay with noise    */
+	delayLine->tick(delayLine->lastOut() * (MY_FLOAT)  0.6  /* fill delay with noise    */
 		  + pickFilt->tick(noise->tick())); /* additively with current  */
 						    /* contents                 */
 }
@@ -66,7 +66,7 @@ void Plucked :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
 
 void Plucked :: noteOff(MY_FLOAT amp)
 {
-    loopGain = 1.0 - amp;
+    loopGain = (MY_FLOAT) 1.0 - amp;
 #if defined(_debug_)        
     printf("Plucked : NoteOff: Amp=%lf\n",amp);
 #endif    
@@ -78,7 +78,7 @@ MY_FLOAT Plucked :: tick()
 	       loopFilt->tick(          /* here's the whole inner    */
 		delayLine->lastOut()    /* loop of the instrument!!  */
 			* loopGain)); 
-    lastOutput *= 3.0;
+    lastOutput *= (MY_FLOAT) 3.0;
     return lastOutput;
 }
 

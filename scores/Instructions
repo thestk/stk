@@ -1,5 +1,0 @@
-useage: testMono Instr file.mtx
-       where Instr = Marimba Vibraphn AgogoBel Plucked
-                     Mandolin Clarinet Flute Brass Bowed 
-                     Rhodey Wurley TubeBell HeavyMtl
-                     PercFlut BeeThree Moog1

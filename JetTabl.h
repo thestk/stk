@@ -12,11 +12,11 @@
 class JetTabl : public Object
 {
   protected:  
-    double lastOutput;
+    MY_FLOAT lastOutput;
   public:
     JetTabl();
     ~JetTabl();
-    double lookup(double deltaP);
-    double lastOut();
+    MY_FLOAT lookup(MY_FLOAT deltaP);
+    MY_FLOAT lastOut();
 };
 

@@ -1,2 +1,2 @@
 cd ..
-wish < TCLSpecs/TCLPhys.tcl | testTextIn Clarinet
+wish < TCLSpecs/TCLPhys.tcl | syntmono Clarinet -r -i

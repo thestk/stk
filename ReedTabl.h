@@ -17,8 +17,8 @@ class ReedTabl : public Object
   public:
     ReedTabl();
     ~ReedTabl();
-    void setOffset(double aValue);
-    void setSlope(double aValue);
-    MY_FLOAT lookup(double deltaP);
+    void setOffset(MY_FLOAT aValue);
+    void setSlope(MY_FLOAT aValue);
+    MY_FLOAT lookup(MY_FLOAT deltaP);
     MY_FLOAT lastOut();
 };

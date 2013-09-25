@@ -1,2 +1,2 @@
 cd ..
-wish < TCLSpecs/TCLVoice.tcl | testTextIn FMVoices
+wish < TCLSpecs/TCLVoice.tcl | syntmono FMVoices -r -i

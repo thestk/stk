@@ -26,14 +26,14 @@ DCBlock :: ~DCBlock()
 
 void DCBlock :: clear()
 {
-    outputs[0] = 0.0;
-    inputs[0] = 0.0;
-    lastOutput = 0.0;
+    outputs[0] = (MY_FLOAT) 0.0;
+    inputs[0] = (MY_FLOAT) 0.0;
+    lastOutput = (MY_FLOAT) 0.0;
 }
 
 MY_FLOAT DCBlock :: tick(MY_FLOAT sample)    
 {
-    outputs[0] = sample - inputs[0] + (0.99 * outputs[0]);
+    outputs[0] = sample - inputs[0] + ((MY_FLOAT) 0.99 * outputs[0]);
     inputs[0] = sample;
     lastOutput = outputs[0];
     return lastOutput;

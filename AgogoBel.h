@@ -2,10 +2,10 @@
 /*  AgogoBell SubClass of Modal4 Instrument*/
 /*  by Perry R. Cook, 1995-96              */ 
 /*                                         */
-/*   Controls:    CONTROL1 = stickHardness */
-/*                CONTROL2 = strikePosition*/
-/*		  CONTROL3 = vibFreq       */
-/*		  MOD_WHEEL= vibAmt        */
+/*   Controls:   CONTROL1 = stickHardness  */
+/*               CONTROL2 = strikePosition */
+/*               CONTROL3 = vibFreq        */
+/*               MOD_WHEEL= vibAmt         */
 /*******************************************/
 
 #if !defined(__AgogoBel_h)
@@ -15,7 +15,7 @@
 
 class AgogoBel : public Modal4
 {
-  public:
+ public:
     AgogoBel();
     ~AgogoBel();
     void setStickHardness(MY_FLOAT hardness);

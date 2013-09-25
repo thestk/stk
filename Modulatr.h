@@ -9,28 +9,28 @@
 #define __Modulatr_h
 
 #include "Object.h"
-#include "RawWave.h"
+#include "RawLoop.h"
 #include "SubNoise.h"
 #include "OnePole.h"
 
 class Modulatr : public Object
 {
   protected:  
-    RawWave  *vibwave;
+    RawLoop  *vibwave;
     SubNoise *noise;
     OnePole  *onepole;
-    double vibAmt;
-    double rndAmt;
-    double lastOutput;
+    MY_FLOAT vibAmt;
+    MY_FLOAT rndAmt;
+    MY_FLOAT lastOutput;
   public:
     Modulatr();
     ~Modulatr();
     void reset();
-    void setVibFreq(double vibFreq);
-    void setVibAmt(double vibAmount);
-    void setRndAmt(double rndAmount);
-    double tick();
-    double lastOut();
+    void setVibFreq(MY_FLOAT vibFreq);
+    void setVibAmt(MY_FLOAT vibAmount);
+    void setRndAmt(MY_FLOAT rndAmount);
+    MY_FLOAT tick();
+    MY_FLOAT lastOut();
 };
 
 #endif

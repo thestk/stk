@@ -1,2 +1,2 @@
 cd ..
-testMIDI | testTextIn Clarinet
+MD2SKINI | syntmono Clarinet -r -i

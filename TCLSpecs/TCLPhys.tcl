@@ -1,128 +1,60 @@
 set pitch 64.0
 set press 64.0
+set cont1 0.0
+set cont2 20.0
+set cont4 64.0
+set cont11 64.0
+set outID "stdout"
+set commtype "stdout"
+set patchnum 0
 
-button .pretty -bitmap @TCLSpecs/bitmaps/prcFunny.xbm \
--background white -foreground black
-.pretty config -bitmap @TCLSpecs/bitmaps/prc.xbm
+# Configure main window
+wm title . "STK Physical Model Controller"
+wm iconname . "physical"
+. config -bg black
 
-proc myExit {} {
-    puts stdout [format "ExitProgram"]
-    flush stdout
-    exit
-}
+# Configure "communications" menu
+menu .menu -tearoff 0
+menu .menu.communication -tearoff 0 
+.menu add cascade -label "Communication" -menu .menu.communication \
+    -underline 0
+.menu.communication add radio -label "Console" -variable commtype \
+    -value "stdout" -command { setComm }
+.menu.communication add radio -label "Socket" -variable commtype \
+    -value "socket" -command { setComm }
+. configure -menu .menu
 
-proc noteOn {pitchVal pressVal} {
-    puts stdout [format "NoteOn           0.0 1 %f %f" $pitchVal $pressVal]
-    flush stdout
-}
-
-proc noteOff {pitchVal pressVal} {
-    puts stdout [format "NoteOff          0.0 1 %f %f" $pitchVal $pressVal]
-    flush stdout
-}
-
-proc patchChange {value} {
-    global .pretty
-    puts stdout [format "ProgramChange    0.0 1 %i" $value]
-    if {$value==0}	{
-	.pretty config -bitmap @TCLSpecs/bitmaps/Klar.xbm
-    }
-    if {$value==1}	{
-	.pretty config -bitmap @TCLSpecs/bitmaps/KFloot.xbm
-    }
-    if {$value==2}	{
-	.pretty config -bitmap @TCLSpecs/bitmaps/KHose.xbm
-    }
-    if {$value==3}	{
-	.pretty config -bitmap @TCLSpecs/bitmaps/KFiddl.xbm
-    }
-    flush stdout
-}
-
-proc printWhatz {tag value1 value2 } {
-    puts stdout [format "%s %i %f" $tag $value1 $value2]
-    flush stdout
-}
-
-proc changePress {value} {
-    global press
-    set press $value
-    puts stdout [format "AfterTouch       0.0 1 %f" $press]
-    flush stdout
-}
-
-proc changePitch {value} {
-    global pitch
-    set pitch $value     
-    puts stdout [format "PitchBend        0.0 1 %f" $pitch]
-    flush stdout
-}
-
-scale .bPressure -from 0 -to 128 -length 200 \
--command {changePress } \
--activeforeground white -sliderforeground grey80\
--orient horizontal -label "Breath Pressure" \
--tickinterval 32 -showvalue true -bg grey66
-
-scale .pitch -from 0 -to 128 -length 200 \
--command {changePitch }  \
--activeforeground white -sliderforeground grey80\
--orient horizontal -label "MIDI Note Number" \
--tickinterval 32 -showvalue true -bg grey66
-
-scale .cont1 -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0 1 " 2} \
--activeforeground white -sliderforeground grey80\
--orient horizontal -label "Reed, Emb., Lip., Bow Pres." \
--tickinterval 32 -showvalue true -bg grey66 
-
-scale .cont2 -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0 1 " 4} \
--activeforeground white -sliderforeground grey80\
--orient horizontal -label "Noise Amt., Slide Length,Bow Pos." \
--tickinterval 32 -showvalue true -bg grey66 
-
-scale .cont3 -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0 1 " 11} \
--activeforeground white -sliderforeground grey80\
--orient horizontal -label "Vibrato Rate" \
--tickinterval 32 -showvalue true -bg grey66 
-
-scale .vibrato -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0 1 " 1} \
--activeforeground white -sliderforeground grey80\
--orient horizontal -label "Vibrato Amount" \
--tickinterval 32 -showvalue true -bg grey66
-
-. config -bg grey20
-
+# Configure patch change buttons
 frame .instChoice -bg black
 
-radiobutton .instChoice.clar -text Clarinet -bg grey66  \
--command { patchChange 0 }
-radiobutton .instChoice.flut -text Flute -bg grey66 \
--command { patchChange 1 }
-radiobutton .instChoice.bras -text Brass -bg grey66 \
--command { patchChange 2 }
-radiobutton .instChoice.bowd -text Bowed -bg grey66 \
--command { patchChange 3 }
+radiobutton .instChoice.clar -text "Clarinet" -bg grey66 \
+  -variable patchnum -value 0 -command { patchChange $patchnum }
+radiobutton .instChoice.flut -text "Flute" -bg grey66 \
+  -variable patchnum -value 1 -command { patchChange $patchnum }
+radiobutton .instChoice.bras -text "Brass" -bg grey66 \
+  -variable patchnum -value 2 -command { patchChange $patchnum }
+radiobutton .instChoice.bowd -text "Bowed" -bg grey66 \
+  -variable patchnum -value 3 -command { patchChange $patchnum }
 
 pack .instChoice.clar -side left -padx 5
 pack .instChoice.flut -side left -padx 5
 pack .instChoice.bras -side left -padx 5
 pack .instChoice.bowd -side left -padx 5 -pady 10
 
-pack .instChoice
+pack .instChoice -side top
 
+# Configure bitmap display
+if {$tcl_platform(platform) == "windows"} {
+    set bitmappath bitmaps
+} else {
+    set bitmappath TCLSpecs/bitmaps
+}
+button .pretty -bitmap @$bitmappath/prcFunny.xbm \
+    -background white -foreground black
+.pretty config -bitmap @$bitmappath/prc.xbm
 pack .pretty -padx 5 -pady 10
 
-pack .bPressure -padx 10 -pady 10
-pack .pitch 	-padx 10 -pady 10
-pack .vibrato 	-padx 10 -pady 10
-pack .cont1 	-padx 10 -pady 10
-pack .cont2 	-padx 10 -pady 10
-pack .cont3 	-padx 10 -pady 10
-
+# Configure "note-on" buttons
 frame .noteOn -bg black
 
 button .noteOn.on -text NoteOn -bg grey66 -command { noteOn $pitch $press }
@@ -134,3 +66,172 @@ pack .noteOn.exit -side left -padx 5 -pady 10
 
 pack .noteOn
 
+# Configure sliders
+frame .left -bg black
+frame .right -bg black
+
+scale .left.bPressure -from 0 -to 128 -length 200 \
+-command {changePress } -variable press \
+-orient horizontal -label "Breath Pressure" \
+-tickinterval 32 -showvalue true -bg grey66
+
+scale .left.pitch -from 0 -to 128 -length 200 \
+-command {changePitch } -variable pitch \
+-orient horizontal -label "MIDI Note Number" \
+-tickinterval 32 -showvalue true -bg grey66
+
+scale .left.cont1 -from 0 -to 128 -length 200 \
+-command {printWhatz "ControlChange    0.0 1 " 2} \
+-orient horizontal -label "Reed, Emb., Lip., Bow Pres." \
+-tickinterval 32 -showvalue true -bg grey66  \
+-variable cont2
+
+scale .right.cont2 -from 0 -to 128 -length 200 \
+-command {printWhatz "ControlChange    0.0 1 " 4} \
+-orient horizontal -label "Noise, Slide Len.,Bow Pos." \
+-tickinterval 32 -showvalue true -bg grey66  \
+-variable cont4
+
+scale .right.cont3 -from 0 -to 128 -length 200 \
+-command {printWhatz "ControlChange    0.0 1 " 11} \
+-orient horizontal -label "Vibrato Rate" \
+-tickinterval 32 -showvalue true -bg grey66  \
+-variable cont11 
+
+scale .right.vibrato -from 0 -to 128 -length 200 \
+-command {printWhatz "ControlChange    0.0 1 " 1} \
+-orient horizontal -label "Vibrato Amount" \
+-tickinterval 32 -showvalue true -bg grey66  \
+-variable cont1
+
+pack .left.bPressure -padx 10 -pady 10
+pack .left.pitch -padx 10 -pady 10
+pack .left.cont1 -padx 10 -pady 10
+pack .right.cont2 -padx 10 -pady 10
+pack .right.cont3 -padx 10 -pady 10
+pack .right.vibrato -padx 10 -pady 10
+
+pack .left -side left
+pack .right -side right
+
+proc myExit {} {
+    global pitch
+    global outID
+    puts $outID [format "NoteOff          0.0 1 %f 127" $pitch ]
+    flush $outID
+    puts $outID [format "ExitProgram"]
+    flush $outID
+    close $outID
+    exit
+}
+
+proc noteOn {pitchVal pressVal} {
+    global outID
+    puts $outID [format "NoteOn           0.0 1 %f %f" $pitchVal $pressVal]
+    flush $outID
+}
+
+proc noteOff {pitchVal pressVal} {
+    global outID
+    puts $outID [format "NoteOff          0.0 1 %f %f" $pitchVal $pressVal]
+    flush $outID
+}
+
+proc patchChange {value} {
+    global outID
+		global bitmappath
+    global cont1
+    global cont2
+    global cont4
+    global cont11
+    puts $outID [format "ProgramChange    0.0 1 %i" $value]
+    if {$value==0}	{
+      .pretty config -bitmap @$bitmappath/Klar.xbm
+    }
+    if {$value==1}	{
+      .pretty config -bitmap @$bitmappath/KFloot.xbm
+    }
+    if {$value==2}	{
+      .pretty config -bitmap @$bitmappath/KHose.xbm
+    }
+    if {$value==3}	{
+      .pretty config -bitmap @$bitmappath/KFiddl.xbm
+    }
+    flush $outID
+    set cont1 0.0
+    set cont2 20.0
+    set cont4 64.0
+    set cont11 64.0
+}
+
+proc printWhatz {tag value1 value2 } {
+    global outID
+    puts $outID [format "%s %i %f" $tag $value1 $value2]
+    flush $outID
+}
+
+proc changePress {value} {
+    global outID
+    puts $outID [format "AfterTouch       0.0 1 %f" $value]
+    flush $outID
+}
+
+proc changePitch {value} {
+    global outID
+    puts $outID [format "PitchBend        0.0 1 %.3f" $value]
+    flush $outID
+}
+
+# Socket connection procedure
+set d .socketdialog
+
+proc setComm {} {
+		global outID
+		global commtype
+		global d
+		if {$commtype == "stdout"} {
+				if { [string compare "stdout" $outID] } {
+						set i [tk_dialog .dialog "Break Socket Connection?" {You are about to break an existing socket connection ... is this what you want to do?} "" 0 Cancel OK]
+						switch $i {
+								0 {set commtype "socket"}
+								1 {close $outID
+								   set outID "stdout"}
+						}
+				}
+		} elseif { ![string compare "stdout" $outID] } {
+				set sockport 2001
+				toplevel $d
+				wm title $d "STK Client Socket Connection"
+				wm resizable $d 0 0
+				grab $d
+				label $d.message -text "Specify a socket port number below (if different than the STK default of 2001) and then click the \"Connect\" button to invoke a socket-client connection attempt to the STK socket server." \
+								-background white -font {Helvetica 10 bold} \
+								-wraplength 3i -justify left
+				frame $d.sockport
+				entry $d.sockport.entry -width 6
+				label $d.sockport.text -text "Socket Port Number:" \
+								-font {Helvetica 10 bold}
+				pack $d.message -side top -padx 5 -pady 10
+				pack $d.sockport.text -side left -padx 1 -pady 10
+				pack $d.sockport.entry -side right -padx 5 -pady 10
+				pack $d.sockport -side top -padx 5 -pady 10
+				$d.sockport.entry insert 0 $sockport
+				frame $d.buttons
+				button $d.buttons.cancel -text "Cancel" -bg grey66 \
+								-command { set commtype "stdout"
+				                   set outID "stdout"
+				                   destroy $d }
+				button $d.buttons.connect -text "Connect" -bg grey66 \
+								-command {
+						set sockport [$d.sockport.entry get]
+					  set err [catch {socket localhost $sockport} outID]
+						if {$err == 0} {
+								destroy $d
+						} else {
+								tk_dialog $d.error "Socket Error" {Error: Unable to make socket connection.  Make sure the STK socket server is first running and that the port number is correct.} "" 0 OK 
+				}   }
+				pack $d.buttons.cancel -side left -padx 5 -pady 10
+				pack $d.buttons.connect -side right -padx 5 -pady 10
+				pack $d.buttons -side bottom -padx 5 -pady 10
+		}
+}

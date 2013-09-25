@@ -9,6 +9,8 @@
 
 #include "RawWave.h"
 
+#include "swapstuf.h"
+
 RawWave :: RawWave(char *fileName)
 {
     long i;
@@ -21,21 +23,25 @@ RawWave :: RawWave(char *fileName)
     }
     i = 0;
     while (fread(&temp,2,1,fd)) i++;
+
     length = i;
     fseek(fd,0,0);
     data = (MY_FLOAT *) malloc(MY_FLOAT_SIZE * (length + 1));
     myData = 1;
     i = 0;
     while (fread(&temp,2,1,fd))   {
+        #ifdef __LITTLE_ENDIAN__
+            temp = SwapShort (temp);
+        #endif
 	data[i] = temp;
 	i++;
     }
     data[length] = data[length-1];
     fclose(fd);
     looping = 0;
-    time = length;
-    phaseOffset = 0.0;
-    rate = 1.0;
+    time = (MY_FLOAT) length;
+    phaseOffset = (MY_FLOAT) 0.0;
+    rate = (MY_FLOAT) 1.0;
     allDone = 0;
 }
 
@@ -46,9 +52,9 @@ RawWave :: RawWave(MY_FLOAT *someData, long aLength)
     data = someData;
     myData = 0;
     looping = 0;
-    time = 0.0;
-    phaseOffset = 0.0;
-    rate = 1.0;
+    time = (MY_FLOAT) 0.0;
+    phaseOffset = (MY_FLOAT) 0.0;
+    rate = (MY_FLOAT) 1.0;
 }
 
 RawWave :: ~RawWave()
@@ -61,25 +67,25 @@ RawWave :: ~RawWave()
 
 void RawWave :: reset()
 {
-    time = 0.0;
-    lastOutput = 0.0;
+    time = (MY_FLOAT) 0.0;
+    lastOutput = (MY_FLOAT) 0.0;
     allDone = 0;
 }
 
 void RawWave :: normalize()
 {
-    this->normalize(1.0);
+    this->normalize((MY_FLOAT) 1.0);
 }
 
 void RawWave :: normalize(MY_FLOAT newPeak)
 {
     long i;
-    MY_FLOAT max = 0.0;
+    MY_FLOAT max = (MY_FLOAT) 0.0;
     for (i=0;i<=length;i++)
 	if (fabs(data[i]) > max) 
-	    max = fabs(data[i]);
+	    max = (MY_FLOAT) fabs(data[i]);
     if (max > 0.0)       {
-	max = 1.0 / max;
+	max = (MY_FLOAT) 1.0 / max;
 	max *= newPeak;
 	for (i=0;i<=length;i++)
 	    data[i] *= max;
@@ -93,7 +99,7 @@ void RawWave :: setRate(MY_FLOAT aRate)
 
 void RawWave :: setFreq(MY_FLOAT aFreq)
 {
-    rate = length * ONE_OVER_SRATE * aFreq;
+    rate = length * (MY_FLOAT) ONE_OVER_SRATE * aFreq;
 }
 
 void RawWave :: addTime(MY_FLOAT aTime)     /* Add an absolute time */
@@ -113,7 +119,7 @@ void RawWave :: addPhaseOffset(MY_FLOAT anAngle)
 
 void RawWave :: setLooping(int aLoopStatus)
 {
-    time = 0;
+    time = (MY_FLOAT) 0;
     looping = aLoopStatus;
     if (looping) data[length] = data[0];
 }
@@ -155,11 +161,11 @@ int RawWave :: informTick()
     }
     else {    
 	if (time >= length)  {          /*  Check for end of sound       */
-	    time = length-1;            /*  stick at end                 */
+	    time = length-(MY_FLOAT) 1; /*  stick at end                 */
 	    allDone = 1;                /*  Information for one-shot use */
 	}
 	else if (time < 0.0)            /*  Check for end of sound       */
-	    time = 0.0;                 /*  stick at beg                 */
+	    time = (MY_FLOAT) 0.0;      /*  stick at beg                 */
     }
     
     temp_time = time;
@@ -174,9 +180,9 @@ int RawWave :: informTick()
 	}
 	else    {
 	    if (temp_time >= length)    /*  Check for end of sound       */
-		temp_time = length-1;   /*  stick at end                 */
+		temp_time = length - (MY_FLOAT) 1; /*  stick at end                 */
 	    else if (temp_time < 0.0)   /*  check for end of sound       */
-		temp_time = 0.0;        /*  stick at beg                 */
+		temp_time = (MY_FLOAT) 0.0; /*  stick at beg                 */
 	}
     }
 

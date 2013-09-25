@@ -14,21 +14,21 @@ HeavyMtl :: HeavyMtl() : FM4Alg3()
                     "rawwaves/twopeaks.raw",
                     "rawwaves/sinewave.raw");
     
-    this->setRatio(0,1.00     );
-    this->setRatio(1,4.00 * 0.999);
-    this->setRatio(2,3.00 * 1.001);
-    this->setRatio(3,0.50 * 1.002);
+    this->setRatio(0,(MY_FLOAT) (1.00 * 1.000));
+    this->setRatio(1,(MY_FLOAT) (4.00 * 0.999));
+    this->setRatio(2,(MY_FLOAT) (3.00 * 1.001));
+    this->setRatio(3,(MY_FLOAT) (0.50 * 1.002));
     gains[0] = __FM4Op_gains[92];
     gains[1] = __FM4Op_gains[76];
     gains[2] = __FM4Op_gains[91];
     gains[3] = __FM4Op_gains[68];
-    adsr[0]->setAll(0.050,0.0100,1.0,0.001);
-    adsr[1]->setAll(0.050,0.0010,1.0,0.0001);
-    adsr[2]->setAll(0.001,0.0020,1.0,0.0002);
-    adsr[3]->setAll(0.050,0.0010,0.2,0.0002);
-    twozero->setGain(2.0);
-    vibWave->setFreq(5.5);
-    modDepth = 0.00;
+    adsr[0]->setAllTimes((MY_FLOAT) 0.001,(MY_FLOAT) 0.001,(MY_FLOAT) 1.0,(MY_FLOAT) 0.01);
+    adsr[1]->setAllTimes((MY_FLOAT) 0.001,(MY_FLOAT) 0.010,(MY_FLOAT) 1.0,(MY_FLOAT) 0.50);
+    adsr[2]->setAllTimes((MY_FLOAT) 0.010,(MY_FLOAT) 0.005,(MY_FLOAT) 1.0,(MY_FLOAT) 0.20);
+    adsr[3]->setAllTimes((MY_FLOAT) 0.030,(MY_FLOAT) 0.010,(MY_FLOAT) 0.2,(MY_FLOAT) 0.20);
+    twozero->setGain((MY_FLOAT) 2.0);
+    vibWave->setFreq((MY_FLOAT) 5.5);
+    modDepth = (MY_FLOAT) 0.00;
 }  
 
 HeavyMtl :: ~HeavyMtl()

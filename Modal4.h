@@ -34,7 +34,7 @@ class Modal4 : public Instrmnt
     MY_FLOAT resons[4];
   public:
     Modal4();
-    ~Modal4();
+    virtual ~Modal4();
     void clear();
     virtual void setFreq(MY_FLOAT frequency);
     void setRatioAndReson(int whichOne, MY_FLOAT ratio, MY_FLOAT reson);

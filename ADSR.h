@@ -18,26 +18,29 @@
 
 class ADSR : public Envelope
 {
-  protected:  
-    MY_FLOAT attackRate;
-    MY_FLOAT decayRate;
-    MY_FLOAT sustainLevel;
-    MY_FLOAT releaseRate;
-  public:
-    ADSR();
-    ~ADSR();
-    void keyOn();
-    void keyOff();
-    void setAttackRate(MY_FLOAT aRate);
-    void setDecayRate(MY_FLOAT aRate);
-    void setSustainLevel(MY_FLOAT aLevel);
-    void setReleaseRate(MY_FLOAT aRate);
-    void setAll(MY_FLOAT attRate, MY_FLOAT decRate, MY_FLOAT susLevel, MY_FLOAT relRate);
-    void setTarget(MY_FLOAT aTarget);
-    void setValue(MY_FLOAT aValue);
-    MY_FLOAT tick();
-    int informTick();  
-    MY_FLOAT lastOut();
+ protected:  
+  MY_FLOAT attackRate;
+  MY_FLOAT decayRate;
+  MY_FLOAT sustainLevel;
+  MY_FLOAT releaseRate;
+ public:
+  ADSR();
+  ~ADSR();
+  void keyOn();
+  void keyOff();
+  void setAttackRate(MY_FLOAT aRate);
+  void setDecayRate(MY_FLOAT aRate);
+  void setSustainLevel(MY_FLOAT aLevel);
+  void setReleaseRate(MY_FLOAT aRate);
+  void setAttackTime(MY_FLOAT aTime);
+  void setDecayTime(MY_FLOAT aTime);
+  void setReleaseTime(MY_FLOAT aTime);
+  void setAllTimes(MY_FLOAT attTime, MY_FLOAT decTime, MY_FLOAT susLevel, MY_FLOAT relTime);
+  void setTarget(MY_FLOAT aTarget);
+  void setValue(MY_FLOAT aValue);
+  MY_FLOAT tick();
+  int informTick();  
+  MY_FLOAT lastOut();
 };
 
 #endif

@@ -11,169 +11,173 @@
 /*******************************************/
 
 #include "SingWave.h"
-
+#include "swapstuf.h"
+ 
 SingWave :: SingWave(char *fileName)
 {
-    long i;
-    short temp;
-    FILE *fd;
-    fd = fopen(fileName,"rb");
-    if (!fd)   {
-	printf("Couldn't find soundfile %s  !!!!!!!!\n",fileName);
-    }
-    i = 0;
-    while (fread(&temp,2,1,fd)) i++;
-    length = i;
-    fseek(fd,0,0);
-    data = (MY_FLOAT *) malloc(MY_FLOAT_SIZE * (length + 1));
-    i = 0;
-    while (fread(&temp,2,1,fd))   {
-	data[i] = temp;
-	i++;
-    }
-    data[length] = data[length-1];
-    fclose(fd);
-    mytime = 0.0;
-    rate = 1.0;
-    sweepRate = 0.001;
-    modulator = new Modulatr;
-    modulator->setVibFreq(6.0);
-    modulator->setVibAmt(0.04);
-    modulator->setRndAmt(0.005);
-    envelope = new Envelope;
-    pitchEnvelope = new Envelope;
-    this->setFreq(75.0);
-    pitchEnvelope->setRate(1.0);
-    this->tick();
-    this->tick();
-    pitchEnvelope->setRate(sweepRate * rate);
+	long i;
+	short temp;
+	FILE *fd;
+	//  extern short SwapShort(short);
+
+	fd = fopen(fileName,"rb");
+	if (!fd)   {
+		printf("Couldn't find soundfile %s  !!!!!!!!\n",fileName);
+	}
+	i = 0;
+	while (fread(&temp,2,1,fd)) i++;
+	length = i;
+	fseek(fd,0,0);
+	data = (MY_FLOAT *) malloc(MY_FLOAT_SIZE * (length + 1));
+	i = 0;
+	while (fread(&temp,2,1,fd))   {
+#ifdef __LITTLE_ENDIAN__
+	  temp = SwapShort(temp);
+#endif
+	  data[i] = temp;
+	  i++;
+	}
+	data[length] = data[length-1];
+	fclose(fd);
+	mytime = (MY_FLOAT) 0.0;
+	rate = (MY_FLOAT) 1.0;
+	sweepRate = (MY_FLOAT) 0.001;
+	modulator = new Modulatr;
+	modulator->setVibFreq((MY_FLOAT) 6.0);
+	modulator->setVibAmt((MY_FLOAT) 0.04);
+	modulator->setRndAmt((MY_FLOAT) 0.005);
+	envelope = new Envelope;
+	pitchEnvelope = new Envelope;
+	this->setFreq((MY_FLOAT) 75.0);
+	pitchEnvelope->setRate((MY_FLOAT) 1.0);
+	this->tick();
+	this->tick();
+	pitchEnvelope->setRate(sweepRate * rate);
 }
 
 SingWave :: ~SingWave()
 {
-    delete modulator;
-    delete envelope;
-    delete pitchEnvelope;
-    free(data);
+	delete modulator;
+	delete envelope;
+	delete pitchEnvelope;
+	free(data);
 }
 
 void SingWave :: reset()
 {
-    mytime = 0.0;
-    lastOutput = 0.0;
+	mytime = (MY_FLOAT)  0.0;
+	lastOutput = (MY_FLOAT) 0.0;
 }
 
 void SingWave :: normalize()
 {
-    long i;
-    MY_FLOAT max = 0.0;
-    for (i=0;i<=length;i++)
-	if (fabs(data[i]) > max) 
-	    max = fabs(data[i]);
-    if (max > 0.0)       {
-	max = 1.0 / max;
+	long i;
+	MY_FLOAT max = (MY_FLOAT) 0.0;
 	for (i=0;i<=length;i++)
+		if (fabs(data[i]) > max) 
+	    max = (MY_FLOAT) fabs((double) data[i]);
+	if (max > 0.0)       {
+		max = (MY_FLOAT) 1.0 / max;
+		for (i=0;i<=length;i++)
 	    data[i] *= max;
-    }
+	}
 }
 
 void SingWave :: normalize(MY_FLOAT newPeak)
 {
-    long i;
-    MY_FLOAT max = 0.0;
-    for (i=0;i<=length;i++)
-	if (fabs(data[i]) > max) 
-	    max = fabs(data[i]);
-    if (max > 0.0)       {
-	max = 1.0 / max;
-	max *= newPeak;
+	long i;
+	MY_FLOAT max = (MY_FLOAT) 0.0;
 	for (i=0;i<=length;i++)
+		if (fabs(data[i]) > max) 
+	    max = (MY_FLOAT) fabs((double) data[i]);
+	if (max > 0.0)       {
+		max = (MY_FLOAT) 1.0 / max;
+		max *= newPeak;
+		for (i=0;i<=length;i++)
 	    data[i] *= max;
-    }
+	}
 }
 
 void SingWave :: setFreq(MY_FLOAT aFreq)
 {
-    MY_FLOAT temp;
-    temp = rate;
-    rate = length * ONE_OVER_SRATE * aFreq;
-    temp -= rate;
-    if (temp<0) temp = -temp;
-    pitchEnvelope->setTarget(rate);
-    pitchEnvelope->setRate(sweepRate * temp);
+	MY_FLOAT temp;
+	temp = rate;
+	rate = length * ONE_OVER_SRATE * aFreq;
+	temp -= rate;
+	if (temp<0) temp = -temp;
+	pitchEnvelope->setTarget(rate);
+	pitchEnvelope->setRate(sweepRate * temp);
 }
 
 void SingWave :: setVibFreq(MY_FLOAT vibFreq)
 {
-    modulator->setVibFreq(vibFreq);
+	modulator->setVibFreq(vibFreq);
 }
 
 void SingWave :: setVibAmt(MY_FLOAT vibAmount)
 {
-    modulator->setVibAmt(vibAmount);
+	modulator->setVibAmt(vibAmount);
 }
 
 void SingWave :: setRndAmt(MY_FLOAT rndAmount)
 {
-    modulator->setRndAmt(rndAmount);
+	modulator->setRndAmt(rndAmount);
 }
 
 void SingWave :: setSweepRate(MY_FLOAT swpRate)
 {
-     sweepRate = swpRate;
+	sweepRate = swpRate;
 }
 
 void SingWave :: setGainRate(MY_FLOAT gainRate)
 {
-     envelope->setRate(gainRate);
+	envelope->setRate(gainRate);
 }
 
 void SingWave :: setGainTarget(MY_FLOAT aTarget)
 {
-    envelope->setTarget(aTarget);
+	envelope->setTarget(aTarget);
 }
 
 void SingWave :: noteOn()
 {
-     envelope->keyOn();
+	envelope->keyOn();
 }
 
 void SingWave :: noteOff()
 {
-     envelope->keyOff();
+	envelope->keyOff();
 }
 
 MY_FLOAT SingWave ::  tick()
 {
-    long temp;
-    MY_FLOAT alpha, temp_rate;
+	long temp;
+	MY_FLOAT alpha, temp_rate;
     
-    temp_rate = pitchEnvelope->tick();
-    mytime += temp_rate;                /*  Update current time            */
-    mytime += temp_rate * 
-		modulator->tick();      /*  Add vibratos                   */
+	temp_rate = pitchEnvelope->tick();
+	mytime += temp_rate;                /* Update current time */
+	mytime += temp_rate * modulator->tick();   /* Add vibratos */
     
-    while (mytime >= length)  {         /*  Check for end of sound         */
-	mytime -= length;               /*  loop back to beginning         */
-    }
-    while (mytime < 0.0)  {             /*  Check for end of sound         */
-	mytime += length;               /*  loop back to beginning         */
-    }
+	while (mytime >= length)  {  /* Check for end of sound */
+		mytime -= length;          /* loop back to beginning */
+	}
+	while (mytime < 0.0)  {      /* Check for end of sound */
+		mytime += length;          /* loop back to beginning */
+	}
 
-    temp = (long) mytime;               /*  Integer part of time address   */
-    alpha = mytime - (MY_FLOAT) temp;   /*  fractional part of time address*/
+	temp = (long) mytime;               /* Integer part of time address */
+	alpha = mytime - (MY_FLOAT) temp;   /*  fractional part of time address */
 
-    lastOutput = alpha * data[temp+1];  /*  Do linear                      */
-    lastOutput += (1.0 - alpha) * 
-			data[temp];     /*      interpolation              */
-    lastOutput *= envelope->tick();
+	lastOutput = alpha * data[temp+1];                   /* Do linear */
+	lastOutput += ((MY_FLOAT) 1.0 - alpha) * data[temp]; /* interpolation */
+	lastOutput *= envelope->tick();
     
-    return lastOutput;                        
+	return lastOutput;                        
 }
 
 MY_FLOAT SingWave :: lastOut()
 {
-    return lastOutput;
+	return lastOutput;
 }
 
 /************   Test Main Program   *****************/

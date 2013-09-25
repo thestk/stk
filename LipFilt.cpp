@@ -15,8 +15,8 @@ LipFilt :: LipFilt()
 {
     MY_FLOAT coeffs[2];
     filter = new BiQuad;
-    coeffs[0] = 0.0;
-    coeffs[1] = 0.0;
+    coeffs[0] = (MY_FLOAT) 0.0;
+    coeffs[1] = (MY_FLOAT) 0.0;
     filter->setZeroCoeffs(coeffs);
     this->clear();
 }
@@ -29,17 +29,17 @@ LipFilt :: ~LipFilt()
 void LipFilt :: clear()
 {
     filter->clear();
-    lastOutput = 0.0;
+    lastOutput = (MY_FLOAT) 0.0;
 }
 
 void LipFilt :: setFreq(MY_FLOAT frequency)
 {
     MY_FLOAT coeffs[2];
-    coeffs[0] = 2.0 * 0.997 * 
-		cos(TWO_PI * frequency / SRATE);  /* damping should change with  */
-    coeffs[1] = -0.997 * 0.997;                 /* lip parameters, but not yet.*/
+    coeffs[0] = (MY_FLOAT) 2.0 * (MY_FLOAT) 0.997 * 
+		(MY_FLOAT)  cos(TWO_PI * frequency / SRATE);      /* damping should change with  */
+    coeffs[1] = (MY_FLOAT) (-0.997 * 0.997);  /* lip parameters, but not yet.*/
     filter->setPoleCoeffs(coeffs);                             
-    filter->setGain(0.03);
+    filter->setGain((MY_FLOAT) 0.03);
 }
 
 /*  NOTE:  Here we should add lip tension                 */
@@ -53,9 +53,10 @@ MY_FLOAT LipFilt :: tick(MY_FLOAT mouthSample,MY_FLOAT boreSample)
     temp = mouthSample - boreSample;          /* Differential pressure              */
     temp = filter->tick(temp);                /* Force -> position                  */
     temp = temp*temp;                         /* Simple position to area mapping    */
-    if (temp > 1.0) temp = 1.0;               /* Saturation at + 1.0                */
+    if (temp > 1.0) temp = (MY_FLOAT) 1.0;    /* Saturation at + 1.0                */
     lastOutput = temp * mouthSample;          /* Assume mouth input = area          */
-    lastOutput += (1.0 - temp) * boreSample;  /* and Bore reflection is compliment. */
+    lastOutput += ((MY_FLOAT) 1.0 - temp) 
+							  * boreSample;  /* and Bore reflection is compliment. */
     return lastOutput;
 }
 

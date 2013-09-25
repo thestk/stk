@@ -25,11 +25,14 @@
 class Mandolin : public Plucked2
 {
   protected:  
-    RawWave *soundfile;
+    RawWave *soundfile[12];
+    MY_FLOAT directBody;
+    int mic;
     long dampTime;
     int waveDone;
   public:
     Mandolin(MY_FLOAT lowestFreq);
+    virtual ~Mandolin();
     void pluck(MY_FLOAT amplitude);
     void pluck(MY_FLOAT amplitude,MY_FLOAT position);
     virtual void noteOn(MY_FLOAT freq, MY_FLOAT amp);

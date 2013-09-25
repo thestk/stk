@@ -15,7 +15,7 @@ DLineN :: DLineN(long max_length)
     length = max_length;
     inputs = (MY_FLOAT *) malloc(length * MY_FLOAT_SIZE);
     this->clear();
-    this->setDelay(length * 0.5);
+    this->setDelay(length * (MY_FLOAT) 0.5);
     inPoint = 0;
     outPoint = 0;
 }
@@ -28,8 +28,8 @@ DLineN :: ~DLineN()
 void DLineN :: clear()
 {
     long i;
-    for (i=0;i<length;i++) inputs[i] = 0.0;
-    lastOutput = 0;
+    for (i=0;i<length;i++) inputs[i] = (MY_FLOAT) 0.0;
+    lastOutput = (MY_FLOAT) 0;
 }
 
 void DLineN :: setDelay(MY_FLOAT lag)

@@ -26,18 +26,22 @@ FM4Alg8 :: FM4Alg8() : FM4Op()
     /*  we still don't know what they will be.             */
 }  
 
+FM4Alg8 :: ~FM4Alg8()
+{
+}
+
 MY_FLOAT FM4Alg8 :: tick()
 {
     MY_FLOAT temp;
 
     waves[3]->addPhaseOffset(twozero->lastOut());
-    temp = control1 * 2.0 * gains[3] * adsr[3]->tick() * waves[3]->tick();
+    temp = control1 * (MY_FLOAT) 2.0 * gains[3] * adsr[3]->tick() * waves[3]->tick();
     twozero->tick(temp);
-    temp += control2 * 2.0 * gains[2] * adsr[2]->tick() * waves[2]->tick();
+    temp += control2 * (MY_FLOAT) 2.0 * gains[2] * adsr[2]->tick() * waves[2]->tick();
     temp += gains[1] * adsr[1]->tick() * waves[1]->tick();
     temp += gains[0] * adsr[0]->tick() * waves[0]->tick();
     
-    lastOutput = temp * 0.125;
+    lastOutput = temp * (MY_FLOAT) 0.125;
     return lastOutput;
 }
 

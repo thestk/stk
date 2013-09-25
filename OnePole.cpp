@@ -17,40 +17,40 @@
 
 OnePole :: OnePole() : Filter()
 {
-    poleCoeff = 0.9;
-    gain = 1.0;
-    sgain = 0.1;
+    poleCoeff = (MY_FLOAT) 0.9;
+    gain = (MY_FLOAT) 1.0;
+    sgain = (MY_FLOAT) 0.1;
     outputs = (MY_FLOAT *) malloc(MY_FLOAT_SIZE);
-    outputs[0] = 0.0;
+    outputs[0] = (MY_FLOAT) 0.0;
 }
 
 OnePole :: ~OnePole()    
 {
-    free(outputs);
+  free(outputs);
 }
 
 void OnePole :: clear()
 {
-    outputs[0] = 0.0;
-    lastOutput = 0.0;
+    outputs[0] = (MY_FLOAT) 0.0;
+    lastOutput = (MY_FLOAT) 0.0;
 }
 
 void OnePole :: setPole(MY_FLOAT aValue)
 {
     poleCoeff = aValue;
     if (poleCoeff > 0.0)                   /*  Normalize gain to 1.0 max */
-	sgain = gain * (1.0 - poleCoeff);
+	sgain = gain * ((MY_FLOAT) 1.0 - poleCoeff);
     else
-	sgain = gain * (1.0 + poleCoeff);
+	sgain = gain * ((MY_FLOAT) 1.0 + poleCoeff);
 }
 
 void OnePole :: setGain(MY_FLOAT aValue)
 {
     gain = aValue;
     if (poleCoeff > 0.0)        
-	sgain = gain * (1.0 - poleCoeff);  /*  Normalize gain to 1.0 max */
+	sgain = gain * ((MY_FLOAT) 1.0 - poleCoeff);  /*  Normalize gain to 1.0 max */
     else
-	sgain = gain * (1.0 + poleCoeff);
+	sgain = gain * ((MY_FLOAT) 1.0 + poleCoeff);
 }
 
 MY_FLOAT OnePole :: tick(MY_FLOAT sample)  /*   Perform Filter Operation */

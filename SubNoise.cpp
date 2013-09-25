@@ -8,7 +8,7 @@
 
 SubNoise :: SubNoise() : Noise()
 {    
-    lastOutput = 0.0;
+    lastOutput = (MY_FLOAT) 0.0;
     howOften = 15;
     counter = 15;
 }
@@ -20,7 +20,7 @@ SubNoise :: ~SubNoise()
 
 SubNoise :: SubNoise(int subSample) : Noise()
 {    
-    lastOutput = 0.0;
+    lastOutput = (MY_FLOAT) 0.0;
     howOften = subSample-1;
     counter = subSample-1;
 }

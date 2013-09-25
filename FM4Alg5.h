@@ -26,6 +26,7 @@ class FM4Alg5 : public FM4Op
 {
   public:
     FM4Alg5();
+    virtual ~FM4Alg5();
     MY_FLOAT tick();
 };
 

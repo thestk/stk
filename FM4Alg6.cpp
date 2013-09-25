@@ -24,17 +24,21 @@ FM4Alg6 :: FM4Alg6() : FM4Op()
     /*  we still don't know what they will be.             */
 }  
 
+FM4Alg6 :: ~FM4Alg6()
+{
+}
+
 MY_FLOAT FM4Alg6 :: tick()
 {
     MY_FLOAT temp,temp2;
 
     temp = gains[3] * adsr[3]->tick() * waves[3]->tick();
-    temp2 = vibWave->tick() * modDepth * 0.1;         /*  Calculate frequency mod  */
+    temp2 = vibWave->tick() * modDepth * (MY_FLOAT) 0.1;         /*  Calculate frequency mod  */
 
-    waves[0]->setFreq(baseFreq * (1.0 + temp2) * ratios[0]);
-    waves[1]->setFreq(baseFreq * (1.0 + temp2) * ratios[1]);
-    waves[2]->setFreq(baseFreq * (1.0 + temp2) * ratios[2]);
-    waves[3]->setFreq(baseFreq * (1.0 + temp2) * ratios[3]);
+    waves[0]->setFreq(baseFreq * ((MY_FLOAT) 1.0 + temp2) * ratios[0]);
+    waves[1]->setFreq(baseFreq * ((MY_FLOAT) 1.0 + temp2) * ratios[1]);
+    waves[2]->setFreq(baseFreq * ((MY_FLOAT) 1.0 + temp2) * ratios[2]);
+    waves[3]->setFreq(baseFreq * ((MY_FLOAT) 1.0 + temp2) * ratios[3]);
 
     waves[0]->addPhaseOffset(temp * mods[0]);
     waves[1]->addPhaseOffset(temp * mods[1]);
@@ -45,7 +49,7 @@ MY_FLOAT FM4Alg6 :: tick()
     temp += gains[1] * tilt[1] * adsr[1]->tick() * waves[1]->tick();
     temp += gains[2] * tilt[2] * adsr[2]->tick() * waves[2]->tick();
     
-    return temp * 0.33;
+    return temp * (MY_FLOAT) 0.33;
 }
 
 void FM4Alg6 :: controlChange(int number, MY_FLOAT value)
