@@ -1,5 +1,9 @@
 % The Synthesis ToolKit in C++ (STK)
-% By Perry R. Cook and Gary P. Scavone, 1995-2012.
+% Perry R. Cook and Gary P. Scavone
+% 1995--2012
+
+# The Synthesis ToolKit in C++ (STK)
+By Perry R. Cook and Gary P. Scavone, 1995--2012.
 
 The Synthesis ToolKit in C++ can be used in a variety of ways, depending on your particular needs.  Some people simmply choose the classes they need for a particular project and copy those to their project directory.  Others like to compile and link to a library of object files.  STK was not designed with one particular style of use in mind.
 
