@@ -1,27 +1,44 @@
-/**********************************************/
-/* Jet Table Object by Perry R. Cook, 1995-96 */
-/* Consult Fletcher and Rossing, Karjalainen, */
-/*       Cook, more, for information.         */
-/* This, as with many other of my "tables",   */
-/* is not a table, but is computed by poly-   */
-/* nomial calculation.                        */
-/**********************************************/
+/***************************************************/
+/*! \class JetTabl
+    \brief STK jet table class.
 
-#if !defined(__JetTabl_h)
-#define __JetTabl_h
+    This class implements a flue jet non-linear
+    function, computed by a polynomial calculation.
+    Contrary to the name, this is not a "table".
 
-#include "Object.h"
+    Consult Fletcher and Rossing, Karjalainen,
+    Cook, and others for more information.
 
-class JetTabl : public Object
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
+
+#if !defined(__JETTABL_H)
+#define __JETTABL_H
+
+#include "Stk.h"
+
+class JetTabl : public Stk
 {
+public:
+  //! Default constructor.
+  JetTabl();
+
+  //! Class destructor.
+  ~JetTabl();
+
+  //! Return the last output value.
+  MY_FLOAT lastOut() const;
+
+  //! Return the function value for \e input.
+  MY_FLOAT tick(MY_FLOAT input);
+
+  //! Take \e vectorSize inputs and return the corresponding function values in \e vector.
+  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+
 protected:  
   MY_FLOAT lastOutput;
-public:
-  JetTabl();
-  ~JetTabl();
-  MY_FLOAT lookup(MY_FLOAT deltaP);
-  MY_FLOAT tick(MY_FLOAT deltaP);
-  MY_FLOAT lastOut();
+
 };
 
 #endif

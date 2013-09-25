@@ -1,53 +1,94 @@
-/*******************************************/
-/*  Two Zero Filter Class,                 */
-/*  by Perry R. Cook, 1995-96              */ 
-/*  See books on filters to understand     */
-/*  more about how this works.  Nothing    */
-/*  out of the ordinary in this version.   */
-/*******************************************/
+/***************************************************/
+/*! \class TwoZero
+    \brief STK two-zero filter class.
+
+    This protected Filter subclass implements
+    a two-zero digital filter.  A method is
+    provided for creating a "notch" in the
+    frequency response while maintaining a
+    constant filter gain.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "TwoZero.h"
+#include <math.h>
 
 TwoZero :: TwoZero() : Filter()
 {
-  inputs = (MY_FLOAT *) malloc(2 * sizeof(MY_FLOAT));
-  zeroCoeffs[0] = (MY_FLOAT) 0.0;
-  zeroCoeffs[1] = (MY_FLOAT) 0.0;
-  gain = (MY_FLOAT) 1.0;
-  this->clear();
+  MY_FLOAT B[3] = {1.0, 0.0, 0.0};
+  MY_FLOAT A = 1.0;
+  Filter::setCoefficients( 3, B, 1, &A );
 }
 
 TwoZero :: ~TwoZero()
 {
-  free(inputs);
 }
 
-void TwoZero :: clear()
+void TwoZero :: clear(void)
 {
-  inputs[0] = (MY_FLOAT) 0.0;
-  inputs[1] = (MY_FLOAT) 0.0;
-  lastOutput = (MY_FLOAT) 0.0;
+  Filter::clear();
 }
 
-void TwoZero :: setZeroCoeffs(MY_FLOAT *coeffs)
+void TwoZero :: setB0(MY_FLOAT b0)
 {
-  zeroCoeffs[0] = coeffs[0];
-  zeroCoeffs[1] = coeffs[1];
+  b[0] = b0;
 }
 
-void TwoZero :: setGain(MY_FLOAT aValue)
+void TwoZero :: setB1(MY_FLOAT b1)
 {
-  gain = aValue;
+  b[1] = b1;
 }
 
-MY_FLOAT TwoZero :: tick(MY_FLOAT sample) // Perform Filter Operation
-{                                         // TwoZero is a two zero filter (duh!)
-                                          // Look it up in your favorite DSP text
-  lastOutput = zeroCoeffs[0] * inputs[0];
-  lastOutput += zeroCoeffs[1] * inputs[1];
-  inputs[1] = inputs[0];
+void TwoZero :: setB2(MY_FLOAT b2)
+{
+  b[2] = b2;
+}
+
+void TwoZero :: setNotch(MY_FLOAT frequency, MY_FLOAT radius)
+{
+  b[2] = radius * radius;
+  b[1] = (MY_FLOAT) -2.0 * radius * cos(TWO_PI * (double) frequency / Stk::sampleRate());
+
+  // Normalize the filter gain.
+  if (b[1] > 0.0) // Maximum at z = 0.
+    b[0] = 1.0 / (1.0+b[1]+b[2]);
+  else            // Maximum at z = -1.
+    b[0] = 1.0 / (1.0-b[1]+b[2]);
+  b[1] *= b[0];
+  b[2] *= b[0];
+}
+
+void TwoZero :: setGain(MY_FLOAT theGain)
+{
+  Filter::setGain(theGain);
+}
+
+MY_FLOAT TwoZero :: getGain(void) const
+{
+  return Filter::getGain();
+}
+
+MY_FLOAT TwoZero :: lastOut(void) const
+{
+  return Filter::lastOut();
+}
+
+MY_FLOAT TwoZero :: tick(MY_FLOAT sample)
+{
   inputs[0] = gain * sample;
-  lastOutput += inputs[0];
-  return lastOutput;
+  outputs[0] = b[2] * inputs[2] + b[1] * inputs[1] + b[0] * inputs[0];
+  inputs[2] = inputs[1];
+  inputs[1] = inputs[0];
+
+  return outputs[0];
 }
 
+MY_FLOAT *TwoZero :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick(vector[i]);
+
+  return vector;
+}

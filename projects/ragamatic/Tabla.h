@@ -1,29 +1,25 @@
-/*******************************************/
-/*  Master Class for Drum Synthesizer      */
-/*  by Perry R. Cook, 1995-96              */
-/*                                         */
-/*  This instrument contains a bunch of    */
-/*  RawWvIn objects, run through a bunch   */
-/*  of one-pole filters.  All the          */
-/*  corresponding rawwave files have been  */
-/*  sampled at 22050 Hz.  Thus, if the     */
-/*  compile-time SRATE = 22050, then       */
-/*  no interpolation is used.  Otherwise,  */
-/*  the rawwave data is appropriately      */
-/*  interpolated for the current SRATE.    */
-/*  You can specify the maximum Polyphony  */
-/*  (maximum number of simultaneous voices)*/
-/*  in a #define in the .h file.           */
-/*                                         */
-/*  Modified for RawWvIn class             */
-/*  by Gary P. Scavone (4/99)              */
-/*******************************************/
+/***************************************************/
+/*! \class Tabla
+    \brief STK tabla drum class.
 
-#if !defined(__Tabla_h)
-#define __Tabla_h
+    This class implements a drum sampling
+    synthesizer using WvIn objects and one-pole
+    filters.  The drum rawwave files are sampled
+    at 22050 Hz, but will be appropriately
+    interpolated for other sample rates.  You can
+    specify the maximum polyphony (maximum number
+    of simultaneous voices) via a #define in the
+    Drummer.h.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
+
+#if !defined(__TABLA_H)
+#define __TABLA_H
 
 #include "Instrmnt.h"
-#include "RawWvIn.h"
+#include "WvIn.h"
 #include "OnePole.h"
 
 #define TABLA_NUMWAVES 15
@@ -31,16 +27,28 @@
 
 class Tabla : public Instrmnt
 {
-protected:  
-  RawWvIn  *waves[TABLA_POLYPHONY];
-  OnePole  *filters[TABLA_POLYPHONY];
-  int      sounding[TABLA_POLYPHONY];
-  int      numSounding;
-public:
+ public:
+  //! Class constructor.
   Tabla();
+
+  //! Class destructor.
   ~Tabla();
-  virtual void noteOn(MY_FLOAT freq, MY_FLOAT amp);
-  virtual MY_FLOAT tick();
+
+  //! Start a note with the given drum type and amplitude.
+  void noteOn(MY_FLOAT instrument, MY_FLOAT amplitude);
+
+  //! Stop a note with the given amplitude (speed of decay).
+  void noteOff(MY_FLOAT amplitude);
+
+  //! Compute one output sample.
+  MY_FLOAT tick();
+
+ protected:  
+  WvIn    *waves[TABLA_POLYPHONY];
+  OnePole *filters[TABLA_POLYPHONY];
+  int      sounding[TABLA_POLYPHONY];
+  int      nSounding;
+
 };
 
 #endif

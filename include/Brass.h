@@ -1,53 +1,83 @@
-/******************************************/
-/*  Simple Brass Instrument Model ala     */
-/*  Cook (TBone, HosePlayer)              */
-/*  by Perry R. Cook, 1995-96             */
-/*                                        */
-/*  This is a waveguide model, and thus   */
-/*  relates to various Stanford Univ.     */
-/*  and possibly Yamaha and other patents.*/
-/*                                        */
-/*   Controls:    CONTROL1 = lipTension   */
-/*                CONTROL2 = slideLength  */
-/*                CONTROL3 = vibFreq      */
-/*                MOD_WHEEL= vibAmt       */
-/******************************************/
+/***************************************************/
+/*! \class Brass
+    \brief STK simple brass instrument class.
 
-#if !defined(__Brass_h)
-#define __Brass_h
+    This class implements a simple brass instrument
+    waveguide model, a la Cook (TBone, HosePlayer).
+
+    This is a digital waveguide model, making its
+    use possibly subject to patents held by
+    Stanford University, Yamaha, and others.
+
+    Control Change Numbers: 
+       - Lip Tension = 2
+       - Slide Length = 4
+       - Vibrato Frequency = 11
+       - Vibrato Gain = 1
+       - Volume = 128
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
+
+#if !defined(__BRASS_H)
+#define __BRASS_H
 
 #include "Instrmnt.h"
-#include "DLineA.h"
-#include "LipFilt.h"
-#include "DCBlock.h"
+#include "DelayA.h"
+#include "BiQuad.h"
+#include "PoleZero.h"
 #include "ADSR.h"
-#include "RawWvIn.h"
+#include "WaveLoop.h"
 
 class Brass: public Instrmnt
 {
-  protected:  
-    DLineA *delayLine;
-    LipFilt *lipFilter;
-    DCBlock *dcBlock;
-    ADSR *adsr;
-    RawWvIn *vibr;
-    long length;
-    MY_FLOAT lipTarget;
-    MY_FLOAT slideTarget;
-    MY_FLOAT vibrGain;
-    MY_FLOAT maxPressure;
-  public:
-    Brass(MY_FLOAT lowestFreq);
-    ~Brass();
-    void clear();
-    virtual void setFreq(MY_FLOAT frequency);
-    void setLip(MY_FLOAT frequency);
-    void startBlowing(MY_FLOAT amplitude,MY_FLOAT rate);
-    void stopBlowing(MY_FLOAT rate);
-    virtual void noteOn(MY_FLOAT freq, MY_FLOAT amp);
-    virtual void noteOff(MY_FLOAT amp);
-    virtual void controlChange(int number, MY_FLOAT value);
-    virtual MY_FLOAT tick();
+ public:
+  //! Class constructor, taking the lowest desired playing frequency.
+  Brass(MY_FLOAT lowestFrequency);
+
+  //! Class destructor.
+  ~Brass();
+
+  //! Reset and clear all internal state.
+  void clear();
+
+  //! Set instrument parameters for a particular frequency.
+  void setFrequency(MY_FLOAT frequency);
+
+  //! Set the lips frequency.
+  void setLip(MY_FLOAT frequency);
+
+  //! Apply breath pressure to instrument with given amplitude and rate of increase.
+  void startBlowing(MY_FLOAT amplitude,MY_FLOAT rate);
+
+  //! Decrease breath pressure with given rate of decrease.
+  void stopBlowing(MY_FLOAT rate);
+
+  //! Start a note with the given frequency and amplitude.
+  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+
+  //! Stop a note with the given amplitude (speed of decay).
+  void noteOff(MY_FLOAT amplitude);
+
+  //! Compute one output sample.
+  MY_FLOAT tick();
+
+  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
+  void controlChange(int number, MY_FLOAT value);
+
+ protected:  
+  DelayA *delayLine;
+  BiQuad *lipFilter;
+  PoleZero *dcBlock;
+  ADSR *adsr;
+  WaveLoop *vibrato;
+  long length;
+  MY_FLOAT lipTarget;
+  MY_FLOAT slideTarget;
+  MY_FLOAT vibratoGain;
+  MY_FLOAT maxPressure;
+
 };
 
 #endif

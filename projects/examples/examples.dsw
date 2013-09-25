@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "ioN"=.\ioN.dsp - Package Owner=<4>
+Project: "Moogy"=".\Moogy.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -15,7 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "playN"=.\playN.dsp - Package Owner=<4>
+Project: "io"=".\io.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -27,7 +27,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "recordN"=.\recordN.dsp - Package Owner=<4>
+Project: "play"=".\play.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -39,7 +39,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "sineN"=.\sineN.dsp - Package Owner=<4>
+Project: "record"=".\record.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -51,7 +51,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "streamInN"=.\streamInN.dsp - Package Owner=<4>
+Project: "sine"=".\sine.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -63,7 +63,19 @@ Package=<4>
 
 ###############################################################################
 
-Project: "streamOutN"=.\streamOutN.dsp - Package Owner=<4>
+Project: "tcpIn"=".\tcpIn.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "tcpOut"=".\tcpOut.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{

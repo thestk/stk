@@ -1,81 +1,125 @@
-/*******************************************/
-/*  Real-Time Audio Output Class,          */
-/*  by Perry R. Cook, 1996                 */
-/*  Revised by Gary P. Scavone, 2000       */
-/*                                         */
-/*  This object opens a realtime soundout  */
-/*  device, and pokes buffers of samples   */
-/*  into it.                               */
-/*******************************************/
+/***************************************************/
+/*! \class RtWvOut
+    \brief STK realtime audio output class.
+
+    This class provides a simplified interface to
+    RtAudio for realtime audio output.  It is a
+    protected subclass of WvOut.
+
+    RtWvOut supports multi-channel data in
+    interleaved format.  It is important to
+    distinguish the tick() methods, which output
+    single samples to all channels in a sample
+    frame, from the tickFrame() method, which
+    takes a pointer to multi-channel sample
+    frame data.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "RtWvOut.h"
+#include <stdio.h>
 
-#if defined(__STK_REALTIME_)
-
-RtWvOut :: RtWvOut(int chans, int device)
+RtWvOut :: RtWvOut(unsigned int nChannels, MY_FLOAT sampleRate, int device, int bufferFrames, int nBuffers )
 {
-  // We'll let RTSoundIO deal with channel and srate limitations.
-  channels = chans;
-  sound_dev = new RtAudio(channels, SRATE, "play", device);
-  data_length = RT_BUFFER_SIZE*channels;
-  // Add a few extra samples for good measure
-  data = (INT16 *) new INT16[data_length+10];
+  // We'll let RtAudio deal with channel and srate limitations.
+  channels = nChannels;
+  bufferSize = bufferFrames;
+  RtAudio::RTAUDIO_FORMAT format = ( sizeof(MY_FLOAT) == 8 ) ? RtAudio::RTAUDIO_FLOAT64 : RtAudio::RTAUDIO_FLOAT32;
+  try {
+    audio = new RtAudio(&stream, device, (int)channels, 0, 0, format,
+                        (int)sampleRate, &bufferSize, nBuffers);
+    data = (MY_FLOAT *) audio->getStreamBuffer(stream);
+  }
+  catch (RtError &error) {
+    handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+  }
+  stopped = true;
 }
 
 RtWvOut :: ~RtWvOut()
 {
-  sound_dev->playBuffer(data,counter);
-  counter = 0;
-  while (counter<data_length)	{
-    data[counter++] = 0;
-  }
-  sound_dev->playBuffer(data,counter);
-  sound_dev->playBuffer(data,counter);  // Are these extra writes necessary?
-  sound_dev->playBuffer(data,counter);
-  delete sound_dev;
+  if ( !stopped )
+    audio->stopStream(stream);
+  delete audio;
+  data = 0; // RtAudio deletes the buffer itself.
 }
 
-void RtWvOut :: tick(MY_FLOAT sample)
+void RtWvOut :: start()
 {
-  for (int i=0;i<channels;i++)
-    data[counter++] = (INT16) (sample * 32000.0);
+  if ( stopped ) {
+    audio->startStream(stream);
+    stopped = false;
+  }
+}
 
-  if (counter >= data_length) {
-    sound_dev->playBuffer(data,data_length);
+void RtWvOut :: stop()
+{
+  if ( !stopped ) {
+    audio->stopStream(stream);
+    stopped = true;
+  }
+}
+
+unsigned long RtWvOut :: getFrames( void ) const
+{
+  return totalCount;
+}
+
+MY_FLOAT RtWvOut :: getTime( void ) const
+{
+  return (MY_FLOAT) totalCount / Stk::sampleRate();
+}
+
+void RtWvOut :: tick(const MY_FLOAT sample)
+{
+  if ( stopped )
+    start();
+  
+  for ( unsigned int j=0; j<channels; j++ )
+    data[counter*channels+j] = sample;
+
+  counter++;
+  totalCount++;
+
+  if ( counter >= (unsigned int )bufferSize ) {
+    try {
+      audio->tickStream(stream);
+    }
+    catch (RtError &error) {
+      handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+    }
     counter = 0;
   }
 }
 
-void RtWvOut :: mtick(MY_MULTI samples)
+void RtWvOut :: tick(const MY_FLOAT *vector, unsigned int vectorSize)
 {
-  for (int i=0;i<channels;i++)
-    data[counter++] = (INT16) (*samples++ * 32000.0);
+  for (unsigned int i=0; i<vectorSize; i++)
+    tick( vector[i] );
+}
 
-  if (counter >= data_length) {
-    sound_dev->playBuffer(data,data_length);
-    counter = 0;
+void RtWvOut :: tickFrame(const MY_FLOAT *frameVector, unsigned int frames)
+{
+  if ( stopped )
+    start();
+
+  for ( unsigned int i=0; i<frames; i++ ) {
+    for ( unsigned int j=0; j<channels; j++ ) {
+      data[counter*channels+j] = frameVector[i*channels+j];
+    }
+    counter++;
+
+    if ( counter >= (unsigned int)bufferSize ) {
+      try {
+        audio->tickStream(stream);
+      }
+      catch (RtError &error) {
+        handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+      }
+      counter = 0;
+    }
   }
 }
 
-//windows stop and start methods ... because windoze sucks
-#if (defined(__OS_Win_) )
-
-void RtWvOut :: stopPlay() {
-  sound_dev->stopPlay();
-}
-
-void RtWvOut :: startPlay() {
-  sound_dev->startPlay();
-}
-
-void RtWvOut :: stopRecord() {
-  sound_dev->stopRecord();
-}
-
-void RtWvOut :: startRecord() {
-  sound_dev->startRecord();
-}
-
-#endif  // extra windoze crap
-
-#endif

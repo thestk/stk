@@ -1,31 +1,21 @@
 /**************  Test Main Program Individual Voice *********************/
 
 #include "RtWvOut.h"
-#include "SKINI11.msg"
+#include "SKINI.msg"
 #include "Instrmnt.h"
 #include "Reverb.h"
 #include "JCRev.h"
-#include "StrDrone.h"
-#include "Sitar1.h"
+#include "Drone.h"
+#include "Sitar.h"
 #include "Tabla.h"
 #include "VoicDrum.h"
-#include "miditabl.h"
-
-#define RATE_NORM (MY_FLOAT)  (22050.0/SRATE)
 
 // The input control handler.
-#include "Controller.h"
+#include "Messager.h"
 
-// Return random float between 0.0 and max
-MY_FLOAT float_random(MY_FLOAT max)	{
-  MY_FLOAT temp;
-#if defined(__OS_Win_) /* For Windoze */
-  temp = (MY_FLOAT) (rand() * max);
-  temp *= ONE_OVER_RANDLIMIT;
-#else /* This is for unix */
-  temp = (MY_FLOAT) (random() * max);
-  temp *= ONE_OVER_RANDLIMIT;
-#endif
+MY_FLOAT float_random(MY_FLOAT max) // Return random float between 0.0 and max
+{	
+  MY_FLOAT temp = (MY_FLOAT) (max * rand() / (RAND_MAX + 1.0) );
   return temp;	
 }
 
@@ -40,13 +30,21 @@ void usage(void) {
 
 int main(int argc,char *argv[])
 {
-  long i, nTicks;
-  int type;
-  MY_FLOAT byte2, byte3, temp;
-  MY_FLOAT outSamples[2];
-  int controlMask = 0;
   bool done;
-  MY_FLOAT reverbTime = 4.0;  /* in seconds */
+  RtWvOut *output;
+  Instrmnt *drones[3];
+  Instrmnt *sitar;
+  Instrmnt *voicDrums;
+  Instrmnt *tabla;
+  Reverb *reverbs[2];
+  SKINI *score;
+  Messager *messager;
+  MY_FLOAT t60 = 4.0;  // in seconds
+
+  // If you want to change the default sample rate (set in Stk.h), do
+  // it before instantiating any objects!!
+  Stk::setSampleRate( 22050.0 );
+
   MY_FLOAT drone_prob = 0.01, note_prob = 0.0;
   MY_FLOAT drum_prob = 0.0, voic_prob = 0.0;
   MY_FLOAT droneFreqs[3] = {55.0,82.5,220.0};
@@ -58,17 +56,10 @@ int main(int argc,char *argv[])
                        {52, 54, 55, 57, 59, 60, 63, 64, 66, 67, 71, 72}};
   int ragaDown[2][13] = {{57, 60, 62, 64, 65, 67, 69, 71, 72, 76, 79, 81},
                          {48, 52, 53, 55, 57, 59, 60, 64, 66, 68, 70, 72}};
-  RtWvOut *output;
-  Instrmnt *drones[3];
-  Instrmnt *sitar;
-  Instrmnt *voicDrums;
-  Instrmnt *drums;
-  Reverb *reverbs[2];
-  SKINI11 *score;
-  Controller *controller;
 
   if (argc != 2) usage();
 
+  int controlMask = 0;
   if (!strcmp(argv[1],"-is") )
     controlMask |= STK_SOCKET;
   else if (!strcmp(argv[1],"-ip") )
@@ -80,22 +71,21 @@ int main(int argc,char *argv[])
     output = new RtWvOut(2);
 
     // Instantiate the input message controller.
-    controller = new Controller( controlMask );
+    messager = new Messager( controlMask );
   }
-  catch (StkError& m) {
-    m.printMessage();
+  catch (StkError &) {
     exit(0);
   }
 
-  drones[0] = new StrDrone(50.0);
-  drones[1] = new StrDrone(50.0);
-  drones[2] = new StrDrone(50.0);
-  sitar = new Sitar1(50.0);
+  drones[0] = new Drone(50.0);
+  drones[1] = new Drone(50.0);
+  drones[2] = new Drone(50.0);
+  sitar = new Sitar(50.0);
   voicDrums = new VoicDrum();
-  drums = new Tabla();
+  tabla = new Tabla();
 
-  score = new SKINI11();
-  reverbs[0] = new JCRev(reverbTime);
+  score = new SKINI();
+  reverbs[0] = new JCRev(t60);
   reverbs[0]->setEffectMix(0.5);
   reverbs[1] = new JCRev(2.0);
   reverbs[1]->setEffectMix(0.2);
@@ -104,41 +94,47 @@ int main(int argc,char *argv[])
   drones[1]->noteOn(droneFreqs[1],0.1);
   drones[2]->noteOn(droneFreqs[2],0.1);
 
-  for (i=0;i<SRATE;i++) { /* warm everybody up a little */
+  int i;
+  MY_FLOAT outSamples[2];
+  for (i=0;i<Stk::sampleRate();i++) { /* warm everybody up a little */
     outSamples[0] = reverbs[0]->tick(drones[0]->tick() + drones[2]->tick());
     outSamples[1] = reverbs[1]->tick(1.5 * drones[1]->tick());
-    output->mtick(outSamples);
+    output->tickFrame(outSamples);
   }
 
   // The runtime loop begins here:
   done = FALSE;
+  MY_FLOAT rateScaler = 22050.0 / Stk::sampleRate();
+  int nTicks, type;
+  MY_FLOAT temp, byte2, byte3;
   while (!done) {
 
-    nTicks = controller->getNextMessage();
-
-    if (nTicks == -1)
+    type = messager->nextMessage();
+    if (type < 0)
       done = TRUE;
+
+    nTicks = messager->getDelta();
 
     for (i=0; i<nTicks; i++) {
       outSamples[0] = reverbs[0]->tick(drones[0]->tick() + drones[2]->tick()
                                        + sitar->tick());
       outSamples[1] = reverbs[1]->tick(1.5 * drones[1]->tick() + 0.5 * voicDrums->tick()
-                                       + 0.5 * drums->tick());
+                                       + 0.5 * tabla->tick());
       // mix a little left to right and back
       temp = outSamples[0];
       outSamples[0] += 0.3 * outSamples[1];
       outSamples[1] += 0.3 * temp;
-      output->mtick(outSamples);
+      output->tickFrame(outSamples);
 
       counter -= 1;
       if (counter == 0)	{
-        counter = (int) (tempo / RATE_NORM);
+        counter = (int) (tempo / rateScaler);
         if (float_random(1.0) < drone_prob)
-          drones[0]->noteOn(droneFreqs[0],0.1);
+          drones[0]->noteOn(droneFreqs[0], 0.1);
         if (float_random(1.0) < drone_prob)
-          drones[1]->noteOn(droneFreqs[1],0.1);
+          drones[1]->noteOn(droneFreqs[1], 0.1);
         if (float_random(1.0) < drone_prob)
-          drones[2]->noteOn(droneFreqs[2],0.1);
+          drones[2]->noteOn(droneFreqs[2], 0.1);
         if (float_random(1.0) < note_prob)	{
           if ((temp = float_random(1.0)) < 0.1)
             ragaStep = 0;
@@ -152,46 +148,45 @@ int main(int argc,char *argv[])
           if (ragaPoint > 11) 
             ragaPoint = 11;
           if (ragaStep > 0)
-            sitar->noteOn(__MIDI_To_Pitch[ragaUp[key][ragaPoint]],
+            sitar->noteOn(Midi2Pitch[ragaUp[key][ragaPoint]],
                           0.05 + float_random(0.3));
           else
-            sitar->noteOn(__MIDI_To_Pitch[ragaDown[key][ragaPoint]],
+            sitar->noteOn(Midi2Pitch[ragaDown[key][ragaPoint]],
                           0.05 + float_random(0.3));
         }
         if (float_random(1.0) < voic_prob)	{
           voicNote = (int) float_random(11);
           voicDrums->noteOn(voicNote, 0.3 + (0.4 * drum_prob) +
-                            float_random(0.9 * voic_prob));
+                            float_random(0.3 * voic_prob));
         }
         if (float_random(1.0) < drum_prob)	{
           voicNote = (int) float_random(TABLA_NUMWAVES);
-          drums->noteOn(voicNote, 0.2 + (0.2 * drum_prob) + 
-                        float_random(0.7 * drum_prob));
+          tabla->noteOn(voicNote, 0.2 + (0.2 * drum_prob) + 
+                        float_random(0.6 * drum_prob));
         }
       }
     }
 
-    type = controller->getType();
-    if (type > 0) {
+    if ( type > 0 ) {
       // parse the input control message
 
-      byte2 = controller->getByte2();
-      byte3 = controller->getByte3();
+      byte2 = messager->getByteTwo();
+      byte3 = messager->getByteThree();
 
       switch(type) {
 
       case __SK_ControlChange_:
         if (byte2 == 1)	{
-          drone_prob = byte3 * NORM_7;
+          drone_prob = byte3 * ONE_OVER_128;
         }
         else if (byte2 == 2)	{
-          note_prob = byte3 * NORM_7;
+          note_prob = byte3 * ONE_OVER_128;
         }
         else if (byte2 == 4)	{
-          voic_prob = byte3 * NORM_7;
+          voic_prob = byte3 * ONE_OVER_128;
         }
         else if (byte2 == 11)	{
-          drum_prob = byte3 * NORM_7;
+          drum_prob = byte3 * ONE_OVER_128;
         }
         else if (byte2 == 7)	{
           tempo = (int) (11025 - (byte3 * 70));
@@ -214,38 +209,40 @@ int main(int argc,char *argv[])
     }
   }
 
+  nTicks = (long) (t60 * Stk::sampleRate());
+
   printf("What Need Have I for This?\n");
   drones[1]->noteOn(droneFreqs[1],0.1);
-  for (i=0; i<reverbTime*SRATE; i++) { // Calm down a little
+  for (i=0; i<nTicks; i++) { // Calm down a little
     outSamples[0] = reverbs[0]->tick(drones[0]->tick() + drones[2]->tick());
     outSamples[1] = reverbs[1]->tick(1.5 * drones[1]->tick());
-    output->mtick(outSamples);
+    output->tickFrame(outSamples);
   }
   printf("What Need Have I for This?\n");
   drones[2]->noteOn(droneFreqs[2],0.1);
-  for (i=0; i<reverbTime*SRATE; i++) { // and a little more
+  for (i=0; i<nTicks; i++) { // and a little more
     outSamples[0] = reverbs[0]->tick(drones[0]->tick() + drones[2]->tick());
     outSamples[1] = reverbs[1]->tick(1.5 * drones[1]->tick());
-    output->mtick(outSamples);
+    output->tickFrame(outSamples);
   }
   printf("RagaMatic finished ... \n");
   drones[0]->noteOn(droneFreqs[0],0.1);
-  for (i=0; i<reverbTime*SRATE; i++) { // almost ready to think about ending
+  for (i=0; i<nTicks; i++) { // almost ready to think about ending
     outSamples[0] = reverbs[0]->tick(drones[0]->tick() + drones[2]->tick());
     outSamples[1] = reverbs[1]->tick(1.5 * drones[1]->tick());
-    output->mtick(outSamples);
+    output->tickFrame(outSamples);
   }
   printf("All is Bliss ...\n");
-  for (i=0; i<reverbTime*SRATE; i++) { // nearly finished now
+  for (i=0; i<nTicks; i++) { // nearly finished now
     outSamples[0] = reverbs[0]->tick(drones[0]->tick() + drones[2]->tick());
     outSamples[1] = reverbs[1]->tick(1.5 * drones[1]->tick());
-    output->mtick(outSamples);
+    output->tickFrame(outSamples);
   }
   printf("All is Bliss ...\n");
-  for (i=0; i<reverbTime*SRATE; i++) { // all is bliss....
+  for (i=0; i<nTicks; i++) { // all is bliss....
     outSamples[0] = reverbs[0]->tick(drones[0]->tick() + drones[2]->tick());
     outSamples[1] = reverbs[1]->tick(1.5 * drones[1]->tick());
-    output->mtick(outSamples);
+    output->tickFrame(outSamples);
   }
 
   delete output;
@@ -254,11 +251,11 @@ int main(int argc,char *argv[])
   delete drones[1];
   delete drones[2];
   delete sitar;
-  delete drums;
+  delete tabla;
   delete voicDrums;
   delete reverbs[0];
   delete reverbs[1];
-  delete controller;
+  delete messager;
 
   return 0;
 }

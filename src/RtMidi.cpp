@@ -1,46 +1,43 @@
-/******************************************/
-/*
-  RtMidi.cpp
-  Realtime MIDI I/O Object for STK,
-  by Gary P. Scavone, 1998-2000.
-  Based in part on code by Perry
-  Cook (SGI), Paul Leonard (Linux),
-  the RoseGarden team (Linux), and
-  Bill Putnam (Win95/NT).
+/***************************************************/
+/*! \class RtMidi
+    \brief STK realtime MIDI class.
 
-  At the moment, this object only
-  handles MIDI input, though MIDI
-  output code can go here when someone
-  decides they need it (and writes it).
+    At the moment, this object only handles MIDI
+    input, though MIDI output code can go here
+    when someone decides they need it (and writes
+    it).
 
-  This object opens a MIDI input device
-  and parses MIDI messages into a MIDI
-  buffer.  Time stamp info is converted
-  to deltaTime. MIDI data is stored as
-  MY_FLOAT to conform with SKINI.
+    This object opens a MIDI input device and
+    parses MIDI messages into a MIDI buffer.  Time
+    stamp info is converted to a delta-time
+    value. MIDI data is stored as MY_FLOAT to
+    conform with SKINI.  System exclusive messages
+    are currently ignored.
 
-  An optional argument to the constructor
-  can be used to specify a device or card.
-  When no argument is given, a default
-  device is opened or a list of available
-  devices is printed to allow selection
-  by the user.
+    An optional argument to the constructor can be
+    used to specify a device or card.  When no
+    argument is given, a default device is opened.
+    If a device argument fails, a list of available
+    devices is printed to allow selection by the user.
+
+    This code is based in part on work of Perry
+    Cook (SGI), Paul Leonard (Linux), the
+    RoseGarden team (Linux), and Bill Putnam
+    (Windows).
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 */
-/******************************************/
+/***************************************************/
 
 #include "RtMidi.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
-#if defined(__STK_REALTIME_)
+#define MIDI_BUFFER_SIZE 256
+int writeIndex;
 
-#define MIDI_BUFFER_SIZE 1024
-int writeOffset;
-int readOffset;
-
-#if defined(__OS_IRIX_)
-
-/*************************************/
-/*         SGI MIDI INPUT            */
-/*************************************/
+#if defined(__OS_IRIX__)
 
 #include <pthread.h>
 #include <dmedia/midi.h>
@@ -48,9 +45,7 @@ int readOffset;
 #include <signal.h>
 
 MDport inport;
-
 MDevent *midiBuffer;
-
 pthread_t midi_input_thread;
 
 void *midiInputThread(void *)
@@ -64,11 +59,11 @@ void *midiInputThread(void *)
 
     // Ignore all system messages
     if (status != 0xf0) {
-      midiBuffer[writeOffset] = newMessage;
-      writeOffset++;
+      midiBuffer[writeIndex] = newMessage;
+      writeIndex++;
 
-      if( writeOffset >= MIDI_BUFFER_SIZE )
-        writeOffset = 0;
+      if( writeIndex >= MIDI_BUFFER_SIZE )
+        writeIndex = 0;
     }
   }
 }
@@ -81,16 +76,16 @@ RtMidi :: RtMidi(int device)
 
   nports = mdInit();
   if (nports < 1) {
-    sprintf(msg, "RtMidi: No SGI MIDI device available.\n");
-    throw StkError(msg, StkError::MIDICARD_NOT_FOUND);
+    sprintf(msg, "RtMidi: No Irix MIDI device available.");
+    handleError(msg, StkError::MIDI_SYSTEM);
   }
 
-  if (device == -1) {
-    // open default MIDI interface
+  if (device == 0) {
+    // Open default MIDI interface.
     inport = mdOpenInPort(NULL);
     if (inport == NULL) {
-      sprintf(msg, "RtMidi: Cannot open default SGI MIDI device.\n");
-      throw StkError(msg, StkError::MIDICARD_CONTROL);
+      sprintf(msg, "RtMidi: Cannot open default Irix MIDI device.");
+      handleError(msg, StkError::MIDI_SYSTEM);
     }
   }
   else {
@@ -102,29 +97,31 @@ RtMidi :: RtMidi(int device)
         printf("MIDI interface %d: %s\n", card, device_name);
       }
       char choice[16];
-      printf("\nType a MIDI interface number from above: ");
-      fgets(choice, 16, stdin);
-      card = atoi(choice);
+      card = -1;
+      while ( card < 0 || card >= nports ) {
+        printf("\nType a MIDI interface number from above: ");
+        fgets(choice, 16, stdin);
+        card = atoi(choice);
+      }
       printf("\n");
     }
     inport = mdOpenInPort(mdGetName(card));
     if (inport == NULL) {
-      sprintf(msg, "RtMidi: Cannot open SGI MIDI interface %d.\n",
-              card);
-      throw StkError(msg, StkError::MIDICARD_CONTROL);
+      sprintf(msg, "RtMidi: Cannot open Irix MIDI interface %d!", card);
+      handleError(msg, StkError::MIDI_SYSTEM);
     }
   }
 
   mdSetStampMode(inport, MD_NOSTAMP);
 
-  // Set up the circular buffer for the Midi Input Messages
+  // Set up the circular buffer for the Midi input messages.
   midiBuffer = new MDevent[MIDI_BUFFER_SIZE];
-  readOffset = 0;
-  writeOffset = 0;
+  readIndex = 0;
+  writeIndex = 0;
 
-  if (pthread_create(&midi_input_thread, NULL, midiInputThread, NULL)) {
-    sprintf(msg, "RtMidi: unable to create MIDI input thread.\n");
-    throw StkError(msg, StkError::PROCESS_THREAD);
+  if ( pthread_create(&midi_input_thread, NULL, midiInputThread, NULL) ) {
+    sprintf(msg, "RtMidi: unable to create MIDI input thread.");
+    handleError(msg, StkError::PROCESS_THREAD);
   }
 }
 
@@ -144,12 +141,12 @@ int RtMidi ::  nextMessage()
   MDevent lastEvent;
   static unsigned long long lastTimeStamp = 0;
 
-  if ( readOffset == writeOffset ) return 0;
+  if ( readIndex == writeIndex ) return 0;
 
-  lastEvent = midiBuffer[readOffset];
+  lastEvent = midiBuffer[readIndex];
 
-  readOffset++;
-  if ( readOffset >= MIDI_BUFFER_SIZE ) readOffset = 0;
+  readIndex++;
+  if ( readIndex >= MIDI_BUFFER_SIZE ) readIndex = 0;
 
   status = (lastEvent.msg[0] & MD_STATUSMASK);
   byte1 = lastEvent.msg[1];
@@ -176,7 +173,7 @@ int RtMidi ::  nextMessage()
   else if (status == MD_PITCHBENDCHANGE)
     {
       messageType = status;
-      byteTwo = (float) byte1 * NORM_7;
+      byteTwo = (float) byte1 * ONE_OVER_128;
       byteTwo += (float) byte2;
       deltaTime = (MY_FLOAT) ((lastEvent.stamp - lastTimeStamp) * 0.000000001);
       lastTimeStamp = lastEvent.stamp;
@@ -190,28 +187,31 @@ int RtMidi ::  nextMessage()
 }
 
 
-#elif ( defined(__OSS_API_) || defined(__ALSA_API_) )
-
-/*************************************/
-/*      OSS & ALSA MIDI INPUT        */
-/*************************************/
+#elif ( defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) )
 
 #include <pthread.h>
 #include <sys/time.h>
 
-#if defined(__OSS_API_)
+#if defined(__MIDIATOR__)
 
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <errno.h>
+int midi_in;
+
+#elif defined(__LINUX_OSS__)
+
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/soundcard.h>
 #include <errno.h>
 int midi_in;
 
-#else // ALSA_API
+#else // __LINUX_ALSA__
 
-#include <sys/asoundlib.h>
+#include <alsa/asoundlib.h>
 snd_rawmidi_t *midi_in = 0;
 
 #endif
@@ -221,7 +221,7 @@ typedef unsigned char byte;
 /* MIDI System Messages */
 #define MD_SYSTEM_MSG   ((byte)0xF0)
 #define MD_PGM_CHANGE   ((byte)0xC0)
-#define MD_CHN_PRESSURE   ((byte)0xD0)
+#define MD_CHN_PRESSURE ((byte)0xD0)
 #define MD_PITCH_BEND		((byte)0xE0)
 #define MessageType(MSG)  (byte)((MSG) & ((byte)0xF0))
 
@@ -248,7 +248,7 @@ void *midiInputThread(void *)
 
   for (;;) {
 
-#if defined(__OSS_API_)
+#if defined(__LINUX_OSS__) || defined(__MIDIATOR__)
 
     // Normally, you should check the return value of this read() call.
     // A return of -1 usually indicates an error.  However, for OSS
@@ -258,11 +258,8 @@ void *midiInputThread(void *)
 
 #else // ALSA_API
 
-    if ((n = snd_rawmidi_read(midi_in, &newByte, 1)) == -1) {
-      char msg[256];
-      sprintf(msg, "RtMidi: Error reading ALSA raw MIDI device.\n");
-      throw StkError(msg, StkError::MIDICARD_CAPS);
-    }
+    if ((n = snd_rawmidi_read(midi_in, &newByte, 1)) == -1)
+      fprintf(stderr, "RtMidi: Error reading ALSA raw MIDI data from device!\n");
 
 #endif
 
@@ -310,350 +307,286 @@ void *midiInputThread(void *)
           lastTime = newTime;
 
           // Put newMessage in the circular buffer
-          midiBuffer[writeOffset] = newMessage;
-          writeOffset++;
+          midiBuffer[writeIndex] = newMessage;
+          writeIndex++;
 
-          if( writeOffset >= MIDI_BUFFER_SIZE )
-            writeOffset = 0;
+          if( writeIndex >= MIDI_BUFFER_SIZE )
+            writeIndex = 0;
         }
       }
       n--;
     }
   }
+  return 0;
 }
 
-#if defined(__OSS_API_)
 
-#if defined(__MIDIATOR_)
 
-/* Hopefully, this special support for the MIDIator serial
-   port MIDI device is temporary and it will eventually be
-   incorporated into the OSS and ALSA APIs.
+#if defined(__MIDIATOR__)
 
-   This code is based almost entirely on David Topper's 
-   driver code, which is available from:
+/*
+  Hopefully, this special support for the MIDIator serial
+  port MIDI device is temporary and it will eventually be
+  incorporated into the OSS and ALSA APIs.
 
-     ftp://presto.music.virginia.edu/pub/midiator
+  This code is based almost entirely on David Topper's 
+  driver code, which is available from:
 
-   See the README-Linux STK document for details on how to
-   get the MIDIator setup correctly for use under linux.
+    ftp://presto.music.virginia.edu/pub/midiator
+
+  See the README-Linux STK document for details on how to
+  get the MIDIator setup correctly for use under linux.
 */
 
 #include <termio.h>
 #include <linux/serial_reg.h>
 
 #define BAUD_RATE B19200
-#define MAX_MIDI_DEVS 3
+#define MAX_DEVICES 3
 #define MIDI_NAME "/dev/ttyS"
 
 void initializeMidiator();
 
 RtMidi :: RtMidi(int device)
 {
-  int card = 0, err = 0, nChoices = 0;
   char msg[256];
-  char device_name[16];
-  bool print_list = FALSE;
+  char name[16];
+  char deviceNames[MAX_DEVICES][16];
   midi_in = 0;
 
-  // /dev/midi should be a link to the default midi device under OSS
-  strcpy(device_name, MIDI_NAME);
-
-  // The OSS API doesn't really give us a means for probing the
-  // capabilities of devices.  Thus, we'll just pursue a brute
-  // force method of opening devices until we either find something
-  // that doesn't complain or we have to give up.  We'll start with
-  // the default device, then try /dev/midi00, /dev/midi01, etc...
-
-  if (device != -1) {
-    // check device specified as argument
-    sprintf(device_name, "%s%d", MIDI_NAME, device);
-    // try to open this device
-    if((midi_in = open(device_name, O_RDONLY, 0)) == -1)  {
-      // Open device failed ... either busy or doesn't exist
-      print_list = TRUE;
-      printf("\n");
-      card = 0;
+  int i, nDevices = 0;
+  for ( i=0; i<MAX_DEVICES; i++ ) {
+    sprintf(name, "%s%d", MIDI_NAME, i);
+    midi_in = open(name, O_RDONLY | O_NONBLOCK, 0);
+    if ( midi_in != -1 ) {
+      strncpy( deviceNames[nDevices++], name, 16 );
+      close( midi_in );
     }
-    else {
-      goto have_good_device;
-    }
+    else if ( errno == EBUSY )
+      fprintf(stderr,"RtMidi: Serial port (%s) is busy and cannot be opened.\n", name);
   }
 
-  while (card < MAX_MIDI_DEVS) {
-    // if the default device doesn't work, try some others
-    sprintf(device_name, "%s%d", MIDI_NAME, card);
-
-    if ((midi_in = open(device_name, O_RDONLY, 0)) == -1)  {
-      // Open device failed ... either busy or doesn't exist
-      if (errno == EBUSY && print_list == FALSE)
-        fprintf(stderr,"RtMidi: Serial device (%s) is busy and cannot be opened.\n",
-                device_name);
-      card++;
-      continue;
-    }
-
-    if (print_list) {
-      close(midi_in);
-      printf("Serial Port %d: %s\n", card, device_name);
-      nChoices++;
-      card++;
-      continue;
-    }
-
-    // This device appears to be OK
-    goto have_good_device;
+  if (nDevices == 0) {
+    sprintf(msg, "RtMidi: no serial ports available.");
+    handleError(msg, StkError::MIDI_SYSTEM);
   }
 
-  if (print_list && nChoices) {
-    char choice[16];
-    printf("\nType a serial port number from above: ");
-    fgets(choice, 16, stdin);
-    card = atoi(choice);
+  // Check device argument and print list if necessary.
+  int deveyes;
+  if ( device >= 0 && device < nDevices )
+    deveyes = device;
+  else if ( nDevices == 1 )
+    deveyes = 0;
+  else {
+    // Invalid device argument ... print list.
     printf("\n");
-    sprintf(device_name, "%s%d", MIDI_NAME, card);
-    if ((midi_in = open(device_name, O_RDONLY, 0)) == -1)  {
-      sprintf(msg, "RtMidi: Unable to open serial port (%s) for MIDI input!\n",
-              device_name);
-      throw StkError(msg, StkError::MIDICARD_CONTROL);
+    for ( i=0; i<nDevices; i++ )
+      printf("Serial Port %d: %s\n", i, deviceNames[i]);
+
+    char choice[16];
+    deveyes = -1;
+    while ( deveyes < 0 || deveyes >= nDevices ) {
+      printf("\nType a MIDI device number from above: ");
+      fgets(choice, 16, stdin);
+      deveyes = atoi(choice);
     }
-    goto have_good_device;
+    printf("\n");
   }
 
-  // If we got here, no device was found to meet the requested functionality
-  sprintf(msg, "RtMidi: could not open any serial ports for MIDI input!\n");
-  throw StkError(msg, StkError::MIDICARD_CAPS);
-
- have_good_device: // the current device is what we will use
+  midi_in = open(deviceNames[deveyes], O_RDONLY, 0);
+  if ( midi_in == -1)  {
+    sprintf(msg, "RtMidi: Unable to open serial port (%s) for MIDI input!",
+            deviceNames[deveyes]);
+    handleError(msg, StkError::MIDI_SYSTEM);
+  }
 
 	printf("\nInitializing MIDIator MS-124w ... ");
   initializeMidiator();
-  printf("ready on serial port %s.\n",device_name);
+  printf("ready on serial port %s.\n", deviceNames[deveyes]);
 
   // Set up the circular buffer for the MIDI input messages
   midiBuffer = new MIDIMESSAGE[MIDI_BUFFER_SIZE];
-  readOffset = 0;
-  writeOffset = 0;
+  readIndex = 0;
+  writeIndex = 0;
 
-  err = pthread_create(&midi_input_thread, NULL, midiInputThread, NULL);
-  if (err) {
-    sprintf(msg, "RtMidi: unable to create MIDI input thread.\n");
-    throw StkError(msg, StkError::PROCESS_THREAD);
+  int result = pthread_create(&midi_input_thread, NULL, midiInputThread, NULL);
+  if (result) {
+    sprintf(msg, "RtMidi: unable to create MIDI input thread.");
+    handleError(msg, StkError::PROCESS_THREAD);
   }
 }
 
-#else // normal OSS stuff
+#elif defined(__LINUX_OSS__) // normal OSS setup
 
-#define MAX_MIDI_DEVS 8
+#define MAX_DEVICES 8
 #define MIDI_NAME "/dev/midi"
 
 RtMidi :: RtMidi(int device)
 {
-  int card = 0, err = 0, nChoices = 0;
-  midi_in = 0;
   char msg[256];
-  char device_name[16];
-  bool print_list = FALSE;
+  char name[16];
+  char deviceNames[MAX_DEVICES][16];
+  midi_in = 0;
 
   // /dev/midi should be a link to the default midi device under OSS
-  strcpy(device_name, MIDI_NAME);
+  strcpy(name, MIDI_NAME);
 
   // The OSS API doesn't really give us a means for probing the
   // capabilities of devices.  Thus, we'll just pursue a brute
   // force method of opening devices until we either find something
   // that doesn't complain or we have to give up.  We'll start with
   // the default device, then try /dev/midi00, /dev/midi01, etc...
-
-  if (device != -1) {
-    // check device specified as argument
-    sprintf(device_name, "%s%d%d", MIDI_NAME, 0, device);
-    // try to open this device
-    if((midi_in = open(device_name, O_RDONLY, 0)) == -1)  {
-      // Open device failed ... either busy or doesn't exist
-      print_list = TRUE;
-      printf("\n");
-      card = 1;
+  int i, nDevices = 0;
+  for ( i=0; i<MAX_DEVICES; i++ ) {
+    if (i > 0) sprintf(name, "%s%d%d", MIDI_NAME, 0, i-1);
+    midi_in = open(name, O_RDONLY | O_NONBLOCK, 0);
+    if ( midi_in != -1 ) {
+      strncpy( deviceNames[nDevices++], name, 16 );
+      close( midi_in );
     }
-    else {
-      goto have_good_device;
-    }
+    else if ( errno == EBUSY )
+      fprintf(stderr,"RtMidi: MIDI device (%s) is busy and cannot be opened.\n", name);
   }
 
-  while (card < MAX_MIDI_DEVS) {
-    // if the default device doesn't work, try some others
-    if (card > 0) sprintf(device_name, "%s%d%d", MIDI_NAME, 0, card-1);
-
-    if ((midi_in = open(device_name, O_RDONLY, 0)) == -1)  {
-      // Open device failed ... either busy or doesn't exist
-      if (errno == EBUSY && print_list == FALSE)
-        fprintf(stderr,"RtMidi: OSS MIDI device (%s) is busy and cannot be opened.\n",
-                device_name);
-      card++;
-      continue;
-    }
-
-    if (print_list) {
-      close(midi_in);
-      printf("MIDI Card %d: %s\n", card-1, device_name);
-      nChoices++;
-      card++;
-      continue;
-    }
-
-    // This device appears to be OK
-    goto have_good_device;
+  if (nDevices == 0) {
+    sprintf(msg, "RtMidi: no OSS MIDI cards reported available.");
+    handleError(msg, StkError::MIDI_SYSTEM);
   }
 
-  if (print_list && nChoices) {
-    char choice[16];
-    printf("\nType a MIDI card number from above: ");
-    fgets(choice, 16, stdin);
-    card = atoi(choice);
+  // Check device argument and print list if necessary.
+  int deveyes;
+  if ( device >= 0 && device < nDevices )
+    deveyes = device;
+  else if ( nDevices == 1 )
+    deveyes = 0;
+  else {
+    // Invalid device argument ... print list.
     printf("\n");
-    sprintf(device_name, "%s%d%d", MIDI_NAME, 0, card);
-    if ((midi_in = open(device_name, O_RDONLY, 0)) == -1)  {
-      sprintf(msg, "RtMidi: Unable to open OSS device (%s) for MIDI input!\n",
-              device_name);
-      throw StkError(msg, StkError::MIDICARD_CONTROL);
+    for ( i=0; i<nDevices; i++ )
+      printf("MIDI Device %d: %s\n", i, deviceNames[i]);
+
+    char choice[16];
+    deveyes = -1;
+    while ( deveyes < 0 || deveyes >= nDevices ) {
+      printf("\nType a MIDI device number from above: ");
+      fgets(choice, 16, stdin);
+      deveyes = atoi(choice);
     }
-    goto have_good_device;
+    printf("\n");
   }
 
-  // If we got here, no device was found to meet the requested functionality
-  sprintf(msg, "RtMidi: no OSS device found for MIDI input!\n");
-  throw StkError(msg, StkError::MIDICARD_CAPS);
-
- have_good_device: // the current device is what we will use
+  midi_in = open(deviceNames[deveyes], O_RDONLY, 0);
+  if ( midi_in == -1)  {
+    sprintf(msg, "RtMidi: Unable to open OSS device (%s) for MIDI input!",
+            deviceNames[deveyes]);
+    handleError(msg, StkError::MIDI_SYSTEM);
+  }
 
   // Set up the circular buffer for the MIDI input messages
   midiBuffer = new MIDIMESSAGE[MIDI_BUFFER_SIZE];
-  readOffset = 0;
-  writeOffset = 0;
+  readIndex = 0;
+  writeIndex = 0;
 
-  err = pthread_create(&midi_input_thread, NULL, midiInputThread, NULL);
-  if (err) {
-    sprintf(msg, "RtMidi: unable to create MIDI input thread.\n");
-    throw StkError(msg, StkError::PROCESS_THREAD);
+  int result = pthread_create(&midi_input_thread, NULL, midiInputThread, NULL);
+  if (result) {
+    sprintf(msg, "RtMidi: unable to create MIDI input thread.");
+    handleError(msg, StkError::PROCESS_THREAD);
   }
 }
 
-#endif // end of normal OSS section
-
 #else // ALSA_API
+
+#define MAX_DEVICES 8
 
 RtMidi :: RtMidi(int device)
 {
-  int err = 0, nChoices = 0;
   midi_in = 0;
   char msg[256];
-  int card, dev;
-  int default_card;
-  bool print_list = FALSE;
-  unsigned int mask;
-  snd_ctl_t *chandle;
-  struct snd_ctl_hw_info info;
-	snd_rawmidi_info_t midiinfo;
+  int result, card, deveyes, nDevices;
+  char name[32];
+  char deviceNames[MAX_DEVICES][32];
+  snd_ctl_t *handle;
+  snd_ctl_card_info_t *info;
+  snd_ctl_card_info_alloca(&info);
 
-  mask = snd_cards_mask();
-  if (!mask) {
-    sprintf(msg, "RtMidi: no ALSA sound/MIDI cards reported available.\n");
-    throw StkError(msg, StkError::MIDICARD_NOT_FOUND);
+  // Count cards and devices
+  card = -1;
+  nDevices = 0;
+  snd_card_next(&card);
+  while ( card >= 0 ) {
+    sprintf(name, "hw:%d", card);
+    result = snd_ctl_open(&handle, name, 0);
+    if (result < 0) {
+      sprintf(msg, "RtMidi: ALSA control open (%i): %s.", card, snd_strerror(result));
+      handleError(msg, StkError::WARNING);
+      goto next_card;
+		}
+    result = snd_ctl_card_info(handle, info);
+		if (result < 0) {
+      sprintf(msg, "RtMidi: ALSA control hardware info (%i): %s.", card, snd_strerror(result));
+      handleError(msg, StkError::WARNING);
+      goto next_card;
+		}
+		deveyes = -1;
+		while (1) {
+      result = snd_ctl_rawmidi_next_device(handle, &deveyes);
+			if (result < 0) {
+        sprintf(msg, "RtMidi: ALSA control next rawmidi device (%i): %s.", card, snd_strerror(result));
+        handleError(msg, StkError::WARNING);
+        break;
+      }
+			if (deveyes < 0)
+        break;
+      sprintf( deviceNames[nDevices++], "hw:%d,%d", card, deveyes );
+      if ( nDevices > MAX_DEVICES ) break;
+    }
+    if ( nDevices > MAX_DEVICES ) break;
+  next_card:
+    snd_ctl_close(handle);
+    snd_card_next(&card);
   }
 
-  if (device == -1) {
-    default_card = snd_defaults_rawmidi_card();
-  }
-  else { // check device specified as argument
-    if (!(mask & (1<<device))) {
-      default_card = 0;
-      print_list = TRUE;
-      printf("\n");
-    }
-    else {
-      default_card = device;
-    }
+  if (nDevices == 0) {
+    sprintf(msg, "RtMidi: no ALSA MIDI cards reported available.");
+    handleError(msg, StkError::MIDI_SYSTEM);
   }
 
-  card = default_card; // start with default card
-  while (card<SND_CARDS) {
-    if (mask & (1<<card)) {
-      if ((err = snd_ctl_open(&chandle, card)) < 0) {
-        fprintf(stderr,"RtMidi: ALSA error on control open (%d): %s\n",
-                card, snd_strerror(err));
-        continue;
-      }
-      if ((err = snd_ctl_hw_info(chandle, &info)) < 0) {
-        fprintf(stderr,"RtMidi: ALSA error on control hardware info (%d): %s\n",
-                card, snd_strerror(err));
-        snd_ctl_close(chandle);
-        continue;
-      }
-      for (dev=0; dev<(int)info.mididevs; dev++) {
-        /* get information for each device */
-        if ((err = snd_ctl_rawmidi_info(chandle, dev, &midiinfo)) < 0) {
-          fprintf(stderr,"RtMidi: ALSA error on control MIDI info (%d): %s\n",
-                  card, snd_strerror(err));
-          continue;
-        }
-        if (midiinfo.flags & SND_RAWMIDI_INFO_INPUT) {
-          // this device can handle MIDI input
-          if (print_list) {
-            printf("MIDI Card %d, Device %d: %s\n", card, dev, info.name);
-            nChoices++;
-            continue;
-          }
-          goto have_good_device;
-        }
-        else { // this device wont' work
-          continue;
-        }
-      }
-    }
-    if (default_card == 0) card++;
-    else { // default card != 0, now start with card 0 and keep searching
-      if (card == default_card) card = 0; // first time only
-      else {
-        card++;
-        if (card == default_card) card++; // skip over default card
-      }
-    }
-  }
-
-  if (print_list && nChoices) {
-    char choice[16];
-    printf("\nType a MIDI card number from above: ");
-    fgets(choice, 16, stdin);
-    card = atoi(choice);
-    printf("Select a device for the same card: ");
-    fgets(choice, 16, stdin);
+  // Check device argument and print list if necessary.
+  if ( device >= 0 && device < nDevices )
+    deveyes = device;
+  else if ( nDevices == 1 )
+    deveyes = 0;
+  else {
+    // Invalid device argument ... print list.
     printf("\n");
-    dev = atoi(choice);
-    goto have_good_device;
+    for ( int i=0; i<nDevices; i++ )
+      printf("MIDI Device %d: %s\n", i, deviceNames[i]);
+
+    char choice[16];
+    deveyes = -1;
+    while ( deveyes < 0 || deveyes >= nDevices ) {
+      printf("\nType a MIDI device number from above: ");
+      fgets(choice, 16, stdin);
+      deveyes = atoi(choice);
+    }
+    printf("\n");
   }
 
-  // if we got here, no devices were found to meet the requested functionality
-  sprintf(msg, "RtMidi: no ALSA device found for MIDI input!\n");
-  throw StkError(msg, StkError::MIDICARD_CAPS);
-
- have_good_device: // the current value of card and dev are what we will use
-
-  err = snd_rawmidi_open(&midi_in, card, dev, O_RDONLY);
-  if (err) {
-    sprintf(msg, "RtMidi: Error opening ALSA raw MIDI device: card %d, device %d.\n",
-            card, dev);
-    throw StkError(msg, StkError::MIDICARD_CONTROL);
+  result = snd_rawmidi_open(&midi_in, NULL, deviceNames[deveyes], 0);
+  if (result) {
+    sprintf(msg, "RtMidi: Error opening ALSA raw MIDI device: %s.", deviceNames[deveyes]);
+    handleError(msg, StkError::MIDI_SYSTEM);
   }
-
 
   // Set up the circular buffer for the MIDI input messages
   midiBuffer = new MIDIMESSAGE[MIDI_BUFFER_SIZE];
-  readOffset = 0;
-  writeOffset = 0;
+  readIndex = 0;
+  writeIndex = 0;
 
-  err = pthread_create(&midi_input_thread, NULL, midiInputThread, NULL);
-  if (err) {
-    sprintf(msg, "RtMidi: unable to create MIDI input thread.\n");
-    throw StkError(msg, StkError::PROCESS_THREAD);
+  result = pthread_create(&midi_input_thread, NULL, midiInputThread, NULL);
+  if (result) {
+    sprintf(msg, "RtMidi: unable to create MIDI input thread.");
+    handleError(msg, StkError::PROCESS_THREAD);
   }
 }
 
@@ -663,10 +596,11 @@ RtMidi :: ~RtMidi()
 {
   pthread_cancel(midi_input_thread);
   delete [] midiBuffer;
-#if defined(__OSS_API_)
-  #if defined(__MIDIATOR_)
-    tcdrain(midi_in);
-  #endif
+
+#if defined(__MIDIATOR__)
+  tcdrain(midi_in);
+  if (midi_in != 0) close(midi_in);
+#elif defined(__LINUX_OSS__)
   if (midi_in != 0) close(midi_in);
 #else // ALSA_API
   if (midi_in != 0)
@@ -678,18 +612,18 @@ int RtMidi::nextMessage()
 {
   MIDIMESSAGE lastEvent;
 
-  if ( readOffset == writeOffset ) return 0;
+  if ( readIndex == writeIndex ) return 0;
 
-  lastEvent = midiBuffer[readOffset];
+  lastEvent = midiBuffer[readIndex];
 
-  readOffset++;
-  if ( readOffset >= MIDI_BUFFER_SIZE ) readOffset = 0;
+  readIndex++;
+  if ( readIndex >= MIDI_BUFFER_SIZE ) readIndex = 0;
 
   messageType = (int) (lastEvent.data[0] & 0xf0);
   channel = (int) (lastEvent.data[0] & 0x0f);
   byteTwo = (float) lastEvent.data[1];
   if (messageType == (int) MD_PITCH_BEND)
-    byteTwo = (float) lastEvent.data[2] + (byteTwo * NORM_7);
+    byteTwo = (float) lastEvent.data[2] + (byteTwo / 128.0);
   else
     byteThree = (float) lastEvent.data[2];
   deltaTime = (float) lastEvent.delta_time;
@@ -697,178 +631,176 @@ int RtMidi::nextMessage()
   return messageType;
 }
 
-#if defined(__MIDIATOR_)
+#if defined(__MIDIATOR__)
 
 void initializeMidiator()
 {
-  struct termios info;	/* serial port configuration info */
-  int status; /* Serial port status */
-  struct timeval tv;	/* to do a little time delay */
-  char msg[256];
+  struct termios info;	// serial port configuration info
+  int status;         // serial port status
+  struct timeval tv;   // to do a little time delay
 
-	/* Get the current serial port attributes, so we can change
-	 * the ones we care about.
-   */
-	if (tcgetattr(midi_in, &info) < 0) {
-    sprintf(msg, "RtMidi: ioctl to get tty info failed (MIDIator support)!\n");
-    throw StkError(msg, StkError::MIDICARD_CAPS);
-	}
+  // Get the current serial port attributes, so we can change
+  // the ones we care about.
+  if (tcgetattr(midi_in, &info) < 0) {
+    fprintf(stderr, "RtMidi: ioctl to get tty info failed (MIDIator support)!");
+    return;
+  }
 
-	bzero(&info, sizeof(info));
-	info.c_cflag = BAUD_RATE | CRTSCTS | CS8 | CLOCAL | CREAD;
-	info.c_iflag &= ~IGNCR;
-	info.c_oflag &= ~IGNCR;
+  bzero(&info, sizeof(info));
+  info.c_cflag = BAUD_RATE | CRTSCTS | CS8 | CLOCAL | CREAD;
+  info.c_iflag &= ~IGNCR;
+  info.c_oflag &= ~IGNCR;
 	
-	/* set input mode (non-canonical, no echo,...) */
-	info.c_lflag = 0;
+  // set input mode (non-canonical, no echo,...)
+  info.c_lflag = 0;
 	
-	info.c_cc[VTIME]    = 1;   /* inter-character timer unused */
-	info.c_cc[VMIN]     = 1;   /* blocking read until 5 chars received */
+  info.c_cc[VTIME]    = 1;   // inter-character timer unused
+  info.c_cc[VMIN]     = 1;   // blocking read until 5 chars received
 	
-	tcflush(midi_in, TCIFLUSH);
+  tcflush(midi_in, TCIFLUSH);
 
-	/* Set the attributes */
-	tcsetattr(midi_in, TCSANOW, &info);
+  // Set the attributes
+  tcsetattr(midi_in, TCSANOW, &info);
 
-	/* Startup sequence, as per ron@MIDI_DEV's instructions */
-	/* Many thanks to Ron for supporting Linux */
+  // Startup sequence, as per ron@MIDI_DEV's instructions
+  // Many thanks to Ron for supporting Linux
 
-	/* Step 1 */
-	/* Power down */
-	/* deassert DTR and RTS */
-	ioctl(midi_in, TIOCMGET, &status);
-	status &= ~TIOCM_DTR;
-	status &= ~TIOCM_RTS;
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 600 ms to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 600000;
-	select(0, NULL, NULL, NULL, &tv);
+  // Step 1
+  // Power down and deassert DTR and RTS
+  ioctl(midi_in, TIOCMGET, &status);
+  status &= ~TIOCM_DTR;
+  status &= ~TIOCM_RTS;
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 600 ms to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 600000;
+  select(0, NULL, NULL, NULL, &tv);
 
-  /* Step 2 */
-  /* Power up */
-  /* assert break */
-	ioctl(midi_in, TIOCMGET, &status);
-	status |= TCSBRK;
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 300 ms to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 300000;
-	select(0, NULL, NULL, NULL, &tv);
+  // Step 2
+  // Power up and assert break
+  ioctl(midi_in, TIOCMGET, &status);
+  status |= TCSBRK;
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 300 ms to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 300000;
+  select(0, NULL, NULL, NULL, &tv);
 
-	/* Step 3 */
-	/* Set input mode */
-	ioctl(midi_in, TIOCMGET, &status);
-	status &= ~TIOCM_DTR;
-	status |= TIOCM_RTS;
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 40 us to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 40;
-	select(0, NULL, NULL, NULL, &tv);
+  // Step 3
+  // Set input mode
+  ioctl(midi_in, TIOCMGET, &status);
+  status &= ~TIOCM_DTR;
+  status |= TIOCM_RTS;
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 40 us to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 40;
+  select(0, NULL, NULL, NULL, &tv);
 
-	/* Step 4*/
-	/* Set input mode */
-	ioctl(midi_in, TIOCMGET, &status);
-	status |= TIOCM_DTR;
-	status &= TIOCM_RTS;
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 40 us to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 40;
-	select(0, NULL, NULL, NULL, &tv);
+  // Step 4
+  // Set input mode
+  ioctl(midi_in, TIOCMGET, &status);
+  status |= TIOCM_DTR;
+  status &= TIOCM_RTS;
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 40 us to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 40;
+  select(0, NULL, NULL, NULL, &tv);
 
-	/* Step 5 */
-	/* Set output mode */
-	/* Bitval = RTS, clock = DTR */
+  // Step 5
+  // Set output mode
+  // Bitval = RTS, clock = DTR
 
-  /* 1 */
-	ioctl(midi_in, TIOCMGET, &status);
-	status &= ~TIOCM_DTR; /* 0 */
-	status |= TIOCM_RTS; /* 1 */
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 40 us to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 40;
-	select(0, NULL, NULL, NULL, &tv);
-	/****/
-	ioctl(midi_in, TIOCMGET, &status);
-	status |= TIOCM_DTR; /* 1 rising edge clock */
-	status |= TIOCM_RTS; /* 1 */
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 40 us to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 40;
-	select(0, NULL, NULL, NULL, &tv);
+  // 1
+  ioctl(midi_in, TIOCMGET, &status);
+  status &= ~TIOCM_DTR; /* 0 */
+  status |= TIOCM_RTS; /* 1 */
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 40 us to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 40;
+  select(0, NULL, NULL, NULL, &tv);
+  //
+  ioctl(midi_in, TIOCMGET, &status);
+  status |= TIOCM_DTR; // 1 rising edge clock
+  status |= TIOCM_RTS; // 1
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 40 us to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 40;
+  select(0, NULL, NULL, NULL, &tv);
 
-	/* 1 */
-	ioctl(midi_in, TIOCMGET, &status);
-	status &= ~TIOCM_DTR; /* 0 */
-	status |= TIOCM_RTS; /* 1 */
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 40 us to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 40;
-	select(0, NULL, NULL, NULL, &tv);
-	/****/
-	ioctl(midi_in, TIOCMGET, &status);
-	status |= TIOCM_DTR; /* 1 rising edge clock */
-	status |= TIOCM_RTS; /* 1 */
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 40 us to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 40;
-	select(0, NULL, NULL, NULL, &tv);
+  // 1
+  ioctl(midi_in, TIOCMGET, &status);
+  status &= ~TIOCM_DTR; // 0
+  status |= TIOCM_RTS;  // 1
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 40 us to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 40;
+  select(0, NULL, NULL, NULL, &tv);
+  //
+  ioctl(midi_in, TIOCMGET, &status);
+  status |= TIOCM_DTR; // 1 rising edge clock
+  status |= TIOCM_RTS; // 1
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 40 us to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 40;
+  select(0, NULL, NULL, NULL, &tv);
 
-	/* 0 */
-	ioctl(midi_in, TIOCMGET, &status);
-	status &= ~TIOCM_DTR; /* 0 */
-	status &= ~TIOCM_RTS; /* 0 */
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 40 us to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 40;
-	select(0, NULL, NULL, NULL, &tv);
-	/****/
-	ioctl(midi_in, TIOCMGET, &status);
-	status |= TIOCM_DTR; /* 1 rising edge clock */
-	status &= ~TIOCM_RTS; /* 0 */
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 40 us to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 40;
-	select(0, NULL, NULL, NULL, &tv);
+	// 0
+  ioctl(midi_in, TIOCMGET, &status);
+  status &= ~TIOCM_DTR; // 0
+  status &= ~TIOCM_RTS; // 0
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 40 us to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 40;
+  select(0, NULL, NULL, NULL, &tv);
+  //
+  ioctl(midi_in, TIOCMGET, &status);
+  status |= TIOCM_DTR;  // 1 rising edge clock
+  status &= ~TIOCM_RTS; // 0
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 40 us to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 40;
+  select(0, NULL, NULL, NULL, &tv);
 
-	/* Step 6 ... necessary ?*/ 
-	/* Set RTS=0,DTR=1 ... but they already are from previous ^ */
-	/****/
-	ioctl(midi_in, TIOCMGET, &status);
-	status |= TIOCM_DTR; /* 1 rising edge clock */
-	status &= ~TIOCM_RTS; /* 0 */
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 40 us to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 40;
-	select(0, NULL, NULL, NULL, &tv);
+  // Step 6 ... necessary ?
+  // Set RTS=0,DTR=1 ... but they already are from previous ^
+  //
+  ioctl(midi_in, TIOCMGET, &status);
+  status |= TIOCM_DTR;  // 1 rising edge clock
+  status &= ~TIOCM_RTS; // 0
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 40 us to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 40;
+  select(0, NULL, NULL, NULL, &tv);
 
-  /* Step 7 */
-  /* Deassert break */
-	ioctl(midi_in, TIOCMGET, &status);
-	status &= ~TCSBRK;
-	ioctl(midi_in, TIOCMSET, status);
-	/* Wait 100 ms to make sure everything is stable */
-	tv.tv_sec = 0;
-	tv.tv_usec = 100000;
-	select(0, NULL, NULL, NULL, &tv);
-  /*  End Midiator startup sequence -- midi_dev_type = MIDIATOR */
+  // Step 7
+  // Deassert break
+  ioctl(midi_in, TIOCMGET, &status);
+  status &= ~TCSBRK;
+  ioctl(midi_in, TIOCMSET, status);
+  // Wait 100 ms to make sure everything is stable
+  tv.tv_sec = 0;
+  tv.tv_usec = 100000;
+  select(0, NULL, NULL, NULL, &tv);
+  //  End Midiator startup sequence -- midi_dev_type = MIDIATOR
 }
 #endif // MIDIator
 
-#elif defined(__OS_Win_)
+#elif defined(__OS_WINDOWS__)
 
-/*************************************/
-/*        Windoze MIDI INPUT         */
-/*************************************/
+#include <windows.h>
+#include <mmsystem.h>
+
+static void CALLBACK midiInputCallback( HMIDIOUT hmin, UINT inputStatus, 
+          DWORD instancePtr, DWORD midiMessage, DWORD timestamp);
 
 #define MIDI_NOTEON 0x90
 #define MIDI_NOTEOFF 0x80
@@ -902,11 +834,11 @@ static void CALLBACK midiInputCallback( HMIDIOUT hmin, UINT inputStatus,
     newMessage.time = timestamp;
 
     // Put newMessage in the circular buffer
-    midiBuffer[writeOffset] = newMessage;
-    writeOffset++;
+    midiBuffer[writeIndex] = newMessage;
+    writeIndex++;
 
-    if( writeOffset >= MIDI_BUFFER_SIZE )
-      writeOffset = 0;
+    if( writeIndex >= MIDI_BUFFER_SIZE )
+      writeIndex = 0;
     break;
 
   default:
@@ -914,28 +846,28 @@ static void CALLBACK midiInputCallback( HMIDIOUT hmin, UINT inputStatus,
   }
 }
 
-HMIDIIN hMidiIn ;   // Handle to Midi Output Device
+HMIDIIN hMidiIn ;   // Handle to Midi Input Device
 
 RtMidi :: RtMidi(int device)
 {
   MMRESULT result;
   UINT uDeviceID;
+  int deveyes;
   MIDIINCAPS deviceCaps;
   UINT i;
   char msg[256];
 
   uDeviceID = midiInGetNumDevs();
   if (uDeviceID < 1) {
-    sprintf(msg, "RtMidi: No windoze MIDI device available.\n");
-    throw StkError(msg, StkError::MIDICARD_NOT_FOUND);
+    sprintf(msg, "RtMidi: No windoze MIDI device available.");
+    handleError(msg, StkError::MIDI_SYSTEM);
   }
 
-  /* Our normal scheme is to use the default device if no argument
-     is supplied to RtMidi() or if the argument = -1.  However,
-     there is no way to specify a default MIDI device under windoze.
-     So, I'm going to print the list if device = -1.
-  */
-  if ( (device != -1) && (device < uDeviceID) ) {
+  // Our normal scheme is to use the default device if no argument
+  // is supplied to RtMidi() or if the argument = 0.  However,
+  // there is no way to specify a default MIDI device under windoze.
+  // So, I'm going to print the list if device is not a valid identifier.
+  if ( device >= 0 && device < (int)uDeviceID ) {
 		// try to open device specified as argument
 		result = midiInOpen(&hMidiIn, device,
 												(DWORD)&midiInputCallback,
@@ -945,37 +877,39 @@ RtMidi :: RtMidi(int device)
       goto have_good_device;
   }
 
-  printf("\nMIDI input interfaces available: %i\n",uDeviceID);
+  printf("\nMIDI input interfaces available: %i\n", uDeviceID);
   for (i=0; i<uDeviceID; i++) {
     result = midiInGetDevCaps(i, &deviceCaps, sizeof(MIDIINCAPS));
     printf("   MIDI interface %d is %s\n", i, deviceCaps.szPname);
   }
 
+  deveyes = -1;
   if (uDeviceID > 1) {
     char choice[16];
-    printf("\nType the MIDI interface to open: ");
-    fgets(choice, 16, stdin);
-    uDeviceID = (UINT) atoi(choice);
+    while ( deveyes < 0 || deveyes >= (int)uDeviceID ) {
+      printf("\nType a MIDI device number from above: ");
+      fgets(choice, 16, stdin);
+      deveyes = atoi(choice);
+    }
   }
-  else uDeviceID -= 1;
+  else deveyes = 0;
 
   // Open the port and return any errors	
-  result = midiInOpen(&hMidiIn, uDeviceID,
+  result = midiInOpen(&hMidiIn, (UINT)deveyes,
 											(DWORD)&midiInputCallback,
 											(DWORD)NULL,
 											CALLBACK_FUNCTION);
   if (result != MMSYSERR_NOERROR) {
-    sprintf(msg, "RtMidi: Cannot open Windoze MIDI interface %d.\n",
-            uDeviceID);
-    throw StkError(msg, StkError::MIDICARD_CONTROL);
+    sprintf(msg, "RtMidi: Cannot open Windoze MIDI interface %d.", deveyes);
+    handleError(msg, StkError::MIDI_SYSTEM);
   }
 
  have_good_device: // the current device is what we will use
 
   // Set up the circular buffer for the Midi Input Messages
   midiBuffer = new MIDIMESSAGE[MIDI_BUFFER_SIZE];
-  readOffset = 0;
-  writeOffset = 0;
+  readIndex = 0;
+  writeIndex = 0;
 	
   midiInStart( hMidiIn );
 }
@@ -997,12 +931,12 @@ int RtMidi ::  nextMessage()
   static DWORD lastTime = 0;
   static DWORD newTime = 0;
 
-  if ( readOffset == writeOffset ) return 0;
+  if ( readIndex == writeIndex ) return 0;
 
-  lastEvent = midiBuffer[readOffset];
+  lastEvent = midiBuffer[readIndex];
 		
-  readOffset++;
-  if ( readOffset >= MIDI_BUFFER_SIZE ) readOffset = 0;
+  readIndex++;
+  if ( readIndex >= MIDI_BUFFER_SIZE ) readIndex = 0;
 
   status = (int) (lastEvent.data & 0xff);
   byte1 = (int) (lastEvent.data & 0xff00) >> 8;
@@ -1029,7 +963,7 @@ int RtMidi ::  nextMessage()
   else if (status == MIDI_PITCHBEND)
 		{
 			messageType = status;
-			byteTwo = (float) (byte1 * NORM_7);
+			byteTwo = (float) (byte1 * ONE_OVER_128);
 			byteTwo += (float) byte2;
 		}
   else
@@ -1042,37 +976,35 @@ int RtMidi ::  nextMessage()
 
 #endif
 
-void RtMidi :: printMessage()
+void RtMidi :: printMessage() const
 {
   printf("type = %d, channel = %d, byte2 = %f, byte3 = %f\n",
 		 this->getType(), this->getChannel(), this->getByteTwo(),
 		 this->getByteThree());
 }
 
-int RtMidi ::  getType()
+int RtMidi ::  getType() const
 {
   return messageType;
 }
 
-int RtMidi ::  getChannel()
+int RtMidi ::  getChannel() const
 {
   return channel;
 }
 
-MY_FLOAT RtMidi :: getByteTwo()
+MY_FLOAT RtMidi :: getByteTwo() const
 {
   return byteTwo;
 }
 
-MY_FLOAT RtMidi :: getByteThree()
+MY_FLOAT RtMidi :: getByteThree() const
 {
   return byteThree;
 }
 
-MY_FLOAT RtMidi :: getDeltaTime()
+MY_FLOAT RtMidi :: getDeltaTime() const
 {
   return deltaTime;
 }
 
-
-#endif

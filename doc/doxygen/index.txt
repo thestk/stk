@@ -1,0 +1,15 @@
+/*! \mainpage <I>The Synthesis ToolKit in C++ (STK)</I>
+
+<BODY BGCOLOR="white">
+
+The <B>Synthesis ToolKit in C++ (STK)</B> is a set of audio signal processing and synthesis classes and algorithms written in C++.  You can use these classes to create programs that make sounds with a variety of synthesis techniques.  This is not a terribly novel concept, except that the Synthesis ToolKit is extremely portable (it's mostly platform-independent C and C++ code), and it's completely user-extensible (no libraries, no hidden drivers, and all source code is included).  We like to think that this increases the chances that our programs will still work in another 5-10 years.  In fact, the ToolKit has been working continuously for nearly 8 years now.  STK currently runs with "realtime" support (audio and MIDI) on SGI (Irix), Linux, and Windows computer platforms.  Generic, non-realtime support has been tested under NeXTStep, Sun, and other platforms and should work with any standard C++ compiler.
+
+- \ref information
+- \ref classes
+- \ref download
+- \ref usage
+- \ref maillist
+- \ref system
+- \ref tutorial
+
+*/

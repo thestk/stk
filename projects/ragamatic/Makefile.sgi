@@ -4,21 +4,21 @@
 # the core STK classes.
 STK_PATH = ../../src/
 
-O_FILES		=	$(STK_PATH)Object.o $(STK_PATH)Envelope.o $(STK_PATH)ADSR.o \
-						$(STK_PATH)Filter.o $(STK_PATH)DLineL.o $(STK_PATH)DLineN.o \
-						$(STK_PATH)ByteSwap.o $(STK_PATH)Noise.o $(STK_PATH)OnePole.o \
-						$(STK_PATH)OneZero.o $(STK_PATH)DCBlock.o $(STK_PATH)SKINI11.o \
-						$(STK_PATH)Instrmnt.o $(STK_PATH)WvIn.o $(STK_PATH)RawWvIn.o \
-						$(STK_PATH)DLineA.o $(STK_PATH)Reverb.o $(STK_PATH)JCRev.o \
+O_FILES		=	$(STK_PATH)Stk.o $(STK_PATH)Envelope.o $(STK_PATH)ADSR.o \
+						$(STK_PATH)Filter.o $(STK_PATH)DelayA.o $(STK_PATH)Delay.o \
+						$(STK_PATH)Noise.o $(STK_PATH)OnePole.o $(STK_PATH)OneZero.o \
+						$(STK_PATH)SKINI.o $(STK_PATH)Instrmnt.o $(STK_PATH)WvIn.o \
+						$(STK_PATH)Sitar.o $(STK_PATH)Reverb.o $(STK_PATH)JCRev.o \
 						$(STK_PATH)WvOut.o $(STK_PATH)RtAudio.o $(STK_PATH)RtMidi.o \
-						$(STK_PATH)RtWvOut.o $(STK_PATH)StkError.o $(STK_PATH)Controller.o
+						$(STK_PATH)RtWvOut.o $(STK_PATH)Messager.o $(STK_PATH)Socket.o \
+						$(STK_PATH)Thread.o
 
-O_LOCAL_FILES = Tabla.o Sitar1.o StrDrone.o VoicDrum.o
+O_LOCAL_FILES = Tabla.o Drone.o VoicDrum.o
 
 RM = /bin/rm 
 
 INSTR = ragamat
-CC = CC -O2 -D__OS_IRIX_ # -g -fullwarn -D__SGI_CC__
+CC = CC -O2 -D__IRIX_AL__ # -g -fullwarn -D__SGI_CC__
 LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm -lpthread
 INCLUDE = -I../../include/
 
@@ -47,11 +47,8 @@ strip :
 Tabla.o: Tabla.cpp
 	$(CC) $(INCLUDE) -c Tabla.cpp
 
-Sitar1.o: Sitar1.cpp
-	$(CC) $(INCLUDE) -c Sitar1.cpp
-
-StrDrone.o: StrDrone.cpp
-	$(CC) $(INCLUDE) -c StrDrone.cpp
+Drone.o: Drone.cpp
+	$(CC) $(INCLUDE) -c Drone.cpp
 
 VoicDrum.o: VoicDrum.cpp
 	$(CC) $(INCLUDE) -c VoicDrum.cpp

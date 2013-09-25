@@ -1,101 +1,99 @@
-/*******************************************/
-/*
-   One Pole Filter Class,
-   by Perry R. Cook, 1995-96.
-   Added methods by Julius Smith, 2000.
+/***************************************************/
+/*! \class OnePole
+    \brief STK one-pole filter class.
 
-   The parameter gain is an additional
-   gain parameter applied to the filter
-   on top of the normalization that takes
-   place automatically.  So the net max
-   gain through the system equals the
-   value of gain.  sgain is the combina-
-   tion of gain and the normalization
-   parameter, so if you set the poleCoeff
-   to alpha, sgain is always set to
-   gain * (1.0 - fabs(alpha)).
+    This protected Filter subclass implements
+    a one-pole digital filter.  A method is
+    provided for setting the pole position along
+    the real axis of the z-plane while maintaining
+    a constant peak filter gain.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 */
-/*******************************************/
+/***************************************************/
 
 #include "OnePole.h"
 
 OnePole :: OnePole() : Filter()
 {
-  poleCoeff = (MY_FLOAT) 0.9;
-  gain = (MY_FLOAT) 1.0;
-  sgain = (MY_FLOAT) 0.1;
-  outputs = (MY_FLOAT *) malloc(sizeof(MY_FLOAT));
-  outputs[0] = (MY_FLOAT) 0.0;
-  lastOutput = (MY_FLOAT) 0.0;
+  MY_FLOAT B = 0.1;
+  MY_FLOAT A[2] = {1.0, -0.9};
+  Filter::setCoefficients( 1, &B, 2, A );
 }
 
 OnePole :: OnePole(MY_FLOAT thePole) : Filter()
 {
-  poleCoeff = thePole;
-  gain = (MY_FLOAT) 1.0;
-  sgain = (MY_FLOAT) 1.0 - fabs(thePole);
-  outputs = (MY_FLOAT *) malloc(sizeof(MY_FLOAT));
-  outputs[0] = (MY_FLOAT) 0.0;
-  lastOutput = (MY_FLOAT) 0.0;
+  MY_FLOAT B;
+  MY_FLOAT A[2] = {1.0, -0.9};
+
+  // Normalize coefficients for peak unity gain.
+  if (thePole > 0.0)
+    B = (MY_FLOAT) (1.0 - thePole);
+  else
+    B = (MY_FLOAT) (1.0 + thePole);
+
+  A[1] = -thePole;
+  Filter::setCoefficients( 1, &B, 2,  A );
 }
 
 OnePole :: ~OnePole()    
 {
-  free(outputs);
 }
 
-void OnePole :: clear()
+void OnePole :: clear(void)
 {
-  outputs[0] = (MY_FLOAT) 0.0;
-  lastOutput = (MY_FLOAT) 0.0;
+  Filter::clear();
 }
 
-void OnePole :: setB0(MY_FLOAT aValue)
+void OnePole :: setB0(MY_FLOAT b0)
 {
-  sgain = aValue;
+  b[0] = b0;
 }
 
-void OnePole :: setNum(MY_FLOAT *values)
+void OnePole :: setA1(MY_FLOAT a1)
 {
-  sgain = values[0];
+  a[1] = a1;
 }
 
-void OnePole :: setA1(MY_FLOAT aValue)
+void OnePole :: setPole(MY_FLOAT thePole)
 {
-  poleCoeff = -aValue;
-}
-
-void OnePole :: setDen(MY_FLOAT *values)
-{
-  poleCoeff = -values[0];
-}
-
-void OnePole :: setPole(MY_FLOAT aValue)
-{
-  poleCoeff = aValue;
-  // Normalize gain to 1.0 max
-  if (poleCoeff > (MY_FLOAT) 0.0)
-    sgain = gain * ((MY_FLOAT) 1.0 - poleCoeff);
+  // Normalize coefficients for peak unity gain.
+  if (thePole > 0.0)
+    b[0] = (MY_FLOAT) (1.0 - thePole);
   else
-    sgain = gain * ((MY_FLOAT) 1.0 + poleCoeff);
+    b[0] = (MY_FLOAT) (1.0 + thePole);
+
+  a[1] = -thePole;
 }
 
-void OnePole :: setGain(MY_FLOAT aValue)
+void OnePole :: setGain(MY_FLOAT theGain)
 {
-  gain = aValue;
-
-  // Normalize gain to 1.0 max
-  if (poleCoeff > (MY_FLOAT) 0.0)
-    sgain = gain * ((MY_FLOAT) 1.0 - poleCoeff);
-  else
-    sgain = gain * ((MY_FLOAT) 1.0 + poleCoeff);
+  Filter::setGain(theGain);
 }
 
-// Perform Filter Operation
+MY_FLOAT OnePole :: getGain(void) const
+{
+  return Filter::getGain();
+}
+
+MY_FLOAT OnePole :: lastOut(void) const
+{
+  return Filter::lastOut();
+}
+
 MY_FLOAT OnePole :: tick(MY_FLOAT sample)
 {
-  outputs[0] = (sgain * sample) + (poleCoeff * outputs[0]);              
-  lastOutput = outputs[0];
-  return lastOutput;
+  inputs[0] = gain * sample;
+  outputs[0] = b[0] * inputs[0] - a[1] * outputs[1];
+  outputs[1] = outputs[0];
+
+  return outputs[0];
 }
 
+MY_FLOAT *OnePole :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick(vector[i]);
+
+  return vector;
+}

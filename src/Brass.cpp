@@ -1,40 +1,53 @@
-/******************************************/
-/*  Waveguide Brass Instrument Model ala  */
-/*  Cook (TBone, HosePlayer)              */
-/*  by Perry R. Cook, 1995-96             */
-/*                                        */
-/*  This is a waveguide model, and thus   */
-/*  relates to various Stanford Univ.     */
-/*  and possibly Yamaha and other patents.*/
-/*                                        */
-/*   Controls:    CONTROL1 = lipTension   */
-/*                CONTROL2 = slideLength  */
-/*		  CONTROL3 = vibFreq      */
-/*		  MOD_WHEEL= vibAmt       */
-/******************************************/
+/***************************************************/
+/*! \class Brass
+    \brief STK simple brass instrument class.
+
+    This class implements a simple brass instrument
+    waveguide model, a la Cook (TBone, HosePlayer).
+
+    This is a digital waveguide model, making its
+    use possibly subject to patents held by
+    Stanford University, Yamaha, and others.
+
+    Control Change Numbers: 
+       - Lip Tension = 2
+       - Slide Length = 4
+       - Vibrato Frequency = 11
+       - Vibrato Gain = 1
+       - Volume = 128
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "Brass.h"
-#include "SKINI11.msg"
+#include "SKINI.msg"
+#include <string.h>
+#include <math.h>
 
-Brass :: Brass(MY_FLOAT lowestFreq)
+Brass :: Brass(MY_FLOAT lowestFrequency)
 {
-  length = (long) (SRATE / lowestFreq + 1);
-  delayLine = new DLineA(length);
-  lipFilter = new LipFilt;
-  dcBlock = new DCBlock;
+  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
+  delayLine = new DelayA( 0.5 * length, length );
+
+  lipFilter = new BiQuad();
+  lipFilter->setGain( 0.03 );
+  dcBlock = new PoleZero();
+  dcBlock->setBlockZero();
+
   adsr = new ADSR;
-  adsr->setAllTimes((MY_FLOAT) 0.005, (MY_FLOAT) 0.001, (MY_FLOAT) 1.0, (MY_FLOAT) 0.010);
+  adsr->setAllTimes( 0.005, 0.001, 1.0, 0.010);
 
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  vibr = new RawWvIn(strcat(file,"rawwaves/sinewave.raw"),"looping");
+  vibrato = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE );
+  vibrato->setFrequency( 6.137 );
+  vibratoGain = 0.0;
+
   this->clear();
-
-  vibr->setFreq((MY_FLOAT)  6.137);
-  vibrGain = (MY_FLOAT)  0.05;            /* breath periodic vibrato component  */
-
 	maxPressure = (MY_FLOAT) 0.0;
+  lipTarget = 0.0;
 }
 
 Brass :: ~Brass()
@@ -43,7 +56,7 @@ Brass :: ~Brass()
   delete lipFilter;
   delete dcBlock;
   delete adsr;
-  delete vibr;
+  delete vibrato;
 }
 
 void Brass :: clear()
@@ -53,21 +66,34 @@ void Brass :: clear()
   dcBlock->clear();
 }
 
-void Brass :: setFreq(MY_FLOAT frequency)
+void Brass :: setFrequency(MY_FLOAT frequency)
 {
-  slideTarget = (SRATE / frequency * (MY_FLOAT) 2.0) + (MY_FLOAT) 3.0;
-  /* fudge correction for filter delays */
-  delayLine->setDelay(slideTarget);   /*  we'll play a harmonic  */
-  lipTarget = frequency;
-  lipFilter->setFreq(frequency);
+  MY_FLOAT freakency = frequency;
+  if ( frequency <= 0.0 ) {
+    cerr << "Brass: setFrequency parameter is less than or equal to zero!" << endl;
+    freakency = 220.0;
+  }
+
+  // Fudge correction for filter delays.
+  slideTarget = (Stk::sampleRate() / freakency * 2.0) + 3.0;
+  delayLine->setDelay(slideTarget); // play a harmonic
+
+  lipTarget = freakency;
+  lipFilter->setResonance( freakency, 0.997 );
 }
 
 void Brass :: setLip(MY_FLOAT frequency)
 {
-  lipFilter->setFreq(frequency);
+  MY_FLOAT freakency = frequency;
+  if ( frequency <= 0.0 ) {
+    cerr << "Brass: setLip parameter is less than or equal to zero!" << endl;
+    freakency = 220.0;
+  }
+
+  lipFilter->setResonance( freakency, 0.997 );
 }
 
-void Brass :: startBlowing(MY_FLOAT amplitude,MY_FLOAT rate)
+void Brass :: startBlowing(MY_FLOAT amplitude, MY_FLOAT rate)
 {
   adsr->setAttackRate(rate);
   maxPressure = amplitude;
@@ -80,55 +106,71 @@ void Brass :: stopBlowing(MY_FLOAT rate)
   adsr->keyOff();
 }
 
-void Brass :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
+void Brass :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
 {
-  this->setFreq(freq);
-  this->startBlowing(amp, amp * (MY_FLOAT) 0.001);
-#if defined(_debug_)        
-  printf("Brass : NoteOn: Freq=%lf Amp=%lf\n",freq,amp);
-#endif    
+  setFrequency(frequency);
+  this->startBlowing(amplitude, amplitude * 0.001);
+
+#if defined(_STK_DEBUG_)
+  cerr << "Brass: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+#endif
 }
 
-void Brass :: noteOff(MY_FLOAT amp)
+void Brass :: noteOff(MY_FLOAT amplitude)
 {
-  this->stopBlowing(amp * (MY_FLOAT) 0.005);
-#if defined(_debug_)        
-  printf("Brass : NoteOff: Amp=%lf\n",amp);
-#endif    
+  this->stopBlowing(amplitude * 0.005);
+
+#if defined(_STK_DEBUG_)
+  cerr << "Brass: NoteOff amplitude = " << amplitude << endl;
+#endif
 }
 
 MY_FLOAT Brass :: tick()
 {
-  MY_FLOAT breathPressure;
+  MY_FLOAT breathPressure = maxPressure * adsr->tick();
+  breathPressure += vibratoGain * vibrato->tick();
 
-  breathPressure = maxPressure * adsr->tick();
-  breathPressure += vibrGain * vibr->tick();
-  lastOutput = delayLine->tick(                                 /* bore delay  */
-               dcBlock->tick(                                   /* block DC    */
-               lipFilter->tick((MY_FLOAT) 0.3 * breathPressure, /* mouth input */
-                     (MY_FLOAT) 0.85 * delayLine->lastOut()))); /* and bore reflection */
+  MY_FLOAT mouthPressure = 0.3 * breathPressure;
+  MY_FLOAT borePressure = 0.85 * delayLine->lastOut();
+  MY_FLOAT deltaPressure = mouthPressure - borePressure; // Differential pressure.
+  deltaPressure = lipFilter->tick( deltaPressure );      // Force - > position.
+  deltaPressure *= deltaPressure;                        // Basic position to area mapping.
+  if ( deltaPressure > 1.0 ) deltaPressure = 1.0;         // Non-linear saturation.
+  // The following input scattering assumes the mouthPressure = area.
+  lastOutput = deltaPressure * mouthPressure + ( 1.0 - deltaPressure) * borePressure;
+  lastOutput = delayLine->tick( dcBlock->tick( lastOutput ) );
+
   return lastOutput;
 }
 
 void Brass :: controlChange(int number, MY_FLOAT value)
 {
-  MY_FLOAT temp;
-#if defined(_debug_)        
-  printf("Brass : ControlChange: Number=%i Value=%f\n",number,value);
-#endif    
-  if (number == __SK_LipTension_)	{
-    temp = lipTarget * (MY_FLOAT) pow(4.0,(2.0*value*NORM_7) - 1.0);
+  MY_FLOAT norm = value * ONE_OVER_128;
+  if ( norm < 0 ) {
+    norm = 0.0;
+    cerr << "Brass: Control value less than zero!" << endl;
+  }
+  else if ( norm > 1.0 ) {
+    norm = 1.0;
+    cerr << "Brass: Control value greater than 128.0!" << endl;
+  }
+
+  if (number == __SK_LipTension_)	{ // 2
+    MY_FLOAT temp = lipTarget * pow( 4.0, (2.0 * norm) - 1.0 );
     this->setLip(temp);
   }
-  else if (number == __SK_SlideLength_)
-    delayLine->setDelay(slideTarget * ((MY_FLOAT) 0.5 + (value * NORM_7)));  
-  else if (number == __SK_ModFrequency_)
-		vibr->setFreq((value * NORM_7 * (MY_FLOAT) 12.0));
-  else if (number == __SK_ModWheel_ )
-		vibrGain = (value * NORM_7 * (MY_FLOAT) 0.4);
-  else if (number == __SK_AfterTouch_Cont_)
-    adsr->setTarget(value * NORM_7);
-  else    {        
-    printf("Brass : Undefined Control Number!!\n");
-  }  
+  else if (number == __SK_SlideLength_) // 4
+    delayLine->setDelay( slideTarget * (0.5 + norm) );
+  else if (number == __SK_ModFrequency_) // 11
+    vibrato->setFrequency( norm * 12.0 );
+  else if (number == __SK_ModWheel_ ) // 1
+    vibratoGain = norm * 0.4;
+  else if (number == __SK_AfterTouch_Cont_) // 128
+    adsr->setTarget( norm );
+  else
+    cerr << "Brass: Undefined Control Number (" << number << ")!!" << endl;
+
+#if defined(_STK_DEBUG_)
+  cerr << "Brass: controlChange number = " << number << ", value = " << value << endl;
+#endif
 }

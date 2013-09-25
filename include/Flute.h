@@ -1,64 +1,100 @@
-/******************************************/
-/*  WaveGuide Flute ala Karjalainen,      */
-/*  Smith, Waryznyk, etc.                 */
-/*  with polynomial Jet ala Cook          */
-/*  by Perry Cook, 1995-96                */
-/*                                        */
-/*  This is a waveguide model, and thus   */
-/*  relates to various Stanford Univ.     */
-/*  and possibly Yamaha and other patents.*/
-/*                                        */
-/*   Controls:    CONTROL1 = jetDelay     */
-/*                CONTROL2 = noiseGain    */
-/*                CONTROL3 = vibFreq      */
-/*                MOD_WHEEL= vibAmt       */
-/******************************************/
+/***************************************************/
+/*! \class Flute
+    \brief STK flute physical model class.
 
-#if !defined(__Flute_h)
-#define __Flute_h
+    This class implements a simple flute
+    physical model, as discussed by Karjalainen,
+    Smith, Waryznyk, etc.  The jet model uses
+    a polynomial, a la Cook.
+
+    This is a digital waveguide model, making its
+    use possibly subject to patents held by Stanford
+    University, Yamaha, and others.
+
+    Control Change Numbers: 
+       - Jet Delay = 2
+       - Noise Gain = 4
+       - Vibrato Frequency = 11
+       - Vibrato Gain = 1
+       - Breath Pressure = 128
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
+
+#if !defined(__FLUTE_H)
+#define __FLUTE_H
 
 #include "Instrmnt.h"
 #include "JetTabl.h"
-#include "DLineL.h"
+#include "DelayL.h"
 #include "OnePole.h"
-#include "DCBlock.h"
+#include "PoleZero.h"
 #include "Noise.h"
 #include "ADSR.h"
-#include "RawWvIn.h"
+#include "WaveLoop.h"
 
 class Flute : public Instrmnt
 {
+ public:
+  //! Class constructor, taking the lowest desired playing frequency.
+  Flute(MY_FLOAT lowestFrequency);
+
+  //! Class destructor.
+  ~Flute();
+
+  //! Reset and clear all internal state.
+  void clear();
+
+  //! Set instrument parameters for a particular frequency.
+  void setFrequency(MY_FLOAT frequency);
+
+  //! Set the reflection coefficient for the jet delay (-1.0 - 1.0).
+  void setJetReflection(MY_FLOAT coefficient);
+
+  //! Set the reflection coefficient for the air column delay (-1.0 - 1.0).
+  void setEndReflection(MY_FLOAT coefficient);
+
+  //! Set the length of the jet delay in terms of a ratio of jet delay to air column delay lengths.
+  void setJetDelay(MY_FLOAT aRatio);
+
+  //! Apply breath velocity to instrument with given amplitude and rate of increase.
+  void startBlowing(MY_FLOAT amplitude, MY_FLOAT rate);
+
+  //! Decrease breath velocity with given rate of decrease.
+  void stopBlowing(MY_FLOAT rate);
+
+  //! Start a note with the given frequency and amplitude.
+  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+
+  //! Stop a note with the given amplitude (speed of decay).
+  void noteOff(MY_FLOAT amplitude);
+
+  //! Compute one output sample.
+  MY_FLOAT tick();
+
+  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
+  void controlChange(int number, MY_FLOAT value);
+
  protected:  
-  DLineL *jetDelay;
-  DLineL *boreDelay;
+  DelayL *jetDelay;
+  DelayL *boreDelay;
   JetTabl *jetTable;
   OnePole *filter;
-  DCBlock *dcBlock;
+  PoleZero *dcBlock;
   Noise *noise;
   ADSR *adsr;
-  RawWvIn *vibr;
-  MY_FLOAT lastFreq;
+  WaveLoop *vibrato;
+  long length;
+  MY_FLOAT lastFrequency;
   MY_FLOAT maxPressure;
-  MY_FLOAT jetRefl;
-  MY_FLOAT endRefl;
+  MY_FLOAT jetReflection;
+  MY_FLOAT endReflection;
   MY_FLOAT noiseGain;
-  MY_FLOAT vibrGain;
+  MY_FLOAT vibratoGain;
   MY_FLOAT outputGain;
   MY_FLOAT jetRatio;
- public:
-  Flute(MY_FLOAT lowestFreq);
-  ~Flute();
-  void clear();
-  void startBlowing(MY_FLOAT amplitude,MY_FLOAT rate);
-  void stopBlowing(MY_FLOAT rate);
-  virtual void noteOn(MY_FLOAT freq, MY_FLOAT amp);
-  virtual void noteOff(MY_FLOAT amp);
-  void setJetRefl(MY_FLOAT refl);
-  void setEndRefl(MY_FLOAT refl);
-  virtual void setFreq(MY_FLOAT frequency);
-  virtual MY_FLOAT tick();
-  virtual void controlChange(int number, MY_FLOAT value);
-  void setJetDelay(MY_FLOAT aLength);
+
 };
 
 #endif

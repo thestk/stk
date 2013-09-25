@@ -1,102 +1,153 @@
-/*******************************************/
-/*  Real-Time Duplex Input/Output Class,   */
-/*  by Gary P. Scavone, 1999-2000          */
-/*                                         */
-/*  This object opens the sound i/o        */
-/*  device, reads buffers in from it, and  */
-/*  pokes buffers of samples out to it.    */
-/*                                         */
-/*  At the moment, duplex mode is possible */
-/*  only on Linux (OSS), IRIX, and         */
-/*  Windows95/98 platforms.                */
-/*******************************************/
+/***************************************************/
+/*! \class RtDuplex
+    \brief STK realtime audio input/output class.
+
+    This class provides a simplified interface to
+    RtAudio for realtime audio input/output.  It
+    is also possible to achieve duplex operation
+    using separate RtWvIn and RtWvOut classes, but
+    this class ensures better input/output
+    syncronization.
+
+    RtDuplex supports multi-channel data in
+    interleaved format.  It is important to
+    distinguish the tick() methods, which output
+    single samples to all channels in a sample frame
+    and return samples produced by averaging across
+    sample frames, from the tickFrame() methods, which
+    take/return pointers to multi-channel sample frames.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "RtDuplex.h"
 
-#if (defined(__STK_REALTIME_) )
-
-RtDuplex :: RtDuplex(int chans, MY_FLOAT srate, int device)
+RtDuplex :: RtDuplex(int nChannels, MY_FLOAT sampleRate, int device, int bufferFrames, int nBuffers )
 {
-  // We'll let RTSoundIO deal with channel and srate limitations.
-  channels = chans;
-  sound_dev = new RtAudio(channels, srate, "duplex", device);
-  writeCounter = 0;
-  gain = 0.00003052;
-  data_length = RT_BUFFER_SIZE*channels;
-  indata = (INT16 *) new INT16[data_length+10];
-  outdata = (INT16 *) new INT16[data_length+10];
-  insamples = new MY_FLOAT[channels];
-#if (defined(__STK_REALTIME_) && defined(__OS_IRIX_))
-  // This is necessary under IRIX because it scales the input by 0.5
-  // when using single-channel input.
-  if (channels == 1) gain *= 2;
-#endif
-  // Read half a buffer to get started
-  readCounter = data_length / 2;
-  sound_dev->recordBuffer(&indata[readCounter],(data_length/2));
+  channels = nChannels;
+  bufferSize = bufferFrames;
+  RtAudio::RTAUDIO_FORMAT format = ( sizeof(MY_FLOAT) == 8 ) ? RtAudio::RTAUDIO_FLOAT64 : RtAudio::RTAUDIO_FLOAT32;
+  try {
+    audio = new RtAudio(&stream, device, channels, device, channels, format,
+                        (int)sampleRate, &bufferSize, nBuffers);
+    data = (MY_FLOAT *) audio->getStreamBuffer(stream);
+  }
+  catch (RtError &error) {
+    handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+  }
+
+  lastOutput = (MY_FLOAT *) new MY_FLOAT[channels];
+  for (unsigned int i=0; i<channels; i++) lastOutput[i] = 0.0;
+  counter = 0;
+  stopped = true;
 }
 
 RtDuplex :: ~RtDuplex()
 {
-  sound_dev->playBuffer(outdata,writeCounter);
-  writeCounter = 0;
-  while (writeCounter<data_length)	{
-    outdata[writeCounter++] = 0;
-  }
-  sound_dev->playBuffer(outdata,writeCounter);
-  sound_dev->playBuffer(outdata,writeCounter);  // Are these extra writes necessary?
-  sound_dev->playBuffer(outdata,writeCounter);
-  delete [ ] insamples;
-  delete [ ] indata;
-  delete [ ] outdata;
-  delete sound_dev;
+  if ( !stopped )
+    audio->stopStream(stream);
+  delete audio;
+  delete [] lastOutput;
+  data = 0; // RtAudio deletes the buffer itself.
 }
 
-MY_FLOAT RtDuplex :: tick(MY_FLOAT outsample)
+void RtDuplex :: start()
 {
-  // We offset the data read and data write calls by RT_BUFFER_SIZE / 2
-  if (readCounter >= data_length) {
-    sound_dev->recordBuffer(indata,data_length);
-    readCounter = 0;
+  if ( stopped ) {
+    audio->startStream(stream);
+    stopped = false;
   }
-  *insamples = (MY_FLOAT) indata[readCounter++];
-  if (channels > 1) {
-    int i;
-    for (i=1;i<channels;i++)
-      *insamples += (MY_FLOAT) indata[readCounter++];
-    *insamples /= i;
-  }
-  *insamples *= gain;
-
-  for (int i=0;i<channels;i++)
-    outdata[writeCounter++] = (short) (outsample * 32000.0);
-
-  if (writeCounter >= data_length) {
-    sound_dev->playBuffer(outdata,data_length);
-    writeCounter = 0;
-  }
-  return *insamples;
 }
 
-MY_MULTI RtDuplex :: mtick(MY_MULTI outsamples)
+void RtDuplex :: stop()
 {
-  int i;
-  // We offset the data read and data write calls by RT_BUFFER_SIZE / 2
-  if (readCounter >= data_length) {
-    sound_dev->recordBuffer(indata,data_length);
-    readCounter = 0;
+  if ( !stopped ) {
+    audio->stopStream(stream);
+    stopped = true;
   }
-  for (i=0;i<channels;i++)
-    insamples[i] = (MY_FLOAT) (indata[readCounter++]*gain);
-
-  for (i=0;i<channels;i++)
-    outdata[writeCounter++] = (short) (*outsamples++ * 32000.0);
-
-  if (writeCounter >= data_length) {
-    sound_dev->playBuffer(outdata,data_length);
-    writeCounter = 0;
-  }
-  return insamples;
 }
 
-#endif
+MY_FLOAT RtDuplex :: lastOut(void) const
+{
+  if ( channels == 1 )
+    return *lastOutput;
+
+  MY_FLOAT output = 0.0;
+  for (unsigned int i=0; i<channels; i++ ) {
+    output += lastOutput[i];
+  }
+  return output / channels;
+}
+
+MY_FLOAT RtDuplex :: tick(const MY_FLOAT sample)
+{
+  if ( stopped )
+    start();
+
+  if (counter == 0) {
+    try {
+      audio->tickStream(stream);
+    }
+    catch (RtError &error) {
+      handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+    }
+  }
+
+  unsigned long temp = counter * channels;
+  for (unsigned int i=0; i<channels; i++) {
+    lastOutput[i] = data[temp];
+    data[temp++] = sample;
+  }
+
+  counter++;
+  if (counter >= (long) bufferSize)
+    counter = 0;
+
+  return lastOut();
+}
+
+MY_FLOAT *RtDuplex :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for ( unsigned int i=0; i<vectorSize; i++ )
+    vector[i] = tick(vector[i]);
+
+  return vector;
+}
+
+const MY_FLOAT *RtDuplex :: lastFrame() const
+{
+  return lastOutput;
+}
+
+MY_FLOAT *RtDuplex :: tickFrame(MY_FLOAT *frameVector, unsigned int frames)
+{
+  if ( stopped )
+    start();
+
+  unsigned int i;
+  unsigned long temp;
+  for (unsigned int j=0; j<frames; j++ ) {
+    if (counter == 0) {
+      try {
+        audio->tickStream(stream);
+      }
+      catch (RtError &error) {
+        handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+      }
+    }
+
+    temp = counter * channels;
+    for (i=0; i<channels; i++) {
+      lastOutput[i] = data[temp];
+      data[temp++] = frameVector[j*channels+i];
+      frameVector[j*channels+i] = lastOutput[i];
+    }
+
+    counter++;
+    if (counter >= (long) bufferSize)
+      counter = 0;
+  }
+
+  return frameVector;
+}

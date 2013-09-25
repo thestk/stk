@@ -1,52 +1,59 @@
-/******************************************/
-/*  WaveGuide Flute ala Karjalainen,      */
-/*  Smith, Waryznyk, etc.                 */
-/*  with polynomial Jet ala Cook          */
-/*  by Perry Cook, 1995-96                */
-/*                                        */
-/*  This is a waveguide model, and thus   */
-/*  relates to various Stanford Univ.     */
-/*  and possibly Yamaha and other patents.*/
-/*                                        */
-/*   Controls:    CONTROL1 = jetDelay     */
-/*                CONTROL2 = noiseGain    */
-/*                CONTROL3 = vibFreq      */
-/*                MOD_WHEEL= vibAmt       */
-/******************************************/
+/***************************************************/
+/*! \class Fluate
+    \brief STK flute physical model class.
+
+    This class implements a simple flute
+    physical model, as discussed by Karjalainen,
+    Smith, Waryznyk, etc.  The jet model uses
+    a polynomial, a la Cook.
+
+    This is a digital waveguide model, making its
+    use possibly subject to patents held by Stanford
+    University, Yamaha, and others.
+
+    Control Change Numbers: 
+       - Jet Delay = 2
+       - Noise Gain = 4
+       - Vibrato Frequency = 11
+       - Vibrato Gain = 1
+       - Breath Pressure = 128
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "Flute.h"
-#include "SKINI11.msg"
+#include "SKINI.msg"
+#include <string.h>
 
-Flute :: Flute(MY_FLOAT lowestFreq)
+Flute :: Flute(MY_FLOAT lowestFrequency)
 {
-  long length;
-  length = (long) (SRATE / lowestFreq + 1);
-  boreDelay = new DLineL(length);
+  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
+  boreDelay = new DelayL( 100.0, length );
   length >>= 1;
-  jetDelay = new DLineL(length);
-  jetTable = new JetTabl;
-  filter = new OnePole;
-  dcBlock = new DCBlock;
-  noise = new Noise;
-  adsr = new ADSR;
+  jetDelay = new DelayL( 49.0, length );
+  jetTable = new JetTabl();
+  filter = new OnePole();
+  dcBlock = new PoleZero();
+  dcBlock->setBlockZero();
+  noise = new Noise();
+  adsr = new ADSR();
 
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  vibr = new RawWvIn(strcat(file,"rawwaves/sinewave.raw"),"looping");
+  vibrato = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE );
+  vibrato->setFrequency( 5.925 );
+
   this->clear();
 
-  boreDelay->setDelay((MY_FLOAT) 100.0);
-  jetDelay->setDelay((MY_FLOAT) 49.0);
-
-  filter->setPole((MY_FLOAT) 0.7 - ((MY_FLOAT) 0.1 * (MY_FLOAT)  22050.0 / SRATE));
-  filter->setGain((MY_FLOAT) -1.0);
-  vibr->setFreq((MY_FLOAT) 5.925);
-  adsr->setAllTimes((MY_FLOAT) 0.005, (MY_FLOAT) 0.01, (MY_FLOAT) 0.8, (MY_FLOAT) 0.010);
-  endRefl = (MY_FLOAT) 0.5;
-  jetRefl = (MY_FLOAT) 0.5;
-  noiseGain = (MY_FLOAT) 0.15;          /* Breath pressure random component   */
-  vibrGain = (MY_FLOAT) 0.05;            /* breath periodic vibrato component  */
+  filter->setPole( 0.7 - ((MY_FLOAT) 0.1 * 22050.0 / Stk::sampleRate() ) );
+  filter->setGain( -1.0 );
+  adsr->setAllTimes( 0.005, 0.01, 0.8, 0.010);
+  endReflection = (MY_FLOAT) 0.5;
+  jetReflection = (MY_FLOAT) 0.5;
+  noiseGain =  0.15;             // Breath pressure random component.
+  vibratoGain = (MY_FLOAT) 0.05; // Breath periodic vibrato component.
   jetRatio = (MY_FLOAT) 0.32;
 
 	maxPressure = (MY_FLOAT) 0.0;
@@ -61,7 +68,7 @@ Flute :: ~Flute()
   delete dcBlock;
   delete noise;
   delete adsr;
-  delete vibr;
+  delete vibrato;
 }
 
 void Flute :: clear()
@@ -72,13 +79,23 @@ void Flute :: clear()
   dcBlock->clear();
 }
 
-void Flute :: setFreq(MY_FLOAT frequency)
+void Flute :: setFrequency(MY_FLOAT frequency)
 {
-  MY_FLOAT temp;
-  lastFreq = frequency * (MY_FLOAT) 0.66666; /* we're overblowing here */
-  temp = SRATE / lastFreq - (MY_FLOAT) 2.0;  /* Length - approx. filter delay */
-  boreDelay->setDelay(temp);                 /* Length of bore tube           */
-  jetDelay->setDelay(temp * jetRatio);       /* jet delay shorter             */
+  lastFrequency = frequency;
+  if ( frequency <= 0.0 ) {
+    cerr << "Flute: setFrequency parameter is less than or equal to zero!" << endl;
+    lastFrequency = 220.0;
+  }
+
+  // We're overblowing here.
+  lastFrequency *= 0.66666;
+  // Delay = length - approximate filter delay.
+  MY_FLOAT delay = Stk::sampleRate() / lastFrequency - (MY_FLOAT) 2.0;
+  if (delay <= 0.0) delay = 0.3;
+  else if (delay > length) delay = length;
+
+  boreDelay->setDelay(delay);
+  jetDelay->setDelay(delay * jetRatio);
 }
 
 void Flute :: startBlowing(MY_FLOAT amplitude, MY_FLOAT rate)
@@ -94,84 +111,92 @@ void Flute :: stopBlowing(MY_FLOAT rate)
   adsr->keyOff();
 }
 
-void Flute :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
+void Flute :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
 {
-  this->setFreq(freq);
-  this->startBlowing((MY_FLOAT) 1.1 + (amp * (MY_FLOAT) 0.20),amp * (MY_FLOAT) 0.02);
-  outputGain = amp + (MY_FLOAT) 0.001;
-#if defined(_debug_)        
-  printf("Flute : NoteOn: Freq=%lf Amp=%lf\n",freq,amp);
-#endif    
+  setFrequency(frequency);
+  startBlowing( 1.1 + (amplitude * 0.20), amplitude * 0.02);
+  outputGain = amplitude + 0.001;
+
+#if defined(_STK_DEBUG_)
+  cerr << "Flute: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+#endif
 }
 
-void Flute :: noteOff(MY_FLOAT amp)
+void Flute :: noteOff(MY_FLOAT amplitude)
 {
-  this->stopBlowing(amp * (MY_FLOAT) 0.02);
-#if defined(_debug_)        
-  printf("Flute : NoteOff: Amp=%lf\n",amp);
-#endif    
+  this->stopBlowing(amplitude * 0.02);
+
+#if defined(_STK_DEBUG_)
+  cerr << "Flute: NoteOff amplitude = " << amplitude << endl;
+#endif
 }
 
-void Flute :: setJetRefl(MY_FLOAT refl)
+void Flute :: setJetReflection(MY_FLOAT coefficient)
 {
-  jetRefl = refl;
+  jetReflection = coefficient;
 }
 
-void Flute :: setEndRefl(MY_FLOAT refl)
+void Flute :: setEndReflection(MY_FLOAT coefficient)
 {         
-  endRefl = refl;
+  endReflection = coefficient;
 }               
 
 void Flute :: setJetDelay(MY_FLOAT aRatio)
 {
-  MY_FLOAT temp;
-  temp = SRATE / lastFreq - (MY_FLOAT) 2.0; /* Length - approx. filter delay */
+  // Delay = length - approximate filter delay.
+  MY_FLOAT temp = Stk::sampleRate() / lastFrequency - (MY_FLOAT) 2.0;
   jetRatio = aRatio;
-  jetDelay->setDelay(temp * aRatio);   /* Scaled by ratio               */
+  jetDelay->setDelay(temp * aRatio); // Scaled by ratio.
 }
 
 MY_FLOAT Flute :: tick()
 {
-  MY_FLOAT temp;
   MY_FLOAT pressureDiff;
-  MY_FLOAT randPressure;
   MY_FLOAT breathPressure;
 
-  breathPressure = maxPressure * adsr->tick();   /* Breath Pressure               */
-  randPressure = noiseGain * noise->tick();      /* Random Deviation              */
-  randPressure += vibrGain * vibr->tick();       /* + breath vibrato              */
-  randPressure *= breathPressure;                /* All scaled by Breath Pressure */
+  // Calculate the breath pressure (envelope + noise + vibrato)
+  breathPressure = maxPressure * adsr->tick();
+  breathPressure += breathPressure * noiseGain * noise->tick();
+  breathPressure += breathPressure * vibratoGain * vibrato->tick();
 
-  temp = filter->tick(boreDelay->lastOut());     
-  temp = dcBlock->tick(temp);                    /* Block DC on reflection        */
-  pressureDiff = breathPressure + randPressure - /* Breath Pressure               */
-                           (jetRefl * temp);     /*    - reflected                */
-  pressureDiff = jetDelay->tick(pressureDiff);   /* Jet Delay Line                */
-  pressureDiff = jetTable->lookup(pressureDiff)  /* Non-Lin Jet + reflected       */
-    + (endRefl * temp);        
-  lastOutput = (MY_FLOAT) 0.3 * boreDelay->tick(pressureDiff);  /* Bore Delay and "bell" filter  */
+  MY_FLOAT temp = filter->tick( boreDelay->lastOut() );
+  temp = dcBlock->tick(temp); // Block DC on reflection.
+
+  pressureDiff = breathPressure - (jetReflection * temp);
+  pressureDiff = jetDelay->tick( pressureDiff );
+  pressureDiff = jetTable->tick( pressureDiff ) + (endReflection * temp);
+  lastOutput = (MY_FLOAT) 0.3 * boreDelay->tick( pressureDiff );
 
   lastOutput *= outputGain;
   return lastOutput;
-
 }
 
 void Flute :: controlChange(int number, MY_FLOAT value)
 {
-#if defined(_debug_)        
-  printf("Flute : ControlChange: Number=%i Value=%f\n",number,value);
-#endif    
-  if (number == __SK_JetDelay_)
-    this->setJetDelay((MY_FLOAT) 0.08 + ((MY_FLOAT) 0.48 * value * NORM_7));
-  else if (number == __SK_NoiseLevel_)
-    noiseGain = (value * NORM_7 * (MY_FLOAT) 0.4);
-  else if (number == __SK_ModFrequency_)
-    vibr->setFreq((value * NORM_7 * (MY_FLOAT) 12.0));
-  else if (number == __SK_ModWheel_)
-    vibrGain = (value * NORM_7 * (MY_FLOAT) 0.4);
-  else if (number == __SK_AfterTouch_Cont_)
-    adsr->setTarget(value * NORM_7);
-  else    {        
-    printf("Flute : Undefined Control Number!!\n");
-  }   
+  MY_FLOAT norm = value * ONE_OVER_128;
+  if ( norm < 0 ) {
+    norm = 0.0;
+    cerr << "Flute: Control value less than zero!" << endl;
+  }
+  else if ( norm > 1.0 ) {
+    norm = 1.0;
+    cerr << "Flute: Control value greater than 128.0!" << endl;
+  }
+
+  if (number == __SK_JetDelay_) // 2
+    this->setJetDelay( 0.08 + (0.48 * norm) );
+  else if (number == __SK_NoiseLevel_) // 4
+    noiseGain = ( norm * 0.4);
+  else if (number == __SK_ModFrequency_) // 11
+    vibrato->setFrequency( norm * 12.0);
+  else if (number == __SK_ModWheel_) // 1
+    vibratoGain = ( norm * 0.4 );
+  else if (number == __SK_AfterTouch_Cont_) // 128
+    adsr->setTarget( norm );
+  else
+    cerr << "Flute: Undefined Control Number (" << number << ")!!" << endl;
+
+#if defined(_STK_DEBUG_)
+  cerr << "Flute: controlChange number = " << number << ", value = " << value << endl;
+#endif
 }

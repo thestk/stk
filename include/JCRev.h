@@ -1,51 +1,48 @@
-/*******************************************/  
-/*  JVRev Reverb Subclass                  */
-/*  by Tim Stilson, 1998                   */
-/*    based on CLM JCRev                   */
-/*  Integrated into STK by Gary Scavone    */
-/*                                         */
-/*  This is based on some of the famous    */
-/*  Stanford CCRMA reverbs (NRev, KipRev)  */
-/*  all based on the Chowning/Moorer/      */
-/*  Schroeder reverberators, which use     */
-/*  networks of simple allpass and comb    */
-/*  delay filters.  This particular        */
-/*  arrangement consists of 3 allpass      */
-/*  filters in series, followed by 4 comb  */
-/*  filters in parallel, an optional       */
-/*  lowpass filter, and two decorrelation  */
-/*  delay lines in parallel at the output. */
-/*******************************************/
+/***************************************************/
+/*! \class JCRev
+    \brief John Chowning's reverberator class.
 
-#if !defined(__JCRev_h)
-#define __JCRev_h
+    This class is derived from the CLM JCRev
+    function, which is based on the use of
+    networks of simple allpass and comb delay
+    filters.  This class implements three series
+    allpass units, followed by four parallel comb
+    filters, and two decorrelation delay lines in
+    parallel at the output.
 
-#include "Object.h" 
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
+
+#if !defined(__JCREV_H)
+#define __JCREV_H
+
 #include "Reverb.h"
-#include "DLineN.h" 
+#include "Delay.h" 
 
 class JCRev : public Reverb
 {
-  protected:  
-    DLineN *APdelayLine[3];
-    DLineN *CdelayLine[4];
-    DLineN *outLdelayLine;
-    DLineN *outRdelayLine;
-    MY_FLOAT allPassCoeff;
-    MY_FLOAT combCoeff[4];
-	MY_FLOAT combsum,combsum1,combsum2;
-    MY_FLOAT lastOutL;
-    MY_FLOAT lastOutR;
-    MY_FLOAT effectMix;
-  public:
-    JCRev(MY_FLOAT T60);
-    ~JCRev();
-    void clear();
-    void setEffectMix(MY_FLOAT mix);
-    MY_FLOAT lastOutput();
-    MY_FLOAT lastOutputL();
-    MY_FLOAT lastOutputR();
-    MY_FLOAT tick(MY_FLOAT input);
+ public:
+  // Class constructor taking a T60 decay time argument.
+  JCRev(MY_FLOAT T60);
+
+  // Class destructor.
+  ~JCRev();
+
+  //! Reset and clear all internal state.
+  void clear();
+
+  //! Compute one output sample.
+  MY_FLOAT tick(MY_FLOAT input);
+
+ protected:
+  Delay *allpassDelays[3];
+  Delay *combDelays[4];
+  Delay *outLeftDelay;
+  Delay *outRightDelay;
+  MY_FLOAT allpassCoefficient;
+  MY_FLOAT combCoefficient[4];
+
 };
 
 #endif

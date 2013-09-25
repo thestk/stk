@@ -1,112 +1,120 @@
-/*******************************************/
-/*
-   BiQuad (2-pole, 2-zero) Filter Class,
-   by Perry R. Cook, 1995-96.
-   Modified by Julius Smith, 2000:
-     setA1,setA2,setB1,setB2
+/***************************************************/
+/*! \class BiQuad
+    \brief STK biquad (two-pole, two-zero) filter class.
 
-   See books on filters to understand
-   more about how this works.  Nothing
-   out of the ordinary in this version.
+    This protected Filter subclass implements a
+    two-pole, two-zero digital filter.  A method
+    is provided for creating a resonance in the
+    frequency response while maintaining a constant
+    filter gain.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 */
-/*******************************************/
+/***************************************************/
 
 #include "BiQuad.h"
+#include <math.h>
 
 BiQuad :: BiQuad() : Filter()
 {
-  inputs = (MY_FLOAT *) malloc(2 * sizeof(MY_FLOAT));
-  zeroCoeffs[0] = (MY_FLOAT) 0.0;
-  zeroCoeffs[1] = (MY_FLOAT) 0.0;
-  poleCoeffs[0] = (MY_FLOAT) 0.0;
-  poleCoeffs[1] = (MY_FLOAT) 0.0;
-  gain = (MY_FLOAT) 1.0;
-  this->clear();
+  MY_FLOAT B[3] = {1.0, 0.0, 0.0};
+  MY_FLOAT A[3] = {1.0, 0.0, 0.0};
+  Filter::setCoefficients( 3, B, 3, A );
 }
 
 BiQuad :: ~BiQuad()
 {
-  free(inputs);
 }
 
-void BiQuad :: clear()
+void BiQuad :: clear(void)
 {
-  inputs[0] = (MY_FLOAT) 0.0;
-  inputs[1] = (MY_FLOAT) 0.0;
-  lastOutput = (MY_FLOAT) 0.0;
+  Filter::clear();
+}
+
+void BiQuad :: setB0(MY_FLOAT b0)
+{
+  b[0] = b0;
+}
+
+void BiQuad :: setB1(MY_FLOAT b1)
+{
+  b[1] = b1;
+}
+
+void BiQuad :: setB2(MY_FLOAT b2)
+{
+  b[2] = b2;
 }
 
 void BiQuad :: setA1(MY_FLOAT a1)
 {
-  poleCoeffs[0] = -a1;
-}  
+  a[1] = a1;
+}
 
 void BiQuad :: setA2(MY_FLOAT a2)
 {
-  poleCoeffs[1] = -a2;
-}  
-
-void BiQuad :: setB1(MY_FLOAT b1)
-{
-  zeroCoeffs[0] = b1;
-}  
-
-void BiQuad :: setB2(MY_FLOAT b2)
-{
-  zeroCoeffs[1] = b2;
-}  
-
-void BiQuad :: setPoleCoeffs(MY_FLOAT *coeffs)
-{
-  poleCoeffs[0] = coeffs[0];
-  poleCoeffs[1] = coeffs[1];
+  a[2] = a2;
 }
 
-void BiQuad :: setZeroCoeffs(MY_FLOAT *coeffs)
+void BiQuad :: setResonance(MY_FLOAT frequency, MY_FLOAT radius, bool normalize)
 {
-  zeroCoeffs[0] = coeffs[0];
-  zeroCoeffs[1] = coeffs[1];
+  a[2] = radius * radius;
+  a[1] = -2.0 * radius * cos(TWO_PI * frequency / Stk::sampleRate());
+
+  if ( normalize ) {
+    // Use zeros at +- 1 and normalize the filter peak gain.
+    b[0] = 0.5 - 0.5 * a[2];
+    b[1] = 0.0;
+    b[2] = -b[0];
+  }
 }
 
-void BiQuad :: setFreqAndReson(MY_FLOAT freq, MY_FLOAT reson)
+void BiQuad :: setNotch(MY_FLOAT frequency, MY_FLOAT radius)
 {
-  poleCoeffs[1] = - (reson * reson);
-  poleCoeffs[0] = (MY_FLOAT) 2.0 * reson * (MY_FLOAT)  cos(TWO_PI * freq / SRATE);
+  // This method does not attempt to normalize the filter gain.
+  b[2] = radius * radius;
+  b[1] = (MY_FLOAT) -2.0 * radius * cos(TWO_PI * (double) frequency / Stk::sampleRate());
 }
 
 void BiQuad :: setEqualGainZeroes()
 {
-  zeroCoeffs[1] = (MY_FLOAT) -1.0;
-  zeroCoeffs[0] = (MY_FLOAT) 0.0;
+  b[0] = 1.0;
+  b[1] = 0.0;
+  b[2] = -1.0;
 }
 
-void BiQuad :: setGain(MY_FLOAT aValue)
+void BiQuad :: setGain(MY_FLOAT theGain)
 {
-  gain = aValue;
+  Filter::setGain(theGain);
 }
 
-/* Perform Filter Operation */
+MY_FLOAT BiQuad :: getGain(void) const
+{
+  return Filter::getGain();
+}
+
+MY_FLOAT BiQuad :: lastOut(void) const
+{
+  return Filter::lastOut();
+}
+
 MY_FLOAT BiQuad :: tick(MY_FLOAT sample)
 {
-  /*
-     Biquad is two pole, two zero filter. Look it up
-     in your favorite DSP text.  This version implements
-     only 2 state variables.  It takes 5 multiplies, 
-     4 adds, and 3 moves.
-  */
-  MY_FLOAT temp;
-
-  temp = sample * gain;
-  temp += inputs[0] * poleCoeffs[0];
-  temp += inputs[1] * poleCoeffs[1];
-    
-  lastOutput = temp;
-  lastOutput += (inputs[0] * zeroCoeffs[0]);
-  lastOutput += (inputs[1] * zeroCoeffs[1]);
+  inputs[0] = gain * sample;
+  outputs[0] = b[0] * inputs[0] + b[1] * inputs[1] + b[2] * inputs[2];
+  outputs[0] -= a[2] * outputs[2] + a[1] * outputs[1];
+  inputs[2] = inputs[1];
   inputs[1] = inputs[0];
-  inputs[0] = temp;
+  outputs[2] = outputs[1];
+  outputs[1] = outputs[0];
 
-  return lastOutput;
-
+  return outputs[0];
 }
 
+MY_FLOAT *BiQuad :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick(vector[i]);
+
+  return vector;
+}

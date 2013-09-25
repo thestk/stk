@@ -1,21 +1,57 @@
-/******************************************/
-/*  Wurlitzer Electric Piano Subclass     */
-/*  of Algorithm 5 (TX81Z) Subclass of    */ 
-/*  4 Operator FM Synth                   */
-/*  by Perry R. Cook, 1995-96             */ 
-/******************************************/
+/***************************************************/
+/*! \class Wurley
+    \brief STK Wurlitzer electric piano FM
+           synthesis instrument.
 
-#if !defined(__Wurley_h)
-#define __Wurley_h
+    This class implements two simple FM Pairs
+    summed together, also referred to as algorithm
+    5 of the TX81Z.
 
-#include "FM4Alg5.h"
+    \code
+    Algorithm 5 is :  4->3--\
+                             + --> Out
+                      2->1--/
+    \endcode
 
-class Wurley : public FM4Alg5
+    Control Change Numbers: 
+       - Modulator Index One = 2
+       - Crossfade of Outputs = 4
+       - LFO Speed = 11
+       - LFO Depth = 1
+       - ADSR 2 & 4 Target = 128
+
+    The basic Chowning/Stanford FM patent expired
+    in 1995, but there exist follow-on patents,
+    mostly assigned to Yamaha.  If you are of the
+    type who should worry about this (making
+    money) worry away.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
+
+#if !defined(__WURLEY_H)
+#define __WURLEY_H
+
+#include "FM.h"
+
+class Wurley : public FM
 {
-  public:
-    Wurley();
-    virtual void setFreq(MY_FLOAT frequency);
-    virtual void noteOn(MY_FLOAT freq, MY_FLOAT amp);
+ public:
+  //! Class constructor.
+  Wurley();
+
+  //! Class destructor.
+  ~Wurley();
+
+  //! Set instrument parameters for a particular frequency.
+  void setFrequency(MY_FLOAT frequency);
+
+  //! Start a note with the given frequency and amplitude.
+  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+
+  //! Compute one output sample.
+  MY_FLOAT tick();
 };
 
 #endif

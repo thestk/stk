@@ -1,146 +1,121 @@
-/*******************************************/
-/*  RtWvIn Input Class,                    */
-/*  by Gary P. Scavone, 1999-2000          */
-/*                                         */
-/*  This object inherits from WvIn and is  */
-/*  used to read in realtime 16-bit data   */
-/*  from a computer's audio port.          */
-/*                                         */
-/*  NOTE: This object is NOT intended for  */
-/*  use in achieving simultaneous realtime */
-/*  audio input/output (together with      */
-/*  RtWvOut). Under certain circumstances  */
-/*  such a scheme is possible, though you  */
-/*  should definitely know what you are    */
-/*  doing before trying.  For safer "full- */
-/*  duplex" operation, use the RtDuplex    */
-/*  class.                                 */
-/*******************************************/
+/***************************************************/
+/*! \class RtWvIn
+    \brief STK realtime audio input class.
+
+    This class provides a simplified interface to
+    RtAudio for realtime audio input.  It is a
+    protected subclass of WvIn.
+
+    RtWvIn supports multi-channel data in
+    interleaved format.  It is important to
+    distinguish the tick() methods, which return
+    samples produced by averaging across sample
+    frames, from the tickFrame() methods, which
+    return pointers to multi-channel sample frames.
+    For single-channel data, these methods return
+    equivalent values.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "RtWvIn.h"
 
-RtWvIn :: RtWvIn(int chans, MY_FLOAT srate, int device)
+RtWvIn :: RtWvIn(int nChannels, MY_FLOAT sampleRate, int device, int bufferFrames, int nBuffers )
 {
-  chunking = 1;
-  looping = 0;
-  sound_dev = new RtAudio(chans, srate, "record", device);
-  channels = chans;
-  bufferSize = RT_BUFFER_SIZE;
-  data = 0;
-  rtdata = (INT16 *) new INT16[(bufferSize+1)*channels];
-
-  lastSamples = (INT16 *) new INT16[channels];
-  for (int i=0;i<channels;i++) {
-    lastSamples[i] = (INT16) 0.0;
+  channels = nChannels;
+  int size = bufferFrames;
+  RtAudio::RTAUDIO_FORMAT format = ( sizeof(MY_FLOAT) == 8 ) ? RtAudio::RTAUDIO_FLOAT64 : RtAudio::RTAUDIO_FLOAT32;
+  try {
+    audio = new RtAudio(&stream, 0, 0, device, channels, format,
+                        (int)sampleRate, &size, nBuffers);
+    data = (MY_FLOAT *) audio->getStreamBuffer(stream);
+  }
+  catch (RtError &error) {
+    handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
   }
 
-  this->getData(0);
-
-  rate = (MY_FLOAT) srate / SRATE;
-  if (fmod(rate, 1.0) > 0.0) interpolate = 1;
-  else interpolate = 0;
-  phaseOffset = (MY_FLOAT) 0.0;
+  bufferSize = size;
   lastOutput = (MY_FLOAT *) new MY_FLOAT[channels];
-  this->reset();
-
-  gain = 0.00003052;
-#if (defined(__STK_REALTIME_) && defined(__OS_IRIX_))
-  // This is necessary under IRIX because it scales the input by 0.5
-  // when using single-channel input.
-  if (channels == 1) gain *= 2;
-#endif
+  for (unsigned int i=0; i<channels; i++) lastOutput[i] = 0.0;
+  counter = 0;
+  stopped = true;
 }
 
 RtWvIn :: ~RtWvIn()
 {
-  delete sound_dev;
-  if (rtdata) {
-    delete [ ] rtdata;
-    rtdata = 0;
-  }
-  if (lastSamples) {
-    delete [ ] lastSamples;
-    lastSamples = 0;
-  }
+  if ( !stopped )
+    audio->stopStream(stream);
+  delete audio;
+  data = 0; // RtAudio deletes the buffer itself.
 }
 
-void RtWvIn :: setRate(MY_FLOAT aRate)
+void RtWvIn :: start()
 {
-  // Negative rates not allowed for realtime input
-  rate = fabs(aRate);
-
-  if (fmod(rate, 1.0) != 0.0) interpolate = 1;
-  else interpolate = 0;
-}
-
-void RtWvIn :: addTime(MY_FLOAT aTime)   
-{
-  // Negative time shift no allowed for realtime input
-  time += fabs(aTime);
-}
-
-void RtWvIn :: setLooping(int aLoopStatus)
-{
-  // No looping for realtime data.
-  looping = 0;
-}
-
-long RtWvIn :: getSize()
-{
-  return bufferSize;
-}
-
-void RtWvIn :: getData(long index)
-{
-  static long temp = RT_BUFFER_SIZE*channels;
-  sound_dev->recordBuffer(&rtdata[channels],temp);
-
-  /* Fill in the extra sample frame for interpolation.
-   * We do this by pre-pending the last sample frame
-   * from the previous input buffer to the current one.
-   */
-  for (int i=0;i<channels;i++) {
-    rtdata[i] = lastSamples[i];
-    lastSamples[i] = rtdata[temp+i];
+  if ( stopped ) {
+    audio->startStream(stream);
+    stopped = false;
   }
 }
 
-int RtWvIn :: informTick()
+void RtWvIn :: stop()
 {
-  static MY_FLOAT alpha;
-  static long index;
-
-  if (time >= bufferSize) {
-    this->getData(0);
-    while (time >= bufferSize)
-      time -= bufferSize;
+  if ( !stopped ) {
+    audio->stopStream(stream);
+    stopped = true;
   }
+}
 
-  // integer part of time address
-  index = (long) time;
+MY_FLOAT RtWvIn :: lastOut(void) const
+{
+  return WvIn::lastOut();
+}
 
-  if (interpolate) {
-    // fractional part of time address
-    alpha = time - (MY_FLOAT) index;
-    index *= channels;
-    for (int i=0;i<channels;i++) {
-      //  Do linear interpolation
-      lastOutput[i] = (MY_FLOAT) rtdata[index];
-      lastOutput[i] += alpha * ((MY_FLOAT) rtdata[index+channels] - lastOutput[i]);
-      lastOutput[i] *= gain;
-      index++;
+MY_FLOAT RtWvIn :: tick(void)
+{
+  tickFrame();
+  return lastOut();
+}
+
+MY_FLOAT *RtWvIn :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for ( unsigned int i=0; i<vectorSize; i++ )
+    vector[i] = tick();
+
+  return vector;
+}
+
+const MY_FLOAT *RtWvIn :: lastFrame() const
+{
+  return lastOutput;
+}
+
+const MY_FLOAT *RtWvIn :: tickFrame(void)
+{
+  if ( stopped )
+    start();
+
+  if (counter == 0) {
+    try {
+      audio->tickStream(stream);
     }
-  }
-  else {
-    index *= channels;
-    for (int i=0;i<channels;i++) {
-      lastOutput[i] = rtdata[index++];
-      lastOutput[i] *= gain;
+    catch (RtError &error) {
+      handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
     }
   }
 
-  // increment time, which can be negative
-  time += rate;
+  long temp = counter * channels;
+  for (unsigned int i=0; i<channels; i++)
+    lastOutput[i] = data[temp++];
 
-  return finished;
+  counter++;
+  if (counter >= (long) bufferSize)
+    counter = 0;
+
+  return lastOutput;
+}
+
+MY_FLOAT *RtWvIn :: tickFrame(MY_FLOAT *frameVector, unsigned int frames)
+{
+  return WvIn::tickFrame( frameVector, frames );
 }

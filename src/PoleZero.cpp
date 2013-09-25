@@ -1,68 +1,97 @@
-/*******************************************/
-/*  PoleZero (1-pole, 1-zero) Filter Class */
-/*  by Gary P. Scavone, 1999               */
-/*                                         */
-/*  See books on filters to understand     */
-/*  more about how this works.  Nothing    */
-/*  out of the ordinary in this version.   */
-/*******************************************/
+/***************************************************/
+/*! \class PoleZero
+    \brief STK one-pole, one-zero filter class.
+
+    This protected Filter subclass implements
+    a one-pole, one-zero digital filter.  A
+    method is provided for creating an allpass
+    filter with a given coefficient.  Another
+    method is provided to create a DC blocking filter.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "PoleZero.h"
 
 PoleZero :: PoleZero() : Filter()
 {
-  inputs = (MY_FLOAT *) malloc(sizeof(MY_FLOAT));
-  outputs = (MY_FLOAT *) malloc(sizeof(MY_FLOAT));
-  b0Coeff = (MY_FLOAT) 1.0;
-  b1Coeff = (MY_FLOAT) 0.0;
-  a1Coeff = (MY_FLOAT) 0.0;
-  gain = (MY_FLOAT) 1.0;
-  this->clear();
+  // Default setting for pass-through.
+  MY_FLOAT B[2] = {1.0, 0.0};
+  MY_FLOAT A[2] = {1.0, 0.0};
+  Filter::setCoefficients( 2, B, 2, A );
 }
 
 PoleZero :: ~PoleZero()
 {
-  free(inputs);
-  free(outputs);
 }
 
-void PoleZero :: clear()
+void PoleZero :: clear(void)
 {
-  inputs[0] = (MY_FLOAT) 0.0;
-  outputs[0] = (MY_FLOAT) 0.0;
-  lastOutput = (MY_FLOAT) 0.0;
+  Filter::clear();
 }
 
-void PoleZero :: setA1(MY_FLOAT coeff)
+void PoleZero :: setB0(MY_FLOAT b0)
 {
-  a1Coeff = coeff;
+  b[0] = b0;
 }
 
-void PoleZero :: setB0(MY_FLOAT coeff)
+void PoleZero :: setB1(MY_FLOAT b1)
 {
-  b0Coeff = coeff;
+  b[1] = b1;
 }
 
-void PoleZero :: setB1(MY_FLOAT coeff)
+void PoleZero :: setA1(MY_FLOAT a1)
 {
-  b1Coeff = coeff;
+  a[1] = a1;
 }
 
-void PoleZero :: setGain(MY_FLOAT aValue)
+void PoleZero :: setAllpass(MY_FLOAT coefficient)
 {
-  gain = aValue;
+  b[0] = coefficient;
+  b[1] = 1.0;
+  a[0] = 1.0; // just in case
+  a[1] = coefficient;
 }
 
-// PoleZero is one pole, one zero filter
-// Look it up in your favorite DSP text
+void PoleZero :: setBlockZero(MY_FLOAT thePole)
+{
+  b[0] = 1.0;
+  b[1] = -1.0;
+  a[0] = 1.0; // just in case
+  a[1] = -thePole;
+}
+
+void PoleZero :: setGain(MY_FLOAT theGain)
+{
+  Filter::setGain(theGain);
+}
+
+MY_FLOAT PoleZero :: getGain(void) const
+{
+  return Filter::getGain();
+}
+
+MY_FLOAT PoleZero :: lastOut(void) const
+{
+  return Filter::lastOut();
+}
+
 MY_FLOAT PoleZero :: tick(MY_FLOAT sample)
 {
-  MY_FLOAT in_sample = gain*sample;
+  inputs[0] = gain * sample;
+  outputs[0] = b[0] * inputs[0] + b[1] * inputs[1] - a[1] * outputs[1];
+  inputs[1] = inputs[0];
+  outputs[1] = outputs[0];
 
-  lastOutput = b0Coeff*in_sample + b1Coeff*inputs[0] - a1Coeff*outputs[0];
-  inputs[0] = in_sample;
-  outputs[0] = lastOutput;
+  return outputs[0];
+}
 
-  return lastOutput;
+MY_FLOAT *PoleZero :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick(vector[i]);
+
+  return vector;
 }
 

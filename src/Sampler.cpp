@@ -1,22 +1,25 @@
-/*******************************************/
-/*  Master Class for Sampling Synthesizer  */
-/*  by Perry R. Cook, 1995-96              */ 
-/*  This instrument contains up to 5       */
-/*  attack waves, 5 looped waves, and      */
-/*  an ADSR envelope.                      */
-/*******************************************/
+/***************************************************/
+/*! \class Sampler
+    \brief STK sampling synthesis abstract base class.
+
+    This instrument contains up to 5 attack waves,
+    5 looped waves, and an ADSR envelope.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "Sampler.h"
 
 Sampler :: Sampler()
 {
+  // We don't make the waves here yet, because
+  // we don't know what they will be.
   adsr = new ADSR;
-  /*  We don't make the waves here yet, because */
-  /*  we don't know what they will be.          */
-  baseFreq = (MY_FLOAT) 440.0;
+  baseFrequency = 440.0;
   filter = new OnePole;
-  attackGain = (MY_FLOAT) 0.25;
-  loopGain = (MY_FLOAT) 0.25;
+  attackGain = 0.25;
+  loopGain = 0.25;
   whichOne = 0;
 }  
 
@@ -40,13 +43,10 @@ void Sampler :: keyOff()
 void Sampler :: noteOff(MY_FLOAT amplitude)
 {
   this->keyOff();
-#if defined(_debug_)        
-  printf("Sampler : NoteOff: Amp=%lf\n",amplitude);
-#endif    
-}
 
-void Sampler :: setFreq(MY_FLOAT frequency)
-{
+#if defined(_STK_DEBUG_)
+  cerr << "Sampler: NoteOff amplitude = " << amplitude << endl;
+#endif
 }
 
 MY_FLOAT Sampler :: tick()
@@ -56,8 +56,4 @@ MY_FLOAT Sampler :: tick()
   lastOutput = filter->tick(lastOutput);
   lastOutput *= adsr->tick();
   return lastOutput;
-}
-
-void Sampler :: controlChange(int number, MY_FLOAT value)
-{
 }

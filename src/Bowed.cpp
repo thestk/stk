@@ -1,55 +1,57 @@
-/******************************************/
-/*  Bowed String model ala Smith          */
-/*  after McIntyre, Schumacher, Woodhouse */
-/*  by Perry Cook, 1995-96                */
-/*                                        */
-/*  This is a waveguide model, and thus   */
-/*  relates to various Stanford Univ.     */
-/*  and possibly Yamaha and other patents.*/
-/*                                        */
-/*   Controls:    CONTROL1 = bowPressure  */
-/*                CONTROL2 = bowPosition  */
-/*	                CONTROL3 = vibrFreq     */
-/*                MOD_WHEEL= vibrGain     */
-/*                                        */
-/******************************************/
+/***************************************************/
+/*! \class Bowed
+    \brief STK bowed string instrument class.
+
+    This class implements a bowed string model, a
+    la Smith (1986), after McIntyre, Schumacher,
+    Woodhouse (1983).
+
+    This is a digital waveguide model, making its
+    use possibly subject to patents held by
+    Stanford University, Yamaha, and others.
+
+    Control Change Numbers: 
+       - Bow Pressure = 2
+       - Bow Position = 4
+       - Vibrato Frequency = 11
+       - Vibrato Gain = 1
+       - Volume = 128
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "Bowed.h"
-#include "SKINI11.msg"
+#include "SKINI.msg"
+#include <string.h>
 
-Bowed :: Bowed(MY_FLOAT lowestFreq)
+Bowed :: Bowed(MY_FLOAT lowestFrequency)
 {
   long length;
-  length = (long) (SRATE / lowestFreq + 1);
-  neckDelay = new DLineL(length);
+  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
+  neckDelay = new DelayL(100.0, length);
   length >>= 1;
-  bridgeDelay = new DLineL(length);
-  bowTabl = new BowTabl;
-  reflFilt = new OnePole;
-  bodyFilt = new BiQuad;
+  bridgeDelay = new DelayL(29.0, length);
+
+  bowTable = new BowTabl;
+  bowTable->setSlope((MY_FLOAT) 3.0);
 
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  vibr = new RawWvIn(strcat(file,"rawwaves/sinewave.raw"),"looping");
+  vibrato = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE );
+  vibrato->setFrequency((MY_FLOAT) 6.12723);
+  vibratoGain = (MY_FLOAT) 0.0;
+
+  stringFilter = new OnePole;
+  stringFilter->setPole((MY_FLOAT) (0.6 - (0.1 * 22050.0 / Stk::sampleRate() ) ) );
+  stringFilter->setGain((MY_FLOAT) 0.95);
+
+  bodyFilter = new BiQuad;
+  bodyFilter->setResonance( 500.0, 0.85, TRUE );
+  bodyFilter->setGain((MY_FLOAT) 0.2);
 
   adsr = new ADSR;
-  vibrGain = (MY_FLOAT) 0.0;
-
-  neckDelay->setDelay((MY_FLOAT) 100.0);
-  bridgeDelay->setDelay((MY_FLOAT) 29.0);
-
-  bowTabl->setSlope((MY_FLOAT) 3.0);
-
-  reflFilt->setPole((MY_FLOAT) (0.6 - (0.1 * 22050.0 / SRATE)));
-  reflFilt->setGain((MY_FLOAT) 0.95);
-
-  bodyFilt->setFreqAndReson((MY_FLOAT) 500.0, (MY_FLOAT) 0.85);
-  bodyFilt->setEqualGainZeroes();
-  bodyFilt->setGain((MY_FLOAT) 0.2);
-
-  vibr->setFreq((MY_FLOAT) 6.12723);
-
   adsr->setAllTimes((MY_FLOAT) 0.02,(MY_FLOAT) 0.005,(MY_FLOAT) 0.9,(MY_FLOAT) 0.01);
     
   betaRatio = (MY_FLOAT) 0.127236;
@@ -59,10 +61,10 @@ Bowed :: ~Bowed()
 {
   delete neckDelay;
   delete bridgeDelay;
-  delete bowTabl;
-  delete reflFilt;
-  delete bodyFilt;
-  delete vibr;
+  delete bowTable;
+  delete stringFilter;
+  delete bodyFilter;
+  delete vibrato;
   delete adsr;
 }
 
@@ -72,11 +74,19 @@ void Bowed :: clear()
   bridgeDelay->clear();
 }
 
-void Bowed :: setFreq(MY_FLOAT frequency)
+void Bowed :: setFrequency(MY_FLOAT frequency)
 {
-  baseDelay = SRATE / frequency - (MY_FLOAT) 4.0;   	/* delay - approx. filter delay */
-  bridgeDelay->setDelay(baseDelay * betaRatio); 	    /* bow to bridge length */
-  neckDelay->setDelay(baseDelay * ((MY_FLOAT) 1.0 - betaRatio)); /* bow to nut (finger) length */
+  MY_FLOAT freakency = frequency;
+  if ( frequency <= 0.0 ) {
+    cerr << "Bowed: setFrequency parameter is less than or equal to zero!" << endl;
+    freakency = 220.0;
+  }
+
+  // Delay = length - approximate filter delay.
+  baseDelay = Stk::sampleRate() / freakency - (MY_FLOAT) 4.0;
+  if ( baseDelay <= 0.0 ) baseDelay = 0.3;
+  bridgeDelay->setDelay(baseDelay * betaRatio); 	               // bow to bridge length
+  neckDelay->setDelay(baseDelay * ((MY_FLOAT) 1.0 - betaRatio)); // bow to nut (finger) length
 }
 
 void Bowed :: startBowing(MY_FLOAT amplitude, MY_FLOAT rate)
@@ -92,74 +102,88 @@ void Bowed :: stopBowing(MY_FLOAT rate)
   adsr->keyOff();
 }
 
-void Bowed :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
+void Bowed :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
 {
-  this->startBowing(amp,amp * (MY_FLOAT) 0.001);
-  this->setFreq(freq);
-#if defined(_debug_)        
-  printf("Bowed : NoteOn: Freq=%lf Amp=%lf\n",freq,amp);
-#endif    
+  this->startBowing(amplitude, amplitude * 0.001);
+  this->setFrequency(frequency);
+
+#if defined(_STK_DEBUG_)
+  cerr << "Bowed: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+#endif
 }
 
-void Bowed :: noteOff(MY_FLOAT amp)
+void Bowed :: noteOff(MY_FLOAT amplitude)
 {
-  this->stopBowing(((MY_FLOAT) 1.0 - amp) * (MY_FLOAT) 0.005);
-#if defined(_debug_)        
-  printf("Bowed : NoteOff: Amp=%lf\n",amp);
-#endif    
+  this->stopBowing(((MY_FLOAT) 1.0 - amplitude) * (MY_FLOAT) 0.005);
+
+#if defined(_STK_DEBUG_)
+  cerr << "Bowed: NoteOff amplitude = " << amplitude << endl;
+#endif
 }
 
-void Bowed :: setVibrato(MY_FLOAT amount)
+void Bowed :: setVibrato(MY_FLOAT gain)
 {
-  vibrGain = amount;
+  vibratoGain = gain;
 }
 
 MY_FLOAT Bowed :: tick()
 {
   MY_FLOAT bowVelocity;
-  MY_FLOAT bridgeRefl=(MY_FLOAT) 0,nutRefl=(MY_FLOAT) 0;
-  MY_FLOAT newVel=(MY_FLOAT) 0,velDiff=(MY_FLOAT) 0,stringVel=(MY_FLOAT) 0;
+  MY_FLOAT bridgeRefl;
+  MY_FLOAT nutRefl;
+  MY_FLOAT newVel;
+  MY_FLOAT velDiff;
+  MY_FLOAT stringVel;
     
   bowVelocity = maxVelocity * adsr->tick();
 
-  bridgeRefl = -reflFilt->tick(
-                               bridgeDelay->lastOut());          /* Bridge Reflection      */
-  nutRefl = -neckDelay->lastOut();              /* Nut Reflection         */
-  stringVel = bridgeRefl + nutRefl;             /* Sum is String Velocity */
-  velDiff = bowVelocity - stringVel;            /* Differential Velocity  */
-  newVel = velDiff * bowTabl->lookup(velDiff);  /* Non-Lin Bow Function   */
-  neckDelay->tick(bridgeRefl + newVel);         /* Do string              */     
-  bridgeDelay->tick(nutRefl + newVel);          /*   propagations         */
+  bridgeRefl = -stringFilter->tick( bridgeDelay->lastOut() );
+  nutRefl = -neckDelay->lastOut();
+  stringVel = bridgeRefl + nutRefl;               // Sum is String Velocity
+  velDiff = bowVelocity - stringVel;              // Differential Velocity
+  newVel = velDiff * bowTable->tick( velDiff );   // Non-Linear Bow Function
+  neckDelay->tick(bridgeRefl + newVel);           // Do string propagations
+  bridgeDelay->tick(nutRefl + newVel);
     
-  if (vibrGain > 0.0)  {
+  if (vibratoGain > 0.0)  {
     neckDelay->setDelay((baseDelay * ((MY_FLOAT) 1.0 - betaRatio)) + 
-                        (baseDelay * vibrGain*vibr->tick()));
+                        (baseDelay * vibratoGain * vibrato->tick()));
   }
 
-  lastOutput = bodyFilt->tick(bridgeDelay->lastOut());                 
+  lastOutput = bodyFilter->tick(bridgeDelay->lastOut());                 
 
   return lastOutput;
 }
 
 void Bowed :: controlChange(int number, MY_FLOAT value)
 {
-#if defined(_debug_)        
-  printf("Bowed : ControlChange: Number=%i Value=%f\n",number,value);
-#endif    
-  if (number == __SK_BowPressure_)
-		bowTabl->setSlope((MY_FLOAT) 5.0 - ((MY_FLOAT) 4.0 * value * NORM_7));
-  else if (number == __SK_BowPosition_)	{
-		betaRatio = (MY_FLOAT) 0.027236 + ((MY_FLOAT) 0.2 * value * NORM_7);
-    bridgeDelay->setDelay(baseDelay * betaRatio); 	/* bow to bridge length   */
-    neckDelay->setDelay(baseDelay * ((MY_FLOAT) 1.0 - betaRatio)); /* bow to nut (finger) length   */
+  MY_FLOAT norm = value * ONE_OVER_128;
+  if ( norm < 0 ) {
+    norm = 0.0;
+    cerr << "Bowed: Control value less than zero!" << endl;
   }
-  else if (number == __SK_ModFrequency_)
-    vibr->setFreq((value * NORM_7 * (MY_FLOAT) 12.0));
-  else if (number == __SK_ModWheel_)
-    vibrGain = (value * NORM_7 * (MY_FLOAT) 0.4);
-  else if (number == __SK_AfterTouch_Cont_)
-    adsr->setTarget(value * NORM_7);
-  else    {        
-    printf("Bowed : Undefined Control Number!!\n");
-  }    
+  else if ( norm > 1.0 ) {
+    norm = 1.0;
+    cerr << "Bowed: Control value greater than 128.0!" << endl;
+  }
+
+  if (number == __SK_BowPressure_) // 2
+		bowTable->setSlope( 5.0 - (4.0 * norm) );
+  else if (number == __SK_BowPosition_) { // 4
+		betaRatio = 0.027236 + (0.2 * norm);
+    bridgeDelay->setDelay(baseDelay * betaRatio);
+    neckDelay->setDelay(baseDelay * ((MY_FLOAT) 1.0 - betaRatio));
+  }
+  else if (number == __SK_ModFrequency_) // 11
+    vibrato->setFrequency( norm * 12.0 );
+  else if (number == __SK_ModWheel_) // 1
+    vibratoGain = ( norm * 0.4 );
+  else if (number == __SK_AfterTouch_Cont_) // 128
+    adsr->setTarget(norm);
+  else
+    cerr << "Bowed: Undefined Control Number (" << number << ")!!" << endl;
+
+#if defined(_STK_DEBUG_)
+  cerr << "Bowed: controlChange number = " << number << ", value = " << value << endl;
+#endif
 }

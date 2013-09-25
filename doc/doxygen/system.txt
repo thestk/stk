@@ -1,0 +1,29 @@
+/*! \page system System Requirements
+
+<B>General</B>
+<UL>
+<LI>A MIDI interface to use MIDI input controls. (NOTE: This may be built into the soundcard on your computer.)</LI>
+<LI><A HREF="http://dev.scriptics.com">Tcl/Tk</A> version 8.0 or higher to use the simple Tcl/Tk GUIs provided with the STK distribution (available free over the WWW for all supported realtime platforms).</LI>
+</UL>
+<B>Linux (specific)</B>
+<UL>
+<LI>A soundcard to use realtime audio input/output capabilities.  In order to use the <I><B>effects</B></I> project, the soundcard and drivers must support full duplex mode.</LI>
+<LI><A HREF="http://www.opensound.com">OSS</A> or <A HREF="http://www.alsa-project.org/">ALSA</A> device drivers for realtime sound output and MIDI input.</LI>
+</UL>
+
+<B>Windows95/98/2000/XP (specific)</B>
+<UL>
+<LI>A soundcard to use realtime audio input/output capabilities.  In order to use the <I><B>effects</B></I> project, the soundcard and drivers must support full duplex mode.</LI>
+<LI><A HREF="http://www.microsoft.com/directx/">DirectX</A> 5.0 (or higher) runtime libraries to use the precompiled binaries.</LI>
+<LI>Visual C++ 6.0 for compiling (though a precompiled distribution is available).</LI>
+<LI>For compiling the source (if not already in your system): <UL><LI><A HREF="Misc/dsound.h">dsound.h</A> header file (DirectX 6.1) - put somewhere in your header search path</LI><LI><A HREF="Misc/dsound.lib">dsound.lib</A> library file (DirectX 6.1) - put somewhere in your library search path</LI></UL></LI>
+</UL>
+
+<B>WindowsNT (specific)</B>
+<UL>
+<LI>STK is no longer supported under WindowsNT because DirectX support for NT is minimal.  Unless DirectX 5.0 or higher becomes available for NT, STK won't work.</LI>
+</UL>
+
+<P>
+
+*/

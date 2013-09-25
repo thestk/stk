@@ -1,37 +1,32 @@
-# Misc Makefile - Global version for Unix systems which have GNU
-# Makefile utilities installed.  If this Makefile does not work on
-# your system, try using the platform specific Makefiles (.sgi,
-# .next, and .linux).
+# Examples Makefile - Global version for Unix systems which have GNU
+# Makefile utilities installed.
 
 OS = $(shell uname)
 
-# You will have to modify this path to correspond to the correct
-# location in your system.  The following definition corresponds
-# to an STK project directory that is a subdirectory of the core
-# STK distribution.
-STK_PATH = ../../src/
-
-O_FILES		=	Object.o WvOut.o WvIn.o RtAudio.o \
-						RtWvIn.o RtWvOut.o ByteSwap.o \
-						StkError.o WavWvOut.o StrmWvIn.o \
-						RtDuplex.o StrmWvOut.o WavWvIn.o \
-						RawWvIn.o
-
+# You might have to modify the following path if you move things
+# around on your system.
+STK_SRC = ../../src/
+INCLUDE = -I../../include
 RM = /bin/rm 
 
+INSTR = sine play record io tcpIn tcpOut Moogy
+
 ifeq ($(OS),Linux) # These are for Linux
-	INSTR = sineN playN recordN ioN streamInN streamOutN
-	CC = g++ -O3 -Wall -D__OS_Linux_ # -g -pg -O3
+	CC = g++ -O3 -Wall -D__LITTLE_ENDIAN__ -D__LINUX_OSS__
 	LIBRARY = -lpthread -lm #-lasound
-	INCLUDE = -I../../include
 endif
 
-%.o : $(STK_PATH)%.cpp
+ifeq ($(OS),IRIX) # These are for SGI
+	CC = CC -D__IRIX_AL__ # -g -fullwarn -O2
+	LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm -lpthread
+endif
+
+%.o : $(STK_SRC)%.cpp
 	$(CC) $(INCLUDE) -c $(<) -o $@
 
 all: $(INSTR)
 
-clean : 
+clean :
 	rm *.o
 	rm $(INSTR)
 
@@ -41,20 +36,23 @@ cleanIns :
 strip : 
 	strip $(INSTR)
 
-playN: playN.cpp $(O_FILES)
-	$(CC) -o playN playN.cpp $(O_FILES) $(LIBRARY) $(INCLUDE)
+play: play.cpp Stk.o WvIn.o WvOut.o RtWvOut.o RtAudio.o
+	$(CC) -o play play.cpp Stk.o WvIn.o WvOut.o RtWvOut.o RtAudio.o $(LIBRARY) $(INCLUDE)
 
-streamOutN: streamOutN.cpp $(O_FILES)
-	$(CC) -o streamOutN streamOutN.cpp $(O_FILES) $(LIBRARY) $(INCLUDE)
+record: record.cpp Stk.o WvIn.o WvOut.o RtWvIn.o RtAudio.o
+	$(CC) -o record record.cpp Stk.o WvIn.o WvOut.o RtWvIn.o RtAudio.o $(LIBRARY) $(INCLUDE)
 
-streamInN: streamInN.cpp $(O_FILES)
-	$(CC) -o streamInN streamInN.cpp $(O_FILES) $(LIBRARY) $(INCLUDE)
+sine: sine.cpp Stk.o WvIn.o WvOut.o WaveLoop.o
+	$(CC) -o sine sine.cpp Stk.o WvIn.o WvOut.o WaveLoop.o $(LIBRARY) $(INCLUDE)
 
-recordN: recordN.cpp $(O_FILES)
-	$(CC) -o recordN recordN.cpp $(O_FILES) $(LIBRARY) $(INCLUDE)
+io: io.cpp Stk.o RtAudio.o RtDuplex.o
+	$(CC) -o io io.cpp Stk.o RtAudio.o RtDuplex.o $(LIBRARY) $(INCLUDE)
 
-ioN: ioN.cpp $(O_FILES)
-	$(CC) -o ioN ioN.cpp $(O_FILES) $(LIBRARY) $(INCLUDE)
+tcpIn: tcpIn.cpp Stk.o WvIn.o TcpWvIn.o WvOut.o RtWvOut.o RtAudio.o Socket.o Thread.o
+	$(CC) -o tcpIn tcpIn.cpp Stk.o WvIn.o Socket.o Thread.o TcpWvIn.o WvOut.o RtWvOut.o RtAudio.o $(LIBRARY) $(INCLUDE)
 
-sineN: sineN.cpp $(O_FILES)
-	$(CC) -o sineN sineN.cpp $(O_FILES) $(LIBRARY) $(INCLUDE)
+tcpOut: tcpOut.cpp Stk.o WvIn.o WvOut.o TcpWvOut.o Socket.o Thread.o
+	$(CC) -o tcpOut tcpOut.cpp Stk.o WvIn.o WvOut.o Socket.o Thread.o TcpWvOut.o $(LIBRARY) $(INCLUDE)
+
+Moogy: Moogy.cpp Stk.o WvIn.o WaveLoop.o WvOut.o RtWvOut.o RtAudio.o Instrmnt.o Sampler.o FormSwep.o Filter.o BiQuad.o Envelope.o ADSR.o OnePole.o Moog.o 
+	$(CC) -o Moogy Stk.o WvIn.o WaveLoop.o WvOut.o RtWvOut.o RtAudio.o Instrmnt.o Sampler.o FormSwep.o Filter.o BiQuad.o Envelope.o ADSR.o OnePole.o Moog.o Moogy.cpp $(LIBRARY) $(INCLUDE)

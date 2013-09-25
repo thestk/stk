@@ -1,12 +1,16 @@
-/********************************************/
-/*  Reverb Abstract Class,                  */
-/*  by Tim Stilson, 1998                    */
-/*                                          */
-/*  Integrated into STK by Gary Scavone     */
-/*  with T60 argument.                      */
-/********************************************/
+/***************************************************/
+/*! \class Reverb
+    \brief STK abstract reverberator parent class.
+
+    This class provides common functionality for
+    STK reverberator subclasses.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "Reverb.h"
+#include <math.h>
 
 Reverb :: Reverb()
 {
@@ -16,28 +20,41 @@ Reverb :: ~Reverb()
 {
 }
 
-MY_FLOAT Reverb :: tick(MY_FLOAT sample)
-{
-  printf("Warning: Using virtual function Reverb :: tick()\n");
-  return 0;
-}
-
 void Reverb :: setEffectMix(MY_FLOAT mix)
 {
+  effectMix = mix;
 }
 
-int Reverb :: isprime(int val)
+MY_FLOAT Reverb :: lastOut() const
 {
-  int i;
+  return (lastOutput[0] + lastOutput[1]) * 0.5;
+}
 
-  if (val == 2) return 1;
-  if (val & 1)
-	{
-	  for (i=3; i<(int)sqrt((double)val)+1; i+=2)
-		{
-		  if ((val%i) == 0) return 0;
-		}
-	  return 1; /* prime */
+MY_FLOAT Reverb :: lastOutLeft() const
+{
+  return lastOutput[0];
+}
+
+MY_FLOAT Reverb :: lastOutRight() const
+{
+  return lastOutput[1];
+}
+
+MY_FLOAT *Reverb :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick(vector[i]);
+
+  return vector;
+}
+
+bool Reverb :: isPrime(int number)
+{
+  if (number == 2) return true;
+  if (number & 1)	{
+	  for (int i=3; i<(int)sqrt((double)number)+1; i+=2)
+		  if ( (number % i) == 0) return false;
+	  return true; /* prime */
 	}
-  else return 0; /* even */
+  else return false; /* even */
 }

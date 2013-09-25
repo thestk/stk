@@ -4,19 +4,19 @@
 # the core STK classes.
 STK_PATH = ../../src/
 
-O_FILES		=	$(STK_PATH)Object.o $(STK_PATH)Envelope.o $(STK_PATH)Filter.o \
-						$(STK_PATH)DLineL.o $(STK_PATH)DLineN.o $(STK_PATH)ByteSwap.o \
-						$(STK_PATH)SKINI11.o $(STK_PATH)WvIn.o $(STK_PATH)RawWvIn.o \
-						$(STK_PATH)Reverb.o $(STK_PATH)PRCRev.o $(STK_PATH)JCRev.o \
-						$(STK_PATH)NRev.o $(STK_PATH)RtAudio.o $(STK_PATH)RtMidi.o \
-						$(STK_PATH)RtDuplex.o $(STK_PATH)StkError.o $(STK_PATH)Controller.o
+O_FILES		=	$(STK_PATH)Stk.o $(STK_PATH)Envelope.o $(STK_PATH)Filter.o \
+						$(STK_PATH)DelayL.o $(STK_PATH)Delay.o $(STK_PATH)SKINI.o \
+						$(STK_PATH)WvIn.o $(STK_PATH)Reverb.o $(STK_PATH)PRCRev.o \
+						$(STK_PATH)JCRev.o $(STK_PATH)NRev.o $(STK_PATH)RtAudio.o \
+						$(STK_PATH)RtMidi.o $(STK_PATH)RtDuplex.o $(STK_PATH)Messager.o \
+						$(STK_PATH)WaveLoop.o $(STK_PATH)Thread.o $(STK_PATH)Socket.o
 
 O_LOCAL_FILES = Echo.o PitShift.o Chorus.o 
 
 RM = /bin/rm 
 
 INSTR = effects
-CC = CC -O2 -D__OS_IRIX_ # -g -fullwarn -D__SGI_CC__
+CC = CC -O2 -D__IRIX_AL__ # -g -fullwarn -D__SGI_CC__
 LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm -lpthread
 INCLUDE = -I../../include/
 

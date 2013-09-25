@@ -1,166 +1,121 @@
-/*******************************************/  
-/*  JVRev Reverb Subclass                  */
-/*  by Tim Stilson, 1998                   */
-/*    based on CLM JCRev                   */
-/*  Integrated into STK by Gary Scavone    */
-/*                                         */
-/*  This is based on some of the famous    */
-/*  Stanford CCRMA reverbs (NRev, KipRev)  */
-/*  all based on the Chowning/Moorer/      */
-/*  Schroeder reverberators, which use     */
-/*  networks of simple allpass and comb    */
-/*  delay filters.  This particular        */
-/*  arrangement consists of 3 allpass      */
-/*  filters in series, followed by 4 comb  */
-/*  filters in parallel, an optional       */
-/*  lowpass filter, and two decorrelation  */
-/*  delay lines in parallel at the output. */
-/*******************************************/
+/***************************************************/
+/*! \class JCRev
+    \brief John Chowning's reverberator class.
+
+    This class is derived from the CLM JCRev
+    function, which is based on the use of
+    networks of simple allpass and comb delay
+    filters.  This class implements three series
+    allpass units, followed by four parallel comb
+    filters, and two decorrelation delay lines in
+    parallel at the output.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "JCRev.h"
-
-//#define LOWPASS
+#include <math.h>
 
 JCRev :: JCRev(MY_FLOAT T60)
 {
-  /* These are the values from CLM's JCRev.ins ... I found that the
-	 impulse response sounded better with the shorter delay lengths.
-	 --Gary Scavone, 2/1998
-	 int lens[9] = {4799,4999,5399,5801,1051,337,113,573,487};
-   */
-  int lens[9] = {1777,1847,1993,2137,389,127,43,211,179};
-  int val, i;
+  // Delay lengths for 44100 Hz sample rate.
+  int lengths[9] = {1777, 1847, 1993, 2137, 389, 127, 43, 211, 179};
+  double scaler = Stk::sampleRate() / 44100.0;
 
-  if (SRATE < 44100.0) {
-    double srscale = SRATE / 44100.0;
-    for (i=0; i<9; i++)	{
-      val = (int) floor(srscale * lens[i]);
-      if ((val & 1) == 0) val++;
-      while (!this->isprime(val)) val += 2;
-      lens[i] = val;
+  int delay, i;
+  if ( scaler != 1.0 ) {
+    for (i=0; i<9; i++) {
+      delay = (int) floor(scaler * lengths[i]);
+      if ( (delay & 1) == 0) delay++;
+      while ( !this->isPrime(delay) ) delay += 2;
+      lengths[i] = delay;
     }
   }
 
   for (i=0; i<3; i++)
-	{
-	  APdelayLine[i] = new DLineN(lens[i+4] + 2);
-	  APdelayLine[i]->setDelay(lens[i+4]);
-	}
-  for (i=0; i<4; i++)
-	{
-	  CdelayLine[i] = new DLineN(lens[i] + 2);
-	  CdelayLine[i]->setDelay(lens[i]);
-	  combCoeff[i] = pow(10,(-3 * lens[i] / (T60 * SRATE)));
-	  //	  printf("combCoeff[%d] = %f\n", i, combCoeff[i]);
-	}
-  outLdelayLine = new DLineN(lens[7] + 2);
-  outLdelayLine->setDelay(lens[7]);
-  outRdelayLine = new DLineN(lens[8] + 2);
-  outRdelayLine->setDelay(lens[8]);
-  allPassCoeff = 0.7;
+	  allpassDelays[i] = new Delay(lengths[i+4], lengths[i+4]);
+
+  for (i=0; i<4; i++)	{
+    combDelays[i] = new Delay(lengths[i], lengths[i]);
+    combCoefficient[i] = pow(10,(-3 * lengths[i] / (T60 * Stk::sampleRate())));
+  }
+
+  outLeftDelay = new Delay(lengths[7], lengths[7]);
+  outRightDelay = new Delay(lengths[8], lengths[8]);
+  allpassCoefficient = 0.7;
   effectMix = 0.3;
   this->clear();
 }
 
 JCRev :: ~JCRev()
 {
-    delete APdelayLine[0];
-    delete APdelayLine[1];
-    delete APdelayLine[2];
-    delete CdelayLine[0];
-    delete CdelayLine[1];
-    delete CdelayLine[2];
-    delete CdelayLine[3];
-    delete outLdelayLine;
-    delete outRdelayLine;
+  delete allpassDelays[0];
+  delete allpassDelays[1];
+  delete allpassDelays[2];
+  delete combDelays[0];
+  delete combDelays[1];
+  delete combDelays[2];
+  delete combDelays[3];
+  delete outLeftDelay;
+  delete outRightDelay;
 }
 
 void JCRev :: clear()
 {
-  APdelayLine[0]->clear();
-  APdelayLine[1]->clear();
-  APdelayLine[2]->clear();
-  CdelayLine[0]->clear();
-  CdelayLine[1]->clear();
-  CdelayLine[2]->clear();
-  CdelayLine[3]->clear();
-  outRdelayLine->clear();
-  outLdelayLine->clear();
-  lastOutL = 0.0;
-  lastOutR = 0.0;
-  combsum1=0.0;
-  combsum2=0.0;
-  combsum=0.0;
-}
-
-void JCRev :: setEffectMix(MY_FLOAT mix)
-{
-  effectMix = mix;
-}
-
-MY_FLOAT JCRev :: lastOutput()
-{
-  return (lastOutL + lastOutR) * 0.5;
-}
-
-MY_FLOAT JCRev :: lastOutputL()
-{
-  return lastOutL;
-}
-
-MY_FLOAT JCRev :: lastOutputR()
-{
-  return lastOutR;
+  allpassDelays[0]->clear();
+  allpassDelays[1]->clear();
+  allpassDelays[2]->clear();
+  combDelays[0]->clear();
+  combDelays[1]->clear();
+  combDelays[2]->clear();
+  combDelays[3]->clear();
+  outRightDelay->clear();
+  outLeftDelay->clear();
+  lastOutput[0] = 0.0;
+  lastOutput[1] = 0.0;
 }
 
 MY_FLOAT JCRev :: tick(MY_FLOAT input)
 {
-  MY_FLOAT temp,temp0,temp1,temp2,temp3,temp4,temp5,temp6;
+  MY_FLOAT temp, temp0, temp1, temp2, temp3, temp4, temp5, temp6;
   MY_FLOAT filtout;
 
-  temp = APdelayLine[0]->lastOut();
-  temp0 = allPassCoeff * temp;
+  temp = allpassDelays[0]->lastOut();
+  temp0 = allpassCoefficient * temp;
   temp0 += input;
-  APdelayLine[0]->tick(temp0);
-  temp0 = -(allPassCoeff * temp0) + temp;
+  allpassDelays[0]->tick(temp0);
+  temp0 = -(allpassCoefficient * temp0) + temp;
     
-  temp = APdelayLine[1]->lastOut();
-  temp1 = allPassCoeff * temp;
+  temp = allpassDelays[1]->lastOut();
+  temp1 = allpassCoefficient * temp;
   temp1 += temp0;
-  APdelayLine[1]->tick(temp1);
-  temp1 = -(allPassCoeff * temp1) + temp;
+  allpassDelays[1]->tick(temp1);
+  temp1 = -(allpassCoefficient * temp1) + temp;
     
-  temp = APdelayLine[2]->lastOut();
-  temp2 = allPassCoeff * temp;
+  temp = allpassDelays[2]->lastOut();
+  temp2 = allpassCoefficient * temp;
   temp2 += temp1;
-  APdelayLine[2]->tick(temp2);
-  temp2 = -(allPassCoeff * temp2) + temp;
+  allpassDelays[2]->tick(temp2);
+  temp2 = -(allpassCoefficient * temp2) + temp;
     
-  temp3 = temp2 + (combCoeff[0] * CdelayLine[0]->lastOut());
-  temp4 = temp2 + (combCoeff[1] * CdelayLine[1]->lastOut());
-  temp5 = temp2 + (combCoeff[2] * CdelayLine[2]->lastOut());
-  temp6 = temp2 + (combCoeff[3] * CdelayLine[3]->lastOut());
+  temp3 = temp2 + (combCoefficient[0] * combDelays[0]->lastOut());
+  temp4 = temp2 + (combCoefficient[1] * combDelays[1]->lastOut());
+  temp5 = temp2 + (combCoefficient[2] * combDelays[2]->lastOut());
+  temp6 = temp2 + (combCoefficient[3] * combDelays[3]->lastOut());
 
-  CdelayLine[0]->tick(temp3);
-  CdelayLine[1]->tick(temp4);
-  CdelayLine[2]->tick(temp5);
-  CdelayLine[3]->tick(temp6);
+  combDelays[0]->tick(temp3);
+  combDelays[1]->tick(temp4);
+  combDelays[2]->tick(temp5);
+  combDelays[3]->tick(temp6);
 
-#ifdef LOWPASS
-  combsum2=combsum1;	
-  combsum1=combsum;	
-  combsum = temp3+temp4+temp5+temp6;
-  filtout= 0.5*combsum1+0.25*(combsum+combsum2);
-#else
-  filtout = temp3+temp4+temp5+temp6;
-#endif
+  filtout = temp3 + temp4 + temp5 + temp6;
 
-  lastOutL = effectMix * (outLdelayLine->tick(filtout));
-  lastOutR = effectMix * (outRdelayLine->tick(filtout));
+  lastOutput[0] = effectMix * (outLeftDelay->tick(filtout));
+  lastOutput[1] = effectMix * (outRightDelay->tick(filtout));
   temp = (1.0 - effectMix) * input;
-  lastOutL += temp;
-  lastOutR += temp;
+  lastOutput[0] += temp;
+  lastOutput[1] += temp;
     
-  return (lastOutL + lastOutR) * 0.5;
-
+  return (lastOutput[0] + lastOutput[1]) * 0.5;
 }

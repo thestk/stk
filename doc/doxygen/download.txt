@@ -1,0 +1,115 @@
+/*! \page download Download and Release Notes
+
+<B>Version 4.0, 30 April 2002</B><P>
+<A HREF="Release/stk-4.0.tar.gz">STK Version 4.0: Source distribution</A> (1.64 MB tar/gzipped)<BR>
+<A HREF="Release/stk-4.0.binaries.tar.gz">STK Version 4.0: Source distribution with precompiled windows binaries</A> (2.26 MB tar/gzipped)<BR>
+<P>
+
+\section notes Release Notes:
+
+\subsection v4 Version 4.0
+
+<UL>
+<LI>New documentation and tutorial.</LI>
+<LI>Several new instruments, including Saxofony, BlowBotl, and StifKarp.</LI>
+<LI>New Stk base class, replacing Object class.</LI>
+<LI>New Filter class structure and methods.</LI>
+<LI>Extensive modifications to WvIn and WvOut class structures and methods.</LI>
+<LI>Looping functionality moved to WaveLoop (subclass of WvIn).</LI>
+<LI>Automatic file type detection in WvIn ... hosed WavWvIn, AifWvIn, RawWavIn, SndWavIn, and MatWvIn subclasses.</LI>
+<LI>New file type specifier argument in WvOut ... hosed WavWvOut, AifWvOut, RawWavOut, SndWavOut, and MatWvOut subclasses.</LI>
+<LI>Some simplifications of Messager class (was Controller).</LI>
+<LI>New independent RtAudio class.</LI>
+<LI>Extensive revisions in code and a significant number of API changes.</LI>
+</UL>
+
+\subsection v3dot2 Version 3.2
+
+<UL>
+<LI>New input control handling class (Controller)</LI>
+<LI>Added AIFF file input/output support.</LI>
+<LI>New C++ error handling capabilities.</LI>
+<LI>New input/output internet streaming support (StrmWvIn/StrmWvOut).</LI>
+<LI>Added native ALSA support for linux.</LI>
+<LI>Added optional "device" argument to all "Rt" classes (audio and MIDI) and printout of devices when argument is invalid.</LI>
+<LI>WvIn classes rewritten to support very big files (incremental load from disk).</LI>
+<LI>Changed WvIn/WvOut classes to work with sample frame buffers.</LI>
+<LI>Fixed looping and negative rate calculations in WvIn classes.</LI>
+<LI>Fixed interpolation bug in RtWvIn.</LI>
+<LI>Windoze RtAudio code rewritten (thank Dave!).</LI>
+<LI>Simplified byte-swapping functions (in-place swapping).</LI>
+<LI>"Stereo-ized" RagaMatic.</LI>
+<LI>Miscellaneous renamings.</LI>
+<LI>Probably a bunch more fixes that I've long since forgotten about.</LI>
+</UL>
+
+\subsection v3dot1 Version 3.1
+
+<UL>
+<LI>New RagaMatic project ... very cool!!!</LI>
+<LI>Less clipping in the Shakers class.</LI>
+<LI>Added "microphone position" to Mandolin in STKdemo.</LI>
+<LI>Fixed MIDI system message exclusion under Irix.</LI>
+<LI>Added a few bitmaps for the Shaker instruments.</LI>
+<LI>Made destructors virtual for Reverb.h, WvIn.h and Simple.h.</LI>
+<LI>Fixed bug setting delay length in DLineA when value too big.</LI>
+<LI>Fixed bug in WinMM realtime code (RTSoundIO).</LI>
+<LI>Added tick() method to BowTabl, JetTabl, and ReedTabl (same as lookup).</LI>
+<LI>Switched to pthread API on SGI platforms.</LI>
+<LI>Added some defines to Object.h for random number generation, FPU overflow checking, etc....</LI>
+<LI>A few minor changes, some bug fixes ... can't remember all of them.</LI>
+</UL>
+
+\subsection v3 Version 3.0
+
+<UL>
+<LI>New #define flags for OS and realtime dependencies (this will probably cause problems for old personal STK code, but it was necessary to make future ports easier).</LI>
+<LI>Expanded and cleaned the Shakers class.</LI>
+<LI>New BowedBar algorithm/class.</LI>
+<LI>Fixed Linux MIDI input bug.</LI>
+<LI>Fixed MIDI status masking problem in Windows.</LI>
+<LI>OS type defines now in Makefile.</LI>
+<LI>New RAWWAVE_PATH define in Object.h.</LI>
+<LI>Syntmono project pulled out to separate directory and cleaned up.</LI>
+<LI>Socketing capabilities under Unix, as well as Windoze.</LI>
+<LI>Multiple simultaneous socket client connections to STK servers now possible.</LI>
+<LI>MD2SKINI now can merge MIDI and piped messages under Irix and Linux (for TCL->MD2SKINI->syntmono control).</LI>
+<LI>Defined INT16 and INT32 types and fixed various WvIn and WvOut classes.</LI>
+<LI>Updated MatWvIn and MatWvOut for new MAT-file documentation from Matlab.</LI>
+<LI>New demo Tcl/Tk GUI (TclDemo.tcl).</LI>
+<LI>Minor fixes to FM behavior.</LI>
+<LI>Added record/duplex capabilities to RTSoundIO (Linux, SGI, and Windoze).</LI>
+<LI>Fixed bugs in WavWvOut and MatWvOut header specifications.</LI>
+<LI>Added RawWvOut class.</LI>
+<LI>New WvIn class with RawWvIn, SndWvIn, WavWvIn, MatWvIn, and RTWvIn subclasses.</LI>
+<LI>Removed RawWave, RawShot, RawInterp, and RawLoop classes (supplanted by RawWvIn).</LI>
+<LI>Multi-channel data support in WvIn and WvOut classes using MY_MULTI data type (pointer to MY_FLOAT) and the methods mtick() and mlastOutput().</LI>
+<LI>Now writing to primary buffer under Windoze when allowed by hardware.</LI>
+<LI>Cleaned up Object.h a bit.</LI>
+<LI>Pulled various utility and thread functions out of syntmono.cpp (to aid readability of the code).</LI>
+</UL>
+
+\subsection v2dot02 Version 2.02
+
+<UL>
+<LI>Created RawWave abstract class, with subclasses of RawLoop (looping rawwave oscillator), RawShot (non-looping, non-interpolating rawwave player ... used to be RawWvIn), and RawInterp (looping or non-looping, interpolating rawwave player ... used to be RawWave).</LI>
+<LI>Modified DrumSynt to correctly handle sample rates different than 22050 Hz.</LI>
+<LI>Modified syntmono parsing vs. tick routine so that some ticking occurs between each message.  When multiple messages are waiting to be processed, the time between message updates is inversely proportional to the number of messages in the buffer.</LI>
+<LI>Fixed DirectSound playback bug in WinXX distribution.  Sound was being played at 8-bit, 22 kHz in all cases.  Playback is now 16-bit and dependent on SRATE.</LI>
+<LI>Fixed bug in MD2SKINI which prevented some NoteOff statements from being output.</LI>
+<LI>This distribution includes an example STK project, mus151, which demonstrates a means for keeping a user's personal projects separate from the main distribution.  This is highly recommended, in order to simplify upgrades to future STK releases.</LI>
+</UL>
+
+\subsection v2 Version 2
+
+<UL>
+<LI>Unification of the capabilities of STK across the various platforms.  All of the previous SGI functionality has been ported to Linux and Windows, including realtime sound output and MIDI input.</LI>
+<LI>MIDI input (with optional time-stamping) supported on SGI, Linux (OSS device drivers only), and Windows operating systems.  Time stamping under IRIX and Windows is quantized to milliseconds and under Linux to hundredths of a second.</LI>
+<LI>Various Sound Output Options - .wav, .snd, and .mat (Matlab MAT-file) soundfile outputs are supported on all operating systems.  I hacked out the MAT-file structure, so you don't have to include any platform-specific libraries.  Realtime sound output is provided as well, except under NeXTStep. </LI>
+<LI>Multiple Reverberator Implementations - Reverb subclasses of JCRev and NRev (popular reverberator implementations from CCRMA) have been written.  Perry's original reverb implementation still exists as PRCRev.  All reverberators now take a T60 initializer argument.</LI>
+<LI>MD2SKINI - A program which parses a MIDI input stream and spits out SKINI code.  The output of MD2SKINI is typically piped into an STK instrument executable (eg. <FONT FACE="Geneva">MD2SKINI | syntmono Clarinet -r -i</FONT>).  In addition, you can supply a filename argument to MD2SKINI and have it simultaneously record a SKINI score file for future reuse.
+<LI>Modifications to <I>Object.h</I> for OS_TYPE compilation dependencies.  <I>Makefile</I> automatically determines OS_TYPE when invoked (if you have the GNU makefile utilities installed on your system).
+<LI>A single distribution for all platforms.  The Unix and Windows versions have been merged into a single set of classes.  Makefiles and Visual C++ workspace/project files are provided for compiling.
+</UL>
+
+*/

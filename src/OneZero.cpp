@@ -1,64 +1,99 @@
-/*******************************************/
-/*  One Zero Filter Class,                 */
-/*  by Perry R. Cook, 1995-96              */ 
-/*  The parameter gain is an additional    */
-/*  gain parameter applied to the filter   */  
-/*  on top of the normalization that takes */
-/*  place automatically.  So the net max   */
-/*  gain through the system equals the     */
-/*  value of gain.  sgain is the combina-  */
-/*  tion of gain and the normalization     */
-/*  parameter, so if you set the poleCoeff */
-/*  to alpha, sgain is always set to       */
-/*  gain / (1.0 - fabs(alpha)).            */
-/*******************************************/
+/***************************************************/
+/*! \class OneZero
+    \brief STK one-zero filter class.
+
+    This protected Filter subclass implements
+    a one-zero digital filter.  A method is
+    provided for setting the zero position
+    along the real axis of the z-plane while
+    maintaining a constant filter gain.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "OneZero.h"
 
-OneZero :: OneZero()
+OneZero :: OneZero() : Filter()
 {
-  gain = (MY_FLOAT) 1.0;
-  zeroCoeff = (MY_FLOAT) 1.0;
-  sgain = (MY_FLOAT) 0.5;
-  inputs = (MY_FLOAT *) malloc(sizeof(MY_FLOAT));
-  this->clear();
+  MY_FLOAT B[2] = {0.5, 0.5};
+  MY_FLOAT A = 1.0;
+  Filter::setCoefficients( 2, B, 1, &A );
 }
 
-OneZero :: ~OneZero()
+OneZero :: OneZero(MY_FLOAT theZero) : Filter()
 {
-  free(inputs);
-}
+  MY_FLOAT B[2];
+  MY_FLOAT A = 1.0;
 
-void OneZero :: clear()
-{
-  inputs[0] = (MY_FLOAT) 0.0;
-  lastOutput = (MY_FLOAT) 0.0;
-}
-
-void OneZero :: setGain(MY_FLOAT aValue)
-{
-  gain = aValue;
-  if (zeroCoeff > 0.0)                  // Normalize gain to 1.0 max
-    sgain = gain / ((MY_FLOAT) 1.0 + zeroCoeff);
+  // Normalize coefficients for unity gain.
+  if (theZero > 0.0)
+    B[0] = 1.0 / ((MY_FLOAT) 1.0 + theZero);
   else
-    sgain = gain / ((MY_FLOAT) 1.0 - zeroCoeff);
+    B[0] = 1.0 / ((MY_FLOAT) 1.0 - theZero);
+
+  B[1] = -theZero * B[0];
+  Filter::setCoefficients( 2, B, 1,  &A );
 }
 
-void OneZero :: setCoeff(MY_FLOAT aValue)
+OneZero :: ~OneZero(void)
 {
-  zeroCoeff = aValue;
-  if (zeroCoeff > 0.0)                  // Normalize gain to 1.0 max
-    sgain = gain / ((MY_FLOAT) 1.0 + zeroCoeff);
+}
+
+void OneZero :: clear(void)
+{
+  Filter::clear();
+}
+
+void OneZero :: setB0(MY_FLOAT b0)
+{
+  b[0] = b0;
+}
+
+void OneZero :: setB1(MY_FLOAT b1)
+{
+  b[1] = b1;
+}
+
+void OneZero :: setZero(MY_FLOAT theZero)
+{
+  // Normalize coefficients for unity gain.
+  if (theZero > 0.0)
+    b[0] = 1.0 / ((MY_FLOAT) 1.0 + theZero);
   else
-    sgain = gain / ((MY_FLOAT) 1.0 - zeroCoeff);
+    b[0] = 1.0 / ((MY_FLOAT) 1.0 - theZero);
+
+  b[1] = -theZero * b[0];
 }
 
-MY_FLOAT OneZero :: tick(MY_FLOAT sample) // Perform Filter Operation
+void OneZero :: setGain(MY_FLOAT theGain)
 {
-  MY_FLOAT temp;
-  temp = sgain * sample;
-  lastOutput = (inputs[0] * zeroCoeff) + temp;
-  inputs[0] = temp;
-  return lastOutput;
+  Filter::setGain(theGain);
 }
 
+MY_FLOAT OneZero :: getGain(void) const
+{
+  return Filter::getGain();
+}
+
+MY_FLOAT OneZero :: lastOut(void) const
+{
+  return Filter::lastOut();
+}
+
+MY_FLOAT OneZero :: tick(MY_FLOAT sample)
+{
+  inputs[0] = gain * sample;
+  outputs[0] = b[1] * inputs[1] + b[0] * inputs[0];
+  inputs[1] = inputs[0];
+
+  return outputs[0];
+}
+
+MY_FLOAT *OneZero :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick(vector[i]);
+
+  return vector;
+}

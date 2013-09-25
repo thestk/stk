@@ -1,156 +1,155 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
-Version 3.2
 
-By Perry R. Cook, 1995-2000
-and Gary P. Scavone, 1997-2000.
+By Perry R. Cook and Gary P. Scavone, 1995-2002.
 
-STK Classes, Version 3.2
-Please read README.txt for more information.
+STK Classes - See the HTML documentation in the html directory for complete information.
 
-<--------Building Blocks---------->|<----------------Instruments------------------>
+     .- Envelope - ADSR
+     |
+     |- Noise - SubNoise
+     |
+     |- Table
+     |
+     |- WvIn - (WaveLoop, RtWvIn, TcpWvIn)
+     |
+     |- WvOut - (RtWvOut, TcpWvOut)
+     |
+     |- Filter - (OnePole, OneZero, Delay, TwoPole, TwoZero, PoleZero, Biquad)
+     |                                |                                  |
+     |                              DelayL                             FormSwep
+     |                              DelayA
+     |
+     |- Echo, Chorus, PitShift
+     |
+     |- RtAudio, RtMidi, Socket, Thread
+Stk -|
+     |- Reverb - (PRCRev, JCRev, NRev)
+     |
+     |- Modulate
+     |
+     |- Messager
+     |
+     |- SKINI
+     |
+     |- ReedTabl, JetTabl, BowTabl
+     |
+     |            .- FM - (HevyMetl, PercFlut, Rhodey, Wurley, TubeBell, BeeThree, FMVoices)
+     |            |
+     |            |- Modal - ModalBar
+     |            |
+     |            |- Sampler - Moog
+     |            |
+     |            |- Resonate
+     |            |
+     |            |- PluckedTwo - Mandolin
+     .- Instrmnt -|
+                  |- Drummer
+                  |
+                  |- Clarinet, BlowHole, Saxofony, Flute, Brass, BlowBotl, Bowed, Plucked, StifKarp, Sitar
+                  |
+                  |- Shakers
+                  |
+                  |- BandedWG
+                  |
+                  .- Mesh2D
 
-SourcSink Filters  Reverb  Non-Lin   Modal &     FM      Physical  Sampling   PhISM
-                                     Formant
 
-Object-----------------------------------Instrmnt----------.  
-  |     |    |       |        |    |                       |
-Envelope| Filter   Reverb  BowTabl |    .----------------------------------------.
-  |     |    |       |     JetTabl |    |    |    |     |   |         |    |     |
-ADSR    | OneZero  PRCRev  ReedTabl| Modal4  | FM4Op---.|   |         |    |  Shakers
-        | OnePole  JCRev           |    |    |    |    ||   |         |    |
-  ._____| TwoZero  NRev       .____| ModalBar| FM4Alg3 || Plucked  Sampler |
-  |     | TwoPole             |              |    |    || Clarinet    |    |
-Noise   | DCBlock          LipFilt           | HeavyMtl|| Brass    SamplFlt|
-  |     | BiQuad                             |         || Flute       |    |
-SubNoise| DlineL                        .____|    .____|| Bowed     Moog1  |
-        | DLineA                        |         |    || BowedBar         |
-        | DLineN                     VoicForm  FM4Alg4 || BlowHole         |
-        | FormSwep                                |    ||____.             |
-        | PoleZero                             PercFlut|     |             |
-   .____|   FIR                                        |  Plucked2         |
-   |    |                                         .____|     |        .____|
-TablLook|                                         |    |  Mandolin    |
-        |                                      FM4Alg5 |           DrumSynt
-        |____.                                    |    |
-        |    |                                 Rhodey  |
-        |   WvIn                               Wurley  |
-  ._____|    |                                TubeBell |
-  |     | WavWvIn                                 .____|
-Modulatr| SndWvIn                                 |    |
-        | RawWvIn                              FM4Alg6 |
-  ._____| MatWvIn                                 |    |
-  |     | AifWvIn                              FMVoices|
-SingWave| StrmWvIn                                     |
-        |                                         .____|
-  ._____|_____.                                   |
-  |     |     |                                FM4Alg8
-VoicMang|   WvOut                                 |
-        |     |                                BeeThree
-        |  WavWvOut
-  ._____|  SndWvOut
-  |     |  RawWvOut
-RtMidi  |  MatWvOut
-        |  AifWvOut
-  ._____|  RtWvOut
-  |        StrmWvOut
-RtAudio
+***********   UNIT GENERATORS   **************
+
+Master Class:  Stk.cpp         Sample rate, byte-swapping, error handling functionality
+
+Sources:       Envelope.cpp    Linearly Goes to Target by Rate
+               ADSR.cpp        ADSR Flavor of Envelope
+               Noise.cpp       Random Number Generator
+               SubNoise.cpp    Random Numbers each N samples
+               Table.cpp       Lookup Table (assumes given data in big-endian format)
+               WvIn.cpp        Data Input Class (interpolating) for RAW, WAV, SND (AU), AIFF, MAT-file files
+               WaveLoop.cpp    Wavetable looping (subclass of WvIn)
+               RtWvIn.cpp      Realtime Audio Input Class (subclass of WvIn)
+               TcpWvIn.cpp     Audio Streaming (socket server) Input Class (subclass of WvIn)
+
+Sinks:         WvOut.cpp       Output Master Class for RAW, WAV, SND (AU), AIFF, MAT-file files
+               RtWvOut.cpp     Realtime Output Class (subclass of WvOut)
+               TcpWvOut.cpp    Audio Streaming (socket client) Output Class (subclass of WvOut)
+
+Duplex:        RtDuplex.cpp    Synchronous Realtime Audio Input/Output Class
+
+Filters:       Filter.cpp      Filter Master Class
+               OneZero.cpp     One Zero Filter
+               OnePole.cpp     One Pole Filter
+               PoleZero.cpp    One Pole/One Zero Filter
+               TwoZero.cpp     Two Zero Filter
+               TwoPole.cpp     Two Pole Filter
+               BiQuad.cpp      Two Pole/Two Zero Filter
+               FormSwep.cpp    Sweepable BiQuad Filter (goes to target by rate)
+               Delay.cpp       Non-Interpolating Delay Line Class
+               DelayL.cpp      Linearly Interpolating Delay Line (subclass of Delay)
+               DelayA.cpp      Allpass Interpolating Delay Line (subclass of Delay)
+
+Non-Linear:    JetTabl.cpp     Cubic Jet Non-Linearity
+               BowTabl.cpp     x^(-3) Bow Non-Linearity
+               ReedTabl.cpp    One Breakpoint Saturating Reed Non-Linearity
+                                
+Derived:       Modulate.cpp    Periodic and Random Vibrato: RawWvIn, SubNoise, OnePole
+
 
 ********** INSTRUMENTS AND ALGORITHMS **************
 
-Each Class will be listed either with all UGs it uses, 
-or the <<Algorithm>> of which it is a flavor.
-All inherit from Instrmnt, which inherits from Object.
+Each Class will be listed either with all the unit generators it uses, 
+or the <<Algorithm>> of which it is a flavor.  All inherit from Instrmnt,
+which inherits from Stk.
 
-Plucked.cpp     Basic Plucked String      DLineA,OneZero,OnePole,Noise
-Plucked2.cpp    Not So Basic Pluck        DLineL,DlineA,OneZero
-Mandolin.cpp    My Own Mandolin           <<flavor of Plucked2>>
-Bowed.cpp       Not Hideous Bowed String  DlineL,BowTabl,OnePole,BiQuad,RawWave,ADSR
-Brass.cpp       Not So Bad Brass Inst.    DLineA,LipFilt,DCBlock,ADSR,RawWvIn
-Clarinet.cpp    Pretty Good Clarinet      DLineL,ReedTabl,OneZero,Envelope,Noise,RawWvIn
-BlowHole.cpp    Clarinet w/ tone/reghole  DLineL,ReedTabl,OneZero,Envelope,Noise,RawWvIn,PoleZero
-Flute.cpp       Pretty Good Flute         JetTabl,DLineL,OnePole,DCBlock,Noise,ADSR,RawWvIn
-BowedBar.cpp    Pretty Good Bowed Bar     DLineN,BowTabl,ADSR,BiQuad
-Modal4.cpp      4 Resonances              Envelope,RawWvIn,RawWvIn,BiQuad,OnePole
-ModalBar.cpp    Various presets           <<flavor of MODAL4>>
-FM4Op.cpp       4 Operator FM Master      ADSR,RawWvIn,TwoZero
-FM4Alg3.cpp     3 Cascade w/ FB Mod.      <<flavor of FM4OP>>
-FM4Alg4.cpp     Like Alg3 but diff.       <<flavor of FM4OP>>
-FM4Alg5.cpp     2 Parallel Simple FMs     <<flavor of FM4OP>>
-FM4Alg6.cpp     3 Carr. with 1 Mod.       <<flavor of FM4OP>>
-FM4Alg8.cpp     4 Osc. Additive           <<flavor of FM4OP>>
-HeavyMtl.cpp    Distorted Synth           <<flavor of FM4Alg3>>
-PercFlut.cpp    Perc. Flute               <<flavor of FM4Alg4>>
-Rhodey.cpp      Rhodes-Like Elec. Piano   <<flavor of FM4Alg5>>
-Wurley.cpp      Wurlitz. Elec. Piano      <<flavor of FM4Alg5>>
-TubeBell.cpp    Classic FM Bell           <<flavor of FM4Alg5>>
-FMVoices.cpp    3-Formant Voice Synth.    <<flavor of FM4Alg6>>
-BeeThree.cpp    Cheezy Organ for Paul     <<flavor of FM4Alg8>>
-Sampler.cpp     Sampling Synth.           4 each ADSR, RawWvIn (att), RawWvIn (loop), OnePole
-SamplFlt.cpp    Sampler with Swept Filter <<flavor of Sampler>>
-Moog1.cpp       Swept filter flavor of    <<flavor of SamplFlt>>   
-VoicForm.cpp    Source/Filter Voice       Envelope,Noise,SingWave,FormSwep,OnePole,OneZero
-DrumSynt.cpp    Drum Synthesizer          bunch of RawWvIn, and OnePole
-Shakers.cpp     Stochastic Event Models
+Simple.cpp      Simple Instrument              Pulse oscillator + resonant filtered noise
+Plucked.cpp     Basic Plucked String           DelayA, OneZero, OnePole, Noise
+StifKarp.cpp    Plucked String with Stiffness  DelayA, DelayL, OneZero, BiQuad, Noise
+PluckTwo.cpp    Not So Basic Pluck             DelayL, DlineA, OneZero
+Mandolin.cpp    Commuted Mandolin              <<flavor of PluckTwo>>
+Bowed.cpp       So So Bowed String             DelayL, BowTabl, OnePole, BiQuad, WaveLoop, ADSR
+Brass.cpp       Not So Bad Brass Instrument    DelayA, BiQuad, PoleZero, ADSR, WaveLoop
+Clarinet.cpp    Pretty Good Clarinet           DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop
+BlowHole.cpp    Clarinet w/ Tone & Vent Holes  DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop, PoleZero
+Saxofony.cpp    A Faux Saxophone               DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop
+Flute.cpp       Pretty Good Flute              JetTabl, DelayL, OnePole, PoleZero, Noise, ADSR, WaveLoop
+BlowBotl.cpp    Blown Bottle                   JetTabl, BiQuad, PoleZero, Noise, ADSR, WaveLoop
+BandedWG.cpp    Banded Waveguide Meta-Object   Delay, BowTabl, ADSR, BiQuad
+Modal.cpp       N Resonances                   Envelope, WaveLoop, BiQuad, OnePole
+ModalBar.cpp    Various presets                4 Resonance Models
+FM.cpp          N Operator FM Master           ADSR, WaveLoop, TwoZero
+HevyMetl.cpp    Distorted FM Synthesizer       3 Cascade with FB Modulator
+PercFlut.cpp    Percussive Flute               3 Cascade Operators
+Rhodey.cpp      Rhodes-Like Electric Piano     2 Parallel Simple FMs
+Wurley.cpp      Wurlitzer Electric Piano       2 Parallel Simple FMs
+TubeBell.cpp    Classic FM Bell                2 Parallel Simple FMs
+FMVoices.cpp    3 Formant FM Voice             3 Carriers Share 1 Modulator
+BeeThree.cpp    Cheezy Additive Organ          4 Oscillators Additive
+Sampler.cpp     Sampling Synthesizer           5 each ADSR, WvIn, WaveLoop, OnePole
+Moog.cpp        Swept Filter                   Sampler with Swept Filter
+Resonate.cpp    Filtered Noise                 ADSR, BiQuad, Noise
+Drummer.cpp     Drum Synthesizer               Bunch of WvIns, and OnePole
+Shakers.cpp     PhISM statistical model for shakers and real-world sound effects
+Mesh2D.cpp      Two-dimensional, rectilinear digital waveguide mesh.
 
-***********    BASIC UNIT GENERATORS   **************
+Reverb.cpp      Reverberator Effects Processor  Master Class for reverberators
+JCRev.cpp       Chowning Reverberator           3 series allpass units, 4 parallel combs, 2 stereo delays
+NRev.cpp        Another famous CCRMA Reverb	    8 allpass, 6 parallel comb filters
+PRCRev.cpp      Dirt Cheap Reverb by Cook	      2 allpass, 2 comb filters
+Flanger.cpp     Flanger Effects Processor       DelayL, WaveLoop
+Chorus.cpp      Chorus Effects Processor        DelayL, WaveLoop
+PitShift.cpp    Cheap Pitch Shifter             DelayL
 
-Master Object:  Object.cpp      For compatibility with Objective C
 
-Source&Sink:    Envelope.cpp    Linearly Goes to Target by Rate, + noteOn/Off
-                ADSR.cpp        ADSR Flavor of Envelope
-                Noise.cpp       Random Number Generator
-                SubNoise.cpp    Random Numbers each N samples
+***********   OTHER SUPPORT CLASSES AND FILES   **************
 
-Inputs:         TablLook.cpp    Lookup Table (assumes given data in big-endian format)
-                WvIn.cpp        Input Master Class (Looping, One-Shot,
-                                                    Interpolating, Non-Interpolating)
-                RawWvIn.cpp     STK Raw-file Input
-                SndWvIn.cpp     .snd Input Class
-                WavWvIn.cpp     .wav Input Class
-                MatWvIn.cpp     Matlab MAT-file Input Class
-                AifWvIn.cpp     AIFF Input Class
-                RtWvIn.cpp      Realtime Input Class
-                StrmWvIn.cpp    Audio Streaming (socket server) Input Class
+RtAudio.cpp     Multi-OS/API audio I/O routines
+RtMidi.cpp      Multi-OS/API MIDI I/O routines
+Messager.cpp    Pipe, socket, and MIDI control message handling
 
-Outputs:        WvOut.cpp       Output Master Class
-                RawWvOut.cpp    STK Raw-file Output Class
-                SndWvOut.cpp    .snd Output Class
-                WavWvOut.cpp    .wav Output Class
-                MatWvOut.cpp    Matlab MaT-file Output Class
-                AifWvOut.cpp    AIFF Output Class
-                RtWvOut.cpp     Realtime Output Class
-                StrmWvOut.cpp   Audio Streaming (socket client) Output Class
+demo.cpp        Demonstration program for most synthesis algorithms
+effects.cpp     Effects demonstration program
+ragamatic.cpp   Nirvana just waiting to happen
 
-Duplex:         RtDuplex.cpp    Realtime Input/Output Class
+SKINI.cpp	      SKINI file/message parser object
+SKINI.msg	      #defines for often used and universal MIDI/SKINI symbols
+SKINI.tbl	      Table of SKINI messages
 
-MIDI:           RtMidi.cpp      MIDI I/O Class
 
-Audio I/O:      RtAudio.cpp     Multi-OS Audio I/O Routines
-                
-Filters:        Filter.cpp      Filter Master Class
-                OneZero.cpp     One Zero Filter
-                OnePole.cpp     One Pole Filter
-                PoleZero.cpp    One Pole/One Zero Filter
-                DCBlock.cpp     DC Blocking 1Pole/1Zero Filter
-                TwoZero.cpp     Two Zero Filter
-                TwoPole.cpp     Two Pole Filter
-                BiQuad.cpp      2Pole/2Zero Filter
-                FormSwep.cpp    Sweepable 2Pole filter, go to target by rate
-                DLineL.cpp      Linearly Interpolating Delay Line
-                DLineA.cpp      AllPass Interpolating Delay Line
-                DLineN.cpp      Non Interpolating Delay Line
-
-Reverb:         Reverb.cpp      Reverb Master Class
-                PRCRev.cpp      2 series allpass units, 2 parallel comb filters
-                JCRev.cpp       3 series allpass units, 4 parallel comb filters
-                NRev.cpp        6 parallel comb filters, 3 series allpass units, ...
-
-NonLin&Lookup:  JetTabl.cpp     Cubic Jet NonLinearity
-                BowTabl.cpp     1/x^3-like Bow NonLinearity
-                ReedTabl.cpp    1 break point Reed NonLinearity
-                LipFilt.cpp     Pressure Controlled BiQuad with NonLin 
-                                
-Derived:        Modulatr.cpp    Per. and Rnd. Vibrato: RawWave, SubNoise, OnePole
-                SingWave.cpp    Looping Wavetable with: Modulatr, Envelope
-
-Control:        Controller.cpp  Pipe, Socket, and MIDI control message handling

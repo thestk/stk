@@ -1,0 +1,149 @@
+/*! \page tutorial Tutorial
+
+- \ref intro
+- \ref start
+- \ref compile
+- \ref rtvsnonrt
+
+\section intro Introduction
+
+First and foremost, the Synthesis ToolKit is a set of C++ classes.  That means you need to know some basics about programming in C++ to make use of STK (beyond the example programs we provide).  STK's "target audience" is people who:
+<UL>
+<LI>already know how to program in C and C++</LI>
+<LI>want to create audio DSP and/or synthesis programs</LI>
+<LI>want to save some time by using our unit generators and input/output routines</LI>
+<LI>know C, but want to learn about synthesis and processing algorithms</LI>
+<LI>wish to teach real-time synthesis and processing, and wish to use some of our classes and examples</LI>
+</UL>
+
+Most ToolKit programmers will likely end up writing a class or two for their own particular needs, but this task is typically simplified by making use of pre-existing STK classes (filters, oscillators, etc.).
+
+\section start Getting Started
+
+We'll begin our introduction to the Synthesis ToolKit with a simple sine-wave oscillator program.  STK doesn't provide a specific oscillator for sine waves.  Instead, it provides a generic waveform oscillator class, WaveLoop, which can load a variety of common file types.  In this example, we load a sine "table" from an STK RAW file.  The class RtWvOut will send "realtime" samples to the audio output hardware on your computer.
+
+\code
+
+// sineosc.cpp
+
+#include "WaveLoop.h"
+#include "RtWvOut.h"
+
+int main()
+{
+  // Set the global sample rate before creating class instances.
+  Stk::setSampleRate( 44100.0 );
+
+  // Define and load the sine wave file
+  WaveLoop *input = new WaveLoop("sinewave.raw", TRUE);
+  input->setFrequency(440.0);
+
+  // Define and open the default realtime output device for one-channel playback
+  RtWvOut *output = new RtWvOut(1);
+
+  // Play the oscillator for 40000 samples
+  for (int i=0; i<40000; i++) {
+    output->tick( input->tick() );
+  }
+
+  // Clean up
+  delete input;
+  delete output;
+
+  return 0;
+}
+\endcode
+
+WaveLoop is a subclass of WvIn, which supports WAV, SND (AU), AIFF, MAT-file (Matlab), and RAW file formats with 8-, 16-, and 32-bit integer and 32- and 64-bit floating-point data types.  WvIn provides interpolating, read once ("oneshot") functionality, as well as methods for setting the read rate and read position.
+
+Nearly all STK classes implement tick() methods which take and/or return sample values. Within the tick() method, the fundamental sample calculations are performed for a given class.  Most STK classes consume/generate a single sample per operation and their tick() method takes/returns each sample "by value".  In addition, every class implementing a tick() method also provides an overloaded tick() function taking pointer and size arguments which can be used for vectorized computations.
+
+The WvIn and WvOut classes support multi-channel sample frames.  To distinguish single-sample frame operations from multi-channel frame operations, these classes also implement tickFrame() functions.  When a tick() method is called for multi-channel data, frame averages are returned or the input sample is distributed across all channels of a sample frame.
+
+Nearly all STK classes inherit from the Stk base class.  Stk provides a static sample rate which is queried by subclasses as needed.  Because many classes use the current sample rate value during instantiation, it is important that the desired value be set at the beginning of a program.  The default STK sample rate is 22050 Hz.
+
+Another primary concept that is somewhat obscurred in this example concerns the data format in which sample values are passed and received.  Audio and control signals throughout STK use a floating-point data type, the exact precision of which can be controlled via the MY_FLOAT \#define statement in Stk.h.  Thus, the ToolKit can use any normalization scheme desired. The base instruments and algorithms are implemented with a general audio sample dynamic maximum of +/-1.0, and the WvIn and WvOut classes and subclasses scale appropriately for DAC or soundfile input and output.
+
+Finally, STK has some basic C++ error handling functionality built in.  Classes which access files and/or hardware are most prone to runtime errors.  To properly "catch" such errors, the above example should be rewritten as shown below.
+
+\code
+// sineosc.cpp
+
+#include "WaveLoop.h"
+#include "RtWvOut.h"
+
+int main()
+{
+  // Set the global sample rate before creating class instances.
+  Stk::setSampleRate( 44100.0 );
+
+  WaveLoop *input = 0;
+  RtWvOut *output = 0;
+
+  try {
+    // Define and load the sine wave file
+    input = new WaveLoop( "sinewave.raw", TRUE );
+
+    // Define and open the default realtime output device for one-channel playback
+    output = new RtWvOut(1);
+  }
+  catch (StkError &) {
+    goto cleanup;
+  }
+
+  input->setFrequency(440.0);
+
+  // Play the oscillator for 40000 samples
+  for (int i=0; i<40000; i++) {
+    try {
+      output->tick(input->tick());
+    }
+    catch (StkError &) {
+      goto cleanup;
+    }
+  }
+
+ cleanup:
+  delete input;
+  delete output;
+
+  return 0;
+}
+\endcode
+
+In this particular case, we simply exit the program if an error occurs (an error message is automatically printed to stderr).  A more refined program might attempt to recover from or fix a particular problem and, if successful, continue processing.
+
+\section compile Compiling
+
+\subsection compileLinux Linux
+
+In general, you will probably want to use a <TT>Makefile</TT> for your STK programs and projects.  For this particular program, however, the following will suffice (on a linux system):
+\code
+g++ -Wall -D__LINUX_OSS__ -D__LITTLE_ENDIAN__ -o sineosc Stk.cpp WvIn.cpp WaveLoop.cpp WvOut.cpp RtWvOut.cpp RtAudio.cpp sineosc.cpp -lpthread
+\endcode
+
+This assumes you've set up a directory that includes the files <TT>sineosc.cpp</TT>, the rawwave file <TT>sinewave.raw</TT>, and the header and source files for the classes Stk, WvIn, WaveLoop, WvOut, RtWvOut, and RtAudio.  There are other, more convenient, means for structuring projects that will be discussed later.
+
+Most linux systems currently come installed with the OSS audio hardware drivers.  If your system instead has ALSA audio drivers installed and you wish to make use of native ALSA API calls, a link to the ALSA library must be specified in the above compile statement (<TT>-lasound</TT>) and the preprocessor definition should instead be <TT>__LINUX_ALSA__</TT>.
+
+\subsection compileIrix Irix
+
+The irix (SGI) and linux operating systems are both flavors of unix and thus behave similarly.  Making the same assumptions as in the linux case, the following compile statement should work:
+\code
+CC -Wall -D__IRIX_AL__ -o sineosc Stk.cpp WvIn.cpp WaveLoop.cpp WvOut.cpp RtWvOut.cpp RtAudio.cpp sineosc.cpp -lpthread
+\endcode
+
+\subsection compileWin Windows
+
+I have personally only worked with Visual C++ when compiling programs under windoze.  I'll assume you've become familiar with Visual C+ and don't need a tutorial on its particular idiosyncrasies.  In creating the VC++ project, add the Stk, WvIn, WaveLoop, WvOut, RtWvOut, and RtAudio class files, as well as the <TT>sineosc.cpp</TT> and <TT>sinewave.raw</TT> files.  You will also need to link to the DirectSound library (<TT>dsound.lib</TT>), select the multithreaded library, and provide the <TT>__WINDOWS_DS__</TT> and <TT>__LITTLE_ENDIAN__</TT> preprocessor definitions.
+
+
+\section rtvsnonrt "Realtime" vs. "Non-Realtime"
+
+Most of the Synthesis ToolKit classes are platform independent.  That means that they should compile on any reasonably current C++ compiler.  The functionality needed for realtime audio and MIDI input/output, as well as realtime control message acquistion, is inherently platform and operating-system (OS) <I>dependent</I>.  STK classes which require specific platform/OS support include RtAudio, RtWvOut, RtWvIn, RtDuplex, RtMidi, TcpWvIn, TcpWvOut, Socket, and Thread.  These classes currently can only be compiled on Linux, Irix, and Windows (except Windows NT) systems using the <TT>__LINUX_OSS__</TT>, <TT>__LINUX_ALSA__</TT>, <TT>__IRIX_AL__</TT>, or <TT>__WINDOWS_DS__</TT> preprocessor definitions.
+
+Without the "realtime" classes, it is still possible to read SKINI scorefiles for control input and to read and write to/from a variety of audio file formats (WAV, SND, AIFF, MAT-file, and RAW).  If compiling for a "little-endian" host processor, the <TT>__LITTLE_ENDIAN__</TT> preprocessor definition should be provided.
+
+\section continued To Be Continued ...
+
+*/

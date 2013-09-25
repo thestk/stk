@@ -1,11 +1,17 @@
-/**********************************************/
-/* Jet Table Object by Perry R. Cook, 1995-96 */
-/* Consult Fletcher and Rossing, Karjalainen, */
-/*       Cook, more, for information.         */
-/* This, as with many other of my "tables",   */
-/* is not a table, but is computed by poly-   */
-/* nomial calculation.                        */
-/**********************************************/
+/***************************************************/
+/*! \class JetTabl
+    \brief STK jet table class.
+
+    This class implements a flue jet non-linear
+    function, computed by a polynomial calculation.
+    Contrary to the name, this is not a "table".
+
+    Consult Fletcher and Rossing, Karjalainen,
+    Cook, and others for more information.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "JetTabl.h"
 
@@ -18,26 +24,30 @@ JetTabl :: ~JetTabl()
 {
 }
 
-MY_FLOAT JetTabl :: lookup(MY_FLOAT sample)
+MY_FLOAT JetTabl :: lastOut() const
 {
-  return this->tick(sample);
+  return lastOutput;
 }
 
-MY_FLOAT JetTabl :: tick(MY_FLOAT sample)
-  // Perform "Table Lookup"
-  // By Polynomial Calculation
+MY_FLOAT JetTabl :: tick( MY_FLOAT input )
 {
-  // (x^3 - x) approximates sigmoid of jet
-  lastOutput = sample * (sample*sample - (MY_FLOAT)  1.0);
+  // Perform "table lookup" using a polynomial
+  // calculation (x^3 - x), which approximates
+  // the jet sigmoid behavior.
+  lastOutput = input * (input * input - (MY_FLOAT)  1.0);
+
+  // Saturate at +/- 1.0.
   if (lastOutput > 1.0) 
-    lastOutput = (MY_FLOAT) 1.0; // Saturation at +/- 1.0
+    lastOutput = (MY_FLOAT) 1.0;
   if (lastOutput < -1.0)
     lastOutput = (MY_FLOAT) -1.0; 
   return lastOutput;
 }
 
-MY_FLOAT JetTabl :: lastOut()
+MY_FLOAT *JetTabl :: tick(MY_FLOAT *vector, unsigned int vectorSize)
 {
-  return lastOutput;
-}
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick(vector[i]);
 
+  return vector;
+}

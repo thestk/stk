@@ -38,11 +38,11 @@ RSC=rc.exe
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir ""
-# PROP Intermediate_Dir "Release"
+# PROP Intermediate_Dir "release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\..\include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__OS_Win_" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\..\include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WINDOWS_DS__" /D "__LITTLE_ENDIAN__" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -63,11 +63,11 @@ LINK32=link.exe
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir ""
-# PROP Intermediate_Dir "Debug"
+# PROP Intermediate_Dir "debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__OS_Win_" /YX /FD /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WINDOWS_DS__" /D "__LITTLE_ENDIAN__" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -86,51 +86,35 @@ LINK32=link.exe
 # Name "effects - Win32 Debug"
 # Begin Source File
 
-SOURCE=..\..\src\ByteSwap.cpp
+SOURCE=..\..\src\Chorus.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\ByteSwap.h
+SOURCE=..\..\include\Chorus.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Chorus.cpp
+SOURCE=..\..\src\Delay.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Chorus.h
+SOURCE=..\..\include\Delay.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Controller.cpp
+SOURCE=..\..\src\DelayL.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\Controller.h
+SOURCE=..\..\include\DelayL.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\DLineL.cpp
+SOURCE=..\..\src\Echo.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\DLineL.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\DLineN.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\DLineN.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Echo.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Echo.h
+SOURCE=..\..\include\Echo.h
 # End Source File
 # Begin Source File
 
@@ -162,6 +146,14 @@ SOURCE=..\..\include\JCRev.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\Messager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\Messager.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\NRev.cpp
 # End Source File
 # Begin Source File
@@ -170,19 +162,11 @@ SOURCE=..\..\include\NRev.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Object.cpp
+SOURCE=..\..\src\PitShift.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\Object.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\PitShift.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\PitShift.h
+SOURCE=..\..\include\PitShift.h
 # End Source File
 # Begin Source File
 
@@ -191,14 +175,6 @@ SOURCE=..\..\src\PRCRev.cpp
 # Begin Source File
 
 SOURCE=..\..\include\PRCRev.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\RawWvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\RawWvIn.h
 # End Source File
 # Begin Source File
 
@@ -234,19 +210,43 @@ SOURCE=..\..\include\RtMidi.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\SKINI11.cpp
+SOURCE=..\..\src\SKINI.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\SKINI11.h
+SOURCE=..\..\include\SKINI.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\StkError.cpp
+SOURCE=..\..\src\Socket.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\StkError.h
+SOURCE=..\..\include\Socket.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Stk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\Stk.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Thread.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\Thread.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\WaveLoop.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\WaveLoop.h
 # End Source File
 # Begin Source File
 

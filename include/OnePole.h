@@ -1,44 +1,72 @@
-/*******************************************/
-/*
-   One Pole Filter Class,
-   by Perry R. Cook, 1995-96.
-   Added methods by Julius Smith, 2000.
+/***************************************************/
+/*! \class OnePole
+    \brief STK one-pole filter class.
 
-   The parameter gain is an additional
-   gain parameter applied to the filter
-   on top of the normalization that takes
-   place automatically.  So the net max
-   gain through the system equals the
-   value of gain.  sgain is the combina-
-   tion of gain and the normalization
-   parameter, so if you set the poleCoeff
-   to alpha, sgain is always set to
-   gain * (1.0 - fabs(alpha)).
+    This protected Filter subclass implements
+    a one-pole digital filter.  A method is
+    provided for setting the pole position along
+    the real axis of the z-plane while maintaining
+    a constant peak filter gain.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 */
-/*******************************************/
+/***************************************************/
 
-#if !defined(__OnePole_h)
-#define __OnePole_h
+#if !defined(__ONEPOLE_H)
+#define __ONEPOLE_H
 
 #include "Filter.h"
 
-class OnePole : public Filter
+class OnePole : protected Filter
 {
-protected:  
-  MY_FLOAT poleCoeff;
-  MY_FLOAT sgain;
 public:
+
+  //! Default constructor creates a first-order low-pass filter.
   OnePole();
+
+  //! Overloaded constructor which sets the pole position during instantiation.
   OnePole(MY_FLOAT thePole);
+
+  //! Class destructor.
   ~OnePole();
-  void clear();
-  void setB0(MY_FLOAT aValue);   /* set numerator b0 in b0/(1+a1/z) */
-  void setNum(MY_FLOAT *values);
-  void setA1(MY_FLOAT aValue);   /* set denominator a1 in b0/(1+a1/z) */
-  void setDen(MY_FLOAT *values);
-  void setPole(MY_FLOAT aValue);
-  void setGain(MY_FLOAT aValue);
+
+  //! Clears the internal state of the filter.
+  void clear(void);
+
+  //! Set the b[0] coefficient value.
+  void setB0(MY_FLOAT b0);
+
+  //! Set the a[1] coefficient value.
+  void setA1(MY_FLOAT a1);
+
+  //! Set the pole position in the z-plane.
+  /*!
+    This method sets the pole position along the real-axis of the
+    z-plane and normalizes the coefficients for a maximum gain of one.
+    A positive pole value produces a low-pass filter, while a negative
+    pole value produces a high-pass filter.  This method does not
+    affect the filter \e gain value.
+  */
+  void setPole(MY_FLOAT thePole);
+
+  //! Set the filter gain.
+  /*!
+    The gain is applied at the filter input and does not affect the
+    coefficient values.  The default gain value is 1.0.
+   */
+  void setGain(MY_FLOAT theGain);
+
+  //! Return the current filter gain.
+  MY_FLOAT getGain(void) const;
+
+  //! Return the last computed output value.
+  MY_FLOAT lastOut(void) const;
+
+  //! Input one sample to the filter and return one output.
   MY_FLOAT tick(MY_FLOAT sample);
+
+  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
 };
 
 #endif

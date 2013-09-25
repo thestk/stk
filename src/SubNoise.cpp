@@ -1,52 +1,43 @@
-/*******************************************/
-/*  SubSampled Noise Generator Class,      */
-/*  by Perry R. Cook, 1995-96              */ 
-/*  White noise as often as you like.      */
-/*******************************************/
+/***************************************************/
+/*! \class SubNoise
+    \brief STK sub-sampled noise generator.
+
+    Generates a new random number every "rate" ticks
+    using the C rand() function.  The quality of the
+    rand() function varies from one OS to another.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "SubNoise.h"    
 
-SubNoise :: SubNoise() : Noise()
+SubNoise :: SubNoise(int subRate) : Noise()
 {    
-    lastOutput = (MY_FLOAT) 0.0;
-    howOften = 15;
-    counter = 15;
+  rate = subRate;
+  counter = rate;
 }
-
 SubNoise :: ~SubNoise()
 {
-
 }
 
-SubNoise :: SubNoise(int subSample) : Noise()
-{    
-    lastOutput = (MY_FLOAT) 0.0;
-    howOften = subSample-1;
-    counter = subSample-1;
+int SubNoise :: subRate(void) const
+{
+  return rate;
+}
+
+void SubNoise :: setRate(int subRate)
+{
+  if (subRate > 0)
+    rate = subRate;
 }
 
 MY_FLOAT SubNoise :: tick()
 {
-    if (!counter)       {
-        lastOutput = Noise::tick();
-        counter = howOften;
-    }
-    else counter -= 1;
-    return lastOutput;
-}
+  if ( ++counter > rate ) {
+    Noise::tick();
+    counter = 1;
+  }
 
-void SubNoise :: setHowOften(int howOft)
-{
-    howOften = howOft;
+  return lastOutput;
 }
-
-/************  Test Main  ************************/
-/*
-void main()
-{
-    long i;
-    SubNoise test(5);
-    for (i=0;i<100;i++) printf("%lf\n",test.tick());
-}
-*/
-

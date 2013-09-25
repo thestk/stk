@@ -1,8 +1,19 @@
-STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
-Release 3.2
+The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook, 1995-2000
-and Gary P. Scavone, 1997-2000
+By Perry R. Cook and Gary P. Scavone, 1995-2002.
+
+v4.0: (April 2002)
+- new documentation and tutorial
+- several new instruments, including Saxofony, BlowBotl, and StifKarp
+- new Stk base class, replacing Object class
+- new Filter class structure and methods
+- extensive modifications to WvIn and WvOut class structures and methods
+- looping functionality moved to WaveLoop (subclass of WvIn)
+- automatic file type detection in WvIn ... hosed WavWvIn, AifWvIn, RawWavIn, SndWavIn, and MatWvIn subclasses
+- new file type specifier argument in WvOut ... hosed WavWvOut, AifWvOut, RawWavOut, SndWavOut, and MatWvOut subclasses
+- some simplifications of Messager class (was Controller)
+- new independent RtAudio class
+- extensive revisions in code and a significant number of API changes
 
 v3.2: (13 November 2000)
 - new control handling class (Controller)

@@ -9,26 +9,26 @@ OS = $(shell uname)
 # the core STK classes.
 STK_PATH = ../../src/
 
-O_FILES		=	Object.o Envelope.o ADSR.o Noise.o \
-						Filter.o DLineA.o DLineL.o DLineN.o \
-						OnePole.o OneZero.o DCBlock.o SKINI11.o \
-						ByteSwap.o Tabla.o Instrmnt.o Sitar1.o \
-						StrDrone.o VoicDrum.o WvOut.o WvIn.o RawWvIn.o \
+O_FILES		=	Stk.o Envelope.o ADSR.o Noise.o \
+						Filter.o DelayA.o Delay.o \
+						OnePole.o OneZero.o SKINI.o \
+						Tabla.o Instrmnt.o Sitar.o \
+						Drone.o VoicDrum.o WvOut.o WvIn.o \
 						RtAudio.o RtWvOut.o RtMidi.o Reverb.o \
-						JCRev.o Controller.o StkError.o
+						JCRev.o Messager.o Socket.o Thread.o
 
 RM = /bin/rm 
 
 ifeq ($(OS),IRIX) # These are for SGI
 	INSTR = ragamat
-	CC = CC -O2 -D__OS_IRIX_ # -g -fullwarn -D__SGI_CC__
+	CC = CC -O2 -D__IRIX_AL__ # -g -fullwarn -D__SGI_CC__
 	LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm -lpthread
 	INCLUDE = -I../../include
 endif
 
 ifeq ($(OS),Linux) # These are for Linux
 	INSTR = ragamat
-	CC = g++ -O3 -Wall -D__OS_Linux_ # -g
+	CC = g++ -O3 -Wall -D__LINUX_OSS__ -D__LITTLE_ENDIAN__ # -g
 	LIBRARY = -lpthread -lm #-lasound
 	INCLUDE = -I../../include
 endif
@@ -56,11 +56,8 @@ strip :
 Tabla.o: Tabla.cpp
 	$(CC) $(INCLUDE) -c Tabla.cpp
 
-Sitar1.o: Sitar1.cpp
-	$(CC) $(INCLUDE) -c Sitar1.cpp
-
-StrDrone.o: StrDrone.cpp
-	$(CC) $(INCLUDE) -c StrDrone.cpp
+Drone.o: Drone.cpp
+	$(CC) $(INCLUDE) -c Drone.cpp
 
 VoicDrum.o: VoicDrum.cpp
 	$(CC) $(INCLUDE) -c VoicDrum.cpp

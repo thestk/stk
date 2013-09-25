@@ -1,53 +1,83 @@
-/******************************************/
-/*  Clarinet model ala Smith              */
-/*  after McIntyre, Schumacher, Woodhouse */
-/*  by Perry Cook, 1995-96                */
-/*                                        */
-/*  This is a waveguide model, and thus   */
-/*  relates to various Stanford Univ.     */
-/*  and possibly Yamaha and other patents.*/
-/*                                        */
-/*   Controls:    CONTROL1 = reedStiffns  */
-/*                CONTROL2 = noiseGain    */
-/*                CONTROL3 = vibFreq      */
-/*                MOD_WHEEL= vibAmt       */
-/******************************************/
+/***************************************************/
+/*! \class Clarinet
+    \brief STK clarinet physical model class.
 
-#if !defined(__Clarinet_h)
-#define __Clarinet_h
+    This class implements a simple clarinet
+    physical model, as discussed by Smith (1986),
+    McIntyre, Schumacher, Woodhouse (1983), and
+    others.
+
+    This is a digital waveguide model, making its
+    use possibly subject to patents held by Stanford
+    University, Yamaha, and others.
+
+    Control Change Numbers: 
+       - Reed Stiffness = 2
+       - Noise Gain = 4
+       - Vibrato Frequency = 11
+       - Vibrato Gain = 1
+       - Breath Pressure = 128
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
+
+#if !defined(__CLARINET_H)
+#define __CLARINET_H
 
 #include "Instrmnt.h"
-#include "DLineL.h"
+#include "DelayL.h"
 #include "ReedTabl.h"
 #include "OneZero.h"
 #include "Envelope.h"
 #include "Noise.h"
-#include "RawWvIn.h"
+#include "WaveLoop.h"
 
 class Clarinet : public Instrmnt
 {
- protected:  
-  DLineL *delayLine;
+ public:
+  //! Class constructor, taking the lowest desired playing frequency.
+  Clarinet(MY_FLOAT lowestFrequency);
+
+  //! Class destructor.
+  ~Clarinet();
+
+  //! Reset and clear all internal state.
+  void clear();
+
+  //! Set instrument parameters for a particular frequency.
+  void setFrequency(MY_FLOAT frequency);
+
+  //! Apply breath pressure to instrument with given amplitude and rate of increase.
+  void startBlowing(MY_FLOAT amplitude, MY_FLOAT rate);
+
+  //! Decrease breath pressure with given rate of decrease.
+  void stopBlowing(MY_FLOAT rate);
+
+  //! Start a note with the given frequency and amplitude.
+  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+
+  //! Stop a note with the given amplitude (speed of decay).
+  void noteOff(MY_FLOAT amplitude);
+
+  //! Compute one output sample.
+  MY_FLOAT tick();
+
+  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
+  void controlChange(int number, MY_FLOAT value);
+
+ protected:
+  DelayL *delayLine;
   ReedTabl *reedTable;
   OneZero *filter;
   Envelope *envelope;
   Noise *noise;
-  RawWvIn *vibr;
+  WaveLoop *vibrato;
   long length;
   MY_FLOAT outputGain;
   MY_FLOAT noiseGain;
-  MY_FLOAT vibrGain;
- public:
-  Clarinet(MY_FLOAT lowestFreq);
-  ~Clarinet();
-  void clear();
-  virtual void setFreq(MY_FLOAT frequency);
-  void startBlowing(MY_FLOAT amplitude,MY_FLOAT rate);
-  void stopBlowing(MY_FLOAT rate);
-  virtual void noteOn(MY_FLOAT freq, MY_FLOAT amp);
-  virtual void noteOff(MY_FLOAT amp);
-  virtual MY_FLOAT tick();
-  virtual void controlChange(int number, MY_FLOAT value);
+  MY_FLOAT vibratoGain;
+
 };
 
 #endif

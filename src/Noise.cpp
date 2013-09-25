@@ -1,15 +1,19 @@
-/*******************************************/
-/*  Noise Generator Class,                 */
-/*  by Perry R. Cook, 1995-96              */ 
-/*  White noise as often as you like.      */
-/*******************************************/
+/***************************************************/
+/*! \class Noise
+    \brief STK noise generator.
 
-#include "Noise.h"    
-#ifdef __OS_NeXT_
-  #include <libc.h>
-#endif
+    Generic random number generation using the
+    C rand() function.  The quality of the rand()
+    function varies from one OS to another.
 
-Noise :: Noise() : Object()
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
+
+#include "Noise.h"
+#include <stdlib.h>
+
+Noise :: Noise() : Stk()
 {    
   lastOutput = (MY_FLOAT) 0.0;
 }
@@ -20,17 +24,20 @@ Noise :: ~Noise()
 
 MY_FLOAT Noise :: tick()
 {
-#if defined(__OS_Win_) /* For Windoze */
-  lastOutput = (MY_FLOAT) (rand() - (int)RANDLIMIT_OVER_TWO);
-#else /* This is for Linux, NeXT and SGI */
-  lastOutput = (MY_FLOAT) (random() - (int)RANDLIMIT_OVER_TWO);
-#endif
-
-  lastOutput *= (MY_FLOAT) ONE_OVER_RANDLIMIT;
+  lastOutput = (MY_FLOAT) (2.0 * rand() / (RAND_MAX + 1.0) );
+  lastOutput -= 1.0;
   return lastOutput;
 }
 
-MY_FLOAT Noise :: lastOut()
+MY_FLOAT *Noise :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick();
+
+  return vector;
+}
+
+MY_FLOAT Noise :: lastOut() const
 {
   return lastOutput;
 }

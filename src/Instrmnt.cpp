@@ -1,7 +1,13 @@
-/******************************************/
-/*  Instrument SuperClass for Toolkit96   */
-/*  Perry R. Cook, Princeton University   */
-/******************************************/
+/***************************************************/
+/*! \class Instrmnt
+    \brief STK instrument abstract base class.
+
+    This class provides a common interface for
+    all STK instruments.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "Instrmnt.h"
 
@@ -13,33 +19,24 @@ Instrmnt :: ~Instrmnt()
 {
 }
 
-void Instrmnt :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
+void Instrmnt :: setFrequency(MY_FLOAT frequency)
 {
-    printf("Warning!! Instrument Class noteOn here!! %f %f\n",freq,amp);
+  cerr << "Instrmnt: virtual setFrequency function call!" << endl;
 }
 
-void Instrmnt :: noteOff(MY_FLOAT amp)
+MY_FLOAT Instrmnt :: lastOut() const
 {
-    printf("Warning!! Instrument Class noteOff here!! %f\n",amp);
+  return lastOutput;
 }
 
-void Instrmnt :: setFreq(MY_FLOAT freq)
+MY_FLOAT *Instrmnt :: tick(MY_FLOAT *vector, unsigned int vectorSize)
 {
-    printf("Warning!! Instrument Class setFreq here!! %f\n",freq);
-}
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick();
 
-MY_FLOAT Instrmnt :: tick()
-{
-    printf("Warning!! Instrument Class tick here!!\n");
-    return lastOutput;
-}
-
-MY_FLOAT Instrmnt :: lastOut()
-{
-    return lastOutput;
+  return vector;
 }
 
 void Instrmnt :: controlChange(int number, MY_FLOAT value)
 {
-    printf("Warning!! Instrument Class Control Change here!! %i %f\n",number,value);
 }

@@ -1,73 +1,106 @@
-/*******************************************/
-/*
-  ModalBar SubClass of Modal4 Instrument
-  by Perry R. Cook, 1999-2000
+/***************************************************/
+/*! \class ModalBar
+    \brief STK resonant bar instrument class.
 
-  Controls:    CONTROL1 = stickHardness
-               CONTROL2 = strikePosition
-               CONTROL3 = Mode Presets
+    This class implements a number of different
+    struck bar instruments.  It inherits from the
+    Modal class.
+
+    Control Change Numbers: 
+       - Stick Hardness = 2
+       - Stick Position = 4
+       - Vibrato Gain = 11
+       - Vibrato Frequency = 7
+       - Direct Stick Mix = 1
+       - Volume = 128
+       - Modal Presets = 16
+         - Marimba = 0
+         - Vibraphone = 1
+         - Agogo = 2
+         - Wood1 = 3
+         - Reso = 4
+         - Wood2 = 5
+         - Beats = 6
+         - Two Fixed = 7
+         - Clump = 8
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 */
-/*******************************************/
+/***************************************************/
 
 #include "ModalBar.h"
-#include "SKINI11.msg"
+#include "SKINI.msg"
+#include <string.h>
+#include <math.h>
 
-ModalBar :: ModalBar() : Modal4()
+ModalBar :: ModalBar()
+  : Modal()
 {
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  wave = new RawWvIn(strcat(file,"rawwaves/marmstk1.raw"),"oneshot");
-  wave->setRate((MY_FLOAT) 0.5);  /*  normal stick  */
+  wave = new WvIn( strcat(file,"rawwaves/marmstk1.raw"), TRUE );
+  wave->setRate((MY_FLOAT) 0.5 * 22050.0 / Stk::sampleRate() );
 
-  this->setRatioAndReson(0, (MY_FLOAT) 1.00,(MY_FLOAT) 0.9996);  /*  Set all       132.0  */
-  this->setRatioAndReson(1, (MY_FLOAT) 3.99,(MY_FLOAT) 0.9994);  /*  of our        523.0  */
-  this->setRatioAndReson(2,(MY_FLOAT) 10.65,(MY_FLOAT) 0.9994);  /*  default       1405.0 */
-  this->setRatioAndReson(3,-(MY_FLOAT) 2443.0,(MY_FLOAT) 0.999);  /*  resonances    2443.0 */
-  this->setFiltGain(0,(MY_FLOAT) 0.04);               /*  and        */
-  this->setFiltGain(1,(MY_FLOAT) 0.01);               /*  gains      */
-  this->setFiltGain(2,(MY_FLOAT) 0.01);               /*  for each   */
-  this->setFiltGain(3,(MY_FLOAT) 0.008);              /*  resonance  */
-  directGain = (MY_FLOAT) 0.1;
-}  
+  // Set the resonances for preset 0 (marimba).
+  setPreset( 0 );
+}
 
 ModalBar :: ~ModalBar()
 {
   delete wave;
-}  
+}
 
 void ModalBar :: setStickHardness(MY_FLOAT hardness)
 {
   stickHardness = hardness;
-  wave->setRate((MY_FLOAT) (0.25 * (MY_FLOAT)  pow(4.0,stickHardness)));
-  masterGain = (MY_FLOAT) 0.1 + ((MY_FLOAT) 1.8 * stickHardness);
+  if ( hardness < 0.0 ) {
+    cerr << "ModalBar: setStickHardness parameter is less than zero!" << endl;
+    stickHardness = 0.0;
+  }
+  else if ( hardness > 1.0 ) {
+    cerr << "ModalBar: setStickHarness parameter is greater than 1.0!" << endl;
+    stickHardness = 1.0;
+  }
+
+  wave->setRate( (0.25 * (MY_FLOAT) pow(4.0, stickHardness)) );
+  masterGain = 0.1 + (1.8 * stickHardness);
 }
 
 void ModalBar :: setStrikePosition(MY_FLOAT position)
 {
-  MY_FLOAT temp,temp2;
-  temp2 = position * PI;
-  strikePosition = position;             /*  Hack only first three modes */
-  temp = (MY_FLOAT)  sin(temp2);                                       
-  this->setFiltGain(0,(MY_FLOAT) 0.12 * temp);      /*  1st mode function of pos.   */
-  temp = (MY_FLOAT)  sin(0.05 + (3.9 * temp2));
-  this->setFiltGain(1,(MY_FLOAT) -0.03 * temp);     /*  2nd mode function of pos.   */
+  strikePosition = position;
+  if ( position < 0.0 ) {
+    cerr << "ModalBar: setStrikePositions parameter is less than zero!" << endl;
+    strikePosition = 0.0;
+  }
+  else if ( position > 1.0 ) {
+    cerr << "ModalBar: setStrikePosition parameter is greater than 1.0!" << endl;
+    strikePosition = 1.0;
+  }
+
+  // Hack only first three modes.
+  MY_FLOAT temp2 = position * PI;
+  MY_FLOAT temp = sin(temp2);                                       
+  this->setModeGain(0, 0.12 * temp);
+
+  temp = sin(0.05 + (3.9 * temp2));
+  this->setModeGain(1,(MY_FLOAT) -0.03 * temp);
+
   temp = (MY_FLOAT)  sin(-0.05 + (11 * temp2));
-  this->setFiltGain(2,(MY_FLOAT) 0.11 * temp);      /*  3rd mode function of pos.   */
+  this->setModeGain(2,(MY_FLOAT) 0.11 * temp);
 }
 
-void ModalBar :: setModalPreset(int which)
+void ModalBar :: setPreset(int preset)
 {
-  /* presets:
-   * first line:  relative modal frequencies (negative number is
-   *              a fixed mode that doesn't scale with frequency
-   * second line: resonances of the modes
-   * third line:  mode volumes
-   * fourth line: stickHardness, strikePosition, and direct stick
-   *              gain (mixed directly into the output
-   */
-  int i, temp;
-  MY_FLOAT presets[9][4][4] = { 
+  // Presets:
+  //     First line:  relative modal frequencies (negative number is
+  //                  a fixed mode that doesn't scale with frequency
+  //     Second line: resonances of the modes
+  //     Third line:  mode volumes
+  //     Fourth line: stickHardness, strikePosition, and direct stick
+  //                  gain (mixed directly into the output
+  static MY_FLOAT presets[9][4][4] = { 
     {{1.0, 3.99, 10.65, -2443},		// Marimba
      {0.9996, 0.9994, 0.9994, 0.999},
      {0.04, 0.01, 0.01, 0.008},
@@ -106,44 +139,52 @@ void ModalBar :: setModalPreset(int which)
      {0.390625,0.570312,0.078125}},
   };
 
-  temp = (which % 9);
-  for (i=0; i<4; i++)	{
-    this->setRatioAndReson(i, presets[temp][0][i], presets[temp][1][i]);
-    this->setFiltGain(i,presets[temp][2][i]);
+  int temp = (preset % 9);
+  for (int i=0; i<nModes; i++) {
+    this->setRatioAndRadius(i, presets[temp][0][i], presets[temp][1][i]);
+    this->setModeGain(i, presets[temp][2][i]);
   }
+
   this->setStickHardness(presets[temp][3][0]);
   this->setStrikePosition(presets[temp][3][1]);
   directGain = presets[temp][3][2];
 
   if (temp == 1) // vibraphone
-    vibrGain = 0.2;
+    vibratoGain = 0.2;
   else
-    vibrGain = 0.0;
+    vibratoGain = 0.0;
 }
 
 void ModalBar :: controlChange(int number, MY_FLOAT value)
 {
-#if defined(_debug_)        
-  printf("ModalBar : ControlChange: Number=%i Value=%f\n",number,value);
-#endif    
-  if (number == __SK_StickHardness_)
-    this->setStickHardness(value * NORM_7);
-  else if (number == __SK_StrikePosition_)
-    this->setStrikePosition(value * NORM_7);
-  else if (number == __SK_ProphesyRibbon_)
-		this->setModalPreset((int) value);
-  else if (number == __SK_ModWheel_)
-    directGain = value * NORM_7;
-  else if (number == __SK_AfterTouch_Cont_)	
-    envelope->setTarget(value * NORM_7);
-  else if (number == __SK_ModFrequency_)
-    vibr->setFreq(value * NORM_7 * 12.0);
-  else if (number == 1024)	{	//  HACKED Poop message
-    printf("StickHard=%f   StrikePos=%f   directGain=%f\n",
-           stickHardness, strikePosition, directGain);
+  MY_FLOAT norm = value * ONE_OVER_128;
+  if ( norm < 0 ) {
+    norm = 0.0;
+    cerr << "ModalBar: Control value less than zero!" << endl;
   }
-  else    {
-    printf("ModalBar : Undefined Control Number!!\n");
-  }    
-}
+  else if ( norm > 1.0 ) {
+    norm = 1.0;
+    cerr << "ModalBar: Control value greater than 128.0!" << endl;
+  }
 
+  if (number == __SK_StickHardness_) // 2
+    this->setStickHardness( norm );
+  else if (number == __SK_StrikePosition_) // 4
+    this->setStrikePosition( norm );
+  else if (number == __SK_ProphesyRibbon_) // 16
+		this->setPreset((int) value);
+  else if (number == __SK_ModWheel_) // 1
+    directGain = norm;
+  else if (number == 11) // 11
+    vibratoGain = norm * 0.3;
+  else if (number == __SK_ModFrequency_) // 7
+    vibrato->setFrequency( norm * 12.0 );
+  else if (number == __SK_AfterTouch_Cont_)	// 128
+    envelope->setTarget( norm );
+  else
+    cerr << "ModalBar: Undefined Control Number (" << number << ")!!" << endl;
+
+#if defined(_STK_DEBUG_)
+  cerr << "ModalBar: controlChange number = " << number << ", value = " << value << endl;
+#endif
+}

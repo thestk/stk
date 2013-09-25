@@ -1,139 +1,118 @@
-/*******************************************/
-/*  Sweepable Formant (2-pole)             */
-/*  Filter Class, by Perry R. Cook, 1995-96*/ 
-/*  See books on filters to understand     */
-/*  more about how this works.  This drives*/
-/*  to a target at speed set by rate.      */
-/*******************************************/
+/***************************************************/
+/*! \class FormSwep
+    \brief STK sweepable formant filter class.
+
+    This public BiQuad filter subclass implements
+    a formant (resonance) which can be "swept"
+    over time from one frequency setting to another.
+    It provides methods for controlling the sweep
+    rate and target frequency.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "FormSwep.h"
 
-FormSwep :: FormSwep() : Filter()
+FormSwep :: FormSwep() : BiQuad()
 {
-  outputs = (MY_FLOAT *) malloc(2 * sizeof(MY_FLOAT));
-  poleCoeffs[0] = (MY_FLOAT) 0.0;
-  poleCoeffs[1] = (MY_FLOAT) 0.0;
-  gain = (MY_FLOAT) 1.0;
-  freq = (MY_FLOAT) 0.0;
-  reson = (MY_FLOAT) 0.0;
-  currentGain = (MY_FLOAT) 1.0;
-  currentFreq = (MY_FLOAT) 0.0;
-  currentReson = (MY_FLOAT) 0.0;
+  frequency = (MY_FLOAT) 0.0;
+  radius = (MY_FLOAT) 0.0;
   targetGain = (MY_FLOAT) 1.0;
-  targetFreq = (MY_FLOAT) 0.0;
-  targetReson = (MY_FLOAT) 0.0;
+  targetFrequency = (MY_FLOAT) 0.0;
+  targetRadius = (MY_FLOAT) 0.0;
   deltaGain = (MY_FLOAT) 0.0;
-  deltaFreq = (MY_FLOAT) 0.0;
-  deltaReson = (MY_FLOAT) 0.0;
+  deltaFrequency = (MY_FLOAT) 0.0;
+  deltaRadius = (MY_FLOAT) 0.0;
   sweepState = (MY_FLOAT)  0.0;
   sweepRate = (MY_FLOAT) 0.002;
-  dirty = 0;
+  dirty = false;
   this->clear();
 }
 
 FormSwep :: ~FormSwep()
 {
-  free(outputs);
 }
 
-void FormSwep :: clear()
+void FormSwep :: setResonance(MY_FLOAT aFrequency, MY_FLOAT aRadius)
 {
-  outputs[0] = (MY_FLOAT) 0.0;
-  outputs[1] = (MY_FLOAT) 0.0;
+  dirty = false;
+  radius = aRadius;
+  frequency = aFrequency;
+
+  BiQuad::setResonance( frequency, radius, true );
 }
 
-void FormSwep :: setPoleCoeffs(MY_FLOAT *coeffs)
+void FormSwep :: setStates(MY_FLOAT aFrequency, MY_FLOAT aRadius, MY_FLOAT aGain)
 {
-  dirty = 0;
-  poleCoeffs[0] = coeffs[0];
-  poleCoeffs[1] = coeffs[1];
-}
+  dirty = false;
 
-void FormSwep :: setFreqAndReson(MY_FLOAT aFreq, MY_FLOAT aReson)
-{
-  dirty = 0;
-  reson = aReson;
-  freq = aFreq;
-  currentReson = aReson;
-  currentFreq = aFreq;
-  poleCoeffs[1] = - (reson * reson);
-  poleCoeffs[0] = (MY_FLOAT) 2.0 * reson * (MY_FLOAT)  cos(TWO_PI * freq / SRATE);
-}
+  if ( frequency != aFrequency || radius != aRadius )
+    BiQuad::setResonance( aFrequency, aRadius, true );
 
-void FormSwep :: setStates(MY_FLOAT aFreq, MY_FLOAT aReson, MY_FLOAT aGain)
-{
-  dirty = 0;
-  freq = aFreq;
-  reson = aReson;
+  frequency = aFrequency;
+  radius = aRadius;
   gain = aGain;
-  targetFreq = aFreq;
-  targetReson = aReson;
+  targetFrequency = aFrequency;
+  targetRadius = aRadius;
   targetGain = aGain;
-  currentFreq = aFreq;
-  currentReson = aReson;
-  currentGain = aGain;
 }
 
-void FormSwep :: setTargets(MY_FLOAT aFreq, MY_FLOAT aReson, MY_FLOAT aGain)
+void FormSwep :: setTargets(MY_FLOAT aFrequency, MY_FLOAT aRadius, MY_FLOAT aGain)
 {
-  dirty = 1;
-  targetFreq = aFreq;
-  targetReson = aReson;
+  dirty = true;
+  startFrequency = frequency;
+  startRadius = radius;
+  startGain = gain;
+  targetFrequency = aFrequency;
+  targetRadius = aRadius;
   targetGain = aGain;
-  deltaFreq = aFreq - currentFreq;
-  deltaReson = aReson - currentReson;
-  deltaGain = aGain - currentGain;
+  deltaFrequency = aFrequency - frequency;
+  deltaRadius = aRadius - radius;
+  deltaGain = aGain - gain;
   sweepState = (MY_FLOAT) 0.0;
 }
 
 void FormSwep :: setSweepRate(MY_FLOAT aRate)
 {
   sweepRate = aRate;
+  if ( sweepRate > 1.0 ) sweepRate = 1.0;
+  if ( sweepRate < 0.0 ) sweepRate = 0.0;
 }
 
 void FormSwep :: setSweepTime(MY_FLOAT aTime)
 {
-  sweepRate = ONE_OVER_SRATE / aTime;
+  sweepRate = 1.0 / ( aTime * Stk::sampleRate() );
+  if ( sweepRate > 1.0 ) sweepRate = 1.0;
+  if ( sweepRate < 0.0 ) sweepRate = 0.0;
 }
 
-void FormSwep :: setGain(MY_FLOAT aValue)
-{
-  gain = aValue;
-}
-
-MY_FLOAT FormSwep :: tick(MY_FLOAT sample)  // Perform Filter Operation
+MY_FLOAT FormSwep :: tick(MY_FLOAT sample)
 {                                     
-  MY_FLOAT temp;                    
-
   if (dirty)  {
     sweepState += sweepRate;
-    if (sweepState>= 1.0)   {
+    if ( sweepState >= 1.0 )   {
       sweepState = (MY_FLOAT) 1.0;
-      dirty = 0;
-      currentReson = targetReson;
-      reson        = targetReson;
-      currentFreq = targetFreq;
-      freq        = targetFreq;
-      currentGain = targetGain;
-      gain        = targetGain;
+      dirty = false;
+      radius = targetRadius;
+      frequency = targetFrequency;
+      gain = targetGain;
     }
     else  {
-      currentReson = reson + (deltaReson * sweepState);
-      currentFreq = freq + (deltaFreq * sweepState);
-      currentGain = gain + (deltaGain * sweepState);
+      radius = startRadius + (deltaRadius * sweepState);
+      frequency = startFrequency + (deltaFrequency * sweepState);
+      gain = startGain + (deltaGain * sweepState);
     }
-    poleCoeffs[1] = - (currentReson * currentReson);
-    poleCoeffs[0] = (MY_FLOAT) 2.0 * currentReson * 
-      (MY_FLOAT)  cos(TWO_PI * currentFreq / SRATE);
+    BiQuad::setResonance( frequency, radius, true );
   }
 
-  temp = currentGain * sample;
-  temp += poleCoeffs[0] * outputs[0];
-  temp += poleCoeffs[1] * outputs[1];
-  outputs[1] = outputs[0];
-  outputs[0] = temp;
-  lastOutput = outputs[0];
-  return lastOutput;
+  return BiQuad::tick( sample );
 }
 
+MY_FLOAT *FormSwep :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+{
+  for (unsigned int i=0; i<vectorSize; i++)
+    vector[i] = tick(vector[i]);
 
+  return vector;
+}
