@@ -1,26 +1,28 @@
 // Thread functions for use with syntmono.
 //
-// Gary P. Scavone, 1999.
+// No mutexes are currently being used when accessing
+// the global variables shared between these threads
+// and the main() routine.  In a single processor
+// environment, no problems have resulted from such data
+// sharing.  However, if STK is to be run on a true parallel
+// processing platform, it is likely that mutexes will be
+// necessary.  While the mutex calls are simple to code, I
+// am trying to keep the code as generic as possible.  A
+// quick investigation of threads under Windoze indicates
+// that mutex functionality is not available, at least with
+// the standard libraries.
+//
+// Gary P. Scavone, 2000.
 
 #include "threads.h"
 
 #if defined(__STK_REALTIME_)
 
-#define SERVICE_PORT 2001  // Socket Port ID number
+// Default STK socket port ID number
+#define SERVICE_PORT 2001
 
 // Do OS dependent declarations and includes
-#if defined(__OS_IRIX_)
-#include <signal.h>
-#include <sys/prctl.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
-pid_t string_thread;
-
-#elif defined(__OS_Linux_)
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
 #include <pthread.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -39,13 +41,10 @@ unsigned long string_thread;
 #endif
 
 
-// The thread function definition protocols are slightly
-// different under Irix, Linux, and Windoze.
-#if defined(__OS_IRIX_)
+// The thread function protocols are slightly different
+// under Windoze ... but of course!
 
-void newStringByPipe(void *)
-
-#elif defined(__OS_Linux_)
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
 
 void *newStringByPipe(void *)
 
@@ -86,14 +85,15 @@ void newStringByPipe(void *)
   // Free inputString.
   for ( i=0;i<MAX_IN_STRINGS;i++ ) free(inputString[i]);
   free(inputString);
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
+  pthread_exit(NULL);
+  return NULL;
+#elif defined(__OS_Win_)
+  _endthread();
+#endif
 }
 
-
-#if defined(__OS_IRIX_)
-
-void newStringBySocket(void *)
-
-#elif defined(__OS_Linux_)
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
 
 void *newStringBySocket(void *)
 
@@ -113,7 +113,7 @@ void newStringBySocket(void *)
   fd_set mask, rmask;
   struct sockaddr_in sockname;
   char socBuf[STRING_LEN];
-  static struct timeval timeout = {0, 1000}; // one millisecond
+  static struct timeval timeout = {0, 10000}; // ten millisecond
 
   // Malloc inputString.
   inputString = (char **) malloc(MAX_IN_STRINGS * sizeof(char *));
@@ -163,6 +163,9 @@ void newStringBySocket(void *)
 
   while (notDone) {
     rmask = mask;
+    // Need to reset the timeout values because of linux "select" implementation
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 10000; // 0.01 seconds
     select(maxfd+1, &rmask, (fd_set *)0, (fd_set *)0, &timeout);
     if (FD_ISSET(soc_id,&rmask)) { // a new connection is available
       // Accept and service the incoming connection request
@@ -232,18 +235,18 @@ void newStringBySocket(void *)
   free(inputString);
 
 	printf("Socket connection closed.\n");
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
+  pthread_exit(NULL);
+  return NULL;
+#elif defined(__OS_Win_)
+  _endthread();
+#endif
 }
 
 
 void startPipeThread()
 {
-#if defined(__OS_IRIX_)
-  string_thread = sproc(newStringByPipe, PR_SALL);
-  if (string_thread == -1)  {
-    fprintf(stderr, "unable to create input pipe thread ... aborting.\n");
-    exit(0);
-  }
-#elif defined(__OS_Linux_)
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
   if (pthread_create(&string_thread, NULL, newStringByPipe, NULL)) {
     fprintf(stderr, "unable to create input pipe thread ... aborting.\n");
     exit(0);
@@ -259,13 +262,7 @@ void startPipeThread()
 
 void startSocketThread()
 {
-#if defined(__OS_IRIX_)
-  string_thread = sproc(newStringBySocket, PR_SALL);
-  if (string_thread == -1)  {
-    fprintf(stderr, "unable to create input socket thread...aborting.\n");
-    exit(0);
-  }
-#elif defined(__OS_Linux_)
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
   if (pthread_create(&string_thread, NULL, newStringBySocket, NULL)) {
     fprintf(stderr, "unable to create input socket thread...aborting.\n");
     exit(0);

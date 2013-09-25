@@ -60,34 +60,39 @@ MY_FLOAT noise_tick() //  Return random MY_FLOAT float between -1.0 and 1.0
 /************************* MARACA *****************************/
 #define MARA_SOUND_DECAY 0.95
 #define MARA_SYSTEM_DECAY 0.999
-#define MARA_GAIN 25.0
+//#define MARA_GAIN 25.0
+#define MARA_GAIN 20.0
 #define MARA_NUM_BEANS 25
 #define MARA_CENTER_FREQ 3200.0
 #define MARA_RESON 0.96
 /***********************  SEKERE *****************************/
 #define SEKE_SOUND_DECAY 0.96
 #define SEKE_SYSTEM_DECAY 0.999
-#define SEKE_GAIN 30.0
+//#define SEKE_GAIN 30.0
+#define SEKE_GAIN 20.0
 #define SEKE_NUM_BEANS 64
 #define SEKE_CENTER_FREQ 5500.0
 #define SEKE_RESON 0.6
 /***********************  SANDPAPER **************************/
 #define SANDPAPR_SOUND_DECAY 0.999
 #define SANDPAPR_SYSTEM_DECAY 0.999
-#define SANDPAPR_GAIN 1.0
+//#define SANDPAPR_GAIN 1.0
+#define SANDPAPR_GAIN 0.5
 #define SANDPAPR_NUM_GRAINS 128
 #define SANDPAPR_CENTER_FREQ 4500.0
 #define SANDPAPR_RESON 0.6
 /************************ CABASA *****************************/
 #define CABA_SOUND_DECAY 0.96
 #define CABA_SYSTEM_DECAY 0.997
-#define CABA_GAIN 150.0
+//#define CABA_GAIN 150.0
+#define CABA_GAIN 40.0
 #define CABA_NUM_BEADS 512
 #define CABA_CENTER_FREQ 3000.0
 #define CABA_RESON 0.7
 /************************ Bamboo Wind Chimes *****************/
 #define BAMB_SOUND_DECAY 0.95
-#define BAMB_SYSTEM_DECAY 0.99995
+//#define BAMB_SYSTEM_DECAY 0.99995
+#define BAMB_SYSTEM_DECAY 0.9999
 #define BAMB_GAIN 2.0
 #define BAMB_NUM_TUBES 1.25
 #define BAMB_CENTER_FREQ0  2800.0
@@ -96,9 +101,11 @@ MY_FLOAT noise_tick() //  Return random MY_FLOAT float between -1.0 and 1.0
 #define BAMB_RESON	   0.995
 /******************* Water Drops  ****************************/
 #define WUTR_SOUND_DECAY 0.95
-#define WUTR_SYSTEM_DECAY 0.999
+//#define WUTR_SYSTEM_DECAY 0.999
+#define WUTR_SYSTEM_DECAY 0.996
 #define WUTR_GAIN 1.0
-#define WUTR_NUM_SOURCES 4
+//#define WUTR_NUM_SOURCES 4
+#define WUTR_NUM_SOURCES 10
 #define WUTR_CENTER_FREQ0  450.0
 #define WUTR_CENTER_FREQ1  600.0
 #define WUTR_CENTER_FREQ2  750.0 
@@ -107,7 +114,8 @@ MY_FLOAT noise_tick() //  Return random MY_FLOAT float between -1.0 and 1.0
 /****************** TAMBOURINE  *****************************/
 #define TAMB_SOUND_DECAY 0.95
 #define TAMB_SYSTEM_DECAY 0.9985
-#define TAMB_GAIN 10.0
+//#define TAMB_GAIN 10.0
+#define TAMB_GAIN 5.0
 #define TAMB_NUM_TIMBRELS 32
 #define TAMB_SHELL_FREQ 2300
 #define TAMB_SHELL_GAIN 0.1
@@ -118,7 +126,8 @@ MY_FLOAT noise_tick() //  Return random MY_FLOAT float between -1.0 and 1.0
 /********************** SLEIGHBELLS *************************/
 #define SLEI_SOUND_DECAY 0.97
 #define SLEI_SYSTEM_DECAY 0.9994
-#define SLEI_GAIN 2.0
+//#define SLEI_GAIN 2.0
+#define SLEI_GAIN 1.0
 #define SLEI_NUM_BELLS 32
 #define SLEI_CYMB_FREQ0 2500
 #define SLEI_CYMB_FREQ1 5300
@@ -145,7 +154,8 @@ MY_FLOAT noise_tick() //  Return random MY_FLOAT float between -1.0 and 1.0
 /************************ COKECAN **************************/
 #define COKECAN_SOUND_DECAY 0.97
 #define COKECAN_SYSTEM_DECAY 0.999
-#define COKECAN_GAIN 1.0
+//#define COKECAN_GAIN 1.0
+#define COKECAN_GAIN 0.8
 #define COKECAN_NUM_PARTS 48
 #define COKECAN_HELMFREQ 370
 #define COKECAN_HELM_RES  0.99
@@ -169,7 +179,8 @@ MY_FLOAT noise_tick() //  Return random MY_FLOAT float between -1.0 and 1.0
 /************************ Crunch1 ***************************/
 #define CRUNCH1_SOUND_DECAY 0.95
 #define CRUNCH1_SYSTEM_DECAY 0.99806
-#define CRUNCH1_GAIN 30.0
+//#define CRUNCH1_GAIN 30.0
+#define CRUNCH1_GAIN 20.0
 #define CRUNCH1_NUM_BEADS 7
 #define CRUNCH1_CENTER_FREQ 800.0
 #define CRUNCH1_RESON 0.95
@@ -270,12 +281,16 @@ int Shakers :: setFreqAndReson(int which, MY_FLOAT freq, MY_FLOAT reson)	{
 
 int Shakers :: setupNum(int inst)
 {
-  int i;
+  int i, rv = 0;
   MY_FLOAT temp;
 
   if (inst==1) {	//  cabasa_setup();
+    rv = inst;
     num_objects = CABA_NUM_BEADS;
+    defObjs[inst] = CABA_NUM_BEADS;
     setDecays(CABA_SOUND_DECAY, CABA_SYSTEM_DECAY);
+    defDecays[inst] = CABA_SYSTEM_DECAY;
+    decayScale[inst] = 0.97;
     num_freqs = 1;
     baseGain = CABA_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -285,8 +300,12 @@ int Shakers :: setupNum(int inst)
     setFinalZs(1.0,-1.0,0.0);
   }
   else if (inst==2) {	//  sekere_setup();
+    rv = inst;
     num_objects = SEKE_NUM_BEANS;
+    defObjs[inst] = SEKE_NUM_BEANS;
     this->setDecays(SEKE_SOUND_DECAY,SEKE_SYSTEM_DECAY);
+    defDecays[inst] = SEKE_SYSTEM_DECAY;
+    decayScale[inst] = 0.94;
     num_freqs = 1;
     baseGain = SEKE_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -296,8 +315,12 @@ int Shakers :: setupNum(int inst)
     this->setFinalZs(1.0, 0.0, -1.0);
   }
   else if (inst==3) {	//  guiro_setup();
+    rv = inst;
     num_objects = GUIR_NUM_PARTS;
+    defObjs[inst] = GUIR_NUM_PARTS;
     setDecays(GUIR_SOUND_DECAY,1.0);
+    defDecays[inst] = 0.9999;
+    decayScale[inst] = 1.0;
     num_freqs = 2;
     baseGain = GUIR_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -313,8 +336,12 @@ int Shakers :: setupNum(int inst)
     ratchetPos = 10;
   }
   else if (inst==4) {	//  wuter_setup();
+    rv = inst;
     num_objects = WUTR_NUM_SOURCES;
+    defObjs[inst] = WUTR_NUM_SOURCES;
     setDecays(WUTR_SOUND_DECAY,WUTR_SYSTEM_DECAY);
+    defDecays[inst] = WUTR_SYSTEM_DECAY;
+    decayScale[inst] = 0.8;
     num_freqs = 3;
     baseGain = WUTR_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -333,8 +360,12 @@ int Shakers :: setupNum(int inst)
     setFinalZs(1.0,0.0,0.0);
   }
   else if (inst==5) {	//  bamboo_setup();
+    rv = inst;
     num_objects = BAMB_NUM_TUBES;
+    defObjs[inst] = BAMB_NUM_TUBES;
     setDecays(BAMB_SOUND_DECAY, BAMB_SYSTEM_DECAY);
+    defDecays[inst] = BAMB_SYSTEM_DECAY;
+    decayScale[inst] = 0.7;
     num_freqs = 3;
     baseGain = BAMB_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -353,8 +384,12 @@ int Shakers :: setupNum(int inst)
     setFinalZs(1.0,0.0,0.0);
   }
   else if (inst==6) {	//  tambourine_setup();
+    rv = inst;
     num_objects = TAMB_NUM_TIMBRELS;
+    defObjs[inst] = TAMB_NUM_TIMBRELS;
     setDecays(TAMB_SOUND_DECAY,TAMB_SYSTEM_DECAY);
+    defDecays[inst] = TAMB_SYSTEM_DECAY;
+    decayScale[inst] = 0.95;
     num_freqs = 3;
     baseGain = TAMB_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -373,8 +408,12 @@ int Shakers :: setupNum(int inst)
     setFinalZs(1.0,0.0,-1.0);
   }
   else if (inst==7) {	//  sleighbell_setup();
+    rv = inst;
     num_objects = SLEI_NUM_BELLS;
+    defObjs[inst] = SLEI_NUM_BELLS;
     setDecays(SLEI_SOUND_DECAY,SLEI_SYSTEM_DECAY);
+    defDecays[inst] = SLEI_SYSTEM_DECAY;
+    decayScale[inst] = 0.9;
     num_freqs = 5;
     baseGain = SLEI_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -395,8 +434,12 @@ int Shakers :: setupNum(int inst)
     setFinalZs(1.0,0.0,-1.0);
   }
   else if (inst==8) {	//  stix1_setup();
+    rv = inst;
     num_objects = STIX1_NUM_BEANS;
+    defObjs[inst] = STIX1_NUM_BEANS;
     setDecays(STIX1_SOUND_DECAY,STIX1_SYSTEM_DECAY);
+    defDecays[inst] = STIX1_SYSTEM_DECAY;
+    decayScale[inst] = 0.96;
     num_freqs = 1;
     baseGain = STIX1_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -406,8 +449,12 @@ int Shakers :: setupNum(int inst)
     setFinalZs(1.0,0.0,-1.0);
   }
   else if (inst==9) {	//  crunch1_setup();
+    rv = inst;
     num_objects = CRUNCH1_NUM_BEADS;
+    defObjs[inst] = CRUNCH1_NUM_BEADS;
     setDecays(CRUNCH1_SOUND_DECAY,CRUNCH1_SYSTEM_DECAY);
+    defDecays[inst] = CRUNCH1_SYSTEM_DECAY;
+    decayScale[inst] = 0.96;
     num_freqs = 1;
     baseGain = CRUNCH1_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -417,8 +464,12 @@ int Shakers :: setupNum(int inst)
     setFinalZs(1.0,-1.0,0.0);
   }
   else if (inst==10) {	//  wrench_setup();
+    rv = inst;
     num_objects = WRENCH_NUM_PARTS;
+    defObjs[inst] = WRENCH_NUM_PARTS;
     setDecays(WRENCH_SOUND_DECAY,1.0);
+    defDecays[inst] = 0.9999;
+    decayScale[inst] = 0.98;
     num_freqs = 2;
     baseGain = WRENCH_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -434,8 +485,12 @@ int Shakers :: setupNum(int inst)
     ratchetPos = 10;
   }
   else if (inst==11) {	//  sandpapr_setup();
+    rv = inst;
     num_objects = SANDPAPR_NUM_GRAINS;
+    defObjs[inst] = SANDPAPR_NUM_GRAINS;
     this->setDecays(SANDPAPR_SOUND_DECAY,SANDPAPR_SYSTEM_DECAY);
+    defDecays[inst] = SANDPAPR_SYSTEM_DECAY;
+    decayScale[inst] = 0.97;
     num_freqs = 1;
     baseGain = SANDPAPR_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -445,8 +500,12 @@ int Shakers :: setupNum(int inst)
     this->setFinalZs(1.0, 0.0, -1.0);
   }
   else if (inst==12) {	//  cokecan_setup();
+    rv = inst;
     num_objects = COKECAN_NUM_PARTS;
+    defObjs[inst] = COKECAN_NUM_PARTS;
     setDecays(COKECAN_SOUND_DECAY,COKECAN_SYSTEM_DECAY);
+    defDecays[inst] = COKECAN_SYSTEM_DECAY;
+    decayScale[inst] = 0.95;
     num_freqs = 5;
     baseGain = COKECAN_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -469,7 +528,10 @@ int Shakers :: setupNum(int inst)
   }
   else { //  maraca_setup();   inst == 0 or other
     num_objects = MARA_NUM_BEANS;
+    defObjs[0] = MARA_NUM_BEANS;
     setDecays(MARA_SOUND_DECAY,MARA_SYSTEM_DECAY);
+    defDecays[0] = MARA_SYSTEM_DECAY;
+    decayScale[inst] = 0.9;
     num_freqs = 1;
     baseGain = MARA_GAIN;
     temp = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
@@ -478,7 +540,7 @@ int Shakers :: setupNum(int inst)
     setFreqAndReson(0,MARA_CENTER_FREQ,MARA_RESON);
     setFinalZs(1.0,-1.0,0.0);
   }
-  return inst;
+  return rv;
 }
 
 void Shakers :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
@@ -486,7 +548,8 @@ void Shakers :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
   // Yep ... pretty kludgey, but it works!
   int noteNum = (int) ((12*log(freq/220)/log(2)) + 57.01) % 32;
   if (instType !=  noteNum) instType = this->setupNum(noteNum);
-  shakeEnergy = amp * MAX_SHAKE * 0.1;
+  //shakeEnergy = amp * MAX_SHAKE * 0.1;
+  shakeEnergy += amp * MAX_SHAKE * 0.1;
   if (shakeEnergy > MAX_SHAKE) shakeEnergy = MAX_SHAKE;
   if (instType==10 || instType==3) ratchetPos += 1;
 #if defined(_debug_)        
@@ -497,6 +560,7 @@ void Shakers :: noteOn(MY_FLOAT freq, MY_FLOAT amp)
 void Shakers :: noteOff(MY_FLOAT amp)
 {
   shakeEnergy = 0.0;
+  if (instType==10 || instType==3) ratchetPos = 0;
 }
 
 #define MIN_ENERGY 0.3
@@ -510,6 +574,7 @@ MY_FLOAT Shakers :: tick()
   if (instType==4) {
   	if (shakeEnergy > MIN_ENERGY)	{
       lastOutput = wuter_tick();
+      lastOutput *= 0.0001;
     }
     else {
       lastOutput = 0.0;
@@ -524,6 +589,7 @@ MY_FLOAT Shakers :: tick()
 	    }
       totalEnergy = ratchet;
       lastOutput = ratchet_tick();
+      lastOutput *= 0.0001;
     }
     else lastOutput = 0.0;
   }
@@ -560,12 +626,10 @@ MY_FLOAT Shakers :: tick()
       data += finalZCoeffs[2] * finalZ[2];    // Extra zero(s) for shape
       if (data > 10000.0)	data = 10000.0;
       if (data < -10000.0) data = -10000.0;
-      lastOutput = data;
+      lastOutput = data * 0.0001;
     }
     else lastOutput = 0.0;
   }
-
-  lastOutput *= 0.0001;
 
   return lastOutput;
 }
@@ -593,23 +657,64 @@ void Shakers :: controlChange(int number, MY_FLOAT value)
 #if defined(_debug_)        
     printf("setting decay\n");
 #endif    
-    systemDecay = 0.998 + (value * NORM_7 * 0.002);
+    //systemDecay = 0.998 + (value * NORM_7 * 0.002);
+    if (instType != 3 && instType != 10) {
+      systemDecay = defDecays[instType] + ((value - 64.0) * decayScale[instType] * (1.0 - defDecays[instType]) / 64.0 );
+      gains[0] = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
+      for (i=1;i<num_freqs;i++) gains[i] = gains[0];
+      if (instType == 6) { // tambourine
+        gains[0] *= TAMB_SHELL_GAIN;
+        gains[1] *= 0.8;
+      }
+      else if (instType == 7) { // sleighbell
+        gains[3] *= 0.5;
+        gains[4] *= 0.3;
+      }
+      else if (instType == 12) { // cokecan
+        for (i=1;i<num_freqs;i++) gains[i] *= 1.8;
+      }
+      for (i=0;i<num_freqs;i++) gains[i] *= ((128-value)/100.0 + 0.36);
+    }
   }
   else if (number == __SK_ModFrequency_) { // control_change #11
 #if defined(_debug_)        
     printf("setting number of objects\n");
 #endif
-    if (instType==5) num_objects = (MY_FLOAT) (value/32.0) + 1;
-    else num_objects = (MY_FLOAT) value + 1;
+    if (instType == 5) // bamboo
+      num_objects = (MY_FLOAT) (value * defObjs[instType] / 64.0) + 0.3;
+    else
+      num_objects = (MY_FLOAT) (value * defObjs[instType] / 64.0) + 1.1;
     gains[0] = log(num_objects) * baseGain / (MY_FLOAT) num_objects;
+    for (i=1;i<num_freqs;i++) gains[i] = gains[0];
+    if (instType == 6) { // tambourine
+      gains[0] *= TAMB_SHELL_GAIN;
+      gains[1] *= 0.8;
+    }
+    else if (instType == 7) { // sleighbell
+      gains[3] *= 0.5;
+      gains[4] *= 0.3;
+    }
+    else if (instType == 12) { // cokecan
+      for (i=1;i<num_freqs;i++) gains[i] *= 1.8;
+    }
+    if (instType != 3 && instType != 10) {
+    // reverse calculate decay setting
+    float temp = 64.0 * (systemDecay-defDecays[instType])/(decayScale[instType]*(1-defDecays[instType])) + 64.0;
+    // scale gains by decay setting
+    for (i=0;i<num_freqs;i++) gains[i] *= ((128-temp)/100.0 + 0.36);
+    }
   }
   else if (number == __SK_ModWheel_) { // control_change #1
+#if defined(_debug_)
+    printf("setting resonance %i freq. to %f\n",i,temp);
+#endif
     for (i=0;i<num_freqs;i++)	{
-      temp = center_freqs[i] * pow (1.015,value-64);
+      if (instType == 6 || instType == 2 || instType == 7) // limit range a bit for tambourine
+        temp = center_freqs[i] * pow (1.008,value-64);
+      else
+        temp = center_freqs[i] * pow (1.015,value-64);
       t_center_freqs[i] = temp;
-#if defined(_debug_)        
-      printf("setting resonance %i freq. to %f\n",i,temp);
-#endif    
+
       coeffs[i][0] = -resons[i] * 2.0 * cos(temp * TWO_PI / SRATE);
       coeffs[i][1] = resons[i]*resons[i];
     }

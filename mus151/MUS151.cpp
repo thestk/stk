@@ -17,7 +17,7 @@ char **inputString;
 #include "threads.h"
 
 /* Error function in case of incorrect command-line argument specifications */
-void errorf(char *func) {
+void usage(char *func) {
   printf("\nuseage: %s Instr flag\n",func);
   printf("        where Instr = TwoOsc (only one available for now)\n");
   printf("        and flag = -ip for realtime SKINI input by pipe\n");
@@ -26,19 +26,19 @@ void errorf(char *func) {
   exit(0);
 }
 
-void main(int argc,char *argv[])
+int main(int argc,char *argv[])
 {
   long i, j, synlength, useSocket = 0;
-  int type, rtInput = 0;
+  int type;
   int outOne = 0;
   MY_FLOAT settleTime = 0.5;  /* in seconds */
   MY_FLOAT temp, byte3, lastPitch;
 
   if (argc == 3) {
-    if (strcmp(argv[1],"TwoOsc")) errorf(argv[0]);
+    if (strcmp(argv[1],"TwoOsc")) usage(argv[0]);
     if (!strcmp(argv[2],"-is")) useSocket = 1;
-    else if (strcmp(argv[2],"-ip")) errorf(argv[0]);
-  } else errorf(argv[0]);
+    else if (strcmp(argv[2],"-ip")) usage(argv[0]);
+  } else usage(argv[0]);
 
   TwoOsc *instrument = new TwoOsc;
   WvOut *output = new RTWvOut(SRATE,1);
@@ -63,38 +63,40 @@ void main(int argc,char *argv[])
     if (numStrings) {
       score->parseThis(inputString[outOne]);
       type = score->getType();
-      if (type > 0)       {
-        if (type == __SK_NoteOn_ )       {
+      if (type > 0) {
+        switch(type) {
+
+        case __SK_NoteOn_:
+          // check to see if velocity is zero ... really a NoteOff
           if (( byte3 = score->getByteThree() ) == 0)
-            instrument->noteOff(byte3*NORM_7);
-          else {
+            instrument->noteOff(0.0);
+          else { // really a NoteOn
             j = (int) score->getByteTwo();
-            temp = __MIDI_To_Pitch[j];
-            lastPitch = temp;
-            instrument->noteOn(temp,byte3*NORM_7);
+            lastPitch = __MIDI_To_Pitch[j];
+            instrument->noteOn(lastPitch,byte3*NORM_7);
           }
-        }
-        else if (type == __SK_NoteOff_) {
-					byte3 = score->getByteThree();
-          instrument->noteOff(byte3*NORM_7);
-        }
-        else if (type == __SK_ControlChange_)   {
-          j = (int) score->getByteTwo();
-					byte3 = score->getByteThree();
-          instrument->controlChange(j,byte3);
-        }
-        else if (type == __SK_AfterTouch_)   {
-          j = (int) score->getByteTwo();
-          instrument->controlChange(128,j);
-        }
-        else if (type == __SK_PitchBend_)   {
+          break;
+
+        case __SK_NoteOff_:
+          instrument->noteOff(NORM_7*score->getByteThree());
+          break;
+
+        case __SK_ControlChange_:
+          instrument->controlChange((int)score->getByteTwo(),
+                                    score->getByteThree());
+          break;
+
+        case __SK_AfterTouch_:
+          instrument->controlChange(128,score->getByteTwo());
+          break;
+
+        case __SK_PitchBend_:
           temp = score->getByteTwo();
           j = (int) temp;
-          temp -= j;
+          temp -= j;   // floating-point remainder
           lastPitch = __MIDI_To_Pitch[j] * pow(2.0,temp / 12.0) ;
           instrument->setFreq(1, lastPitch); /* change osc1 pitch for now */
-        }
-        else if (type == __SK_ProgramChange_)   {
+          break;
         }
       }
       outOne += 1;
@@ -102,6 +104,7 @@ void main(int argc,char *argv[])
       numStrings--;
     }
   }
+
   for (i=0;i<settleTime*SRATE;i++) { /* let the sound settle a little */
     output->tick(instrument->tick());
   }
@@ -111,4 +114,5 @@ void main(int argc,char *argv[])
   delete instrument;
 
 	printf("MUS151 finished.\n");
+  return 0;
 }

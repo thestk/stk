@@ -1,0 +1,53 @@
+--------------------Configuration: ragamatic - Win32 Release--------------------
+Begining build with project "C:\gary\STKRelease\ragamatic\ragamat.dsp", at root.
+Active configuration is Win32 (x86) Console Application (based on Win32 (x86) Console Application)
+
+Project's tools are:
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MT /W3 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__OS_Win_" /Fp"Release/ragamat.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c "
+			"Win32 Resource Compiler" with flags "/l 0x409 /d "NDEBUG" "
+			"Browser Database Maker" with flags "/nologo /o"ragamat.bsc" "
+			"COFF Linker for 80x86" with flags "kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib Wsock32.lib dsound.lib winmm.lib /nologo /subsystem:console /incremental:no /pdb:"ragamat.pdb" /machine:I386 /out:"ragamat.exe" "
+			"Custom Build" with flags ""
+			"<Component 0xa>" with flags ""
+
+Creating temp file "C:\WINDOWS\TEMP\RSP53A0.TMP" with contents </nologo /MT /W3 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__OS_Win_" /Fp"Release/ragamat.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\gary\STKRelease\Stk\RTWvOut.cpp"
+>
+Creating command line "cl.exe @C:\WINDOWS\TEMP\RSP53A0.TMP" 
+Creating temp file "C:\WINDOWS\TEMP\RSP53A1.TMP" with contents <kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib Wsock32.lib dsound.lib winmm.lib /nologo /subsystem:console /incremental:no /pdb:"ragamat.pdb" /machine:I386 /out:"ragamat.exe" 
+.\Release\Sitar1.obj
+.\Release\StrDrone.obj
+.\Release\Tabla.obj
+.\Release\threads.obj
+.\Release\VoicDrum.obj
+.\Release\ragamat.obj
+.\Release\DLineA.obj
+.\Release\DLineL.obj
+.\Release\DLineN.obj
+.\Release\Envelope.obj
+.\Release\Filter.obj
+.\Release\Instrmnt.obj
+.\Release\JCRev.obj
+.\Release\Noise.obj
+.\Release\NRev.obj
+.\Release\Object.obj
+.\Release\OnePole.obj
+.\Release\OneZero.obj
+.\Release\PRCRev.obj
+.\Release\RawWvIn.obj
+.\Release\Reverb.obj
+.\Release\RTSoundIO.obj
+.\Release\SKINI11.obj
+.\Release\swapstuf.obj
+.\Release\WvIn.obj
+.\Release\ADSR.obj
+.\Release\WvOut.obj
+.\Release\RTWvOut.obj>
+Creating command line "link.exe @C:\WINDOWS\TEMP\RSP53A1.TMP" 
+Compiling...
+RTWvOut.cpp
+Linking...
+
+
+
+ragamat.exe - 0 error(s), 0 warning(s)

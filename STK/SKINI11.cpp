@@ -140,7 +140,7 @@ long SKINI11 :: parseThis(char* aString)
   int  somePointrs[__SK_MAX_FIELDS_];
      
   temp = nextChar(aString);
-  if (which = ignore(aString[temp])) {
+  if ((which = ignore(aString[temp]))) {
     if (which == 2) printf("// CommentLine: %s\n",aString);
     messageType = 0;
     return messageType;

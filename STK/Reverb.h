@@ -14,10 +14,11 @@
 class Reverb : public Object
 {
   public:
-	Reverb();
+    Reverb();
+    virtual ~Reverb();
     virtual MY_FLOAT tick(MY_FLOAT sample);
     virtual void setEffectMix(MY_FLOAT mix);
-	int isprime(int val);
+  	int isprime(int val);
 };
 
 #endif // defined(__Reverb_h)

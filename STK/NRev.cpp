@@ -93,6 +93,8 @@ MY_FLOAT NRev :: lastOutputR()
 
 MY_FLOAT NRev :: tick(MY_FLOAT input)
 {
+  // FPU underflow checks seem to make things much
+  // worse here, so I won't do them.
   MY_FLOAT temp,temp0,temp1,temp2,temp3;
   int i;
 

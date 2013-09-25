@@ -104,7 +104,7 @@ int newInstByName(char *instName)
   return temp;
 }
 
-void errorfun(char *func) {
+void usage(char *func) {
   /* Error function in case of incorrect command-line argument specifications */
   int i,j;
 
@@ -138,7 +138,7 @@ int checkArgs(int numArgs, char *args[])
   int numOutputs = 0;
   char flags[16] = "";
 
-  if (numArgs < 3 || numArgs > 10) errorfun(args[0]);
+  if (numArgs < 3 || numArgs > 10) usage(args[0]);
 
   while (i < numArgs) {
     if (args[i][0] == '-') {
@@ -146,9 +146,9 @@ int checkArgs(int numArgs, char *args[])
            (args[i][1] == 'w') || (args[i][1] == 'm') )
         numOutputs++;
       else if (args[i][1] == 'i') {
-        if ( (args[i][2] != 's') && (args[i][2] != 'p') ) errorfun(args[0]);
+        if ( (args[i][2] != 's') && (args[i][2] != 'p') ) usage(args[0]);
       }
-      else errorfun(args[0]);
+      else usage(args[0]);
       flags[j] = args[i][1];
       j++;
     }
@@ -161,14 +161,14 @@ int checkArgs(int numArgs, char *args[])
     while (w <= j) {
       if (flags[i] == flags[w]) {
         printf("\nError: Multiple command line flags of the same type specified.\n\n");
-        errorfun(args[0]);
+        usage(args[0]);
       }
       w++;
     }
   }
 
   /* Make sure we have at least one output type */
-  if (numOutputs < 1) errorfun(args[0]);
+  if (numOutputs < 1) usage(args[0]);
 
   return numOutputs;
 }
@@ -190,7 +190,7 @@ int parseArgs(int numArgs, char *args[])
         else realtime = 1;
         break;
 #else
-        errorfun(args[0]);
+        usage(args[0]);
 #endif
 
       case 'r':
@@ -199,7 +199,7 @@ int parseArgs(int numArgs, char *args[])
         j++;
         break;
 #else
-        errorfun(args[0]);
+        usage(args[0]);
 #endif
 
       case 'w':
@@ -233,7 +233,7 @@ int parseArgs(int numArgs, char *args[])
         break;
           
       default:
-        errorfun(args[0]);
+        usage(args[0]);
         break;
       }
     }

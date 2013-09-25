@@ -14,13 +14,14 @@
 
 class JetTabl : public Object
 {
-  protected:  
-    MY_FLOAT lastOutput;
-  public:
-    JetTabl();
-    ~JetTabl();
-    MY_FLOAT lookup(MY_FLOAT deltaP);
-    MY_FLOAT lastOut();
+protected:  
+  MY_FLOAT lastOutput;
+public:
+  JetTabl();
+  ~JetTabl();
+  MY_FLOAT lookup(MY_FLOAT deltaP);
+  MY_FLOAT tick(MY_FLOAT deltaP);
+  MY_FLOAT lastOut();
 };
 
 #endif

@@ -18,12 +18,12 @@ RM = /bin/rm
 ifeq ($(OS),IRIX) # These are for SGI
 	INSTR = effects
 	CC = CC -O2 -D__OS_IRIX_ # -g -fullwarn -D__SGI_CC__
-	LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm
+	LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm -lpthread
 endif
 
 ifeq ($(OS),Linux) # These are for Linux
 	INSTR = effects
-	CC = g++ -O3 -D__OS_Linux_ # -g
+	CC = g++ -O3 -Wall -D__OS_Linux_ # -g
 	LIBRARY = -lpthread -lm
 endif
 

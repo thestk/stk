@@ -30,7 +30,7 @@ class Simple : public Instrmnt
   MY_FLOAT loopGain;
  public:
   Simple();
-  ~Simple();
+  virtual ~Simple();
   void clear();
   virtual void setFreq(MY_FLOAT frequency);
   void keyOn();

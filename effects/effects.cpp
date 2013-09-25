@@ -19,7 +19,7 @@ int numStrings = 0;
 int notDone = 1;
 char **inputString;
 
-void errorfun(void) {
+void usage(void) {
   /* Error function in case of incorrect command-line argument specifications */
   printf("\nuseage: effects flag \n");
   printf("    where flag = -ip for realtime SKINI input by pipe\n");
@@ -28,7 +28,7 @@ void errorfun(void) {
   exit(0);
 }
 
-void main(int argc,char *argv[])
+int main(int argc,char *argv[])
 {
   MY_FLOAT inSample = 0.0;
   MY_FLOAT lastSample = 0.0;
@@ -36,12 +36,12 @@ void main(int argc,char *argv[])
   long i, synlength;
   int type, j, outOne = 0, effect = 0, useSocket = 0;
 
-  if (argc != 2) errorfun();
+  if (argc != 2) usage();
 
   if (!strcmp(argv[1],"-is") )
     useSocket = 1;
   else if (strcmp(argv[1],"-ip")) {
-    errorfun();
+    usage();
   }
 
   RTDuplex *inout = new RTDuplex(SRATE,1);
@@ -85,21 +85,25 @@ void main(int argc,char *argv[])
       score->parseThis(inputString[outOne]);
       type = score->getType();
       if (type > 0) {
-        if (type == __SK_NoteOn_ ) {
+        switch(type) {
+        case __SK_NoteOn_:
+          // check to see if velocity is zero ... really a NoteOff
           if (( byte3 = score->getByteThree() ) == 0) { // NoteOff
             envelope->setRate(0.001);
             envelope->setTarget(0.0);
           }
-          else { // Really a NoteOn
+          else { // really a NoteOn
             envelope->setRate(0.001);
             envelope->setTarget(1.0);
           }
-        }
-        else if (type == __SK_NoteOff_) {
+        break;
+
+        case __SK_NoteOff_:
           envelope->setRate(0.001);
           envelope->setTarget(0.0);
-        }
-        else if (type == __SK_ControlChange_) {
+          break;
+
+        case __SK_ControlChange_:
           j = (int) score->getByteTwo();
           byte3 = score->getByteThree();
           if (j == 20) effect = (int) byte3;  // effect change
@@ -119,6 +123,7 @@ void main(int argc,char *argv[])
           else if (j == 23) { // effect1 parameter change
             chorus->setModDepth(byte3*NORM_7*0.2);
           }
+          break;
         }
       }
       outOne += 1;
@@ -156,4 +161,5 @@ void main(int argc,char *argv[])
   delete envelope;
 
 	printf("effects finished ... goodbye.\n");
+  return 0;
 }

@@ -141,8 +141,7 @@ bind . <KeyPress> {
 bind . <Destroy> +myExit
 
 proc myExit {} {
-    global pitch
-    global outID
+    global pitch outID
     puts $outID [format "NoteOff          0.0 1 %f 127" $pitch ]
     flush $outID
     puts $outID [format "ExitProgram"]
@@ -164,12 +163,7 @@ proc noteOff {pitchVal pressVal} {
 }
 
 proc patchChange {value} {
-		global outID
-		global bitmappath
-    global cont1
-    global cont2
-    global cont4
-    global cont11
+		global outID bitmappath cont1 cont2 cont4 cont11
     puts $outID [format "ProgramChange    0.0 1 %i" $value]
     if {$value==4}	{
 				.pretty config -bitmap @$bitmappath/KPluk.xbm
@@ -224,9 +218,7 @@ proc changePitch {value} {
 set d .socketdialog
 
 proc setComm {} {
-		global outID
-		global commtype
-		global d
+		global outID commtype d
 		if {$commtype == "stdout"} {
 				if { [string compare "stdout" $outID] } {
 						set i [tk_dialog .dialog "Break Socket Connection?" {You are about to break an existing socket connection ... is this what you want to do?} "" 0 Cancel OK]

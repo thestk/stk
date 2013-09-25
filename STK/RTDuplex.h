@@ -21,8 +21,9 @@ class RTDuplex : public Object
 {
  protected:
 	RTSoundIO *soundIO;
-  short indata[RT_BUFFER_SIZE];
-  short outdata[RT_BUFFER_SIZE];
+  // Add an extra 10 samples to indata[] and outdata[] just to be safe
+  short indata[RT_BUFFER_SIZE+10];
+  short outdata[RT_BUFFER_SIZE+10];
   long readCounter;
   long writeCounter;
   int channels;

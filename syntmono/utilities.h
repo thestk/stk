@@ -8,7 +8,7 @@ int newInstByNum(int instNum);
 
 int newInstByName(char *instName);
 
-void errorfun(char *func);
+void usage(char *func);
 
 int checkArgs(int numArgs, char *args[]);
 

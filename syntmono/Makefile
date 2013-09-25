@@ -40,12 +40,12 @@ ifeq ($(OS),IRIX) # These are for SGI
 	INSTR = MD2SKINI syntmono
 	CC = CC -O2 -D__OS_IRIX_ # -g -fullwarn -D__SGI_CC__
 	O_FILES += RTWvOut.o RTSoundIO.o RTWvIn.o MIDIIO.o RTDuplex.o
-	LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm
+	LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm -lpthread
 endif
 
 ifeq ($(OS),Linux) # These are for Linux
 	INSTR = syntmono MD2SKINI
-	CC = g++ -O3 -D__OS_Linux_ # -g -O3 -Wall
+	CC = g++ -O3 -Wall -D__OS_Linux_ # -g -O3 -Wall
 	O_FILES += RTWvOut.o RTSoundIO.o RTWvIn.o MIDIIO.o RTDuplex.o
 	LIBRARY = -lpthread -lm
 endif
@@ -58,7 +58,7 @@ all: $(INSTR)
 syntmono: syntmono.cpp $(O_FILES)
 	$(CC) $(INCLUDE) -o syntmono syntmono.cpp $(O_FILES) $(LIBRARY)
 
-MD2SKINI: $(STK_PATH)MD2SKINI.cpp $(O_FILES)
+MD2SKINI: $(STK_PATH)MD2SKINI.cpp Object.o MIDIIO.o
 	$(CC) -o MD2SKINI $(STK_PATH)MD2SKINI.cpp Object.o MIDIIO.o $(LIBRARY)
 
 clean : 

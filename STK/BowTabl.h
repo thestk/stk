@@ -10,17 +10,18 @@
 
 class BowTabl : public Object
 {
-  protected:  
-    MY_FLOAT offSet;
-    MY_FLOAT slope;
-    MY_FLOAT lastOutput;
-  public:
-    BowTabl();
-    ~BowTabl();
-    void setOffset(MY_FLOAT aValue);
-    void setSlope(MY_FLOAT aValue);
-    MY_FLOAT lookup(MY_FLOAT sample);
-    MY_FLOAT lastOut();
+protected:  
+  MY_FLOAT offSet;
+  MY_FLOAT slope;
+  MY_FLOAT lastOutput;
+public:
+  BowTabl();
+  ~BowTabl();
+  void setOffset(MY_FLOAT aValue);
+  void setSlope(MY_FLOAT aValue);
+  MY_FLOAT lookup(MY_FLOAT sample);
+  MY_FLOAT tick(MY_FLOAT sample);
+  MY_FLOAT lastOut();
 };
 
 #endif

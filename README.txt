@@ -1,8 +1,8 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
-Version 3.0
+Version 3.1
 
-By Perry R. Cook, 1995-99
-and Gary P. Scavone, 1997-99.
+By Perry R. Cook, 1995-2000
+and Gary P. Scavone, 1997-2000.
 
 Please read the Legal and Ethical notes near the bottom of this document.
 
@@ -23,14 +23,14 @@ WHAT'S NEW:
 
 STK has undergone several key revisions, changes, and additions since its last release in 1998.  Despite being available in one form or another since 1996, we still consider STK to be alpha software.  Thus, backward compatability has not been a priority.  Please read the ReleaseNotes to see what has changed since the last release.
 
-Realtime audio input capabilities have now been added to STK, though the behavior of such is very hardware dependent.  Under Linux and Irix, audio input and output are possible with very low latency.  Using the Windoze DirectSound API, minimum dependable output sound latency seems to be around 15 milliseconds, while input sound latency is on the order of several hundred milliseconds!  It is also possible to generate simultaneous .snd, .wav, .raw, and .mat (Matlab MAT-file) output file types, as well as SKINI scorefiles using MD2SKINI.  Finally, STK should compile with non-realtime functionality on any platform with a generic C++ compiler.
+Realtime audio input capabilities were added to STK with release 3.0, though the behavior of such is very hardware dependent.  Under Linux and Irix, audio input and output are possible with very low latency.  Using the Windoze DirectSound API, minimum dependable output sound latency seems to be around 15 milliseconds, while input sound latency is on the order of several hundred milliseconds!  It is also possible to generate simultaneous .snd, .wav, .raw, and .mat (Matlab MAT-file) output file types, as well as SKINI scorefiles using MD2SKINI.  Finally, STK should compile with non-realtime functionality on any platform with a generic C++ compiler.
 
-Socketing capabilities have been extended in this release to function under Unix platforms, as well as Windoze platforms.  Further, the socket server thread has been updated to accept multiple simultaneous socket connections.  Thus, it is now possible to have several different socket clients sending SKINI control messages to the server at the same time.  Under Linux and Irix, it is also possible to pipe GUI messages through MD2SKINI, enabling both MIDI and GUI control via piping at the same time.
+Socketing capabilities were extended in release 3.0 to function under Unix platforms, as well as Windoze platforms.  Further, the socket server thread was updated to accept multiple simultaneous socket connections.  Thus, it is now possible to have several different socket clients sending SKINI control messages to the server at the same time.  Under Linux and Irix, it is also possible to pipe GUI messages through MD2SKINI, enabling both MIDI and GUI control via piping at the same time.
 
 
 GETTING STARTED:
 
-A number of example executables are provided with this distribution.  The effects directory contains a program that demonstrates realtime duplex mode (simultaneous audio input and output) operation, as well as several simple delay-line based effects algorithms.  The MUS151 directory contains a simple two-oscillator program that can be used to demonstrate psychoacoustic masking effects.  The syntmono directory offers a program for monophonic STK instrument playback and manipulation.  Syntmono is the primary STK synthesis server and is used to demonstrate all the current STK instruments.  MD2SKINI is an executable (currently compiles from the syntmono project) which takes raw MIDI input, converts it to SKINI format, and outputs the result to stdout or any socket host and port ID.  Control data (in the form of SKINI messages) can be fed to syntmono through three principal means - SKINI scorefiles, MD2SKINI output, and Tcl/Tk GUIs.  A variety of SKINI scorefiles are distributed with STK and can be found in the "scores" directory of the syntmono project.
+A number of example executables are provided with this distribution.  The effects directory contains a program that demonstrates realtime duplex mode (simultaneous audio input and output) operation, as well as several simple delay-line based effects algorithms.  The MUS151 directory contains a simple two-oscillator program that can be used to demonstrate psychoacoustic masking effects.  RagaMatic is a totally cool application for achieving inner piece.  The syntmono directory offers a program for monophonic STK instrument playback and manipulation.  Syntmono is the primary STK synthesis server and is used to demonstrate all the current STK instruments.  MD2SKINI is an executable (currently compiles from the syntmono project) which takes raw MIDI input, converts it to SKINI format, and outputs the result to stdout or any socket host and port ID.  Control data (in the form of SKINI messages) can be fed to syntmono through three principal means - SKINI scorefiles, MD2SKINI output, and Tcl/Tk GUIs.  A variety of SKINI scorefiles are distributed with STK and can be found in the "scores" directory of the syntmono project.
 
 Unless you downloaded the distribution with precompiled Windoze binaries, it is necessary to first compile the sources.  Under Linux or Irix, simply typing "make" in any of the particular project directories will begin the compilation process.  If your Unix system does not have the GNU Makefile utilities, you will have to use one of the platform specific Makefiles (eg. make -f Makefile.sgi).  To compile the projects under Windoze, you should use the VC++ project files provided with the STK distribution.
 

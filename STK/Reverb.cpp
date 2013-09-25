@@ -12,6 +12,10 @@ Reverb :: Reverb()
 {
 }
 
+Reverb :: ~Reverb()
+{
+}
+
 MY_FLOAT Reverb :: tick(MY_FLOAT sample)
 {
   printf("Warning: Using virtual function Reverb :: tick()\n");

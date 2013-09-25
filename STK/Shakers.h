@@ -27,6 +27,7 @@
 #include "Instrmnt.h"
 
 #define MAX_FREQS 8
+#define NUM_INSTR 13
 
 class Shakers : public Instrmnt
 {
@@ -59,6 +60,9 @@ class Shakers : public Instrmnt
   void setFinalZs(MY_FLOAT z0, MY_FLOAT z1, MY_FLOAT z2);
   MY_FLOAT wuter_tick();
   MY_FLOAT ratchet_tick();
+  MY_FLOAT defObjs[NUM_INSTR];
+  MY_FLOAT defDecays[NUM_INSTR];
+  MY_FLOAT decayScale[NUM_INSTR];
  public:
   Shakers();
   ~Shakers();

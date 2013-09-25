@@ -49,10 +49,11 @@ void Plucked :: pluck(MY_FLOAT amplitude)
   long i;
   pickFilt->setPole((MY_FLOAT) 0.999 - (amplitude * (MY_FLOAT) 0.15));
   pickFilt->setGain(amplitude * (MY_FLOAT) 0.5);
-  for (i=0;i<length;i++)                          
-    delayLine->tick(delayLine->lastOut() * (MY_FLOAT)  0.6  /* fill delay with noise    */
-                    + pickFilt->tick(noise->tick())); /* additively with current  */
-  /* contents                 */
+  for (i=0;i<length;i++)
+    // fill delay with noise additively with current contents
+    delayLine->tick(delayLine->lastOut() * (MY_FLOAT)  0.6
+                    + pickFilt->tick(noise->tick()));
+
 }
 
 void Plucked :: noteOn(MY_FLOAT freq, MY_FLOAT amp)

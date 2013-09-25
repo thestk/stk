@@ -58,8 +58,8 @@ extern char phonemes[32][4];
 
 void FMVoices :: setFreq(MY_FLOAT frequency)
 {    
-  MY_FLOAT temp,temp2;
-  int tempi,tempi2;
+  MY_FLOAT temp, temp2 = 0.0;
+  int tempi, tempi2 = 0;
 
   if (currentVowel < 32)	{
     tempi2 = currentVowel;

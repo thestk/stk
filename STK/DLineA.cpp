@@ -61,7 +61,7 @@ void DLineA :: setDelay(MY_FLOAT lag)
   if (lag > length-1) {                   // if delay is too big,
     printf("DLineA: Delay length too big.\n");
     printf("Setting to maximum length of %ld.\n",length-1);
-    outPointer = inPoint - 18.0;          // force delay to max_length
+    outPointer = inPoint + 1.0;          // force delay to max_length
   }
   else if (lag < 0.1) {
     printf("DLineA: Delays < 0.1 not possible with current structure.\n");

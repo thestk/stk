@@ -18,26 +18,14 @@
 int outAHere = 0;
 
 // Do OS dependent declarations and includes
-#if defined(__OS_IRIX_)
-
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
 #include <sys/types.h>
-#include <sys/prctl.h>
-#include <signal.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
-
-pid_t exit_thread;
-
-#elif defined(__OS_Linux_)
-
 #include <pthread.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <unistd.h>
 
 pthread_t exit_thread;
 
@@ -50,13 +38,9 @@ unsigned long exit_thread;
 
 #endif
 
-// The thread function definition protocols are slightly
-// different under Irix, Linux, and Windoze.
-#if defined(__OS_IRIX_)
-
-void monitorStdin(void *)
-
-#elif defined(__OS_Linux_)
+// The thread function protocols are slightly different
+// under Windoze ... but of course!
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
 
 void *monitorStdin(void *)
 
@@ -80,10 +64,17 @@ void monitorStdin(void *)
       fflush(stdout);
     }
   }
+
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
+  pthread_exit(NULL);
+  return NULL;
+#elif defined(__OS_Win_)
+  _endthread();
+#endif
 }
 
 
-void errorf(void) {
+void usage(void) {
   printf("useage: MD2SKINI <flag(s)>\n\n");
   printf("   With no arguments, MD2SKINI converts MIDI input to SKINI\n");
   printf("   format and sends the output directly to stdout.\n");
@@ -95,23 +86,24 @@ void errorf(void) {
   exit(0);
 }
 
-void main(int argc,char *argv[])
+int main(int argc,char *argv[])
 {
   long j, i = 1;
   MY_FLOAT byte2, byte3;
   int channel;
   int firstMessage = 1;
   int writeFileOut = 0;
-  FILE *fileOut;
+  FILE *fileOut = NULL;
   MIDIIO *controller;
   char hostName[256];
   char fileName[256];
   int useSocket = 0;
-  int theSocket;
+  int theSocket = 0;
   struct sockaddr_in saServer;
+  static struct timeval timeout = {0, 10000}; // ten millisecond
 
   if (argc>5) {
-    errorf();
+    usage();
   }
 
   // Parse the command-line arguments.
@@ -140,11 +132,11 @@ void main(int argc,char *argv[])
         break;
           
       default:
-        errorf();
+        usage();
         break;
       }
     }
-    else errorf();
+    else usage();
     i++;
   }
 
@@ -198,22 +190,14 @@ void main(int argc,char *argv[])
   }
 
   // Setup the exit thread.
-#if defined(__OS_IRIX_)
-  exit_thread = sproc(monitorStdin, PR_SALL);
-  if (exit_thread == -1)	{
-    fprintf(stderr, "Unable to create exit thread ... aborting.\n");
-    exit(0);
-  }
-#elif defined(__OS_Linux_)
-  int err = 0;
-  err = pthread_create(&exit_thread, NULL, monitorStdin, NULL);
-  if (err)  {
+#if (defined(__OS_IRIX_) || defined(__OS_Linux_))
+  if (pthread_create(&exit_thread, NULL, monitorStdin, NULL)) {
     fprintf(stderr, "Unable to create exit thread ... aborting.\n");
     exit(0);
   }
 #elif defined(__OS_Win_)
   exit_thread = _beginthread(monitorStdin, 0, NULL);
-  if (exit_thread == -1)	{
+  if (exit_thread == -1)  {
     fprintf(stderr, "Unable to create exit thread ... aborting.\n");
     exit(0);
   }
@@ -380,11 +364,19 @@ void main(int argc,char *argv[])
         fflush(stdout);
       }
       memset(s, 0, sizeof(s));
+    } else {
+			// With Irix 5.3, you can no longer use the usleep()
+			// function.  And in Windoze, you can't use the select()
+			// function to do timings.  I love supporting multiple
+			// platforms!
 #if defined(__OS_Win_)
-    } else Sleep ( (DWORD) 2);
+			Sleep ( (DWORD) 5);
 #else
-    } else usleep( (unsigned long) 2000);
+      timeout.tv_sec = 0;
+      timeout.tv_usec = 10000; // 0.01 seconds
+      select(0, NULL, NULL, NULL, &timeout);
 #endif
+    }
   }
 
   sprintf(s,"Exiting MD2SKINI process ... bye!\n");
@@ -406,6 +398,7 @@ void main(int argc,char *argv[])
     fclose(fileOut);
   }
   delete controller;
+  return 0;
 }
 
 #endif

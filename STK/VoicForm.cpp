@@ -180,9 +180,6 @@ MY_FLOAT VoicForm :: tick()
  
 void VoicForm :: controlChange(int number, MY_FLOAT value)
 {
-	MY_FLOAT temp;
-	int tempi;
-
 #if defined(_debug_)        
 	printf("VoicForm : ControlChange: Number=%i Value=%f\n",number,value);
 #endif
@@ -191,7 +188,8 @@ void VoicForm :: controlChange(int number, MY_FLOAT value)
 		this->setUnVoiced((MY_FLOAT) 0.01 * value * (MY_FLOAT) NORM_7);
 	}
 	else if (number == __SK_FootControl_)	{
-		tempi = (int) value;
+    MY_FLOAT temp = 0.0;
+		int tempi = (int) value;
 		if (tempi < 32)	{
       tempi = tempi;
       temp = (MY_FLOAT) 0.9;

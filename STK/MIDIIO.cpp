@@ -33,18 +33,18 @@ int readOffset;
 /*         SGI MIDI INPUT            */
 /*************************************/
 
+#include <pthread.h>
 #include <dmedia/midi.h>
 #include <sys/types.h>
-#include <sys/prctl.h>
 #include <signal.h>
 
 MDport inport;
 
 MDevent *midiBuffer;
 
-pid_t midi_input_pid;
+pthread_t midi_input_thread;
 
-void midiInputThread(void *)
+void *midiInputThread(void *)
 {
   MDevent newMessage;
   int status;
@@ -53,8 +53,9 @@ void midiInputThread(void *)
     mdReceive(inport, &newMessage, 1);
     status = (newMessage.msg[0] & MD_STATUSMASK);
 
-    // Ignore Active Sensing messages
-    if (!((status & 0xff) == 0xfe || (status & 0xff) == 0xf8)) {
+    // Ignore all system messages
+    //if (!((status & 0xff) == 0xfe || (status & 0xff) == 0xf8)) {
+    if (status != 0xf0) {
       midiBuffer[writeOffset] = newMessage;
       writeOffset++;
 
@@ -83,16 +84,15 @@ MIDIIO :: MIDIIO()
   readOffset = 0;
   writeOffset = 0;
 
-  midi_input_pid = sproc(midiInputThread, PR_SALL);
-  if (midi_input_pid == -1)  {
-    fprintf(stderr, "unable to create MIDI input thread...aborting.\n");
+  if (pthread_create(&midi_input_thread, NULL, midiInputThread, NULL)) {
+    fprintf(stderr, "unable to create MIDI input thread ... aborting.\n");
     exit(0);
   }
 }
 
 MIDIIO :: ~MIDIIO()
 {
-  kill (midi_input_pid, SIGKILL);
+  pthread_cancel(midi_input_thread);
   mdClosePort(inport);
   delete [] midiBuffer;
 }

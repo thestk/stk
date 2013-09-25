@@ -1,15 +1,15 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
-Version 3.0
+Version 3.1
 
-By Perry R. Cook, 1995-99
-and Gary P. Scavone, 1997-99.
+By Perry R. Cook, 1995-2000
+and Gary P. Scavone, 1997-2000.
 
 Please read the file README.txt for more general STK information.
 
 DirectX and WindowsNT Issues:
 -----------------------------
 
-The newly offered STK realtime sound input capabilities under Windoze are only supported using the DirectSoundCapture API.  The latency is pretty horrendous, but what do you expect?  Also, there is a good chance you don't have DirectSoundCapture support on your computer.  You should download the DirectX 6.0 (or higher) runtime libraries from Microsoft's WWW site (http://www.microsoft.com/directx/download.asp) in order to run the pre-compiled STK executables for Windoze.  HOWEVER, there is no DirectSoundCapture support for WindowsNT at this time ... you'll have to wait for Windows 2000.  If you wish to compile STK under WindowsNT (without realtime audio input support), you'll have to uncomment the __WINMM_API_ flag (and comment out the __WINDS_API flag) in Object.h and recompile the source code.
+The newly offered STK realtime sound input capabilities under Windoze are only supported using the DirectSoundCapture API.  The latency is pretty horrendous, but what do you expect?  Also, there is a good chance you don't have DirectSoundCapture support on your computer.  You should download the DirectX 6.0 (or higher) runtime libraries from Microsoft's WWW site (http://www.microsoft.com/directx/download.asp) in order to run the pre-compiled STK executables for Windoze.  There is no DirectSoundCapture support for WindowsNT ... you'll have to switch to Windows 2000.  If you wish to compile STK under WindowsNT (without realtime audio input support), you'll have to uncomment the __WINMM_API_ flag (and comment out the __WINDS_API flag) in Object.h and recompile the source code.
 
 Realtime sound output under Windoze is supported using either the DirectSound (dsound.lib) API or the old WinMM (winmm.lib) API.  The DirectSound version appears to well out-perform the older API.  All new versions of Win95/98/NT come with the DirectSound library, but early versions did not.  If you have trouble running the distributed executables (compiled for DirectSound API), then you probably don't have DirectSound installed on your system.  You can download the necessary DirectSound stuff from Microsoft's WWW pages (http://www.microsoft.com/directx/download.asp).  If all else fails, you should be able to compile using the winmm.lib routines ... more latency, but at least it will work.
 
@@ -64,3 +64,8 @@ USE REALTIME MIDI INPUT FOR CONTROL:
 WINDOWS NT ONLY:
 
 Realtime piping seems to work under WindowsNT in much the same way as on Unix platforms.  Thus, it is possible to pipe realtime control data to syntmono under WindowsNT as well.
+
+
+WINDOWS 2000:
+
+I don't have Windows 2000 and I don't expect to get it anytime soon.  Things should work under 2000 at least as well as they do using NT.  Since 2000 is supposed to ship with DirectX 7.0, the DirectSoundCapture functionality should work as well.

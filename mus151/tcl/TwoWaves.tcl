@@ -102,7 +102,7 @@ bind . <Destroy> +myExit
 
 proc myExit {} {
     global outID
-    puts $outID [format "NoteOff          0.0 1 64 127" ]
+    puts $outID [format "NoteOff          0.0 1 64.0 127.0" ]
     flush $outID
     puts $outID [format "ExitProgram"]
     flush $outID

@@ -103,6 +103,7 @@ if {[file isdirectory bitmaps]} {
 } else {
     set bitmappath tcl/bitmaps
 }
+
 button .pretty -bitmap @$bitmappath/prcFunny.xbm \
     -background white -foreground black
 .pretty config -bitmap @$bitmappath/prc.xbm
@@ -286,7 +287,7 @@ proc patchChange {value} {
         }
         if {$value==5}	{ # Mandolin
             .pretty config -bitmap @$bitmappath/KPluk.xbm
-            .left.bPressure config -state disabled -label "Disabled"
+            .left.bPressure config -state normal -label "Microphone Position"
             .left.pitch config -state normal -label "MIDI Note Number"
             .left.cont2 config -state normal -label "Mandolin Body Size"
             .right.cont4 config -state normal -label "Pick Position"
@@ -296,10 +297,12 @@ proc patchChange {value} {
             set cont2 64.0
             set cont4 64.0
             set cont11 96.0
+            set press 64.0
             printWhatz "ControlChange    0.0  1 " 1  $cont1
             printWhatz "ControlChange    0.0  1 " 2  $cont2
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
+            changePress $press
         }
         if {$value>=6 && $value<=8 }	{ # Modal Instruments
             .pretty config -bitmap @$bitmappath/KModal.xbm
@@ -413,19 +416,46 @@ proc patchChange {value} {
             .right.cont4 config -state normal -label "(<--High) Damping (Low-->)"
             .right.cont11 config -state normal -label "Number of Objects"
             .right.cont1 config -state normal -label "Resonance Center Frequency"
-            if {$value==19} {set pitch 0}
-            if {$value==20} {set pitch 2}
-            if {$value==21} {set pitch 1}
-            if {$value==22} {set pitch 5}
-            if {$value==23} {set pitch 4}
-            if {$value==24} {set pitch 6}
-            if {$value==25} {set pitch 7}
-            if {$value==26} {set pitch 3}
-            if {$value==27} {set pitch 8}
-            if {$value==28} {set pitch 9}
-            if {$value==29} {set pitch 10}
-            if {$value==30} {set pitch 11}
-            if {$value==31} {set pitch 12}
+            switch $value {
+                19 {
+                    set pitch 0
+                    .pretty config -bitmap @$bitmappath/maraca.xbm
+                }
+                20 {set pitch 2}
+                21 {
+                    set pitch 1
+                    .pretty config -bitmap @$bitmappath/cabasa.xbm
+                }
+                22 {
+                    set pitch 5
+                    .pretty config -bitmap @$bitmappath/bamboo.xbm
+                }
+                23 {set pitch 4}
+                24 {
+                    set pitch 6
+                    .pretty config -bitmap @$bitmappath/tambourine.xbm
+                }
+                25 {
+                    set pitch 7
+                    .pretty config -bitmap @$bitmappath/sleighbell.xbm
+                }
+                26 {
+                    set pitch 3
+                    .pretty config -bitmap @$bitmappath/guiro.xbm
+                }
+                27 {set pitch 8}
+                28 {set pitch 9}
+                29 {
+                    set pitch 10
+                    .pretty config -bitmap @$bitmappath/rachet.xbm
+                }
+                30 {set pitch 11}
+                31 {set pitch 12}
+            }
+            set cont1 64.0
+            set cont2 64.0
+            set cont4 64.0
+            set cont11 64.0
             puts $outID [format "NoteOn           0.0  1  %3.2f  %3.2f" $pitch $press]
             flush $outID
         }
@@ -453,8 +483,12 @@ proc printWhatz {tag value1 value2 } {
 }
 
 proc changePress {value} {
-    global outID
-    puts $outID [format "AfterTouch       0.0  1  %3.2f" $value]
+    global outID patchnum
+    if { $patchnum == 5} {
+        puts $outID [format "ControlChange    0.0  1  411  %3.2f" $value]
+    } else {
+        puts $outID [format "AfterTouch       0.0  1  %3.2f" $value]
+    }
     flush $outID
 }
 
@@ -468,9 +502,7 @@ proc changePitch {value} {
 set d .socketdialog
 
 proc setComm {} {
-		global outID
-		global commtype
-		global d
+		global outID commtype d
 		if {$commtype == "stdout"} {
 				if { [string compare "stdout" $outID] } {
 						set i [tk_dialog .dialog "Break Socket Connection?" {You are about to break an existing socket connection ... is this what you want to do?} "" 0 Cancel OK]

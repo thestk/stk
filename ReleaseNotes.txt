@@ -1,10 +1,24 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
-Release 3.0
+Release 3.1
 
-By Perry R. Cook, 1995-99
-and Gary P. Scavone, 1997-99
+By Perry R. Cook, 1995-2000
+and Gary P. Scavone, 1997-2000
 
-v3.0
+v3.1: (13 March 2000)
+- new RagaMatic project!!!
+- added "microphone position" to Mandolin in STKdemo
+- fixed MIDI system message exclusion under Irix
+- added a few bitmaps for the Shaker instruments
+- made destructors virtual for Reverb.h, WvIn.h and Simple.h
+- fixed bug setting delay length in DLineA when value too big
+- fixed bug in WinMM realtime code (RTSoundIO)
+- added tick() method to BowTabl, JetTabl, and ReedTabl (same as lookup)
+- switched to pthread API on SGI platforms
+- added some defines to Object.h for random number generation, FPU overflow checking, etc...
+- a lot of minor changes, some bug fixes ... can't remember all of them
+
+
+v3.0: (10 October 1999)
 - new #define flags for OS and realtime dependencies (this will probably cause problems for most everyone, but it was necessary to make future ports easier)
 - fixed Linux MIDI input bug
 - fixed MIDI status masking problem in Windows
@@ -29,8 +43,7 @@ v3.0
 - pulled various utility and thread functions out of syntmono.cpp (to aid readability of the code)
 
 
-v2.02:
-- 16 November 1998
+v2.02: (16 November 1998)
 - created RawWave abstract class, with subclasses of RawLoop (looping rawwave oscillator), RawShot (non-looping, non-interpolating rawwave player ... used to be RawWvIn), and RawInterp (looping or non-looping, interpolating rawwave player ... used to be RawWave).
 - modified DrumSynt to correctly handle sample rates different than 22050 Hz.
 - modified syntmono parsing vs. tick routine so that some ticking occurs between each message.  When multiple messages are waiting to be processed, the time between message updates is inversely proportional to the number of messages in the buffer.
@@ -38,13 +51,11 @@ v2.02:
 - fixed bug in MD2SKINI which prevented some NoteOff statements from being output.
 
 
-v2.01:
-- 27 July 1998
+v2.01: (27 July 1998)
 - Corrected extraneous ^M line return characters that were incompatible with SGI.
 
 
-v2.0:
-- 20 July 1998
+v2.0: (20 July 1998)
 - The first true release by Gary, with unified capabilities across SGI, Linux, and Win platforms.  See WWW pages (http://www-ccrma.stanford.edu/CCRMA/Software/STK/) for more info.
 
 

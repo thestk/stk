@@ -22,10 +22,10 @@
 RTWvIn :: RTWvIn(MY_FLOAT srate, short chans)
 {
   soundIO = new RTSoundIO(srate, chans, "record");
-  length = RT_BUFFER_SIZE;
   channels = chans;
+  length = RT_BUFFER_SIZE/channels;
   data = 0;
-  rtdata = (short *) new short[channels*(RT_BUFFER_SIZE+1)];
+  rtdata = (short *) new short[RT_BUFFER_SIZE+channels];
 
   this->getMoreData();
 
@@ -78,8 +78,8 @@ void RTWvIn :: setLooping(int aLoopStatus)
 
 void RTWvIn :: getMoreData()
 {
-  soundIO->recordBuffer(rtdata,(RT_BUFFER_SIZE)*channels);
-  long temp = channels*(RT_BUFFER_SIZE);
+  soundIO->recordBuffer(rtdata,RT_BUFFER_SIZE);
+  long temp = RT_BUFFER_SIZE;
   for (int i=0;i<channels;i++) {
     rtdata[temp] = rtdata[temp-channels];
     temp++;

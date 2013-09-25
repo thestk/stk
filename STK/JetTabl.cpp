@@ -11,26 +11,33 @@
 
 JetTabl :: JetTabl()
 {
-    lastOutput = (MY_FLOAT) 0.0;
+  lastOutput = (MY_FLOAT) 0.0;
 }
 
 JetTabl :: ~JetTabl()
 {
 }
 
-MY_FLOAT JetTabl :: lookup(MY_FLOAT sample) /*   Perform "Table Lookup"    */
-{                                       /*   By Polynomial Calculation */
-    lastOutput = sample * 
-                (sample*sample - (MY_FLOAT)  1.0);  /* (x^3 - x) approximates sigmoid of jet */
-    if (lastOutput > 1.0) 
-        lastOutput = (MY_FLOAT) 1.0;    /* Saturation at +/- 1.0       */
-    if (lastOutput < -1.0) 
-        lastOutput = (MY_FLOAT) -1.0; 
-    return lastOutput;
+MY_FLOAT JetTabl :: lookup(MY_FLOAT sample)
+{
+  return this->tick(sample);
+}
+
+MY_FLOAT JetTabl :: tick(MY_FLOAT sample)
+  // Perform "Table Lookup"
+  // By Polynomial Calculation
+{
+  // (x^3 - x) approximates sigmoid of jet
+  lastOutput = sample * (sample*sample - (MY_FLOAT)  1.0);
+  if (lastOutput > 1.0) 
+    lastOutput = (MY_FLOAT) 1.0; // Saturation at +/- 1.0
+  if (lastOutput < -1.0)
+    lastOutput = (MY_FLOAT) -1.0; 
+  return lastOutput;
 }
 
 MY_FLOAT JetTabl :: lastOut()
 {
-    return lastOutput;
+  return lastOutput;
 }
 

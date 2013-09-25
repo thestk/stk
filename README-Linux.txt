@@ -1,12 +1,12 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
-Version 3.0
+Version 3.1
 
-By Perry R. Cook, 1995-99
-and Gary P. Scavone, 1997-99.
+By Perry R. Cook, 1995-2000
+and Gary P. Scavone, 1997-2000.
 
 Please read the file README.txt for more general STK information.
 
-STK for Linux is currently using the OSS sound and MIDI API.  The free version of OSS will probably work, though it doesn't work with as many soundcards as the commercial version (which costs about $20).
+STK for Linux is currently using the OSS sound and MIDI API.  The free version of OSS will probably work, though it doesn't work with as many soundcards as the commercial version (which costs about $20).  The Advanced Linux Sound Architecture (ALSA) drivers seem to perform well, though I've done only minimal testing with them.  You'll need to install the OSS compatability library.  You can read more about ALSA at http://www.alsa-project.org/.  ALSA is open source and holds great promise for audio under Linux.
 
 STK should compile without much trouble under Linux.  Since all Linux distributions typically include the GNU makefile utilities, you should be able to use the default Makefile.  Typing "make" will initiate the compilation process.
 

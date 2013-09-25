@@ -6,12 +6,15 @@
 
 #define STRING_LEN 60
 
+/*
 #if (defined(__STK_REALTIME_) && defined(__OS_IRIX_) )
 
 void newStringByPipe(void *);
 void newStringBySocket(void *);
 
 #elif (defined(__STK_REALTIME_) && defined(__OS_Linux_) )
+*/
+#if (defined(__STK_REALTIME_) && (defined(__OS_IRIX_) || defined(__OS_Linux_)))
 
 void *newStringByPipe(void *);
 void *newStringBySocket(void *);

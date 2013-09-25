@@ -26,7 +26,7 @@ char **inputString;
 Instrmnt *instrument;
 WvOut **output;
 
-void main(int argc,char *argv[])
+int main(int argc,char *argv[])
 {
   long i, j, synlength;
   int type, rtInput = 0;
@@ -34,7 +34,7 @@ void main(int argc,char *argv[])
   int instNum;
   char *fin;
   MY_FLOAT reverbTime = 0.5;  // in seconds
-  MY_FLOAT temp, byte3, lastPitch, outSample;
+  MY_FLOAT temp, byte3, outSample, lastPitch=220.0;
   
   // Check the command-line arguments for errors and to determine
   // the number of WvOut objects to be instantiated.
@@ -42,7 +42,7 @@ void main(int argc,char *argv[])
   output = (WvOut **) malloc(numOuts * sizeof(WvOut *));
 
   // Instantiate the instrument from the command-line argument.
-  if ( (instNum=newInstByName(argv[1])) < 0 ) errorfun(argv[0]);
+  if ( (instNum=newInstByName(argv[1])) < 0 ) usage(argv[0]);
 
   // Parse the command-line flags and instantiate WvOut objects.
   rtInput = parseArgs(argc, argv);
@@ -88,7 +88,10 @@ void main(int argc,char *argv[])
       score->parseThis(inputString[outOne]);
       type = score->getType();
       if (type > 0) {
-        if (temp = score->getDelta()) { /* SKINI score file */
+        // All realtime control messages should have a delta time = 0.
+        // If we find a non-zero delta time, we're assuming control is
+        // coming from a score file.
+        if ((temp = score->getDelta())) { /* SKINI score file */
           synlength = (long) (temp * SRATE);
           for ( i=0; i<synlength; i++ )  {
             outSample = reverb->tick(instrument->tick());
@@ -96,40 +99,46 @@ void main(int argc,char *argv[])
           }
           synlength = 0;
         }
-        if (type == __SK_NoteOn_ )       {
+
+        switch(type) {
+
+        case __SK_NoteOn_:
+          // check to see if velocity is zero ... really a NoteOff
           if (( byte3 = score->getByteThree() ) == 0)
-            instrument->noteOff(byte3*NORM_7);
-          else {
+            instrument->noteOff(0.0);
+          else { // really a NoteOn
             j = (int) score->getByteTwo();
-            temp = __MIDI_To_Pitch[j];
-            lastPitch = temp;
-            instrument->noteOn(temp,byte3*NORM_7);
+            lastPitch = __MIDI_To_Pitch[j];
+            instrument->noteOn(lastPitch,byte3*NORM_7);
           }
-        }
-        else if (type == __SK_NoteOff_) {
-					byte3 = score->getByteThree();
-          instrument->noteOff(byte3*NORM_7);
-        }
-        else if (type == __SK_ControlChange_)   {
-          j = (int) score->getByteTwo();
-					byte3 = score->getByteThree();
-          instrument->controlChange(j,byte3);
-        }
-        else if (type == __SK_AfterTouch_)   {
-          j = (int) score->getByteTwo();
-          instrument->controlChange(128,j);
-        }
-        else if (type == __SK_PitchBend_)   {
+          break;
+
+        case __SK_NoteOff_:
+          instrument->noteOff(NORM_7*score->getByteThree());
+          break;
+
+        case __SK_ControlChange_:
+          instrument->controlChange((int)score->getByteTwo(),
+                                    score->getByteThree());
+          break;
+
+        case __SK_AfterTouch_:
+          instrument->controlChange(128,score->getByteTwo());
+          break;
+
+        case __SK_PitchBend_:
           temp = score->getByteTwo();
           j = (int) temp;
-          temp -= j;
+          temp -= j;   // floating-point remainder
           lastPitch = __MIDI_To_Pitch[j] * pow(2.0,temp / 12.0) ;
           instrument->setFreq(lastPitch);
-        }
-        else if (type == __SK_ProgramChange_)   {
+          break;
+
+        case __SK_ProgramChange_:
           j = (int) score->getByteTwo();
           if (j != instNum) {
             instrument->noteOff(1.0);
+            // let the old instrument settle a little
             for (i=0;i<4096;i++)    {
               outSample = reverb->tick(instrument->tick());
               for ( int k=0; k<numOuts; k++ ) output[k]->tick(outSample);
@@ -141,6 +150,7 @@ void main(int argc,char *argv[])
             }
             instrument->noteOn(lastPitch, 0.2);
           }
+          break;
         }
       }
       if (rtInput) {
@@ -167,4 +177,5 @@ void main(int argc,char *argv[])
   delete reverb;
 
 	printf("syntmono finished ... goodbye.\n");
+  return 0;
 }

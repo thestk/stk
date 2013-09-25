@@ -6,7 +6,7 @@
 /*                                         */
 /*  This is based on some of the famous    */
 /*  Stanford CCRMA reverbs (NRev, KipRev)  */
-/*  all based on the the Chowning/Moorer/  */
+/*  all based on the Chowning/Moorer/      */
 /*  Schroeder reverberators, which use     */
 /*  networks of simple allpass and comb    */
 /*  delay filters.  This particular        */

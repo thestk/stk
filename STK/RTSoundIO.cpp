@@ -382,6 +382,8 @@ int RTSoundIO :: recordBuffer(short *buf, int bufsize)
  * capabilities.
  */
 
+#define DS_WRITE_METHOD 1
+
 #include	<stdio.h>
 
 RTSoundIO :: RTSoundIO(MY_FLOAT srate, int channels, char *mode)
@@ -414,8 +416,8 @@ RTSoundIO :: RTSoundIO(MY_FLOAT srate, int channels, char *mode)
     // Define a maximum distance that the write pointer is
     // allowed to lead safePos.  The size of this zone is
     // fairly critical to the behavior of this scheme.  The
-    // value below is set for a 10 millisecond region.
-    zoneSize = (DWORD) (0.01 * srate * sizeof(short));  // bytes
+    // value below is set for a 15 millisecond region.
+    zoneSize = (DWORD) (0.015 * srate * sizeof(short));  // bytes
 
     // Create the DS object
     if ((result = DirectSoundCreate(NULL, &lpDirectSound, NULL)) != DS_OK) {
@@ -651,110 +653,110 @@ int RTSoundIO :: playBuffer(short *buf, int bufsize)
   hr = lpDSBuffer->GetCurrentPosition(&playPos, &safePos);
   if (hr != DS_OK) return -1;
 
-  // METHOD 1: Keep write pointer in front of read pointer.
-  //
-  // Microsloth says that the safePos is about 15 ms ahead of
-  // playPos.  I think this figure is somewhat hardware related, 
-  // especially if you are writing to the primary buffer.  With
-  // my shit-blaster 16, I found the safePos to be about 10 ms
-  // ahead of playPos. If you really need to reduce delay, you
-  // can try moving your "safePos" closer to the play pointer.
-  // You'll be treading on dangerous ground, but then again,
-  // you're obviously using Windoze so you're already familiar
-  // with such uncertainty!  I've been able to lop off 2-5 ms
-  // in some circumstances.
-  //static DWORD backup = (DWORD) (0.005 * SRATE * sizeof(short));
-  //safePos = (safePos + dwDSBufSize - backup) % dwDSBufSize;
+	// METHOD 1: Keep write pointer in front of read pointer.
+	//
+	// Microsloth says that the safePos is about 15 ms ahead of
+	// playPos.  I think this figure is somewhat hardware related, 
+	// especially if you are writing to the primary buffer.  With
+	// my shit-blaster 16, I found the safePos to be about 10 ms
+	// ahead of playPos. If you really need to reduce delay, you
+	// can try moving your "safePos" closer to the play pointer.
+	// You'll be treading on dangerous ground, but then again,
+	// you're obviously using Windoze so you're already familiar
+	// with such uncertainty!  I've been able to lop off 2-5 ms
+	// in some circumstances.
+	//static DWORD backup = (DWORD) (0.005 * SRATE * sizeof(short));
+	//safePos = (safePos + dwDSBufSize - backup) % dwDSBufSize;
 
-  // Assume that the next write position is always in front
-  // of safePos.  If not, the write pointer must have wrapped.
-  // NOTE: If safePos somehow gets ahead of the write pointer,
-  // then an underrun has occurred and there's not much we can
-  // do anyway.
-  DWORD deltaPos;
-  if( safePos > nextWritePos )
-    deltaPos = nextWritePos + dwDSBufSize - safePos;
-  else
-    deltaPos = nextWritePos - safePos;
+	// Assume that the next write position is always in front
+	// of safePos.  If not, the write pointer must have wrapped.
+	// NOTE: If safePos somehow gets ahead of the write pointer,
+	// then an underrun has occurred and there's not much we can
+	// do anyway.
+	DWORD deltaPos;
+	if( safePos > nextWritePos )
+		deltaPos = nextWritePos + dwDSBufSize - safePos;
+	else
+		deltaPos = nextWritePos - safePos;
 
-  // Check whether the write pointer is in the allowed region.
-  while ( deltaPos > zoneSize ) {
-    // If we are here, then we must wait until the write pointer
-    // is in the allowed region.  For this, we can either
-    // continuously check the pointer positions until they are
-    // OK or we can use the Sleep() function to pause operations
-    // for a certain amount of time.  Use of the Sleep() function
-    // would seem to be the better choice, however, there are
-    // reports that Sleep() often "sleeps" for much longer than
-    // requested.  I'll let you choose which method to use.
-    static int sleep = 1;    // 1 = sleep, 0 = don't sleep
+	// Check whether the write pointer is in the allowed region.
+	while ( deltaPos > zoneSize ) {
+		// If we are here, then we must wait until the write pointer
+		// is in the allowed region.  For this, we can either
+		// continuously check the pointer positions until they are
+		// OK or we can use the Sleep() function to pause operations
+		// for a certain amount of time.  Use of the Sleep() function
+		// would seem to be the better choice, however, there are
+		// reports that Sleep() often "sleeps" for much longer than
+		// requested.  I'll let you choose which method to use.
+		static int sleep = 1;    // 1 = sleep, 0 = don't sleep
 
-    if (sleep) {
-      // Sleep until safePos catches up. Calculate number of
-      // milliseconds to wait as:
-      // time = distance * (milliseconds/second) * fudgefactor / 
-      //        ((bytes/sample) * (samples/second))
-      // A "fudgefactor" less than 1 is used because it was found
-      // that sleeping too long was MUCH worse than sleeping for
-      // several shorter periods.
-      DWORD millis = (DWORD) ((deltaPos * 200.0) / ( sizeof(short) * SRATE));
+		if (sleep) {
+			// Sleep until safePos catches up. Calculate number of
+			// milliseconds to wait as:
+			// time = distance * (milliseconds/second) * fudgefactor / 
+			//        ((bytes/sample) * (samples/second))
+			// A "fudgefactor" less than 1 is used because it was found
+			// that sleeping too long was MUCH worse than sleeping for
+			// several shorter periods.
+			DWORD millis = (DWORD) ((deltaPos * 200.0) / ( sizeof(short) * SRATE));
 
-      // Sleep for that long
-      Sleep( millis );
-    }
+			// Sleep for that long
+			Sleep( millis );
+		}
 
-    // Wake up, find out where we are now
-    hr = lpDSBuffer->GetCurrentPosition( &playPos, &safePos );
-    if( hr != DS_OK ) return -1;
+		// Wake up, find out where we are now
+		hr = lpDSBuffer->GetCurrentPosition( &playPos, &safePos );
+		if( hr != DS_OK ) return -1;
 
-    // Backup safePos?  (See above)
-    //safePos = (safePos + dwDSBufSize - backup) % dwDSBufSize;
+		// Backup safePos?  (See above)
+		//safePos = (safePos + dwDSBufSize - backup) % dwDSBufSize;
 
-    if( safePos > nextWritePos )
-      deltaPos = nextWritePos + dwDSBufSize - safePos;
-    else
-      deltaPos = nextWritePos - safePos;
-  }
-  // End of Method 1
+		if( safePos > nextWritePos )
+			deltaPos = nextWritePos + dwDSBufSize - safePos;
+		else
+			deltaPos = nextWritePos - safePos;
+	}
+	// End of Method 1
 
-  /*
-  // METHOD 2: Keep write region behind of play pointer.
-  if( playPos < nextWritePos ) playPos += dwDSBufSize; // unwrap offset
-  DWORD endWrite = nextWritePos + bufsize * sizeof(short);
+	/*
+	// METHOD 2: Keep write region behind of play pointer.
+	if( playPos < nextWritePos ) playPos += dwDSBufSize; // unwrap offset
+	DWORD endWrite = nextWritePos + bufsize * sizeof(short);
 
-  // Check whether the write region is behind the play pointer.
-  while ( playPos < endWrite ) {
-    // If we are here, then we must wait until the play pointer
-    // gets beyond the write region.  For this, we can either
-    // continuously check the pointer positions until they are
-    // OK or we can use the Sleep() function to pause operations
-    // for a certain amount of time.  Use of the Sleep() function
-    // would seem to be the better choice, however, there are
-    // reports that Sleep() often "sleeps" for much longer than
-    // requested.  I'll let you choose which method to use.
-    static int sleep = 1;    // 1 = sleep, 0 = don't sleep
+	// Check whether the write region is behind the play pointer.
+	while ( playPos < endWrite ) {
+		// If we are here, then we must wait until the play pointer
+		// gets beyond the write region.  For this, we can either
+		// continuously check the pointer positions until they are
+		// OK or we can use the Sleep() function to pause operations
+		// for a certain amount of time.  Use of the Sleep() function
+		// would seem to be the better choice, however, there are
+		// reports that Sleep() often "sleeps" for much longer than
+		// requested.  I'll let you choose which method to use.
+		static int sleep = 1;    // 1 = sleep, 0 = don't sleep
 
-    if (sleep) {
-      // Sleep until safePos catches up. Calculate number of
-      // milliseconds to wait as:
-      // time = distance * (milliseconds/second) * fudgefactor / 
-      //        ((bytes/sample) * (samples/second))
-      // A "fudgefactor" less than 1 is used because it was found
-      // that sleeping too long was MUCH worse than sleeping for
-      // several shorter periods.
-      DWORD millis = (DWORD) (((endWrite - playPos) * 200.0) / ( sizeof(short) * SRATE));
+		if (sleep) {
+			// Sleep until safePos catches up. Calculate number of
+			// milliseconds to wait as:
+			// time = distance * (milliseconds/second) * fudgefactor / 
+			//        ((bytes/sample) * (samples/second))
+			// A "fudgefactor" less than 1 is used because it was found
+			// that sleeping too long was MUCH worse than sleeping for
+			// several shorter periods.
+			DWORD millis = (DWORD) (((endWrite - playPos) * 200.0) / ( sizeof(short) * SRATE));
 
-      // Sleep for that long
-      Sleep( millis );
-    }
+			// Sleep for that long
+			Sleep( millis );
+		}
 
-    // Wake up, find out where we are now
-    hr = lpDSBuffer->GetCurrentPosition( &playPos, &safePos );
-    if( hr != DS_OK ) return -1;
-    if( playPos < nextWritePos ) playPos += dwDSBufSize; // unwrap offset
-  }
-  // End of Method 2.
-  */
+		// Wake up, find out where we are now
+		hr = lpDSBuffer->GetCurrentPosition( &playPos, &safePos );
+		if( hr != DS_OK ) return -1;
+		if( playPos < nextWritePos ) playPos += dwDSBufSize; // unwrap offset
+	}
+	// End of Method 2.
+	*/
 
   // Lock free space in the DS
   hr = lpDSBuffer->Lock (nextWritePos, bufsize * sizeof(short), &lpbuf1, &dwsize1, &lpbuf2, &dwsize2, 0);

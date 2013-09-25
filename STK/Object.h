@@ -26,27 +26,34 @@ class Object
 /* The OS type definitions are made in the Makefile */
 
 #if defined(__OS_NeXT_)    /* For NeXTStep - Black or White Hardware */
-// No special defines at this time
+  #define RANDLIMIT 2147483647
 #elif defined(__OS_IRIX_)  /* For SGI */
   #define __STK_REALTIME_
+  #define RANDLIMIT 2147483647
 #elif defined(__OS_Linux_) /* For Linux */
   #define __STK_REALTIME_
   #define __OSS_API_       /* Use OSS API */
   #define __LITTLE_ENDIAN__
+  #define RANDLIMIT 2147483647
 #elif defined(__OS_Win_)   /* For WindowsXX or NT */
   #define __STK_REALTIME_
   #define __WINDS_API_     /* For DirectSound API */
 //  #define __WINMM_API_     /* For Win MM API */
   #define __LITTLE_ENDIAN__
+  #define RANDLIMIT 32767
 #endif
 
-/* Real-time output buffer size.  If clicks are occuring in the
- * output sound stream, a larger buffer size may help.  Larger
- * buffer sizes, however, produce more latency between input and
- * output.
- * NOTE FOR WINDOZE USERS: Given inherent delays in the sound
- * output mechanism under Windoze, there is a trade-off between
- * smoothness of fast SKINI parameter updates and input/output
+/* Real-time audio input and output buffer size.  The value of
+ * this buffer should be an integer multiple of the number of
+ * channels your application plans to support, in order that
+ * multi-channel data is not split across multiple buffers. If
+ * clicks are occuring in the input or output sound stream, a
+ * larger buffer size may help.  Larger buffer sizes, however,
+ * produce more latency between input and output.
+ *
+ * NOTE FOR WINDOZE USERS: Given inherent delays in the audio
+ * input and output mechanism under Windoze, there is a trade-off
+ * between smoothness of fast SKINI parameter updates and input/output
  * latency as discussed above.  You can use buffer sizes as low
  * as 100 (maybe lower) for delay critical applications, but in
  * this case SKINI parameter updates will be clumped together
@@ -92,6 +99,23 @@ class Object
 #define TWO_PI (MY_FLOAT) 6.28318530718
 #define ONE_OVER_TWO_PI (MY_FLOAT) 0.15915494309
 #define SQRT_TWO 1.414213562
+
+/* Useful random number generator values */
+#define ONE_OVER_RANDLIMIT (1.0/RANDLIMIT)
+#define RANDLIMIT_OVER_TWO (int)(RANDLIMIT/2)
+
+/* FPU Underflow Limit
+ * The IEEE specification doesn't call for automatic
+ * zeroing of floating-point values when they reach
+ * their numerical limits.  Instead, most processors
+ * switch to a much more computation-intensive mode
+ * when a FPU underflow occurs.  We set a lower limit
+ * here for our own (not so efficient) checks.  Here's
+ * a useful macro for limiting MY_FLOATs.  At this time,
+ * no FPU underflow checks are being performed.
+ */
+#define FPU_UFLOW_LIMIT 0.0000000001
+#define LIMIT_MY_FLOAT(j) ((((j)<(MY_FLOAT)FPU_UFLOW_LIMIT)&&((j)>(MY_FLOAT)-FPU_UFLOW_LIMIT))?(MY_FLOAT)0.0:(j))
 
 /* States for Envelopes, etc. */
 #define ATTACK 0

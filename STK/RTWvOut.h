@@ -19,7 +19,8 @@ class RTWvOut : public WvOut
 {
  protected:
 	RTSoundIO *soundIO;
-  short data[RT_BUFFER_SIZE];
+  // Add an extra 10 samples to data[] just to be safe
+  short data[RT_BUFFER_SIZE+10];
   long counter;
   int channels;
  public:

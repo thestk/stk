@@ -26,7 +26,7 @@ RM = /bin/rm
 ifeq ($(OS),IRIX) # These are for SGI
 	INSTR = MUS151
 	CC = CC -O2 -D__OS_IRIX_ # -g -fullwarn -D__SGI_CC__
-	LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm
+	LIBRARY = -L/usr/sgitcl/lib -laudio -lm -lpthread
 endif
 
 ifeq ($(OS),Linux) # These are for Linux

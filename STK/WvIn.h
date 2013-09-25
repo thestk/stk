@@ -28,7 +28,7 @@ class WvIn : public Object
     MY_FLOAT *lastOutput;
   public:
     WvIn();
-    ~WvIn();
+    virtual ~WvIn();
     void reset();
     void normalize();
     void normalize(MY_FLOAT newPeak);
