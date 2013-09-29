@@ -12,12 +12,12 @@
 <h1>Clarinet.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00023 <span class="comment">/***************************************************/</span>
 00024 
-00025 <span class="preprocessor">#if !defined(__CLARINET_H)</span>
-00026 <span class="preprocessor"></span><span class="preprocessor">#define __CLARINET_H</span>
+00025 <span class="preprocessor">#ifndef STK_CLARINET_H</span>
+00026 <span class="preprocessor"></span><span class="preprocessor">#define STK_CLARINET_H</span>
 00027 <span class="preprocessor"></span>
 00028 <span class="preprocessor">#include "Instrmnt.h"</span>
 00029 <span class="preprocessor">#include "DelayL.h"</span>
-00030 <span class="preprocessor">#include "ReedTabl.h"</span>
+00030 <span class="preprocessor">#include "ReedTable.h"</span>
 00031 <span class="preprocessor">#include "OneZero.h"</span>
 00032 <span class="preprocessor">#include "Envelope.h"</span>
 00033 <span class="preprocessor">#include "Noise.h"</span>
@@ -26,45 +26,51 @@
 <a name="l00036"></a><a class="code" href="classClarinet.html">00036</a> <span class="keyword">class </span><a class="code" href="classClarinet.html">Clarinet</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00037 {
 00038  <span class="keyword">public</span>:
-00040   <a class="code" href="classClarinet.html#a0">Clarinet</a>(MY_FLOAT lowestFrequency);
-00041 
-00043   <a class="code" href="classClarinet.html#a1">~Clarinet</a>();
+00040 
+00043   <a class="code" href="classClarinet.html#a0">Clarinet</a>(StkFloat lowestFrequency);
 00044 
-00046   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a2">clear</a>();
+00046   <a class="code" href="classClarinet.html#a1">~Clarinet</a>();
 00047 
-00049   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a3">setFrequency</a>(MY_FLOAT frequency);
+00049   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a2">clear</a>();
 00050 
-00052   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a4">startBlowing</a>(MY_FLOAT amplitude, MY_FLOAT rate);
+00052   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a3">setFrequency</a>(StkFloat frequency);
 00053 
-00055   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a5">stopBlowing</a>(MY_FLOAT rate);
+00055   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a4">startBlowing</a>(StkFloat amplitude, StkFloat rate);
 00056 
-00058   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a6">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00058   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a5">stopBlowing</a>(StkFloat rate);
 00059 
-00061   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a7">noteOff</a>(MY_FLOAT amplitude);
+00061   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a6">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00062 
-00064   MY_FLOAT <a class="code" href="classClarinet.html#a8">tick</a>();
+00064   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a7">noteOff</a>(StkFloat amplitude);
 00065 
-00067   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a9">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00067   StkFloat <a class="code" href="classClarinet.html#a8">tick</a>();
 00068 
-00069  <span class="keyword">protected</span>:
-00070   <a class="code" href="classDelayL.html">DelayL</a> *delayLine;
-00071   <a class="code" href="classReedTabl.html">ReedTabl</a> *reedTable;
-00072   <a class="code" href="classOneZero.html">OneZero</a> *filter;
-00073   <a class="code" href="classEnvelope.html">Envelope</a> *envelope;
-00074   <a class="code" href="classNoise.html">Noise</a> *noise;
-00075   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato;
-00076   <span class="keywordtype">long</span> length;
-00077   MY_FLOAT outputGain;
-00078   MY_FLOAT noiseGain;
-00079   MY_FLOAT vibratoGain;
+00070   StkFloat *<a class="code" href="classClarinet.html#a8">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00071 
+00073 
+00079   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classClarinet.html#a8">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
 00080 
-00081 };
-00082 
-00083 <span class="preprocessor">#endif</span>
+00082   <span class="keywordtype">void</span> <a class="code" href="classClarinet.html#a11">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00083 
+00084  <span class="keyword">protected</span>:
+00085   <a class="code" href="classDelayL.html">DelayL</a> delayLine_;
+00086   <a class="code" href="classReedTable.html">ReedTable</a> reedTable_;
+00087   <a class="code" href="classOneZero.html">OneZero</a> filter_;
+00088   <a class="code" href="classEnvelope.html">Envelope</a> envelope_;
+00089   <a class="code" href="classNoise.html">Noise</a> noise_;
+00090   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato_;
+00091   <span class="keywordtype">long</span> length_;
+00092   StkFloat outputGain_;
+00093   StkFloat noiseGain_;
+00094   StkFloat vibratoGain_;
+00095 
+00096 };
+00097 
+00098 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

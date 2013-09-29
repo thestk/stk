@@ -12,46 +12,51 @@
 <h1>WaveLoop.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00019 <span class="comment">/***************************************************/</span>
 00020 
-00021 <span class="preprocessor">#if !defined(__WAVELOOP_H)</span>
-00022 <span class="preprocessor"></span><span class="preprocessor">#define __WAVELOOP_H</span>
+00021 <span class="preprocessor">#ifndef STK_WAVELOOP_H</span>
+00022 <span class="preprocessor"></span><span class="preprocessor">#define STK_WAVELOOP_H</span>
 00023 <span class="preprocessor"></span>
 00024 <span class="preprocessor">#include "WvIn.h"</span>
-00025 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
-00026 
-<a name="l00027"></a><a class="code" href="classWaveLoop.html">00027</a> <span class="keyword">class </span><a class="code" href="classWaveLoop.html">WaveLoop</a> : <span class="keyword">public</span> <a class="code" href="classWvIn.html">WvIn</a>
-00028 {
-00029 <span class="keyword">public</span>:
-00031   <a class="code" href="classWaveLoop.html#a0">WaveLoop</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName, <span class="keywordtype">bool</span> raw = FALSE );
-00032 
-00034   <span class="keyword">virtual</span> <a class="code" href="classWaveLoop.html#a1">~WaveLoop</a>();
-00035 
-00037 
-00043   <span class="keywordtype">void</span> <a class="code" href="classWaveLoop.html#a2">setFrequency</a>(MY_FLOAT aFrequency);
-00044 
-00046   <span class="keywordtype">void</span> <a class="code" href="classWaveLoop.html#a3">addTime</a>(MY_FLOAT aTime);
-00047 
-00049 
-00054   <span class="keywordtype">void</span> <a class="code" href="classWaveLoop.html#a4">addPhase</a>(MY_FLOAT anAngle);
-00055 
-00057 
-00062   <span class="keywordtype">void</span> <a class="code" href="classWaveLoop.html#a5">addPhaseOffset</a>(MY_FLOAT anAngle);
-00063 
-00065   <span class="keyword">const</span> MY_FLOAT *<a class="code" href="classWaveLoop.html#a6">tickFrame</a>(<span class="keywordtype">void</span>);
-00066 
-00067 <span class="keyword">protected</span>:
-00068 
-00069   <span class="comment">// Read file data.</span>
-00070   <span class="keywordtype">void</span> readData(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> index);
+00025 
+<a name="l00026"></a><a class="code" href="classWaveLoop.html">00026</a> <span class="keyword">class </span><a class="code" href="classWaveLoop.html">WaveLoop</a> : <span class="keyword">public</span> <a class="code" href="classWvIn.html">WvIn</a>
+00027 {
+00028 <span class="keyword">public</span>:
+00030   <a class="code" href="classWaveLoop.html#a0">WaveLoop</a>( std::string fileName, <span class="keywordtype">bool</span> raw = <span class="keyword">false</span> );
+00031 
+00033   <span class="keyword">virtual</span> <a class="code" href="classWaveLoop.html#a1">~WaveLoop</a>();
+00034 
+00036 
+00042   <span class="keywordtype">void</span> <a class="code" href="classWaveLoop.html#a2">setFrequency</a>(StkFloat frequency);
+00043 
+00045   <span class="keywordtype">void</span> <a class="code" href="classWaveLoop.html#a3">addTime</a>(StkFloat time);
+00046 
+00048 
+00053   <span class="keywordtype">void</span> <a class="code" href="classWaveLoop.html#a4">addPhase</a>(StkFloat angle);
+00054 
+00056 
+00061   <span class="keywordtype">void</span> <a class="code" href="classWaveLoop.html#a5">addPhaseOffset</a>(StkFloat angle);
+00062 
+00064   <span class="keyword">const</span> StkFloat *<a class="code" href="classWaveLoop.html#a6">tickFrame</a>(<span class="keywordtype">void</span>);
+00065 
+00067 
+00070   StkFloat *<a class="code" href="classWaveLoop.html#a6">tickFrame</a>(StkFloat *frameVector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> frames);
 00071 
-00072   MY_FLOAT phaseOffset;
 00073 
-00074 };
-00075 
-00076 <span class="preprocessor">#endif // defined(__WAVELOOP_H)</span>
+00079   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classWaveLoop.html#a6">tickFrame</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames );
+00080 
+00081 <span class="keyword">protected</span>:
+00082 
+00083   <span class="comment">// Read file data.</span>
+00084   <span class="keywordtype">void</span> readData(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> index);
+00085 
+00086   StkFloat phaseOffset_;
+00087 
+00088 };
+00089 
+00090 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

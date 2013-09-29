@@ -12,12 +12,12 @@
 <h1>Envelope.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00014 <span class="comment">/***************************************************/</span>
 00015 
-00016 <span class="preprocessor">#if !defined(__ENVELOPE_H)</span>
-00017 <span class="preprocessor"></span><span class="preprocessor">#define __ENVELOPE_H</span>
+00016 <span class="preprocessor">#ifndef STK_ENVELOPE_H</span>
+00017 <span class="preprocessor"></span><span class="preprocessor">#define STK_ENVELOPE_H</span>
 00018 <span class="preprocessor"></span>
-00019 <span class="preprocessor">#include "Stk.h"</span>
+00019 <span class="preprocessor">#include "Generator.h"</span>
 00020 
-<a name="l00021"></a><a class="code" href="classEnvelope.html">00021</a> <span class="keyword">class </span><a class="code" href="classEnvelope.html">Envelope</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
+<a name="l00021"></a><a class="code" href="classEnvelope.html">00021</a> <span class="keyword">class </span><a class="code" href="classEnvelope.html">Envelope</a> : <span class="keyword">public</span> <a class="code" href="classGenerator.html">Generator</a>
 00022 {
 00023  <span class="keyword">public</span>:
 00024 
@@ -29,34 +29,35 @@
 00033 
 00035   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classEnvelope.html#a3">keyOff</a>(<span class="keywordtype">void</span>);
 00036 
-00038   <span class="keywordtype">void</span> <a class="code" href="classEnvelope.html#a4">setRate</a>(MY_FLOAT aRate);
+00038   <span class="keywordtype">void</span> <a class="code" href="classEnvelope.html#a4">setRate</a>(StkFloat rate);
 00039 
-00041   <span class="keywordtype">void</span> <a class="code" href="classEnvelope.html#a5">setTime</a>(MY_FLOAT aTime);
+00041   <span class="keywordtype">void</span> <a class="code" href="classEnvelope.html#a5">setTime</a>(StkFloat time);
 00042 
-00044   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classEnvelope.html#a6">setTarget</a>(MY_FLOAT aTarget);
+00044   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classEnvelope.html#a6">setTarget</a>(StkFloat target);
 00045 
-00047   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classEnvelope.html#a7">setValue</a>(MY_FLOAT aValue);
+00047   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classEnvelope.html#a7">setValue</a>(StkFloat value);
 00048 
 00050   <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classEnvelope.html#a8">getState</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
 00051 
-00053   <span class="keyword">virtual</span> MY_FLOAT <a class="code" href="classEnvelope.html#a9">tick</a>(<span class="keywordtype">void</span>);
+00053   <span class="keyword">virtual</span> StkFloat <a class="code" href="classEnvelope.html#a9">tick</a>(<span class="keywordtype">void</span>);
 00054 
-00056   <span class="keyword">virtual</span> MY_FLOAT *<a class="code" href="classEnvelope.html#a9">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00056   <span class="keyword">virtual</span> StkFloat *<a class="code" href="classEnvelope.html#a9">tick</a>( StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize );
 00057 
-00059   MY_FLOAT <a class="code" href="classEnvelope.html#a11">lastOut</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
-00060 
-00061  <span class="keyword">protected</span>:
-00062   MY_FLOAT value;
-00063   MY_FLOAT target;
-00064   MY_FLOAT rate;
-00065   <span class="keywordtype">int</span> state;
-00066 };
-00067 
-00068 <span class="preprocessor">#endif</span>
+00059 
+00065   <span class="keyword">virtual</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classEnvelope.html#a9">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00066 
+00067  <span class="keyword">protected</span>:
+00068   StkFloat value_;
+00069   StkFloat target_;
+00070   StkFloat rate_;
+00071   <span class="keywordtype">int</span> state_;
+00072 };
+00073 
+00074 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

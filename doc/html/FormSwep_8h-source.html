@@ -12,8 +12,8 @@
 <h1>FormSwep.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00013 <span class="comment">/***************************************************/</span>
 00014 
-00015 <span class="preprocessor">#if !defined(__FORMSWEP_H)</span>
-00016 <span class="preprocessor"></span><span class="preprocessor">#define __FORMSWEP_H</span>
+00015 <span class="preprocessor">#ifndef STK_FORMSWEP_H</span>
+00016 <span class="preprocessor"></span><span class="preprocessor">#define STK_FORMSWEP_H</span>
 00017 <span class="preprocessor"></span>
 00018 <span class="preprocessor">#include "BiQuad.h"</span>
 00019 
@@ -26,45 +26,48 @@
 00028   <a class="code" href="classFormSwep.html#a1">~FormSwep</a>();
 00029 
 00031 
-00042   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a2">setResonance</a>(MY_FLOAT aFrequency, MY_FLOAT aRadius);
+00042   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a2">setResonance</a>(StkFloat frequency, StkFloat radius);
 00043 
-00045   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a3">setStates</a>(MY_FLOAT aFrequency, MY_FLOAT aRadius, MY_FLOAT aGain = 1.0);
+00045   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a3">setStates</a>(StkFloat frequency, StkFloat radius, StkFloat gain = 1.0);
 00046 
-00048   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a4">setTargets</a>(MY_FLOAT aFrequency, MY_FLOAT aRadius, MY_FLOAT aGain = 1.0);
+00048   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a4">setTargets</a>(StkFloat frequency, StkFloat radius, StkFloat gain = 1.0);
 00049 
 00051 
-00059   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a5">setSweepRate</a>(MY_FLOAT aRate);    
+00059   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a5">setSweepRate</a>(StkFloat rate);    
 00060 
 00062 
-00067   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a6">setSweepTime</a>(MY_FLOAT aTime);    
+00067   <span class="keywordtype">void</span> <a class="code" href="classFormSwep.html#a6">setSweepTime</a>(StkFloat time);    
 00068 
-00070   MY_FLOAT <a class="code" href="classFormSwep.html#a7">tick</a>(MY_FLOAT sample);
+00070   StkFloat <a class="code" href="classFormSwep.html#a7">tick</a>(StkFloat sample);
 00071 
-00073   MY_FLOAT *<a class="code" href="classFormSwep.html#a7">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00073   StkFloat *<a class="code" href="classFormSwep.html#a7">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
 00074 
-00075  <span class="keyword">protected</span>:  
-00076   <span class="keywordtype">bool</span> dirty;
-00077   MY_FLOAT frequency;
-00078   MY_FLOAT radius;
-00079   MY_FLOAT startFrequency;
-00080   MY_FLOAT startRadius;
-00081   MY_FLOAT startGain;
-00082   MY_FLOAT targetFrequency;
-00083   MY_FLOAT targetRadius;
-00084   MY_FLOAT targetGain;
-00085   MY_FLOAT deltaFrequency;
-00086   MY_FLOAT deltaRadius;
-00087   MY_FLOAT deltaGain;
-00088   MY_FLOAT sweepState;
-00089   MY_FLOAT sweepRate;
-00090 
-00091 };
-00092 
-00093 <span class="preprocessor">#endif</span>
+00076 
+00082   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classFormSwep.html#a7">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00083 
+00084  <span class="keyword">protected</span>:  
+00085   <span class="keywordtype">bool</span> dirty_;
+00086   StkFloat frequency_;
+00087   StkFloat radius_;
+00088   StkFloat startFrequency_;
+00089   StkFloat startRadius_;
+00090   StkFloat startGain_;
+00091   StkFloat targetFrequency_;
+00092   StkFloat targetRadius_;
+00093   StkFloat targetGain_;
+00094   StkFloat deltaFrequency_;
+00095   StkFloat deltaRadius_;
+00096   StkFloat deltaGain_;
+00097   StkFloat sweepState_;
+00098   StkFloat sweepRate_;
+00099 
+00100 };
+00101 
+00102 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

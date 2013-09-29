@@ -12,14 +12,14 @@
 <h1>Shakers.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00053 <span class="comment">/***************************************************/</span>
 00054 
-00055 <span class="preprocessor">#if !defined(__SHAKERS_H)</span>
-00056 <span class="preprocessor"></span><span class="preprocessor">#define __SHAKERS_H</span>
+00055 <span class="preprocessor">#ifndef STK_SHAKERS_H</span>
+00056 <span class="preprocessor"></span><span class="preprocessor">#define STK_SHAKERS_H</span>
 00057 <span class="preprocessor"></span>
 00058 <span class="preprocessor">#include "Instrmnt.h"</span>
 00059 
-00060 <span class="preprocessor">#define MAX_FREQS 8</span>
-00061 <span class="preprocessor"></span><span class="preprocessor">#define NUM_INSTR 24</span>
-00062 <span class="preprocessor"></span>
+00060 <span class="keyword">const</span> <span class="keywordtype">int</span> MAX_FREQS = 8;
+00061 <span class="keyword">const</span> <span class="keywordtype">int</span> NUM_INSTR = 24;
+00062 
 <a name="l00063"></a><a class="code" href="classShakers.html">00063</a> <span class="keyword">class </span><a class="code" href="classShakers.html">Shakers</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00064 {
 00065  <span class="keyword">public</span>:
@@ -28,59 +28,63 @@
 00070   <a class="code" href="classShakers.html#a1">~Shakers</a>();
 00071 
 00073 
-00077   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classShakers.html#a2">noteOn</a>(MY_FLOAT instrument, MY_FLOAT amplitude);
+00077   <span class="keywordtype">void</span> <a class="code" href="classShakers.html#a2">noteOn</a>(StkFloat instrument, StkFloat amplitude);
 00078 
-00080   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classShakers.html#a3">noteOff</a>(MY_FLOAT amplitude);
+00080   <span class="keywordtype">void</span> <a class="code" href="classShakers.html#a3">noteOff</a>(StkFloat amplitude);
 00081 
-00083   MY_FLOAT <a class="code" href="classShakers.html#a4">tick</a>();
+00083   StkFloat <a class="code" href="classShakers.html#a4">tick</a>();
 00084 
-00086   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classShakers.html#a5">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00086   StkFloat *<a class="code" href="classShakers.html#a4">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
 00087 
-00088  <span class="keyword">protected</span>:
 00089 
-00090   <span class="keywordtype">int</span> setupName(<span class="keywordtype">char</span>* instr);
-00091   <span class="keywordtype">int</span> setupNum(<span class="keywordtype">int</span> inst);
-00092   <span class="keywordtype">int</span> setFreqAndReson(<span class="keywordtype">int</span> which, MY_FLOAT freq, MY_FLOAT reson);
-00093   <span class="keywordtype">void</span> setDecays(MY_FLOAT sndDecay, MY_FLOAT sysDecay);
-00094   <span class="keywordtype">void</span> setFinalZs(MY_FLOAT z0, MY_FLOAT z1, MY_FLOAT z2);
-00095   MY_FLOAT wuter_tick();
-00096   MY_FLOAT tbamb_tick();
-00097   MY_FLOAT ratchet_tick();
-00098 
-00099   <span class="keywordtype">int</span> instType;
-00100   <span class="keywordtype">int</span> ratchetPos, lastRatchetPos;
-00101   MY_FLOAT shakeEnergy;
-00102   MY_FLOAT inputs[MAX_FREQS];
-00103   MY_FLOAT outputs[MAX_FREQS][2];
-00104   MY_FLOAT coeffs[MAX_FREQS][2];
-00105   MY_FLOAT sndLevel;
-00106   MY_FLOAT baseGain;
-00107   MY_FLOAT gains[MAX_FREQS];
-00108   <span class="keywordtype">int</span> nFreqs;
-00109   MY_FLOAT t_center_freqs[MAX_FREQS];
-00110   MY_FLOAT center_freqs[MAX_FREQS];
-00111   MY_FLOAT resons[MAX_FREQS];
-00112   MY_FLOAT freq_rand[MAX_FREQS];
-00113   <span class="keywordtype">int</span> freqalloc[MAX_FREQS];
-00114   MY_FLOAT soundDecay;
-00115   MY_FLOAT systemDecay;
-00116   MY_FLOAT nObjects;
-00117   MY_FLOAT collLikely;
-00118   MY_FLOAT totalEnergy;
-00119   MY_FLOAT ratchet,ratchetDelta;
-00120   MY_FLOAT finalZ[3];
-00121   MY_FLOAT finalZCoeffs[3];
-00122   MY_FLOAT defObjs[NUM_INSTR];
-00123   MY_FLOAT defDecays[NUM_INSTR];
-00124   MY_FLOAT decayScale[NUM_INSTR];
-00125 
-00126 };
-00127 
-00128 <span class="preprocessor">#endif</span>
+00095   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classShakers.html#a4">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00096 
+00098   <span class="keywordtype">void</span> <a class="code" href="classShakers.html#a7">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00099 
+00100  <span class="keyword">protected</span>:
+00101 
+00102   <span class="keywordtype">int</span> setupName(<span class="keywordtype">char</span>* instr);
+00103   <span class="keywordtype">int</span> setupNum(<span class="keywordtype">int</span> inst);
+00104   <span class="keywordtype">int</span> setFreqAndReson(<span class="keywordtype">int</span> which, StkFloat freq, StkFloat reson);
+00105   <span class="keywordtype">void</span> setDecays(StkFloat sndDecay, StkFloat sysDecay);
+00106   <span class="keywordtype">void</span> setFinalZs(StkFloat z0, StkFloat z1, StkFloat z2);
+00107   StkFloat wuter_tick();
+00108   StkFloat tbamb_tick();
+00109   StkFloat ratchet_tick();
+00110 
+00111   <span class="keywordtype">int</span> instType_;
+00112   <span class="keywordtype">int</span> ratchetPos_, lastRatchetPos_;
+00113   StkFloat shakeEnergy_;
+00114   StkFloat inputs_[MAX_FREQS];
+00115   StkFloat outputs_[MAX_FREQS][2];
+00116   StkFloat coeffs_[MAX_FREQS][2];
+00117   StkFloat sndLevel_;
+00118   StkFloat baseGain_;
+00119   StkFloat gains_[MAX_FREQS];
+00120   <span class="keywordtype">int</span> nFreqs_;
+00121   StkFloat t_center_freqs_[MAX_FREQS];
+00122   StkFloat center_freqs_[MAX_FREQS];
+00123   StkFloat resons_[MAX_FREQS];
+00124   StkFloat freq_rand_[MAX_FREQS];
+00125   <span class="keywordtype">int</span> freqalloc_[MAX_FREQS];
+00126   StkFloat soundDecay_;
+00127   StkFloat systemDecay_;
+00128   StkFloat nObjects_;
+00129   StkFloat totalEnergy_;
+00130   StkFloat ratchet_, ratchetDelta_;
+00131   StkFloat finalZ_[3];
+00132   StkFloat finalZCoeffs_[3];
+00133   StkFloat defObjs_[NUM_INSTR];
+00134   StkFloat defDecays_[NUM_INSTR];
+00135   StkFloat decayScale_[NUM_INSTR];
+00136 
+00137 };
+00138 
+00139 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

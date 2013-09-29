@@ -12,28 +12,34 @@
 <h1>BeeThree.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00033 <span class="comment">/***************************************************/</span>
 00034 
-00035 <span class="preprocessor">#if !defined(__BEETHREE_H)</span>
-00036 <span class="preprocessor"></span><span class="preprocessor">#define __BEETHREE_H</span>
+00035 <span class="preprocessor">#ifndef STK_BEETHREE_H</span>
+00036 <span class="preprocessor"></span><span class="preprocessor">#define STK_BEETHREE_H</span>
 00037 <span class="preprocessor"></span>
 00038 <span class="preprocessor">#include "FM.h"</span>
 00039 
 <a name="l00040"></a><a class="code" href="classBeeThree.html">00040</a> <span class="keyword">class </span><a class="code" href="classBeeThree.html">BeeThree</a> : <span class="keyword">public</span> <a class="code" href="classFM.html">FM</a>
 00041 {
 00042  <span class="keyword">public</span>:
-00044   <a class="code" href="classBeeThree.html#a0">BeeThree</a>();
-00045 
-00047   <a class="code" href="classBeeThree.html#a1">~BeeThree</a>();
+00044 
+00047   <a class="code" href="classBeeThree.html#a0">BeeThree</a>();
 00048 
-00050   <span class="keywordtype">void</span> <a class="code" href="classBeeThree.html#a2">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00050   <a class="code" href="classBeeThree.html#a1">~BeeThree</a>();
 00051 
-00053   MY_FLOAT <a class="code" href="classBeeThree.html#a3">tick</a>();
-00054 };
-00055 
-00056 <span class="preprocessor">#endif</span>
+00053   <span class="keywordtype">void</span> <a class="code" href="classBeeThree.html#a2">noteOn</a>(StkFloat frequency, StkFloat amplitude);
+00054 
+00056   StkFloat <a class="code" href="classBeeThree.html#a3">tick</a>();
+00057 
+00059   StkFloat *<a class="code" href="classBeeThree.html#a3">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00060 
+00062 
+00068   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classBeeThree.html#a3">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00069 };
+00070 
+00071 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

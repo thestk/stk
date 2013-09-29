@@ -12,8 +12,8 @@
 <h1>DelayA.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00023 <span class="comment">/***************************************************/</span>
 00024 
-00025 <span class="preprocessor">#if !defined(__DelayA_h)</span>
-00026 <span class="preprocessor"></span><span class="preprocessor">#define __DelayA_h</span>
+00025 <span class="preprocessor">#ifndef STK_DELAYA_H</span>
+00026 <span class="preprocessor"></span><span class="preprocessor">#define STK_DELAYA_H</span>
 00027 <span class="preprocessor"></span>
 00028 <span class="preprocessor">#include "Delay.h"</span>
 00029 
@@ -23,36 +23,41 @@
 00033 
 00035   <a class="code" href="classDelayA.html#a0">DelayA</a>();
 00036 
-00038   
-00039   <a class="code" href="classDelayA.html#a0">DelayA</a>(MY_FLOAT theDelay, <span class="keywordtype">long</span> maxDelay);
-00040 
-00042   <a class="code" href="classDelayA.html#a2">~DelayA</a>();
-00043 
-00045   <span class="keywordtype">void</span> <a class="code" href="classDelayA.html#a3">clear</a>();
-00046 
-00048 
-00051   <span class="keywordtype">void</span> <a class="code" href="classDelayA.html#a4">setDelay</a>(MY_FLOAT theDelay);
+00038 
+00043   <a class="code" href="classDelayA.html#a0">DelayA</a>(StkFloat delay, <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> maxDelay);
+00044 
+00046   <a class="code" href="classDelayA.html#a2">~DelayA</a>();
+00047 
+00049   <span class="keywordtype">void</span> <a class="code" href="classDelayA.html#a3">clear</a>();
+00050 
 00052 
-00054   MY_FLOAT <a class="code" href="classDelayA.html#a5">getDelay</a>(<span class="keywordtype">void</span>);
-00055 
-00057 
-00060   MY_FLOAT <a class="code" href="classDelayA.html#a6">nextOut</a>(<span class="keywordtype">void</span>);
+00055   <span class="keywordtype">void</span> <a class="code" href="classDelayA.html#a4">setDelay</a>(StkFloat delay);
+00056 
+00058   StkFloat <a class="code" href="classDelayA.html#a5">getDelay</a>(<span class="keywordtype">void</span>);
+00059 
 00061 
-00063   MY_FLOAT <a class="code" href="classDelayA.html#a7">tick</a>(MY_FLOAT sample);
-00064 
-00065 <span class="keyword">protected</span>:  
-00066   MY_FLOAT alpha;
-00067   MY_FLOAT coeff;
-00068   MY_FLOAT apInput;
-00069   MY_FLOAT nextOutput;
-00070   <span class="keywordtype">bool</span> doNextOut;
-00071 };
-00072 
-00073 <span class="preprocessor">#endif</span>
+00064   StkFloat <a class="code" href="classDelayA.html#a6">nextOut</a>(<span class="keywordtype">void</span>);
+00065 
+00067   StkFloat <a class="code" href="classDelayA.html#a7">tick</a>(StkFloat sample);
+00068 
+00070   <span class="keyword">virtual</span> StkFloat *<a class="code" href="classDelayA.html#a7">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00071 
+00073 
+00079   <span class="keyword">virtual</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classDelayA.html#a7">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00080 
+00081 <span class="keyword">protected</span>:  
+00082   StkFloat alpha_;
+00083   StkFloat coeff_;
+00084   StkFloat apInput_;
+00085   StkFloat nextOutput_;
+00086   <span class="keywordtype">bool</span> doNextOut_;
+00087 };
+00088 
+00089 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

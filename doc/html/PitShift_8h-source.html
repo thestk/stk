@@ -12,13 +12,13 @@
 <h1>PitShift.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00010 <span class="comment">/***************************************************/</span>
 00011 
-00012 <span class="preprocessor">#if !defined(__PITSHIFT_H)</span>
-00013 <span class="preprocessor"></span><span class="preprocessor">#define __PITSHIFT_H</span>
+00012 <span class="preprocessor">#ifndef STK_PITSHIFT_H</span>
+00013 <span class="preprocessor"></span><span class="preprocessor">#define STK_PITSHIFT_H</span>
 00014 <span class="preprocessor"></span>
-00015 <span class="preprocessor">#include "Stk.h"</span> 
+00015 <span class="preprocessor">#include "Effect.h"</span> 
 00016 <span class="preprocessor">#include "DelayL.h"</span> 
 00017 
-<a name="l00018"></a><a class="code" href="classPitShift.html">00018</a> <span class="keyword">class </span><a class="code" href="classPitShift.html">PitShift</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
+<a name="l00018"></a><a class="code" href="classPitShift.html">00018</a> <span class="keyword">class </span><a class="code" href="classPitShift.html">PitShift</a> : <span class="keyword">public</span> <a class="code" href="classEffect.html">Effect</a>
 00019 {
 00020  <span class="keyword">public</span>:
 00022   <a class="code" href="classPitShift.html#a0">PitShift</a>();
@@ -27,32 +27,31 @@
 00026 
 00028   <span class="keywordtype">void</span> <a class="code" href="classPitShift.html#a2">clear</a>();
 00029 
-00031   <span class="keywordtype">void</span> <a class="code" href="classPitShift.html#a3">setShift</a>(MY_FLOAT shift);
+00031   <span class="keywordtype">void</span> <a class="code" href="classPitShift.html#a3">setShift</a>(StkFloat shift);
 00032 
-00034   <span class="keywordtype">void</span> <a class="code" href="classPitShift.html#a4">setEffectMix</a>(MY_FLOAT mix);
+00034   StkFloat <a class="code" href="classPitShift.html#a4">tick</a>(StkFloat input);
 00035 
-00037   MY_FLOAT <a class="code" href="classPitShift.html#a5">lastOut</a>() <span class="keyword">const</span>;
+00037   StkFloat *<a class="code" href="classPitShift.html#a4">tick</a>( StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize );
 00038 
-00040   MY_FLOAT <a class="code" href="classPitShift.html#a6">tick</a>(MY_FLOAT input);
-00041 
-00043   MY_FLOAT *<a class="code" href="classPitShift.html#a6">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
-00044 
-00045  <span class="keyword">protected</span>:  
-00046   <a class="code" href="classDelayL.html">DelayL</a> *delayLine[2];
-00047   MY_FLOAT lastOutput;
-00048   MY_FLOAT delay[2];
-00049   MY_FLOAT env[2];
-00050   MY_FLOAT effectMix;
-00051   MY_FLOAT rate;
-00052 
-00053 };
-00054 
-00055 <span class="preprocessor">#endif</span>
-00056 <span class="preprocessor"></span>
+00040 
+00046   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classPitShift.html#a4">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00047 
+00048  <span class="keyword">protected</span>:  
+00049   <a class="code" href="classDelayL.html">DelayL</a> delayLine_[2];
+00050   StkFloat delay_[2];
+00051   StkFloat env_[2];
+00052   StkFloat rate_;
+00053   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> delayLength;
+00054   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> halfLength;
+00055 
+00056 };
+00057 
+00058 <span class="preprocessor">#endif</span>
+00059 <span class="preprocessor"></span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

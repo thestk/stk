@@ -12,11 +12,11 @@
 <h1>BlowBotl.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00017 <span class="comment">/***************************************************/</span>
 00018 
-00019 <span class="preprocessor">#if !defined(__BOTTLE_H)</span>
-00020 <span class="preprocessor"></span><span class="preprocessor">#define __BOTTLE_H</span>
+00019 <span class="preprocessor">#ifndef STK_BLOWBOTL_H</span>
+00020 <span class="preprocessor"></span><span class="preprocessor">#define STK_BLOWBOTL_H</span>
 00021 <span class="preprocessor"></span>
 00022 <span class="preprocessor">#include "Instrmnt.h"</span>
-00023 <span class="preprocessor">#include "JetTabl.h"</span>
+00023 <span class="preprocessor">#include "JetTable.h"</span>
 00024 <span class="preprocessor">#include "BiQuad.h"</span>
 00025 <span class="preprocessor">#include "PoleZero.h"</span>
 00026 <span class="preprocessor">#include "Noise.h"</span>
@@ -26,45 +26,51 @@
 <a name="l00030"></a><a class="code" href="classBlowBotl.html">00030</a> <span class="keyword">class </span><a class="code" href="classBlowBotl.html">BlowBotl</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00031 {
 00032  <span class="keyword">public</span>:
-00034   <a class="code" href="classBlowBotl.html#a0">BlowBotl</a>();
-00035 
-00037   <a class="code" href="classBlowBotl.html#a1">~BlowBotl</a>();
+00034 
+00037   <a class="code" href="classBlowBotl.html#a0">BlowBotl</a>();
 00038 
-00040   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a2">clear</a>();
+00040   <a class="code" href="classBlowBotl.html#a1">~BlowBotl</a>();
 00041 
-00043   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a3">setFrequency</a>(MY_FLOAT frequency);
+00043   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a2">clear</a>();
 00044 
-00046   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a4">startBlowing</a>(MY_FLOAT amplitude, MY_FLOAT rate);
+00046   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a3">setFrequency</a>(StkFloat frequency);
 00047 
-00049   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a5">stopBlowing</a>(MY_FLOAT rate);
+00049   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a4">startBlowing</a>(StkFloat amplitude, StkFloat rate);
 00050 
-00052   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a6">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00052   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a5">stopBlowing</a>(StkFloat rate);
 00053 
-00055   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a7">noteOff</a>(MY_FLOAT amplitude);
+00055   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a6">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00056 
-00058   MY_FLOAT <a class="code" href="classBlowBotl.html#a8">tick</a>();
+00058   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a7">noteOff</a>(StkFloat amplitude);
 00059 
-00061   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a9">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00061   StkFloat <a class="code" href="classBlowBotl.html#a8">tick</a>();
 00062 
-00063  <span class="keyword">protected</span>:  
-00064   <a class="code" href="classJetTabl.html">JetTabl</a> *jetTable;
-00065   <a class="code" href="classBiQuad.html">BiQuad</a> *resonator;
-00066   <a class="code" href="classPoleZero.html">PoleZero</a> *dcBlock;
-00067   <a class="code" href="classNoise.html">Noise</a> *noise;
-00068   <a class="code" href="classADSR.html">ADSR</a> *adsr;
-00069   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato;
-00070   MY_FLOAT maxPressure;
-00071   MY_FLOAT noiseGain;
-00072   MY_FLOAT vibratoGain;
-00073   MY_FLOAT outputGain;
+00064   StkFloat *<a class="code" href="classBlowBotl.html#a8">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00065 
+00067 
+00073   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classBlowBotl.html#a8">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
 00074 
-00075 };
-00076 
-00077 <span class="preprocessor">#endif</span>
+00076   <span class="keywordtype">void</span> <a class="code" href="classBlowBotl.html#a11">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00077 
+00078  <span class="keyword">protected</span>:  
+00079   <a class="code" href="classJetTable.html">JetTable</a> jetTable_;
+00080   <a class="code" href="classBiQuad.html">BiQuad</a> resonator_;
+00081   <a class="code" href="classPoleZero.html">PoleZero</a> dcBlock_;
+00082   <a class="code" href="classNoise.html">Noise</a> noise_;
+00083   <a class="code" href="classADSR.html">ADSR</a> adsr_;
+00084   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato_;
+00085   StkFloat maxPressure_;
+00086   StkFloat noiseGain_;
+00087   StkFloat vibratoGain_;
+00088   StkFloat outputGain_;
+00089 
+00090 };
+00091 
+00092 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

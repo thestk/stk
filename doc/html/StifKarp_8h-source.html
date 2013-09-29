@@ -12,8 +12,8 @@
 <h1>StifKarp.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00022 <span class="comment">/***************************************************/</span>
 00023 
-00024 <span class="preprocessor">#if !defined(__StifKarp_h)</span>
-00025 <span class="preprocessor"></span><span class="preprocessor">#define __StifKarp_h</span>
+00024 <span class="preprocessor">#ifndef STK_STIFKARP_H</span>
+00025 <span class="preprocessor"></span><span class="preprocessor">#define STK_STIFKARP_H</span>
 00026 <span class="preprocessor"></span>
 00027 <span class="preprocessor">#include "Instrmnt.h"</span>
 00028 <span class="preprocessor">#include "DelayL.h"</span>
@@ -25,53 +25,59 @@
 <a name="l00034"></a><a class="code" href="classStifKarp.html">00034</a> <span class="keyword">class </span><a class="code" href="classStifKarp.html">StifKarp</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00035 {
 00036  <span class="keyword">public</span>:
-00038   <a class="code" href="classStifKarp.html#a0">StifKarp</a>(MY_FLOAT lowestFrequency);
+00038   <a class="code" href="classStifKarp.html#a0">StifKarp</a>(StkFloat lowestFrequency);
 00039 
 00041   <a class="code" href="classStifKarp.html#a1">~StifKarp</a>();
 00042 
 00044   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a2">clear</a>();
 00045 
-00047   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a3">setFrequency</a>(MY_FLOAT frequency);
+00047   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a3">setFrequency</a>(StkFloat frequency);
 00048 
-00050   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a4">setStretch</a>(MY_FLOAT stretch);
+00050   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a4">setStretch</a>(StkFloat stretch);
 00051 
-00053   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a5">setPickupPosition</a>(MY_FLOAT position);
+00053   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a5">setPickupPosition</a>(StkFloat position);
 00054 
 00056 
-00061   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a6">setBaseLoopGain</a>(MY_FLOAT aGain);
+00061   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a6">setBaseLoopGain</a>(StkFloat aGain);
 00062 
-00064   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a7">pluck</a>(MY_FLOAT amplitude);
+00064   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a7">pluck</a>(StkFloat amplitude);
 00065 
-00067   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a8">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00067   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a8">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00068 
-00070   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a9">noteOff</a>(MY_FLOAT amplitude);
+00070   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a9">noteOff</a>(StkFloat amplitude);
 00071 
-00073   MY_FLOAT <a class="code" href="classStifKarp.html#a10">tick</a>();
+00073   StkFloat <a class="code" href="classStifKarp.html#a10">tick</a>();
 00074 
-00076   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a11">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00076   StkFloat *<a class="code" href="classStifKarp.html#a10">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
 00077 
-00078  <span class="keyword">protected</span>:  
-00079     <a class="code" href="classDelayA.html">DelayA</a> *delayLine;
-00080     <a class="code" href="classDelayL.html">DelayL</a> *combDelay;
-00081     <a class="code" href="classOneZero.html">OneZero</a> *filter;
-00082     <a class="code" href="classNoise.html">Noise</a> *noise;
-00083     <a class="code" href="classBiQuad.html">BiQuad</a> *biQuad[4];
-00084     <span class="keywordtype">long</span> length;
-00085     MY_FLOAT loopGain;
-00086     MY_FLOAT baseLoopGain;
-00087     MY_FLOAT lastFrequency;
-00088     MY_FLOAT lastLength;
-00089     MY_FLOAT stretching;
-00090     MY_FLOAT pluckAmplitude;
-00091     MY_FLOAT pickupPosition;
-00092 
-00093 };
-00094 
-00095 <span class="preprocessor">#endif</span>
+00079 
+00085   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classStifKarp.html#a10">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00086 
+00088   <span class="keywordtype">void</span> <a class="code" href="classStifKarp.html#a13">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00089 
+00090  <span class="keyword">protected</span>:  
+00091     <a class="code" href="classDelayA.html">DelayA</a>  delayLine_;
+00092     <a class="code" href="classDelayL.html">DelayL</a>  combDelay_;
+00093     <a class="code" href="classOneZero.html">OneZero</a> filter_;
+00094     <a class="code" href="classNoise.html">Noise</a>   noise_;
+00095     <a class="code" href="classBiQuad.html">BiQuad</a>  biquad_[4];
+00096 
+00097     <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> length_;
+00098     StkFloat loopGain_;
+00099     StkFloat baseLoopGain_;
+00100     StkFloat lastFrequency_;
+00101     StkFloat lastLength_;
+00102     StkFloat stretching_;
+00103     StkFloat pluckAmplitude_;
+00104     StkFloat pickupPosition_;
+00105 
+00106 };
+00107 
+00108 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

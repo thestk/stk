@@ -12,8 +12,8 @@
 <h1>ADSR.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00016 <span class="comment">/***************************************************/</span>
 00017 
-00018 <span class="preprocessor">#if !defined(__ADSR_H)</span>
-00019 <span class="preprocessor"></span><span class="preprocessor">#define __ADSR_H</span>
+00018 <span class="preprocessor">#ifndef STK_ADSR_H</span>
+00019 <span class="preprocessor"></span><span class="preprocessor">#define STK_ADSR_H</span>
 00020 <span class="preprocessor"></span>
 00021 <span class="preprocessor">#include "Envelope.h"</span>
 00022 
@@ -31,44 +31,47 @@
 00038 
 00040   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a3">keyOff</a>(<span class="keywordtype">void</span>);
 00041 
-00043   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a4">setAttackRate</a>(MY_FLOAT aRate);
+00043   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a4">setAttackRate</a>(StkFloat rate);
 00044 
-00046   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a5">setDecayRate</a>(MY_FLOAT aRate);
+00046   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a5">setDecayRate</a>(StkFloat rate);
 00047 
-00049   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a6">setSustainLevel</a>(MY_FLOAT aLevel);
+00049   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a6">setSustainLevel</a>(StkFloat level);
 00050 
-00052   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a7">setReleaseRate</a>(MY_FLOAT aRate);
+00052   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a7">setReleaseRate</a>(StkFloat rate);
 00053 
-00055   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a8">setAttackTime</a>(MY_FLOAT aTime);
+00055   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a8">setAttackTime</a>(StkFloat time);
 00056 
-00058   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a9">setDecayTime</a>(MY_FLOAT aTime);
+00058   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a9">setDecayTime</a>(StkFloat time);
 00059 
-00061   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a10">setReleaseTime</a>(MY_FLOAT aTime);
+00061   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a10">setReleaseTime</a>(StkFloat time);
 00062 
-00064   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a11">setAllTimes</a>(MY_FLOAT aTime, MY_FLOAT dTime, MY_FLOAT sLevel, MY_FLOAT rTime);
+00064   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a11">setAllTimes</a>(StkFloat aTime, StkFloat dTime, StkFloat sLevel, StkFloat rTime);
 00065 
-00067   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a12">setTarget</a>(MY_FLOAT aTarget);
+00067   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a12">setTarget</a>(StkFloat target);
 00068 
 00070   <span class="keywordtype">int</span> <a class="code" href="classADSR.html#a13">getState</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
 00071 
-00073   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a14">setValue</a>(MY_FLOAT aValue);
+00073   <span class="keywordtype">void</span> <a class="code" href="classADSR.html#a14">setValue</a>(StkFloat value);
 00074 
-00076   MY_FLOAT <a class="code" href="classADSR.html#a15">tick</a>(<span class="keywordtype">void</span>);
+00076   StkFloat <a class="code" href="classADSR.html#a15">tick</a>(<span class="keywordtype">void</span>);
 00077 
-00079   MY_FLOAT *<a class="code" href="classADSR.html#a15">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00079   StkFloat *<a class="code" href="classADSR.html#a15">tick</a>( StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize );
 00080 
-00081  <span class="keyword">protected</span>:  
-00082   MY_FLOAT attackRate;
-00083   MY_FLOAT decayRate;
-00084   MY_FLOAT sustainLevel;
-00085   MY_FLOAT releaseRate;
-00086 };
-00087 
-00088 <span class="preprocessor">#endif</span>
+00082 
+00088   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classADSR.html#a15">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00089 
+00090  <span class="keyword">protected</span>:  
+00091   StkFloat attackRate_;
+00092   StkFloat decayRate_;
+00093   StkFloat sustainLevel_;
+00094   StkFloat releaseRate_;
+00095 };
+00096 
+00097 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

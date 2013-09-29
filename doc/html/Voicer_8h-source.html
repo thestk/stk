@@ -12,16 +12,16 @@
 <h1>Voicer.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00030 <span class="comment">/***************************************************/</span>
 00031 
-00032 <span class="preprocessor">#if !defined(__VOICER_H)</span>
-00033 <span class="preprocessor"></span><span class="preprocessor">#define __VOICER_H</span>
+00032 <span class="preprocessor">#ifndef STK_VOICER_H</span>
+00033 <span class="preprocessor"></span><span class="preprocessor">#define STK_VOICER_H</span>
 00034 <span class="preprocessor"></span>
-00035 <span class="preprocessor">#include "Stk.h"</span>
-00036 <span class="preprocessor">#include "Instrmnt.h"</span>
+00035 <span class="preprocessor">#include "Instrmnt.h"</span>
+00036 <span class="preprocessor">#include &lt;vector&gt;</span>
 00037 
 <a name="l00038"></a><a class="code" href="classVoicer.html">00038</a> <span class="keyword">class </span><a class="code" href="classVoicer.html">Voicer</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
 00039 {
 00040 <span class="keyword">public</span>:
-00042   <a class="code" href="classVoicer.html#a0">Voicer</a>( <span class="keywordtype">int</span> maxInstruments, MY_FLOAT decayTime=0.2 );
+00042   <a class="code" href="classVoicer.html#a0">Voicer</a>( StkFloat decayTime=0.2 );
 00043 
 00045   <a class="code" href="classVoicer.html#a1">~Voicer</a>();
 00046 
@@ -32,66 +32,72 @@
 00060   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a3">removeInstrument</a>( <a class="code" href="classInstrmnt.html">Instrmnt</a> *instrument );
 00061 
 00063 
-00071   <span class="keywordtype">long</span> <a class="code" href="classVoicer.html#a4">noteOn</a>( MY_FLOAT noteNumber, MY_FLOAT amplitude, <span class="keywordtype">int</span> channel=0 );
+00071   <span class="keywordtype">long</span> <a class="code" href="classVoicer.html#a4">noteOn</a>( StkFloat noteNumber, StkFloat amplitude, <span class="keywordtype">int</span> channel=0 );
 00072 
 00074 
-00077   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a5">noteOff</a>( MY_FLOAT noteNumber, MY_FLOAT amplitude, <span class="keywordtype">int</span> channel=0 );
+00077   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a5">noteOff</a>( StkFloat noteNumber, StkFloat amplitude, <span class="keywordtype">int</span> channel=0 );
 00078 
 00080 
-00083   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a5">noteOff</a>( <span class="keywordtype">long</span> tag, MY_FLOAT amplitude );
+00083   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a5">noteOff</a>( <span class="keywordtype">long</span> tag, StkFloat amplitude );
 00084 
 00086 
-00089   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a7">setFrequency</a>( MY_FLOAT noteNumber, <span class="keywordtype">int</span> channel=0 );
+00089   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a7">setFrequency</a>( StkFloat noteNumber, <span class="keywordtype">int</span> channel=0 );
 00090 
 00092 
-00095   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a7">setFrequency</a>( <span class="keywordtype">long</span> tag, MY_FLOAT noteNumber );
+00095   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a7">setFrequency</a>( <span class="keywordtype">long</span> tag, StkFloat noteNumber );
 00096 
-00098   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a9">pitchBend</a>( MY_FLOAT value, <span class="keywordtype">int</span> channel=0 );
+00098   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a9">pitchBend</a>( StkFloat value, <span class="keywordtype">int</span> channel=0 );
 00099 
-00101   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a9">pitchBend</a>( <span class="keywordtype">long</span> tag, MY_FLOAT value );
+00101   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a9">pitchBend</a>( <span class="keywordtype">long</span> tag, StkFloat value );
 00102 
-00104   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a11">controlChange</a>( <span class="keywordtype">int</span> number, MY_FLOAT value, <span class="keywordtype">int</span> channel=0 );
+00104   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a11">controlChange</a>( <span class="keywordtype">int</span> number, StkFloat value, <span class="keywordtype">int</span> channel=0 );
 00105 
-00107   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a11">controlChange</a>( <span class="keywordtype">long</span> tag, <span class="keywordtype">int</span> number, MY_FLOAT value );
+00107   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a11">controlChange</a>( <span class="keywordtype">long</span> tag, <span class="keywordtype">int</span> number, StkFloat value );
 00108 
 00110   <span class="keywordtype">void</span> <a class="code" href="classVoicer.html#a13">silence</a>( <span class="keywordtype">void</span> );
 00111 
-00113   MY_FLOAT <a class="code" href="classVoicer.html#a14">tick</a>();
+00113   StkFloat <a class="code" href="classVoicer.html#a14">tick</a>();
 00114 
-00116   MY_FLOAT *<a class="code" href="classVoicer.html#a14">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00116   StkFloat *<a class="code" href="classVoicer.html#a14">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
 00117 
-00119   MY_FLOAT <a class="code" href="classVoicer.html#a16">lastOut</a>() <span class="keyword">const</span>;
-00120 
-00122   MY_FLOAT <a class="code" href="classVoicer.html#a17">lastOutLeft</a>() <span class="keyword">const</span>;
-00123 
-00125   MY_FLOAT <a class="code" href="classVoicer.html#a18">lastOutRight</a>() <span class="keyword">const</span>;
+00119 
+00125   <span class="keyword">virtual</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classVoicer.html#a14">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
 00126 
-00127 <span class="keyword">protected</span>:
-00128 
-00129   <span class="keyword">typedef</span> <span class="keyword">struct </span>{
-00130     <a class="code" href="classInstrmnt.html">Instrmnt</a> *instrument;
-00131     <span class="keywordtype">long</span> tag;
-00132     MY_FLOAT noteNumber;
-00133     MY_FLOAT frequency;
-00134     <span class="keywordtype">int</span> sounding;
-00135     <span class="keywordtype">int</span> channel;
-00136   } Voice;
+00128   StkFloat <a class="code" href="classVoicer.html#a17">lastOut</a>() <span class="keyword">const</span>;
+00129 
+00131   StkFloat <a class="code" href="classVoicer.html#a18">lastOutLeft</a>() <span class="keyword">const</span>;
+00132 
+00134   StkFloat <a class="code" href="classVoicer.html#a19">lastOutRight</a>() <span class="keyword">const</span>;
+00135 
+00136 <span class="keyword">protected</span>:
 00137 
-00138   <span class="keywordtype">int</span>  nVoices;
-00139   <span class="keywordtype">int</span> maxVoices;
-00140   Voice *voices;
-00141   <span class="keywordtype">long</span> tags;
-00142   <span class="keywordtype">int</span> muteTime;
-00143   MY_FLOAT lastOutput;
-00144   MY_FLOAT lastOutputLeft;
-00145   MY_FLOAT lastOutputRight;
-00146 };
-00147 
-00148 <span class="preprocessor">#endif</span>
+00138   <span class="keyword">struct </span>Voice {
+00139     <a class="code" href="classInstrmnt.html">Instrmnt</a> *instrument;
+00140     <span class="keywordtype">long</span> tag;
+00141     StkFloat noteNumber;
+00142     StkFloat frequency;
+00143     <span class="keywordtype">int</span> sounding;
+00144     <span class="keywordtype">int</span> channel;
+00145 
+00146     <span class="comment">// Default constructor.</span>
+00147     Voice()
+00148       :instrument(0), tag(0), noteNumber(-1.0), frequency(0.0),
+00149          sounding(0), channel(0) {}
+00150   };
+00151 
+00152   std::vector&lt;Voice&gt; voices_;
+00153   <span class="keywordtype">long</span> tags_;
+00154   <span class="keywordtype">int</span> muteTime_;
+00155   StkFloat lastOutput_;
+00156   StkFloat lastOutputLeft_;
+00157   StkFloat lastOutputRight_;
+00158 };
+00159 
+00160 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

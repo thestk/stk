@@ -12,8 +12,8 @@
 <h1>PluckTwo.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00019 <span class="comment">/***************************************************/</span>
 00020 
-00021 <span class="preprocessor">#if !defined(__PLUCKTWO_H)</span>
-00022 <span class="preprocessor"></span><span class="preprocessor">#define __PLUCKTWO_H</span>
+00021 <span class="preprocessor">#ifndef STK_PLUCKTWO_H</span>
+00022 <span class="preprocessor"></span><span class="preprocessor">#define STK_PLUCKTWO_H</span>
 00023 <span class="preprocessor"></span>
 00024 <span class="preprocessor">#include "Instrmnt.h"</span>
 00025 <span class="preprocessor">#include "DelayL.h"</span>
@@ -23,49 +23,55 @@
 <a name="l00029"></a><a class="code" href="classPluckTwo.html">00029</a> <span class="keyword">class </span><a class="code" href="classPluckTwo.html">PluckTwo</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00030 {
 00031  <span class="keyword">public</span>:
-00033   <a class="code" href="classPluckTwo.html#a0">PluckTwo</a>(MY_FLOAT lowestFrequency);
+00033   <a class="code" href="classPluckTwo.html#a0">PluckTwo</a>(StkFloat lowestFrequency);
 00034 
 00036   <span class="keyword">virtual</span> <a class="code" href="classPluckTwo.html#a1">~PluckTwo</a>();
 00037 
 00039   <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a2">clear</a>();
 00040 
-00042   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a3">setFrequency</a>(MY_FLOAT frequency);
+00042   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a3">setFrequency</a>(StkFloat frequency);
 00043 
-00045   <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a4">setDetune</a>(MY_FLOAT detune);
+00045   <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a4">setDetune</a>(StkFloat detune);
 00046 
-00048   <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a5">setFreqAndDetune</a>(MY_FLOAT frequency, MY_FLOAT detune);
+00048   <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a5">setFreqAndDetune</a>(StkFloat frequency, StkFloat detune);
 00049 
-00051   <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a6">setPluckPosition</a>(MY_FLOAT position);
+00051   <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a6">setPluckPosition</a>(StkFloat position);
 00052 
 00054 
-00059   <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a7">setBaseLoopGain</a>(MY_FLOAT aGain);
+00059   <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a7">setBaseLoopGain</a>(StkFloat aGain);
 00060 
-00062   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a8">noteOff</a>(MY_FLOAT amplitude);
+00062   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classPluckTwo.html#a8">noteOff</a>(StkFloat amplitude);
 00063 
-00065   <span class="keyword">virtual</span> MY_FLOAT <a class="code" href="classPluckTwo.html#a9">tick</a>() = 0;
+00065   <span class="keyword">virtual</span> StkFloat <a class="code" href="classPluckTwo.html#a9">tick</a>() = 0;
 00066 
-00067   <span class="keyword">protected</span>:  
-00068     <a class="code" href="classDelayA.html">DelayA</a> *delayLine;
-00069     <a class="code" href="classDelayA.html">DelayA</a> *delayLine2;
-00070     <a class="code" href="classDelayL.html">DelayL</a> *combDelay;
-00071     <a class="code" href="classOneZero.html">OneZero</a> *filter;
-00072     <a class="code" href="classOneZero.html">OneZero</a> *filter2;
-00073     <span class="keywordtype">long</span> length;
-00074     MY_FLOAT loopGain;
-00075     MY_FLOAT baseLoopGain;
-00076     MY_FLOAT lastFrequency;
-00077     MY_FLOAT lastLength;
-00078     MY_FLOAT detuning;
-00079     MY_FLOAT pluckAmplitude;
-00080     MY_FLOAT pluckPosition;
-00081 
-00082 };
-00083 
-00084 <span class="preprocessor">#endif</span>
+00068   <span class="keyword">virtual</span> StkFloat *<a class="code" href="classPluckTwo.html#a9">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize) = 0;
+00069 
+00071 
+00077   <span class="keyword">virtual</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classPluckTwo.html#a9">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 ) = 0;
+00078 
+00079  <span class="keyword">protected</span>:  
+00080     <a class="code" href="classDelayA.html">DelayA</a>  delayLine_;
+00081     <a class="code" href="classDelayA.html">DelayA</a>  delayLine2_;
+00082     <a class="code" href="classDelayL.html">DelayL</a>  combDelay_;
+00083     <a class="code" href="classOneZero.html">OneZero</a> filter_;
+00084     <a class="code" href="classOneZero.html">OneZero</a> filter2_;
+00085 
+00086     <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> length_;
+00087     StkFloat loopGain_;
+00088     StkFloat baseLoopGain_;
+00089     StkFloat lastFrequency_;
+00090     StkFloat lastLength_;
+00091     StkFloat detuning_;
+00092     StkFloat pluckAmplitude_;
+00093     StkFloat pluckPosition_;
+00094 
+00095 };
+00096 
+00097 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

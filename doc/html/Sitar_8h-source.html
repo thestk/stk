@@ -12,8 +12,8 @@
 <h1>Sitar.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00018 <span class="comment">/***************************************************/</span>
 00019 
-00020 <span class="preprocessor">#if !defined(__SITAR_H)</span>
-00021 <span class="preprocessor"></span><span class="preprocessor">#define __SITAR_H</span>
+00020 <span class="preprocessor">#ifndef STK_SITAR_H</span>
+00021 <span class="preprocessor"></span><span class="preprocessor">#define STK_SITAR_H</span>
 00022 <span class="preprocessor"></span>
 00023 <span class="preprocessor">#include "Instrmnt.h"</span>
 00024 <span class="preprocessor">#include "DelayA.h"</span>
@@ -24,41 +24,46 @@
 <a name="l00029"></a><a class="code" href="classSitar.html">00029</a> <span class="keyword">class </span><a class="code" href="classSitar.html">Sitar</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00030 {
 00031  <span class="keyword">public</span>:
-00033   <a class="code" href="classSitar.html#a0">Sitar</a>(MY_FLOAT lowestFrequency);
+00033   <a class="code" href="classSitar.html#a0">Sitar</a>( StkFloat lowestFrequency = 20 );
 00034 
 00036   <a class="code" href="classSitar.html#a1">~Sitar</a>();
 00037 
 00039   <span class="keywordtype">void</span> <a class="code" href="classSitar.html#a2">clear</a>();
 00040 
-00042   <span class="keywordtype">void</span> <a class="code" href="classSitar.html#a3">setFrequency</a>(MY_FLOAT frequency);
+00042   <span class="keywordtype">void</span> <a class="code" href="classSitar.html#a3">setFrequency</a>(StkFloat frequency);
 00043 
-00045   <span class="keywordtype">void</span> <a class="code" href="classSitar.html#a4">pluck</a>(MY_FLOAT amplitude);
+00045   <span class="keywordtype">void</span> <a class="code" href="classSitar.html#a4">pluck</a>(StkFloat amplitude);
 00046 
-00048   <span class="keywordtype">void</span> <a class="code" href="classSitar.html#a5">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00048   <span class="keywordtype">void</span> <a class="code" href="classSitar.html#a5">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00049 
-00051   <span class="keywordtype">void</span> <a class="code" href="classSitar.html#a6">noteOff</a>(MY_FLOAT amplitude);
+00051   <span class="keywordtype">void</span> <a class="code" href="classSitar.html#a6">noteOff</a>(StkFloat amplitude);
 00052 
-00054   MY_FLOAT <a class="code" href="classSitar.html#a7">tick</a>();
+00054   StkFloat <a class="code" href="classSitar.html#a7">tick</a>();
 00055 
-00056  <span class="keyword">protected</span>:  
-00057   <a class="code" href="classDelayA.html">DelayA</a> *delayLine;
-00058   <a class="code" href="classOneZero.html">OneZero</a> *loopFilter;
-00059   <a class="code" href="classNoise.html">Noise</a> *noise;
-00060   <a class="code" href="classADSR.html">ADSR</a> *envelope;
-00061   <span class="keywordtype">long</span> length;
-00062   MY_FLOAT loopGain;
-00063   MY_FLOAT amGain;
-00064   MY_FLOAT delay;
-00065   MY_FLOAT targetDelay;
-00066 
-00067 };
-00068 
-00069 <span class="preprocessor">#endif</span>
-00070 <span class="preprocessor"></span>
+00057   StkFloat *<a class="code" href="classSitar.html#a7">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00058 
+00060 
+00066   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classSitar.html#a7">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00067 
+00068  <span class="keyword">protected</span>:  
+00069   <a class="code" href="classDelayA.html">DelayA</a>  delayLine_;
+00070   <a class="code" href="classOneZero.html">OneZero</a> loopFilter_;
+00071   <a class="code" href="classNoise.html">Noise</a>   noise_;
+00072   <a class="code" href="classADSR.html">ADSR</a>    envelope_;
+00073 
+00074   StkFloat loopGain_;
+00075   StkFloat amGain_;
+00076   StkFloat delay_;
+00077   StkFloat targetDelay_;
+00078 
+00079 };
+00080 
+00081 <span class="preprocessor">#endif</span>
+00082 <span class="preprocessor"></span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

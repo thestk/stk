@@ -12,12 +12,12 @@
 <h1>Bowed.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00022 <span class="comment">/***************************************************/</span>
 00023 
-00024 <span class="preprocessor">#if !defined(__BOWED_H)</span>
-00025 <span class="preprocessor"></span><span class="preprocessor">#define __BOWED_H</span>
+00024 <span class="preprocessor">#ifndef STK_BOWED_H</span>
+00025 <span class="preprocessor"></span><span class="preprocessor">#define STK_BOWED_H</span>
 00026 <span class="preprocessor"></span>
 00027 <span class="preprocessor">#include "Instrmnt.h"</span>
 00028 <span class="preprocessor">#include "DelayL.h"</span>
-00029 <span class="preprocessor">#include "BowTabl.h"</span>
+00029 <span class="preprocessor">#include "BowTable.h"</span>
 00030 <span class="preprocessor">#include "OnePole.h"</span>
 00031 <span class="preprocessor">#include "BiQuad.h"</span>
 00032 <span class="preprocessor">#include "WaveLoop.h"</span>
@@ -26,48 +26,53 @@
 <a name="l00035"></a><a class="code" href="classBowed.html">00035</a> <span class="keyword">class </span><a class="code" href="classBowed.html">Bowed</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00036 {
 00037  <span class="keyword">public</span>:
-00039   <a class="code" href="classBowed.html#a0">Bowed</a>(MY_FLOAT lowestFrequency);
+00039   <a class="code" href="classBowed.html#a0">Bowed</a>(StkFloat lowestFrequency);
 00040 
 00042   <a class="code" href="classBowed.html#a1">~Bowed</a>();
 00043 
 00045   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a2">clear</a>();
 00046 
-00048   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a3">setFrequency</a>(MY_FLOAT frequency);
+00048   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a3">setFrequency</a>(StkFloat frequency);
 00049 
-00051   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a4">setVibrato</a>(MY_FLOAT gain);
+00051   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a4">setVibrato</a>(StkFloat gain);
 00052 
-00054   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a5">startBowing</a>(MY_FLOAT amplitude, MY_FLOAT rate);
+00054   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a5">startBowing</a>(StkFloat amplitude, StkFloat rate);
 00055 
-00057   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a6">stopBowing</a>(MY_FLOAT rate);
+00057   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a6">stopBowing</a>(StkFloat rate);
 00058 
-00060   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a7">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00060   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a7">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00061 
-00063   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a8">noteOff</a>(MY_FLOAT amplitude);
+00063   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a8">noteOff</a>(StkFloat amplitude);
 00064 
-00066   MY_FLOAT <a class="code" href="classBowed.html#a9">tick</a>();
+00066   StkFloat <a class="code" href="classBowed.html#a9">tick</a>();
 00067 
-00069   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a10">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00069   StkFloat *<a class="code" href="classBowed.html#a9">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
 00070 
-00071  <span class="keyword">protected</span>:  
-00072   <a class="code" href="classDelayL.html">DelayL</a> *neckDelay;
-00073   <a class="code" href="classDelayL.html">DelayL</a> *bridgeDelay;
-00074   <a class="code" href="classBowTabl.html">BowTabl</a> *bowTable;
-00075   <a class="code" href="classOnePole.html">OnePole</a> *stringFilter;
-00076   <a class="code" href="classBiQuad.html">BiQuad</a> *bodyFilter;
-00077   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato;
-00078   <a class="code" href="classADSR.html">ADSR</a> *adsr;
-00079   MY_FLOAT maxVelocity;
-00080   MY_FLOAT baseDelay;
-00081   MY_FLOAT vibratoGain;
-00082   MY_FLOAT betaRatio;
-00083 
-00084 };
-00085 
-00086 <span class="preprocessor">#endif</span>
+00072 
+00078   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classBowed.html#a9">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00079 
+00081   <span class="keywordtype">void</span> <a class="code" href="classBowed.html#a12">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00082 
+00083  <span class="keyword">protected</span>:  
+00084   <a class="code" href="classDelayL.html">DelayL</a>   neckDelay_;
+00085   <a class="code" href="classDelayL.html">DelayL</a>   bridgeDelay_;
+00086   <a class="code" href="classBowTable.html">BowTable</a> bowTable_;
+00087   <a class="code" href="classOnePole.html">OnePole</a>  stringFilter_;
+00088   <a class="code" href="classBiQuad.html">BiQuad</a>   bodyFilter_;
+00089   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato_;
+00090   <a class="code" href="classADSR.html">ADSR</a>     adsr_;
+00091   StkFloat maxVelocity_;
+00092   StkFloat baseDelay_;
+00093   StkFloat vibratoGain_;
+00094   StkFloat betaRatio_;
+00095 
+00096 };
+00097 
+00098 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

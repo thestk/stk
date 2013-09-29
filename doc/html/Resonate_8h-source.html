@@ -12,8 +12,8 @@
 <h1>Resonate.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00018 <span class="comment">/***************************************************/</span>
 00019 
-00020 <span class="preprocessor">#if !defined(__RESONATE_H)</span>
-00021 <span class="preprocessor"></span><span class="preprocessor">#define __RESONATE_H</span>
+00020 <span class="preprocessor">#ifndef STK_RESONATE_H</span>
+00021 <span class="preprocessor"></span><span class="preprocessor">#define STK_RESONATE_H</span>
 00022 <span class="preprocessor"></span>
 00023 <span class="preprocessor">#include "Instrmnt.h"</span>
 00024 <span class="preprocessor">#include "ADSR.h"</span>
@@ -29,9 +29,9 @@
 00036 
 00038   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a2">clear</a>();
 00039 
-00041   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a3">setResonance</a>(MY_FLOAT frequency, MY_FLOAT radius);
+00041   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a3">setResonance</a>(StkFloat frequency, StkFloat radius);
 00042 
-00044   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a4">setNotch</a>(MY_FLOAT frequency, MY_FLOAT radius);
+00044   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a4">setNotch</a>(StkFloat frequency, StkFloat radius);
 00045 
 00047   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a5">setEqualGainZeroes</a>();
 00048 
@@ -39,30 +39,35 @@
 00051 
 00053   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a7">keyOff</a>();
 00054 
-00056   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a8">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00056   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a8">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00057 
-00059   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a9">noteOff</a>(MY_FLOAT amplitude);
+00059   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a9">noteOff</a>(StkFloat amplitude);
 00060 
-00062   MY_FLOAT <a class="code" href="classResonate.html#a10">tick</a>();
+00062   StkFloat <a class="code" href="classResonate.html#a10">tick</a>();
 00063 
-00065   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a11">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00065   StkFloat *<a class="code" href="classResonate.html#a10">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
 00066 
-00067  <span class="keyword">protected</span>:  
-00068   <a class="code" href="classADSR.html">ADSR</a>     *adsr;
-00069   <a class="code" href="classBiQuad.html">BiQuad</a>   *filter;
-00070   <a class="code" href="classNoise.html">Noise</a>    *noise;
-00071   MY_FLOAT poleFrequency;
-00072   MY_FLOAT poleRadius;
-00073   MY_FLOAT zeroFrequency;
-00074   MY_FLOAT zeroRadius;
+00068 
+00074   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classResonate.html#a10">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
 00075 
-00076 };
-00077 
-00078 <span class="preprocessor">#endif</span>
+00077   <span class="keywordtype">void</span> <a class="code" href="classResonate.html#a13">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00078 
+00079  <span class="keyword">protected</span>:  
+00080   <a class="code" href="classADSR.html">ADSR</a>     adsr_;
+00081   <a class="code" href="classBiQuad.html">BiQuad</a>   filter_;
+00082   <a class="code" href="classNoise.html">Noise</a>    noise_;
+00083   StkFloat poleFrequency_;
+00084   StkFloat poleRadius_;
+00085   StkFloat zeroFrequency_;
+00086   StkFloat zeroRadius_;
+00087 
+00088 };
+00089 
+00090 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

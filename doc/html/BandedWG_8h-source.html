@@ -12,14 +12,14 @@
 <h1>BandedWG.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00030 <span class="comment">/***************************************************/</span>
 00031 
-00032 <span class="preprocessor">#if !defined(__BANDEDWG_H)</span>
-00033 <span class="preprocessor"></span><span class="preprocessor">#define __BANDEDWG_H</span>
+00032 <span class="preprocessor">#ifndef STK_BANDEDWG_H</span>
+00033 <span class="preprocessor"></span><span class="preprocessor">#define STK_BANDEDWG_H</span>
 00034 <span class="preprocessor"></span>
-00035 <span class="preprocessor">#define MAX_BANDED_MODES 20</span>
-00036 <span class="preprocessor"></span>
+00035 <span class="keyword">const</span> <span class="keywordtype">int</span> MAX_BANDED_MODES = 20;
+00036 
 00037 <span class="preprocessor">#include "Instrmnt.h"</span>
 00038 <span class="preprocessor">#include "DelayL.h"</span>
-00039 <span class="preprocessor">#include "BowTabl.h"</span>
+00039 <span class="preprocessor">#include "BowTable.h"</span>
 00040 <span class="preprocessor">#include "ADSR.h"</span>
 00041 <span class="preprocessor">#include "BiQuad.h"</span>
 00042 
@@ -32,58 +32,63 @@
 00051 
 00053   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a2">clear</a>();
 00054 
-00056   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a3">setStrikePosition</a>(MY_FLOAT position);
+00056   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a3">setStrikePosition</a>(StkFloat position);
 00057 
 00059   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a4">setPreset</a>(<span class="keywordtype">int</span> preset);
 00060 
-00062   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a5">setFrequency</a>(MY_FLOAT frequency);
+00062   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a5">setFrequency</a>(StkFloat frequency);
 00063 
-00065   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a6">startBowing</a>(MY_FLOAT amplitude, MY_FLOAT rate);
+00065   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a6">startBowing</a>(StkFloat amplitude, StkFloat rate);
 00066 
-00068   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a7">stopBowing</a>(MY_FLOAT rate);
+00068   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a7">stopBowing</a>(StkFloat rate);
 00069 
-00071   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a8">pluck</a>(MY_FLOAT amp);
+00071   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a8">pluck</a>(StkFloat amp);
 00072 
-00074   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a9">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00074   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a9">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00075 
-00077   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a10">noteOff</a>(MY_FLOAT amplitude);
+00077   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a10">noteOff</a>(StkFloat amplitude);
 00078 
-00080   MY_FLOAT <a class="code" href="classBandedWG.html#a11">tick</a>();
+00080   StkFloat <a class="code" href="classBandedWG.html#a11">tick</a>();
 00081 
-00083   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a12">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00083   StkFloat *<a class="code" href="classBandedWG.html#a11">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
 00084 
-00085  <span class="keyword">protected</span>:
 00086 
-00087   <span class="keywordtype">bool</span> doPluck;
-00088   <span class="keywordtype">bool</span> trackVelocity;
-00089   <span class="keywordtype">int</span> nModes;
-00090   <span class="keywordtype">int</span> presetModes;
-00091   <a class="code" href="classBowTabl.html">BowTabl</a> *bowTabl;
-00092   <a class="code" href="classADSR.html">ADSR</a> *adsr;
-00093   <a class="code" href="classBiQuad.html">BiQuad</a> *bandpass;
-00094   <a class="code" href="classDelayL.html">DelayL</a> *delay;
-00095   MY_FLOAT maxVelocity;
-00096   MY_FLOAT modes[MAX_BANDED_MODES];
-00097   MY_FLOAT freakency;
-00098   MY_FLOAT baseGain;
-00099   MY_FLOAT gains[MAX_BANDED_MODES];
-00100   MY_FLOAT basegains[MAX_BANDED_MODES];
-00101   MY_FLOAT excitation[MAX_BANDED_MODES];
-00102   MY_FLOAT integrationConstant;
-00103   MY_FLOAT velocityInput;
-00104   MY_FLOAT bowVelocity;
-00105   MY_FLOAT bowTarget;
-00106   MY_FLOAT bowPosition;
-00107   MY_FLOAT strikeAmp;
-00108   <span class="keywordtype">int</span> strikePosition;
-00109 
-00110 };
-00111 
-00112 <span class="preprocessor">#endif</span>
+00092   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classBandedWG.html#a11">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00093 
+00095   <span class="keywordtype">void</span> <a class="code" href="classBandedWG.html#a14">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00096 
+00097  <span class="keyword">protected</span>:
+00098 
+00099   <span class="keywordtype">bool</span> doPluck_;
+00100   <span class="keywordtype">bool</span> trackVelocity_;
+00101   <span class="keywordtype">int</span> nModes_;
+00102   <span class="keywordtype">int</span> presetModes_;
+00103   <a class="code" href="classBowTable.html">BowTable</a> bowTable_;
+00104   <a class="code" href="classADSR.html">ADSR</a>     adsr_;
+00105   <a class="code" href="classBiQuad.html">BiQuad</a>   bandpass_[MAX_BANDED_MODES];
+00106   <a class="code" href="classDelayL.html">DelayL</a>   delay_[MAX_BANDED_MODES];
+00107   StkFloat maxVelocity_;
+00108   StkFloat modes_[MAX_BANDED_MODES];
+00109   StkFloat frequency_;
+00110   StkFloat baseGain_;
+00111   StkFloat gains_[MAX_BANDED_MODES];
+00112   StkFloat basegains_[MAX_BANDED_MODES];
+00113   StkFloat excitation_[MAX_BANDED_MODES];
+00114   StkFloat integrationConstant_;
+00115   StkFloat velocityInput_;
+00116   StkFloat bowVelocity_;
+00117   StkFloat bowTarget_;
+00118   StkFloat bowPosition_;
+00119   StkFloat strikeAmp_;
+00120   <span class="keywordtype">int</span> strikePosition_;
+00121 
+00122 };
+00123 
+00124 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

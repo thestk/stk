@@ -12,104 +12,116 @@
 <h1>WvOut.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00034 <span class="comment">/***************************************************/</span>
 00035 
-00036 <span class="preprocessor">#if !defined(__WVOUT_H)</span>
-00037 <span class="preprocessor"></span><span class="preprocessor">#define __WVOUT_H</span>
+00036 <span class="preprocessor">#ifndef STK_WVOUT_H</span>
+00037 <span class="preprocessor"></span><span class="preprocessor">#define STK_WVOUT_H</span>
 00038 <span class="preprocessor"></span>
 00039 <span class="preprocessor">#include "Stk.h"</span>
-00040 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
-00041 
-00042 <span class="preprocessor">#define BUFFER_SIZE 1024  // sample frames</span>
-00043 <span class="preprocessor"></span>
-<a name="l00044"></a><a class="code" href="classWvOut.html">00044</a> <span class="keyword">class </span><a class="code" href="classWvOut.html">WvOut</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
-00045 {
-00046  <span class="keyword">public</span>:
-00047 
-00048   <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> FILE_TYPE;
-00049 
-<a name="l00050"></a><a class="code" href="classWvOut.html#s0">00050</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s0">WVOUT_RAW</a>; 
-<a name="l00051"></a><a class="code" href="classWvOut.html#s1">00051</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s1">WVOUT_WAV</a>; 
-<a name="l00052"></a><a class="code" href="classWvOut.html#s2">00052</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s2">WVOUT_SND</a>; 
-<a name="l00053"></a><a class="code" href="classWvOut.html#s3">00053</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s3">WVOUT_AIF</a>; 
-<a name="l00054"></a><a class="code" href="classWvOut.html#s4">00054</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s4">WVOUT_MAT</a>; 
-00056 
-00057   <a class="code" href="classWvOut.html#a0">WvOut</a>();
-00058 
-00060 
-00063   <a class="code" href="classWvOut.html#a0">WvOut</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = 1, FILE_TYPE type = WVOUT_WAV, Stk::STK_FORMAT format = STK_SINT16 );
-00064 
-00066   <span class="keyword">virtual</span> <a class="code" href="classWvOut.html#a2">~WvOut</a>();
-00067 
-00069 
-00072   <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a3">openFile</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = 1,
-00073                  WvOut::FILE_TYPE type = WVOUT_WAV, Stk::STK_FORMAT format = STK_SINT16 );
-00074 
-00076   <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a4">closeFile</a>( <span class="keywordtype">void</span> );
-00077 
-00079   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="classWvOut.html#a5">getFrames</a>( <span class="keywordtype">void</span> ) <span class="keyword">const</span>;
-00080 
-00082   MY_FLOAT <a class="code" href="classWvOut.html#a6">getTime</a>( <span class="keywordtype">void</span> ) <span class="keyword">const</span>;
-00083 
+00040 
+00041 <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> BUFFER_SIZE = 1024;  <span class="comment">// sample frames</span>
+00042 
+<a name="l00043"></a><a class="code" href="classWvOut.html">00043</a> <span class="keyword">class </span><a class="code" href="classWvOut.html">WvOut</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
+00044 {
+00045  <span class="keyword">public</span>:
+00046 
+00047   <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> FILE_TYPE;
+00048 
+<a name="l00049"></a><a class="code" href="classWvOut.html#s0">00049</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s0">WVOUT_RAW</a>; 
+<a name="l00050"></a><a class="code" href="classWvOut.html#s1">00050</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s1">WVOUT_WAV</a>; 
+<a name="l00051"></a><a class="code" href="classWvOut.html#s2">00051</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s2">WVOUT_SND</a>; 
+<a name="l00052"></a><a class="code" href="classWvOut.html#s3">00052</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s3">WVOUT_AIF</a>; 
+<a name="l00053"></a><a class="code" href="classWvOut.html#s4">00053</a>   <span class="keyword">static</span> <span class="keyword">const</span> FILE_TYPE <a class="code" href="classWvOut.html#s4">WVOUT_MAT</a>; 
+00055 
+00056   <a class="code" href="classWvOut.html#a0">WvOut</a>();
+00057 
+00059 
+00062   <a class="code" href="classWvOut.html#a0">WvOut</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = 1, FILE_TYPE type = WVOUT_WAV, Stk::StkFormat format = STK_SINT16 );
+00063 
+00065   <span class="keyword">virtual</span> <a class="code" href="classWvOut.html#a2">~WvOut</a>();
+00066 
+00068 
+00071   <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a3">openFile</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = 1,
+00072                  WvOut::FILE_TYPE type = WVOUT_WAV, Stk::StkFormat format = STK_SINT16 );
+00073 
+00075   <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a4">closeFile</a>( <span class="keywordtype">void</span> );
+00076 
+00078   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="classWvOut.html#a5">getFrames</a>( <span class="keywordtype">void</span> ) <span class="keyword">const</span>;
+00079 
+00081   StkFloat <a class="code" href="classWvOut.html#a6">getTime</a>( <span class="keywordtype">void</span> ) <span class="keyword">const</span>;
+00082 
+<a name="l00084"></a><a class="code" href="classWvOut.html#a7">00084</a>   <span class="keywordtype">bool</span> <a class="code" href="classWvOut.html#a7">getClipStatus</a>( <span class="keywordtype">void</span> ) { <span class="keywordflow">return</span> clipping_; };
 00085 
-00088   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a7">tick</a>(<span class="keyword">const</span> MY_FLOAT sample);
-00089 
-00091 
-00094   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a7">tick</a>(<span class="keyword">const</span> MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
-00095 
-00097 
-00100   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a9">tickFrame</a>(<span class="keyword">const</span> MY_FLOAT *frameVector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> frames = 1);
-00101 
-00102  <span class="keyword">protected</span>:
-00103 
-00104   <span class="comment">// Initialize class variables.</span>
-00105   <span class="keywordtype">void</span> init( <span class="keywordtype">void</span> );
-00106 
-00107   <span class="comment">// Write data to output file;</span>
-00108   <span class="keyword">virtual</span> <span class="keywordtype">void</span> writeData( <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> frames );
+<a name="l00087"></a><a class="code" href="classWvOut.html#a8">00087</a>   <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a8">resetClipStatus</a>( <span class="keywordtype">void</span> ) { clipping_ = <span class="keyword">false</span>; };
+00088 
+00090 
+00093   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a9">tick</a>(<span class="keyword">const</span> StkFloat sample);
+00094 
+00096 
+00099   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a9">tick</a>( <span class="keyword">const</span> StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize );
+00100 
+00102 
+00108   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a9">tick</a>( <span class="keyword">const</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
 00109 
-00110   <span class="comment">// Write STK RAW file header.</span>
-00111   <span class="keywordtype">bool</span> setRawFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
-00112 
-00113   <span class="comment">// Write WAV file header.</span>
-00114   <span class="keywordtype">bool</span> setWavFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
+00111 
+00114   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a12">tickFrame</a>( <span class="keyword">const</span> StkFloat *frameVector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> frames = 1);
 00115 
-00116   <span class="comment">// Close WAV file, updating the header.</span>
-00117   <span class="keywordtype">void</span> closeWavFile( <span class="keywordtype">void</span> );
-00118 
-00119   <span class="comment">// Write SND (AU) file header.</span>
-00120   <span class="keywordtype">bool</span> setSndFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
-00121 
-00122   <span class="comment">// Close SND file, updating the header.</span>
-00123   <span class="keywordtype">void</span> closeSndFile( <span class="keywordtype">void</span> );
-00124 
-00125   <span class="comment">// Write AIFF file header.</span>
-00126   <span class="keywordtype">bool</span> setAifFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
-00127 
-00128   <span class="comment">// Close AIFF file, updating the header.</span>
-00129   <span class="keywordtype">void</span> closeAifFile( <span class="keywordtype">void</span> );
-00130 
-00131   <span class="comment">// Write MAT-file header.</span>
-00132   <span class="keywordtype">bool</span> setMatFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
-00133 
-00134   <span class="comment">// Close MAT-file, updating the header.</span>
-00135   <span class="keywordtype">void</span> closeMatFile( <span class="keywordtype">void</span> );
-00136 
-00137   <span class="keywordtype">char</span> msg[256];
-00138   FILE *fd;
-00139   MY_FLOAT *data;
-00140   FILE_TYPE fileType;
-00141   STK_FORMAT dataType;
-00142   <span class="keywordtype">bool</span> byteswap;
-00143   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channels;
-00144   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> counter;
-00145   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> totalCount;
+00117 
+00122   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWvOut.html#a12">tickFrame</a>( <span class="keyword">const</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames );
+00123 
+00124  <span class="keyword">protected</span>:
+00125 
+00126   <span class="comment">// Initialize class variables.</span>
+00127   <span class="keywordtype">void</span> init( <span class="keywordtype">void</span> );
+00128 
+00129   <span class="comment">// Write data to output file;</span>
+00130   <span class="keyword">virtual</span> <span class="keywordtype">void</span> writeData( <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> frames );
+00131 
+00132   <span class="comment">// Check for sample clipping and clamp.</span>
+00133   <span class="keywordtype">void</span> clipTest( StkFloat&amp; sample );
+00134 
+00135   <span class="comment">// Write STK RAW file header.</span>
+00136   <span class="keywordtype">bool</span> setRawFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
+00137 
+00138   <span class="comment">// Write WAV file header.</span>
+00139   <span class="keywordtype">bool</span> setWavFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
+00140 
+00141   <span class="comment">// Close WAV file, updating the header.</span>
+00142   <span class="keywordtype">void</span> closeWavFile( <span class="keywordtype">void</span> );
+00143 
+00144   <span class="comment">// Write SND (AU) file header.</span>
+00145   <span class="keywordtype">bool</span> setSndFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
 00146 
-00147 };
-00148 
-00149 <span class="preprocessor">#endif // defined(__WVOUT_H)</span>
+00147   <span class="comment">// Close SND file, updating the header.</span>
+00148   <span class="keywordtype">void</span> closeSndFile( <span class="keywordtype">void</span> );
+00149 
+00150   <span class="comment">// Write AIFF file header.</span>
+00151   <span class="keywordtype">bool</span> setAifFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
+00152 
+00153   <span class="comment">// Close AIFF file, updating the header.</span>
+00154   <span class="keywordtype">void</span> closeAifFile( <span class="keywordtype">void</span> );
+00155 
+00156   <span class="comment">// Write MAT-file header.</span>
+00157   <span class="keywordtype">bool</span> setMatFile( <span class="keyword">const</span> <span class="keywordtype">char</span> *fileName );
+00158 
+00159   <span class="comment">// Close MAT-file, updating the header.</span>
+00160   <span class="keywordtype">void</span> closeMatFile( <span class="keywordtype">void</span> );
+00161 
+00162   FILE *fd_;
+00163   std::valarray&lt;StkFloat&gt; data_;
+00164   FILE_TYPE fileType_;
+00165   StkFormat dataType_;
+00166   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channels_;
+00167   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> counter_;
+00168   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> totalCount_;
+00169   <span class="keywordtype">bool</span> byteswap_;
+00170   <span class="keywordtype">bool</span> clipping_;
+00171 
+00172 };
+00173 
+00174 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

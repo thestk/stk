@@ -12,8 +12,8 @@
 <h1>VoicForm.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00026 <span class="comment">/***************************************************/</span>
 00027 
-00028 <span class="preprocessor">#if !defined(__VOICFORM_H)</span>
-00029 <span class="preprocessor"></span><span class="preprocessor">#define __VOICFORM_H</span>
+00028 <span class="preprocessor">#ifndef STK_VOICFORM_H</span>
+00029 <span class="preprocessor"></span><span class="preprocessor">#define STK_VOICFORM_H</span>
 00030 <span class="preprocessor"></span>
 00031 <span class="preprocessor">#include "Instrmnt.h"</span>
 00032 <span class="preprocessor">#include "Envelope.h"</span>
@@ -26,51 +26,57 @@
 <a name="l00039"></a><a class="code" href="classVoicForm.html">00039</a> <span class="keyword">class </span><a class="code" href="classVoicForm.html">VoicForm</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00040 {
 00041   <span class="keyword">public</span>:
-00043   <a class="code" href="classVoicForm.html#a0">VoicForm</a>();
-00044 
-00046   <a class="code" href="classVoicForm.html#a1">~VoicForm</a>();
+00043 
+00046   <a class="code" href="classVoicForm.html#a0">VoicForm</a>();
 00047 
-00049   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a2">clear</a>();
+00049   <a class="code" href="classVoicForm.html#a1">~VoicForm</a>();
 00050 
-00052   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a3">setFrequency</a>(MY_FLOAT frequency);
+00052   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a2">clear</a>();
 00053 
-00055   <span class="keywordtype">bool</span> <a class="code" href="classVoicForm.html#a4">setPhoneme</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* phoneme);
+00055   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a3">setFrequency</a>(StkFloat frequency);
 00056 
-00058   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a5">setVoiced</a>(MY_FLOAT vGain);
+00058   <span class="keywordtype">bool</span> <a class="code" href="classVoicForm.html#a4">setPhoneme</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* phoneme);
 00059 
-00061   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a6">setUnVoiced</a>(MY_FLOAT nGain);
+00061   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a5">setVoiced</a>(StkFloat vGain);
 00062 
-00064   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a7">setFilterSweepRate</a>(<span class="keywordtype">int</span> whichOne, MY_FLOAT rate);
+00064   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a6">setUnVoiced</a>(StkFloat nGain);
 00065 
-00067   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a8">setPitchSweepRate</a>(MY_FLOAT rate);
+00067   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a7">setFilterSweepRate</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> whichOne, StkFloat rate);
 00068 
-00070   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a9">speak</a>();
+00070   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a8">setPitchSweepRate</a>(StkFloat rate);
 00071 
-00073   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a10">quiet</a>();
+00073   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a9">speak</a>();
 00074 
-00076   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a11">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00076   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a10">quiet</a>();
 00077 
-00079   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a12">noteOff</a>(MY_FLOAT amplitude);
+00079   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a11">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00080 
-00082   MY_FLOAT <a class="code" href="classVoicForm.html#a13">tick</a>();
+00082   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a12">noteOff</a>(StkFloat amplitude);
 00083 
-00085   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a14">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00085   StkFloat <a class="code" href="classVoicForm.html#a13">tick</a>();
 00086 
-00087 <span class="keyword">protected</span>:
-00088   <a class="code" href="classSingWave.html">SingWave</a> *voiced;
-00089   <a class="code" href="classNoise.html">Noise</a>    *noise;
-00090   <a class="code" href="classEnvelope.html">Envelope</a> *noiseEnv;
-00091   <a class="code" href="classFormSwep.html">FormSwep</a>  *filters[4];
-00092   <a class="code" href="classOnePole.html">OnePole</a>  *onepole;
-00093   <a class="code" href="classOneZero.html">OneZero</a>  *onezero;
-00094 
-00095 };
-00096 
-00097 <span class="preprocessor">#endif</span>
+00088   StkFloat *<a class="code" href="classVoicForm.html#a13">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00089 
+00091 
+00097   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classVoicForm.html#a13">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00098 
+00100   <span class="keywordtype">void</span> <a class="code" href="classVoicForm.html#a16">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00101 
+00102 <span class="keyword">protected</span>:
+00103   <a class="code" href="classSingWave.html">SingWave</a> *voiced_;
+00104   <a class="code" href="classNoise.html">Noise</a>    noise_;
+00105   <a class="code" href="classEnvelope.html">Envelope</a> noiseEnv_;
+00106   <a class="code" href="classFormSwep.html">FormSwep</a> filters_[4];
+00107   <a class="code" href="classOnePole.html">OnePole</a>  onepole_;
+00108   <a class="code" href="classOneZero.html">OneZero</a>  onezero_;
+00109 
+00110 };
+00111 
+00112 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

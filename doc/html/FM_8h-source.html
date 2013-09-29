@@ -12,8 +12,8 @@
 <h1>FM.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00024 <span class="comment">/***************************************************/</span>
 00025 
-00026 <span class="preprocessor">#if !defined(__FM_H)</span>
-00027 <span class="preprocessor"></span><span class="preprocessor">#define __FM_H</span>
+00026 <span class="preprocessor">#ifndef STK_FM_H</span>
+00027 <span class="preprocessor"></span><span class="preprocessor">#define STK_FM_H</span>
 00028 <span class="preprocessor"></span>
 00029 <span class="preprocessor">#include "Instrmnt.h"</span>
 00030 <span class="preprocessor">#include "ADSR.h"</span>
@@ -23,61 +23,67 @@
 <a name="l00034"></a><a class="code" href="classFM.html">00034</a> <span class="keyword">class </span><a class="code" href="classFM.html">FM</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00035 {
 00036  <span class="keyword">public</span>:
-00038   <a class="code" href="classFM.html#a0">FM</a>( <span class="keywordtype">int</span> operators = 4 );
-00039 
-00041   <span class="keyword">virtual</span> <a class="code" href="classFM.html#a1">~FM</a>();
+00038 
+00041   <a class="code" href="classFM.html#a0">FM</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> operators = 4 );
 00042 
-00044   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a2">clear</a>();
+00044   <span class="keyword">virtual</span> <a class="code" href="classFM.html#a1">~FM</a>();
 00045 
-00047   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a3">loadWaves</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> **filenames);
+00047   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a2">clear</a>();
 00048 
-00050   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classFM.html#a4">setFrequency</a>(MY_FLOAT frequency);
+00050   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a3">loadWaves</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> **filenames);
 00051 
-00053   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a5">setRatio</a>(<span class="keywordtype">int</span> waveIndex, MY_FLOAT ratio);
+00053   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classFM.html#a4">setFrequency</a>(StkFloat frequency);
 00054 
-00056   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a6">setGain</a>(<span class="keywordtype">int</span> waveIndex, MY_FLOAT gain);
+00056   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a5">setRatio</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> waveIndex, StkFloat ratio);
 00057 
-00059   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a7">setModulationSpeed</a>(MY_FLOAT mSpeed);
+00059   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a6">setGain</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> waveIndex, StkFloat gain);
 00060 
-00062   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a8">setModulationDepth</a>(MY_FLOAT mDepth);
+00062   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a7">setModulationSpeed</a>(StkFloat mSpeed);
 00063 
-00065   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a9">setControl1</a>(MY_FLOAT cVal);
+00065   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a8">setModulationDepth</a>(StkFloat mDepth);
 00066 
-00068   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a10">setControl2</a>(MY_FLOAT cVal);
+00068   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a9">setControl1</a>(StkFloat cVal);
 00069 
-00071   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a11">keyOn</a>();
+00071   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a10">setControl2</a>(StkFloat cVal);
 00072 
-00074   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a12">keyOff</a>();
+00074   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a11">keyOn</a>();
 00075 
-00077   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a13">noteOff</a>(MY_FLOAT amplitude);
+00077   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a12">keyOff</a>();
 00078 
-00080   <span class="keyword">virtual</span> MY_FLOAT <a class="code" href="classFM.html#a14">tick</a>() = 0;
+00080   <span class="keywordtype">void</span> <a class="code" href="classFM.html#a13">noteOff</a>(StkFloat amplitude);
 00081 
-00083   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classFM.html#a15">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00083   <span class="keyword">virtual</span> StkFloat <a class="code" href="classFM.html#a14">tick</a>() = 0;
 00084 
-00085  <span class="keyword">protected</span>:  
-00086   <a class="code" href="classADSR.html">ADSR</a>     **adsr; 
-00087   <a class="code" href="classWaveLoop.html">WaveLoop</a> **waves;
-00088   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato;
-00089   <a class="code" href="classTwoZero.html">TwoZero</a>  *twozero;
-00090   <span class="keywordtype">int</span> nOperators;
-00091   MY_FLOAT baseFrequency;
-00092   MY_FLOAT *ratios;
-00093   MY_FLOAT *gains;
-00094   MY_FLOAT modDepth;
-00095   MY_FLOAT control1;
-00096   MY_FLOAT control2;
-00097   MY_FLOAT __FM_gains[100];
-00098   MY_FLOAT __FM_susLevels[16];
-00099   MY_FLOAT __FM_attTimes[32];
-00100 
-00101 };
-00102 
-00103 <span class="preprocessor">#endif</span>
+00086   <span class="keyword">virtual</span> StkFloat *<a class="code" href="classFM.html#a14">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize) = 0;
+00087 
+00089 
+00095   <span class="keyword">virtual</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classFM.html#a14">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 ) = 0;
+00096 
+00098   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classFM.html#a17">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00099 
+00100  <span class="keyword">protected</span>:  
+00101   std::vector&lt;ADSR *&gt; adsr_; 
+00102   std::vector&lt;WaveLoop *&gt; waves_;
+00103   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato_;
+00104   <a class="code" href="classTwoZero.html">TwoZero</a>  twozero_;
+00105   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nOperators_;
+00106   StkFloat baseFrequency_;
+00107   std::vector&lt;StkFloat&gt; ratios_;
+00108   std::vector&lt;StkFloat&gt; gains_;
+00109   StkFloat modDepth_;
+00110   StkFloat control1_;
+00111   StkFloat control2_;
+00112   StkFloat fmGains_[100];
+00113   StkFloat fmSusLevels_[16];
+00114   StkFloat fmAttTimes_[32];
+00115 
+00116 };
+00117 
+00118 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

@@ -12,54 +12,48 @@
 <h1>Chorus.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00009 <span class="comment">/***************************************************/</span>
 00010 
-00011 <span class="preprocessor">#if !defined(__CHORUS_H)</span>
-00012 <span class="preprocessor"></span><span class="preprocessor">#define __CHORUS_H</span>
+00011 <span class="preprocessor">#ifndef STK_CHORUS_H</span>
+00012 <span class="preprocessor"></span><span class="preprocessor">#define STK_CHORUS_H</span>
 00013 <span class="preprocessor"></span>
-00014 <span class="preprocessor">#include "Stk.h"</span> 
+00014 <span class="preprocessor">#include "Effect.h"</span> 
 00015 <span class="preprocessor">#include "DelayL.h"</span> 
 00016 <span class="preprocessor">#include "WaveLoop.h"</span> 
 00017 
-<a name="l00018"></a><a class="code" href="classChorus.html">00018</a> <span class="keyword">class </span><a class="code" href="classChorus.html">Chorus</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
+<a name="l00018"></a><a class="code" href="classChorus.html">00018</a> <span class="keyword">class </span><a class="code" href="classChorus.html">Chorus</a> : <span class="keyword">public</span> <a class="code" href="classEffect.html">Effect</a>
 00019 {
 00020  <span class="keyword">public</span>:
-00022   <a class="code" href="classChorus.html#a0">Chorus</a>(MY_FLOAT baseDelay);
-00023 
-00025   <a class="code" href="classChorus.html#a1">~Chorus</a>();
+00022 
+00025   <a class="code" href="classChorus.html#a0">Chorus</a>( StkFloat baseDelay = 6000 );
 00026 
-00028   <span class="keywordtype">void</span> <a class="code" href="classChorus.html#a2">clear</a>();
+00028   <a class="code" href="classChorus.html#a1">~Chorus</a>();
 00029 
-00031   <span class="keywordtype">void</span> <a class="code" href="classChorus.html#a3">setModDepth</a>(MY_FLOAT depth);
+00031   <span class="keywordtype">void</span> <a class="code" href="classChorus.html#a2">clear</a>();
 00032 
-00034   <span class="keywordtype">void</span> <a class="code" href="classChorus.html#a4">setModFrequency</a>(MY_FLOAT frequency);
+00034   <span class="keywordtype">void</span> <a class="code" href="classChorus.html#a3">setModDepth</a>(StkFloat depth);
 00035 
-00037   <span class="keywordtype">void</span> <a class="code" href="classChorus.html#a5">setEffectMix</a>(MY_FLOAT mix);
+00037   <span class="keywordtype">void</span> <a class="code" href="classChorus.html#a4">setModFrequency</a>(StkFloat frequency);
 00038 
-00040   MY_FLOAT <a class="code" href="classChorus.html#a6">lastOut</a>() <span class="keyword">const</span>;
+00040   StkFloat <a class="code" href="classChorus.html#a5">tick</a>(StkFloat input);
 00041 
-00043   MY_FLOAT <a class="code" href="classChorus.html#a7">lastOutLeft</a>() <span class="keyword">const</span>;
+00043   StkFloat *<a class="code" href="classChorus.html#a5">tick</a>( StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize );
 00044 
-00046   MY_FLOAT <a class="code" href="classChorus.html#a8">lastOutRight</a>() <span class="keyword">const</span>;
-00047 
-00049   MY_FLOAT <a class="code" href="classChorus.html#a9">tick</a>(MY_FLOAT input);
-00050 
-00052   MY_FLOAT *<a class="code" href="classChorus.html#a9">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00046 
+00052   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classChorus.html#a5">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
 00053 
 00054  <span class="keyword">protected</span>:  
-00055   <a class="code" href="classDelayL.html">DelayL</a> *delayLine[2];
-00056   <a class="code" href="classWaveLoop.html">WaveLoop</a> *mods[2];
-00057   MY_FLOAT baseLength;
-00058   MY_FLOAT modDepth;
-00059   MY_FLOAT lastOutput[2];
-00060   MY_FLOAT effectMix;
+00055   <a class="code" href="classDelayL.html">DelayL</a> delayLine_[2];
+00056   <a class="code" href="classWaveLoop.html">WaveLoop</a> *mods_[2];
+00057   StkFloat baseLength_;
+00058   StkFloat modDepth_;
+00059 
+00060 };
 00061 
-00062 };
-00063 
-00064 <span class="preprocessor">#endif</span>
-00065 <span class="preprocessor"></span>
+00062 <span class="preprocessor">#endif</span>
+00063 <span class="preprocessor"></span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

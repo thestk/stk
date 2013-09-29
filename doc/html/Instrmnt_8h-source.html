@@ -12,47 +12,49 @@
 <h1>Instrmnt.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00010 <span class="comment">/***************************************************/</span>
 00011 
-00012 <span class="preprocessor">#if !defined(__INSTRMNT_H)</span>
-00013 <span class="preprocessor"></span><span class="preprocessor">#define __INSTRMNT_H</span>
+00012 <span class="preprocessor">#ifndef STK_INSTRMNT_H</span>
+00013 <span class="preprocessor"></span><span class="preprocessor">#define STK_INSTRMNT_H</span>
 00014 <span class="preprocessor"></span>
 00015 <span class="preprocessor">#include "Stk.h"</span>
-00016 <span class="preprocessor">#include &lt;iostream&gt;</span>
-00017 
-<a name="l00018"></a><a class="code" href="classInstrmnt.html">00018</a> <span class="keyword">class </span><a class="code" href="classInstrmnt.html">Instrmnt</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
-00019 {
-00020  <span class="keyword">public</span>:
-00022   <a class="code" href="classInstrmnt.html#a0">Instrmnt</a>();
-00023 
-00025   <span class="keyword">virtual</span> <a class="code" href="classInstrmnt.html#a1">~Instrmnt</a>();
-00026 
-00028   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classInstrmnt.html#a2">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude) = 0;
-00029 
-00031   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classInstrmnt.html#a3">noteOff</a>(MY_FLOAT amplitude) = 0;
-00032 
-00034   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classInstrmnt.html#a4">setFrequency</a>(MY_FLOAT frequency);
-00035 
-00037   MY_FLOAT <a class="code" href="classInstrmnt.html#a5">lastOut</a>() <span class="keyword">const</span>;
-00038 
-00040   MY_FLOAT <a class="code" href="classInstrmnt.html#a6">lastOutLeft</a>() <span class="keyword">const</span>;
-00041 
-00043   MY_FLOAT <a class="code" href="classInstrmnt.html#a7">lastOutRight</a>() <span class="keyword">const</span>;
-00044 
-00046   <span class="keyword">virtual</span> MY_FLOAT <a class="code" href="classInstrmnt.html#a8">tick</a>() = 0;
-00047 
-00049   <span class="keyword">virtual</span> MY_FLOAT *<a class="code" href="classInstrmnt.html#a8">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
-00050   
-00052   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classInstrmnt.html#a10">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
-00053 
-00054   <span class="keyword">protected</span>:
-00055     MY_FLOAT lastOutput;
-00056 
-00057 };
+00016 
+<a name="l00017"></a><a class="code" href="classInstrmnt.html">00017</a> <span class="keyword">class </span><a class="code" href="classInstrmnt.html">Instrmnt</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
+00018 {
+00019  <span class="keyword">public</span>:
+00021   <a class="code" href="classInstrmnt.html#a0">Instrmnt</a>();
+00022 
+00024   <span class="keyword">virtual</span> <a class="code" href="classInstrmnt.html#a1">~Instrmnt</a>();
+00025 
+00027   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classInstrmnt.html#a2">noteOn</a>(StkFloat frequency, StkFloat amplitude) = 0;
+00028 
+00030   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classInstrmnt.html#a3">noteOff</a>(StkFloat amplitude) = 0;
+00031 
+00033   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classInstrmnt.html#a4">setFrequency</a>(StkFloat frequency);
+00034 
+00036   StkFloat <a class="code" href="classInstrmnt.html#a5">lastOut</a>() <span class="keyword">const</span>;
+00037 
+00039   StkFloat <a class="code" href="classInstrmnt.html#a6">lastOutLeft</a>() <span class="keyword">const</span>;
+00040 
+00042   StkFloat <a class="code" href="classInstrmnt.html#a7">lastOutRight</a>() <span class="keyword">const</span>;
+00043 
+00045   <span class="keyword">virtual</span> StkFloat <a class="code" href="classInstrmnt.html#a8">tick</a>() = 0;
+00046 
+00048   <span class="keyword">virtual</span> StkFloat *<a class="code" href="classInstrmnt.html#a8">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00049 
+00051 
+00057   <span class="keyword">virtual</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classInstrmnt.html#a8">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
 00058 
-00059 <span class="preprocessor">#endif</span>
+00060   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classInstrmnt.html#a11">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00061 
+00062   <span class="keyword">protected</span>:
+00063     StkFloat lastOutput_;
+00064 
+00065 };
+00066 
+00067 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

@@ -12,12 +12,12 @@
 <h1>Phonemes.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00011 <span class="comment">/***************************************************/</span>
 00012 
-00013 <span class="preprocessor">#if !defined(__PHONEMES_H)</span>
-00014 <span class="preprocessor"></span><span class="preprocessor">#define __PHONEMES_H</span>
+00013 <span class="preprocessor">#ifndef STK_PHONEMES_H</span>
+00014 <span class="preprocessor"></span><span class="preprocessor">#define STK_PHONEMES_H</span>
 00015 <span class="preprocessor"></span>
 00016 <span class="preprocessor">#include "Stk.h"</span>
 00017 
-<a name="l00018"></a><a class="code" href="classPhonemes.html">00018</a> <span class="keyword">class </span><a class="code" href="classPhonemes.html">Phonemes</a>
+<a name="l00018"></a><a class="code" href="classPhonemes.html">00018</a> <span class="keyword">class </span><a class="code" href="classPhonemes.html">Phonemes</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
 00019 {
 00020 <span class="keyword">public</span>:
 00021 
@@ -26,29 +26,28 @@
 00024 
 00026   <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code" href="classPhonemes.html#e0">name</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index );
 00027 
-00029   <span class="keyword">static</span> MY_FLOAT <a class="code" href="classPhonemes.html#e1">voiceGain</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index );
+00029   <span class="keyword">static</span> StkFloat <a class="code" href="classPhonemes.html#e1">voiceGain</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index );
 00030 
-00032   <span class="keyword">static</span> MY_FLOAT <a class="code" href="classPhonemes.html#e2">noiseGain</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index );
+00032   <span class="keyword">static</span> StkFloat <a class="code" href="classPhonemes.html#e2">noiseGain</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index );
 00033 
-00035   <span class="keyword">static</span> MY_FLOAT <a class="code" href="classPhonemes.html#e3">formantFrequency</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> partial );
+00035   <span class="keyword">static</span> StkFloat <a class="code" href="classPhonemes.html#e3">formantFrequency</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> partial );
 00036 
-00038   <span class="keyword">static</span> MY_FLOAT <a class="code" href="classPhonemes.html#e4">formantRadius</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> partial );
+00038   <span class="keyword">static</span> StkFloat <a class="code" href="classPhonemes.html#e4">formantRadius</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> partial );
 00039 
-00041   <span class="keyword">static</span> MY_FLOAT <a class="code" href="classPhonemes.html#e5">formantGain</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> partial );
+00041   <span class="keyword">static</span> StkFloat <a class="code" href="classPhonemes.html#e5">formantGain</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> partial );
 00042 
 00043 <span class="keyword">private</span>:
 00044 
 00045   <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> phonemeNames[][4];
-00046   <span class="keyword">static</span> <span class="keyword">const</span> MY_FLOAT phonemeGains[][2];
-00047   <span class="keyword">static</span> <span class="keyword">const</span> MY_FLOAT phonemeParameters[][4][3];
-00048 
-00049 };
-00050 
-00051 <span class="preprocessor">#endif</span>
+00046   <span class="keyword">static</span> <span class="keyword">const</span> StkFloat phonemeGains[][2];
+00047   <span class="keyword">static</span> <span class="keyword">const</span> StkFloat phonemeParameters[][4][3];
+00048 };
+00049 
+00050 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

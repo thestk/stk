@@ -26,7 +26,7 @@ The <em><b>include</b></em> directory contains the header files for all the STK 
 <p>
 </li>
 <li>
-The <em><b>rawwaves</b></em> directory contains various raw, monophonic, 16-bit, big-endian soundfiles used with the STK classes.<p>
+The <em><b>rawwaves</b></em> directory contains various raw, monophonic, 16-bit, big-endian, 22050 Hz soundfiles used with the STK classes.<p>
 <p>
 </li>
 <li>
@@ -53,13 +53,13 @@ The <em><b>ragamatic</b></em> project is just cool. Fire it up and be enlightene
 <p>
 </li>
 <li>
-The <em><b>examples</b></em> project contains several simple programs which demonstrate audio input/output, as well as the use of the audio internet streaming classes. </li>
+The <em><b>examples</b></em> project contains several simple programs which demonstrate audio input/output, including the audio internet streaming classes, as well as most of the tutorial programs. </li>
 </ol>
 <h2><a class="anchor" name="compiling">
 Compiling:</a></h2>
 <ul>
 <li>
-<b>Windows95/98/2000/XP:</b> Realtime support is available using either DirectSound or ASIO audio drivers. For DirectSound support, use the <code>__WINDOWS_DS__</code> preprocessor definition and link with the <code>dsound.lib</code>, <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. For ASIO support, use the <code>__WINDOWS_ASIO__</code> preprocessor definition, include all the files in the <code>src/asio/</code> directory (i.e. <code>asio.h,cpp</code>, <code>asiodrivers.h,cpp</code>, ...), and link with the <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. In addition, the <code>__LITTLE_ENDIAN__</code> preprocessor definition is necessary for all Windows systems. A distribution of the release is available with precompiled binaries (using DirectSound) for all the projects. In order for these binaries to function properly, your system must have the DirectX 5.0 (or higher) runtime libraries installed (available from <a href="http://www.microsoft.com/directx/">Microsoft</a>). Further, the <em><b>effects</b></em> project requires that your soundcard and drivers provide full duplex mode capabilities. Visual C++ 6.0 project files are provided in each project directory as well should you wish to compile your own binaries. It is important to link with the non-debug libraries when compiling "release" program versions and debug libraries when compiling "debug" program versions.<p>
+<b>Windows95/98/2000/XP:</b> Realtime support is available using either DirectSound or ASIO audio drivers. For DirectSound support, use the <code>__WINDOWS_DS__</code> preprocessor definition and link with the <code>dsound.lib</code>, <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. For ASIO support, use the <code>__WINDOWS_ASIO__</code> preprocessor definition, include all the files in the <code>src/asio/</code> directory (i.e. <code>asio.h,cpp</code>, <code>asiodrivers.h,cpp</code>, ...), and link with the <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. In addition, the <code>__LITTLE_ENDIAN__</code> and <code>__WINDOWS_MM__</code> preprocessor definitions are necessary for all Windows systems (<a class="el" href="classRtMidi.html">RtMidi</a> uses the Windows MultiMedia MIDI API). A distribution of the release is available with precompiled binaries (using DirectSound) for all the projects. In order for these binaries to function properly, your system must have the DirectX 5.0 (or higher) runtime libraries installed (available from <a href="http://www.microsoft.com/directx/">Microsoft</a>). Further, the <em><b>effects</b></em> project requires that your soundcard and drivers provide full duplex mode capabilities. Visual C++ 6.0 project files are provided in each project directory as well should you wish to compile your own binaries. It is important to link with the non-debug libraries when compiling "release" program versions and debug libraries when compiling "debug" program versions.<p>
 </li>
 <li>
 <b>WindowsNT:</b> DirectX support for NT is inadequate, so it is not possible to use STK under WindowsNT with realtime DirectX support. It may be possible to use STK under WindowsNT with realtime ASIO support, though this has not been tested.<p>
@@ -72,12 +72,14 @@ Several options can be supplied to the <code>configure</code> script to customiz
 <li>
 <code>--enable-debug</code> to enable various debug output </li>
 <li>
-<code>--enable-midiator</code> to enable native MS-124W MIDI support (linux only) </li>
+<code>--with-alsa</code> to choose native ALSA API support (default, linux only) </li>
 <li>
-<code>--with-alsa</code> to choose native ALSA API support (linux only) </li>
+<code>--with-jack</code> to choose native JACK API support (linux only) </li>
+<li>
+<code>--with-oss</code> to choose native OSS audio API support (linux only, no native OSS MIDI support) </li>
 </ul>
 <p>
-In addition, it is possible to specify the location of the STK rawwaves and the STK include path as follows: <div class="fragment"><pre>./configure RAWWAVE_PATH=<span class="stringliteral">"/home/gary/rawwaves/"</span>
+Note that it is possible to specify as many of the "--with-" options as desired to compile multi-API support. In addition, it is possible to specify the location of the STK rawwaves and the STK include path as follows: <div class="fragment"><pre>./configure RAWWAVE_PATH=<span class="stringliteral">"/home/gary/rawwaves/"</span>
 ./configure INCLUDE_PATH=<span class="stringliteral">"/home/gary/include/"</span>
 </pre></div><p>
 For novice STK users, the default configuration should be adequate. </li>
@@ -85,32 +87,32 @@ For novice STK users, the default configuration should be adequate. </li>
 <p>
 For those who wish to create their own system-specific <code>Makefiles</code>: <ul>
 <li>
-<b>Linux:</b> Realtime support is enabled with either the <code>__LINUX_OSS__</code> or <code>__LINUX_ALSA__</code> preprocessor definitions, which are used to select the underlying audio/MIDI system API. Realtime programs must also link with the <code>pthread</code> library. When using the ALSA API, it is also necessary to link with the <code>asound</code> library. In addition, the <code>__LITTLE_ENDIAN__</code> preprocessor definition is necessary if compiling on a little-endian system. Special support exists under Linux for the MIDIator serial MIDI device, enabled using the <code>__MIDIATOR__</code> preprocessor definition (together with either the <code>__LINUX_ALSA__</code> or <code>__LINUX_OSS__</code> definitions). See the README-Linux file for further system configuration information.<p>
+<b>Linux:</b> Realtime audio support is enabled with either the <code>__LINUX_ALSA__</code>, <code>__LINUX_JACK__</code>, and/or <code>__LINUX_OSS__</code> preprocessor definitions, which are used to select the underlying audio system API(s). Because the ALSA library is now integrated into the standard Linux kernel, it is the default audio/MIDI API with STK versions 4.2 and higher. The <code>__LINUX_ALSASEQ__</code> preprocessor definition must be included for MIDI support. Note that native OSS MIDI support no longer exists in <a class="el" href="classRtMidi.html">RtMidi</a>. If the <code>__LINUX_OSS__</code> preprocessor definition is specified, only OSS audio support will be compiled and <a class="el" href="classRtMidi.html">RtMidi</a> will still be compiled using the ALSA API (assuming the <code>__LINUX_ALSASEQ__</code> definition is defined). For this reason, STK now requires the <code>asound</code> library for realtime support. Realtime programs must also link with the <code>pthread</code> library. In addition, the <code>__LITTLE_ENDIAN__</code> preprocessor definition is necessary if compiling on a little-endian system. See the README-Linux file for further system configuration information.<p>
 </li>
 <li>
 <b>Macintosh OS X:</b> Realtime support is enabled with the <code>__MACOSX_CORE__</code> preprocessor definitions, which incorporates the CoreAudio audio/MIDI API. Realtime programs must also link with the <code>pthread</code> library and the <code>CoreAudio</code>, <code>CoreMIDI</code>, and <code>CoreFoundation</code> frameworks. See the README-MacOSX file for further system configuration information.<p>
 </li>
 <li>
-<b>SGI:</b> Realtime support is enabled with the <code>__IRIX_AL__</code> preprocessor definition and linkage with the <code>audio</code>, <code>md</code>, and <code>pthread</code> libraries. STK 4.0 (and higher) is confirmed to compile using CC version 7.30. There may be problems with old compiler versions.<p>
+<b>SGI:</b> Realtime audio and MIDI support is enabled with the <code>__IRIX_AL__</code> and <code>__IRIX_MD__</code> preprocessor definitions and linkage with the <code>audio</code>, <code>md</code>, and <code>pthread</code> libraries. STK 4.0 (and higher) is confirmed to compile using CC version 7.30. There may be problems with old compiler versions.<p>
 </li>
 <li>
-<b>Generic (non-realtime):</b> Most STK classes are operating system <em>independent</em> and can be compiled using any current C++ compiler. STK assumes big-endian host byte order by default, so if your system is little-endian (i.e. Intel processor), you must provide the <code>__LITTLE_ENDIAN__</code> preprocessor definition to your compiler. The <em><b>demo</b></em> project will compile without realtime support, allowing the use of <a class="el" href="classSKINI.html">SKINI</a> scorefiles for input control and output to a variety of soundfile formats. The following classes <em>cannot</em> be used without realtime support: <a class="el" href="classRtAudio.html">RtAudio</a>, <a class="el" href="classRtWvIn.html">RtWvIn</a>, <a class="el" href="classRtWvOut.html">RtWvOut</a>, <a class="el" href="classRtDuplex.html">RtDuplex</a>, <a class="el" href="classRtMidi.html">RtMidi</a>, <a class="el" href="classSocket.html">Socket</a>, <a class="el" href="classThread.html">Thread</a>, <a class="el" href="classTcpWvIn.html">TcpWvIn</a>, <a class="el" href="classTcpWvOut.html">TcpWvOut</a>. Because of this, it is not possible to compile the <em><b>effects</b></em>, <em><b>ragamatic</b></em>, and most of the <em><b>examples</b></em> projects for non-realtime use. </li>
+<b>Generic (non-realtime):</b> Most STK classes are operating system <em>independent</em> and can be compiled using any current C++ compiler. STK assumes big-endian host byte order by default, so if your system is little-endian (i.e. Intel processor), you must provide the <code>__LITTLE_ENDIAN__</code> preprocessor definition to your compiler. The <em><b>demo</b></em> project will compile without realtime support, allowing the use of SKINI scorefiles for input control and output to a variety of soundfile formats. The following classes <em>cannot</em> be used without realtime support: <a class="el" href="classRtAudio.html">RtAudio</a>, <a class="el" href="classRtWvIn.html">RtWvIn</a>, <a class="el" href="classRtWvOut.html">RtWvOut</a>, <a class="el" href="classRtDuplex.html">RtDuplex</a>, <a class="el" href="classRtMidi.html">RtMidi</a>, <a class="el" href="classSocket.html">Socket</a>, <a class="el" href="classThread.html">Thread</a>, <a class="el" href="classMutex.html">Mutex</a>, <a class="el" href="classTcpWvIn.html">TcpWvIn</a>, <a class="el" href="classTcpWvOut.html">TcpWvOut</a>. Because of this, it is not possible to compile the <em><b>effects</b></em>, <em><b>ragamatic</b></em>, and most of the <em><b>examples</b></em> projects for non-realtime use. </li>
 </ul>
 <h2><a class="anchor" name="control">
 Control Data:</a></h2>
-All STK programs in this distribution take input control data in the form of <a href="skini.html"><a class="el" href="classSKINI.html">SKINI</a></a> or MIDI messages only. The <a class="el" href="classMessager.html">Messager</a> class unifies the various means of acquiring control data under a single, easy to use set of functions. The way that <a class="el" href="classSKINI.html">SKINI</a> messages can be sent to the programs is dependent upon the operating system in use, as well as whether the program is running in realtime or not. In general, it is possible to:<p>
+All STK programs in this distribution take input control data in the form of <a href="skini.html">SKINI</a> or MIDI messages only. The <a class="el" href="classMessager.html">Messager</a> class unifies the various means of acquiring control data under a single, easy to use set of functions. The way that SKINI messages can be sent to the programs is dependent upon the operating system in use, as well as whether the program is running in realtime or not. In general, it is possible to:<p>
 <ol>
 <li>
-Redirect or pipe <a class="el" href="classSKINI.html">SKINI</a> scorefiles to an executable. </li>
+Redirect or pipe SKINI scorefiles to an executable. </li>
 <li>
-Pipe realtime <a class="el" href="classSKINI.html">SKINI</a> input messages to an executable (not possible under Windows95/98). </li>
+Pipe realtime SKINI input messages to an executable (not possible under Windows95/98). </li>
 <li>
-<a class="el" href="classSocket.html">Socket</a> realtime <a class="el" href="classSKINI.html">SKINI</a> input messages to an executable. </li>
+<a class="el" href="classSocket.html">Socket</a> realtime SKINI input messages to an executable. </li>
 <li>
 Acquire realtime MIDI messages from a MIDI port on your computer. </li>
 </ol>
 <p>
-<a href="http://dev.scriptics.com">Tcl/Tk</a> graphical user interfaces (GUI) are provided with this distribution which can generate realtime <a class="el" href="classSKINI.html">SKINI</a> messages. Note that the <a class="el" href="classMessager.html">Messager</a> class allows multiple simultaneous socket client connections, together with MIDI and/or piped input. The <em><b>Md2Skini</b></em> program (in the <em><b>demo</b></em> directory) is mostly obsolete but can be used to create <a class="el" href="classSKINI.html">SKINI</a> scorefiles from realtime MIDI input.<h2><a class="anchor" name="voices">
+<a href="http://dev.scriptics.com">Tcl/Tk</a> graphical user interfaces (GUI) are provided with this distribution which can generate realtime SKINI messages. Note that the <a class="el" href="classMessager.html">Messager</a> class allows multiple simultaneous socket client connections, together with MIDI and/or piped input. The <em><b>Md2Skini</b></em> program (in the <em><b>demo</b></em> directory) is mostly obsolete but can be used to create SKINI scorefiles from realtime MIDI input.<h2><a class="anchor" name="voices">
 Demo: STK Instruments</a></h2>
 The <em><b>demo</b></em> project demonstrates the behavior of all the distributed STK instruments. The instruments available with this release include: <ul>
 <li>
@@ -171,15 +173,12 @@ The <em><b>demo</b></em> project demonstrates the behavior of all the distribute
 <h2><a class="anchor" name="nort">
 Demo: Non-Realtime Use</a></h2>
 See the information above with respect to compiling STK for non-realtime use.<p>
-In non-realtime mode, it is assumed that input control messages are provided from a <a class="el" href="classSKINI.html">SKINI</a> scorefile and that audio output is written to a soundfile (.snd, .wav, .aif, .mat, .raw). A number of <a class="el" href="classSKINI.html">SKINI</a> scorefiles are provided in the <em>scores</em> directory of the <em><b>demo</b></em> project. Assuming a successful compilation of the <em><b>demo</b></em> program, typing:<p>
-<div class="fragment"><pre>cat scores/bookert.ski | demo <a class="code" href="classBeeThree.html">BeeThree</a> -ow myfile.wav
+In non-realtime mode, it is assumed that input control messages are provided from a SKINI scorefile and that audio output is written to a soundfile (.snd, .wav, .aif, .mat, .raw). A number of SKINI scorefiles are provided in the <em>scores</em> directory of the <em><b>demo</b></em> project. Assuming a successful compilation of the <em><b>demo</b></em> program, typing:<p>
+<div class="fragment"><pre>demo <a class="code" href="classBeeThree.html">BeeThree</a> -ow myfile.wav -<span class="keywordflow">if</span> scores/bookert.ski
 </pre></div><p>
-or (on WindowsXX and/or Unix)<p>
-<div class="fragment"><pre>demo <a class="code" href="classBeeThree.html">BeeThree</a> -ow myfile.wav &lt; scores\bookert.ski
-</pre></div><p>
-from the <em><b>demo</b></em> directory will play the scorefile <em>bookert.ski</em> using the STK <a class="el" href="classBeeThree.html">BeeThree</a> instrument and write the resulting audio data to a WAV formatted soundfile called "myfile.wav". Typing <code>demo</code> without any arguments will provide a full program usage description.<h2><a class="anchor" name="rt">
+from the <em><b>demo</b></em> directory will play the scorefile <em>bookert.ski</em> using the STK <a class="el" href="classBeeThree.html">BeeThree</a> instrument and write the resulting audio data to a WAV formatted soundfile called "myfile.wav" (note that you may need to append <code>./</code> to the program name if your default shell setup is not set to look in the current directory). Typing <code>demo</code> without any arguments will provide a full program usage description.<h2><a class="anchor" name="rt">
 Demo: Realtime Use</a></h2>
-STK realtime audio and MIDI input/output and realtime <a class="el" href="classSKINI.html">SKINI</a> control input via socketing support is provided for Linux, SGI, Mac OS X, and Windows95/98/2000/XP operating systems. STK realtime <a class="el" href="classSKINI.html">SKINI</a> control input via piping is possible under Linux, SGI, Mac OS X, and Windows2000/XP only. <p>
+STK realtime audio and MIDI input/output and realtime SKINI control input via socketing support is provided for Linux, SGI, Mac OS X, and Windows95/98/2000/XP operating systems. STK realtime SKINI control input via piping is possible under Linux, SGI, Mac OS X, and Windows2000/XP only. <p>
 Control input and audio output options are typically specified as command-line arguments to STK programs. For example, the <em><b>demo</b></em> program is invoked as:<p>
 <div class="fragment"><pre>demo instrument flags
 </pre></div><p>
@@ -187,28 +186,27 @@ where instruments include those described above and flags can be any or all of: 
 <li>
 <em>-or</em> for realtime audio output, </li>
 <li>
-<em>-ow </em> for WAV soundfile output, </li>
+<em>-ow &lt;file name&gt;</em> for WAV soundfile output, </li>
 <li>
-<em>-os </em> for SND (AU) soundfile output, </li>
+<em>-os &lt;file name&gt;</em> for SND (AU) soundfile output, </li>
 <li>
-<em>-om </em> for MAT-file output, </li>
+<em>-om &lt;file name&gt;</em> for MAT-file output, </li>
 <li>
-<em>-ip</em> for realtime <a class="el" href="classSKINI.html">SKINI</a> control input via piping, </li>
+<em>-if &lt;file name&gt;</em> for a SKINI formatted control file, </li>
 <li>
-<em>-is </em> &gt; for realtime <a class="el" href="classSKINI.html">SKINI</a> control input via socketing (with an optional port number), </li>
+<em>-ip</em> for realtime SKINI control input via piping, </li>
 <li>
-<em>-im </em> for MIDI control input </li>
+<em>-is &lt;port&gt;</em> for realtime SKINI control input via socketing (with an optional port number), </li>
 <li>
-<em>-s RATE</em> to specify a sample rate </li>
+<em>-im &lt;port&gt;</em> for MIDI control input (with optional port, -1 = virtual port where possible), </li>
+<li>
+<em>-s RATE</em> to specify a sample rate, </li>
 <li>
 <em>-n NUMBER</em> to specify multivoice polyphony </li>
 </ul>
-The &lt;-ip&gt; and &lt;-is&gt; flags must be used when piping or socketing realtime <a class="el" href="classSKINI.html">SKINI</a> control data to an STK program. The &lt;-im&gt; flag must be used to read MIDI control input from your MIDI port. Note that you can use all three input types simultaneously.<p>
+The <em>-ip</em> and <em>-is</em> flags must be used when piping or socketing realtime SKINI control data to an STK program. The <em>-im</em> flag must be used to read MIDI control input from your MIDI port. Note that you can use all three input types simultaneously.<p>
 Assuming a successful compilation of the <em><b>demo</b></em> program, typing:<p>
-<div class="fragment"><pre>cat scores/bookert.ski | demo <a class="code" href="classBeeThree.html">BeeThree</a> -or
-</pre></div><p>
-or (on WindowsXX and/or Unix)<p>
-<div class="fragment"><pre>demo <a class="code" href="classBeeThree.html">BeeThree</a> -or &lt; scores\bookert.ski
+<div class="fragment"><pre>demo <a class="code" href="classBeeThree.html">BeeThree</a> -or -<span class="keywordflow">if</span> scores/bookert.ski
 </pre></div><p>
 from the <em><b>demo</b></em> directory will play the scorefile <em>bookert.ski</em> using the STK <a class="el" href="classBeeThree.html">BeeThree</a> instrument and stream the resulting audio data in realtime to the audio output channel of your computer. Typing <code>demo</code> without any arguments will provide a full program usage description.<h2><a class="anchor" name="tcl">
 Realtime Control Input using Tcl/Tk Graphical User Interfaces:</a></h2>
@@ -228,14 +226,15 @@ Note that it is possible to specify a hostname when establishing the socket conn
 Realtime MIDI Control Input:</a></h2>
 On all supported realtime platforms, you can direct realtime MIDI input to the STK <a class="el" href="classClarinet.html">Clarinet</a> by typing:<p>
 <div class="fragment"><pre>demo <a class="code" href="classClarinet.html">Clarinet</a> -or -im
-</pre></div><h2><a class="anchor" name="polyphony">
+</pre></div><p>
+This will attempt to use the default MIDI port for input. An optional MIDI port number can be specified after the <code>-im</code> flag. Valid MIDI ports are numbered from 0 (default) and higher. On Linux and Macintosh OS-X systems, it is possible to open a virtual MIDI input port (which other software applications can connect to) by specifying a port identifier of -1.<h2><a class="anchor" name="polyphony">
 Polyphony:</a></h2>
 The <em><b>demo</b></em> program supports an arbitrary number of voices via the <code>-n NUMBER</code> command-line flag and argument. For example, you can play eight <a class="el" href="classBeeThree.html">BeeThree</a> instruments with realtime output and control them from a MIDI device by typing:<p>
 <div class="fragment"><pre>demo <a class="code" href="classBeeThree.html">BeeThree</a> -n 8 -or -im
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

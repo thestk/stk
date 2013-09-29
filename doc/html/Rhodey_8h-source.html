@@ -12,30 +12,36 @@
 <h1>Rhodey.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00031 <span class="comment">/***************************************************/</span>
 00032 
-00033 <span class="preprocessor">#if !defined(__RHODEY_H)</span>
-00034 <span class="preprocessor"></span><span class="preprocessor">#define __RHODEY_H</span>
+00033 <span class="preprocessor">#ifndef STK_RHODEY_H</span>
+00034 <span class="preprocessor"></span><span class="preprocessor">#define STK_RHODEY_H</span>
 00035 <span class="preprocessor"></span>
 00036 <span class="preprocessor">#include "FM.h"</span>
 00037 
 <a name="l00038"></a><a class="code" href="classRhodey.html">00038</a> <span class="keyword">class </span><a class="code" href="classRhodey.html">Rhodey</a> : <span class="keyword">public</span> <a class="code" href="classFM.html">FM</a>
 00039 {
 00040  <span class="keyword">public</span>:
-00042   <a class="code" href="classRhodey.html#a0">Rhodey</a>();
-00043 
-00045   <a class="code" href="classRhodey.html#a1">~Rhodey</a>();
+00042 
+00045   <a class="code" href="classRhodey.html#a0">Rhodey</a>();
 00046 
-00048   <span class="keywordtype">void</span> <a class="code" href="classRhodey.html#a2">setFrequency</a>(MY_FLOAT frequency);
+00048   <a class="code" href="classRhodey.html#a1">~Rhodey</a>();
 00049 
-00051   <span class="keywordtype">void</span> <a class="code" href="classRhodey.html#a3">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00051   <span class="keywordtype">void</span> <a class="code" href="classRhodey.html#a2">setFrequency</a>(StkFloat frequency);
 00052 
-00054   MY_FLOAT <a class="code" href="classRhodey.html#a4">tick</a>();
-00055 };
-00056 
-00057 <span class="preprocessor">#endif</span>
+00054   <span class="keywordtype">void</span> <a class="code" href="classRhodey.html#a3">noteOn</a>(StkFloat frequency, StkFloat amplitude);
+00055 
+00057   StkFloat <a class="code" href="classRhodey.html#a4">tick</a>();
+00058 
+00060   StkFloat *<a class="code" href="classRhodey.html#a4">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00061 
+00063 
+00069   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classRhodey.html#a4">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00070 };
+00071 
+00072 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

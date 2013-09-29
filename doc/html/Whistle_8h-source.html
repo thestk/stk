@@ -12,8 +12,8 @@
 <h1>Whistle.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00017 <span class="comment">/***************************************************/</span>
 00018 
-00019 <span class="preprocessor">#if !defined(__WHISTLE_H)</span>
-00020 <span class="preprocessor"></span><span class="preprocessor">#define __WHISTLE_H</span>
+00019 <span class="preprocessor">#ifndef STK_WHISTLE_H</span>
+00020 <span class="preprocessor"></span><span class="preprocessor">#define STK_WHISTLE_H</span>
 00021 <span class="preprocessor"></span>
 00022 <span class="preprocessor">#include "Instrmnt.h"</span>
 00023 <span class="preprocessor">#include "Sphere.h"</span>
@@ -26,53 +26,59 @@
 <a name="l00030"></a><a class="code" href="classWhistle.html">00030</a> <span class="keyword">class </span><a class="code" href="classWhistle.html">Whistle</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00031 {
 00032 <span class="keyword">public</span>:
-00034   <a class="code" href="classWhistle.html#a0">Whistle</a>();
-00035 
-00037   <a class="code" href="classWhistle.html#a1">~Whistle</a>();
+00034 
+00037   <a class="code" href="classWhistle.html#a0">Whistle</a>();
 00038 
-00040   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a2">clear</a>();
+00040   <a class="code" href="classWhistle.html#a1">~Whistle</a>();
 00041 
-00043   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a3">setFrequency</a>(MY_FLOAT frequency);
+00043   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a2">clear</a>();
 00044 
-00046   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a4">startBlowing</a>(MY_FLOAT amplitude, MY_FLOAT rate);
+00046   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a3">setFrequency</a>(StkFloat frequency);
 00047 
-00049   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a5">stopBlowing</a>(MY_FLOAT rate);
+00049   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a4">startBlowing</a>(StkFloat amplitude, StkFloat rate);
 00050 
-00052   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a6">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00052   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a5">stopBlowing</a>(StkFloat rate);
 00053 
-00055   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a7">noteOff</a>(MY_FLOAT amplitude);
+00055   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a6">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00056 
-00058   MY_FLOAT <a class="code" href="classWhistle.html#a8">tick</a>();
+00058   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a7">noteOff</a>(StkFloat amplitude);
 00059 
-00061   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a9">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00061   StkFloat <a class="code" href="classWhistle.html#a8">tick</a>();
 00062 
-00063 <span class="keyword">protected</span>:  
-00064         <a class="code" href="classVector3D.html">Vector3D</a> *tempVectorP;
-00065   <a class="code" href="classVector3D.html">Vector3D</a> *tempVector;
-00066   <a class="code" href="classOnePole.html">OnePole</a> onepole;
-00067   <a class="code" href="classNoise.html">Noise</a> noise;
-00068         <a class="code" href="classEnvelope.html">Envelope</a> envelope;
-00069   <a class="code" href="classSphere.html">Sphere</a> *can;           <span class="comment">// Declare a Spherical "can".</span>
-00070   <a class="code" href="classSphere.html">Sphere</a> *pea, *bumper;  <span class="comment">// One spherical "pea", and a spherical "bumper".</span>
-00071 
-00072   <a class="code" href="classWaveLoop.html">WaveLoop</a> *sine;
-00073 
-00074   MY_FLOAT baseFrequency;
-00075         MY_FLOAT maxPressure;
-00076   MY_FLOAT noiseGain;
-00077   MY_FLOAT fippleFreqMod;
-00078         MY_FLOAT fippleGainMod;
-00079         MY_FLOAT blowFreqMod;
-00080         MY_FLOAT tickSize;
-00081         MY_FLOAT canLoss;
-00082         <span class="keywordtype">int</span> subSample, subSampCount;
-00083 };
-00084 
-00085 <span class="preprocessor">#endif</span>
+00064   StkFloat *<a class="code" href="classWhistle.html#a8">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00065 
+00067 
+00073   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classWhistle.html#a8">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00074 
+00076   <span class="keywordtype">void</span> <a class="code" href="classWhistle.html#a11">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
+00077 
+00078 <span class="keyword">protected</span>:  
+00079 
+00080          <a class="code" href="classVector3D.html">Vector3D</a> *tempVectorP_;
+00081   <a class="code" href="classVector3D.html">Vector3D</a> tempVector_;
+00082   <a class="code" href="classOnePole.html">OnePole</a> onepole_;
+00083   <a class="code" href="classNoise.html">Noise</a> noise_;
+00084          <a class="code" href="classEnvelope.html">Envelope</a> envelope_;
+00085   <a class="code" href="classSphere.html">Sphere</a> can_;           <span class="comment">// Declare a Spherical "can".</span>
+00086   <a class="code" href="classSphere.html">Sphere</a> pea_, bumper_;  <span class="comment">// One spherical "pea", and a spherical "bumper".</span>
+00087 
+00088   <a class="code" href="classWaveLoop.html">WaveLoop</a> *sine_;
+00089 
+00090   StkFloat baseFrequency_;
+00091   StkFloat noiseGain_;
+00092   StkFloat fippleFreqMod_;
+00093          StkFloat fippleGainMod_;
+00094          StkFloat blowFreqMod_;
+00095          StkFloat tickSize_;
+00096          StkFloat canLoss_;
+00097          <span class="keywordtype">int</span> subSample_, subSampCount_;
+00098 };
+00099 
+00100 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

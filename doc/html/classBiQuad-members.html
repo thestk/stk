@@ -13,45 +13,49 @@
   <tr class="memlist"><td><a class="el" href="classBiQuad.html#a0">BiQuad</a>()</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classBiQuad.html#a2">clear</a>(void)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classFilter.html#a0">Filter</a>(void)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classFilter.html#a1">Filter</a>(int nb, MY_FLOAT *bCoefficients, int na, MY_FLOAT *aCoefficients)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classFilter.html#a1">Filter</a>(std::vector&lt; StkFloat &gt; &amp;bCoefficients, std::vector&lt; StkFloat &gt; &amp;aCoefficients)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classBiQuad.html#a12">getGain</a>(void) const </td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classStk.html#f0">handleError</a>(const  char *message, StkError::TYPE type)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#e8">handleError</a>(const  char *message, StkError::Type type)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#e9">handleError</a>(std::string message, StkError::Type type)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#b2">handleError</a>(StkError::Type type)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classBiQuad.html#a13">lastOut</a>(void) const </td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classStk.html#s3">MY_FLOAT32</a></td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classStk.html#s4">MY_FLOAT64</a></td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classStk.html#e2">rawwavePath</a>(void)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classStk.html#e0">sampleRate</a>(void)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a6">setA1</a>(MY_FLOAT a1)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a7">setA2</a>(MY_FLOAT a2)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a3">setB0</a>(MY_FLOAT b0)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a4">setB1</a>(MY_FLOAT b1)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a5">setB2</a>(MY_FLOAT b2)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classFilter.html#a4">setCoefficients</a>(int nb, MY_FLOAT *bCoefficients, int na, MY_FLOAT *aCoefficients)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classFilter.html#a6">setDenominator</a>(int na, MY_FLOAT *aCoefficients)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#e2">rawwavePath</a>(void)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [inline, protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#e0">sampleRate</a>(void)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [inline, protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a6">setA1</a>(StkFloat a1)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a7">setA2</a>(StkFloat a2)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a3">setB0</a>(StkFloat b0)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a4">setB1</a>(StkFloat b1)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a5">setB2</a>(StkFloat b2)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classFilter.html#a4">setCoefficients</a>(std::vector&lt; StkFloat &gt; &amp;bCoefficients, std::vector&lt; StkFloat &gt; &amp;aCoefficients)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classFilter.html#a6">setDenominator</a>(std::vector&lt; StkFloat &gt; &amp;aCoefficients)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classBiQuad.html#a10">setEqualGainZeroes</a>()</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a11">setGain</a>(MY_FLOAT theGain)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a9">setNotch</a>(MY_FLOAT frequency, MY_FLOAT radius)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classFilter.html#a5">setNumerator</a>(int nb, MY_FLOAT *bCoefficients)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classStk.html#e3">setRawwavePath</a>(std::string newPath)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a8">setResonance</a>(MY_FLOAT frequency, MY_FLOAT radius, bool normalize=FALSE)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
-  <tr class="memlist"><td><a class="el" href="classStk.html#e1">setSampleRate</a>(MY_FLOAT newRate)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a11">setGain</a>(StkFloat gain)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a9">setNotch</a>(StkFloat frequency, StkFloat radius)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classFilter.html#a5">setNumerator</a>(std::vector&lt; StkFloat &gt; &amp;bCoefficients)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#e3">setRawwavePath</a>(std::string path)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a8">setResonance</a>(StkFloat frequency, StkFloat radius, bool normalize=false)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#e1">setSampleRate</a>(StkFloat rate)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [inline, protected, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classStk.html#e7">sleep</a>(unsigned long milliseconds)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classStk.html#b0">Stk</a>(void)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#s4">STK_FLOAT32</a></td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#s5">STK_FLOAT64</a></td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classStk.html#s1">STK_SINT16</a></td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classStk.html#s2">STK_SINT32</a></td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#s2">STK_SINT24</a></td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classStk.html#s3">STK_SINT32</a></td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classStk.html#s0">STK_SINT8</a></td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classStk.html#e4">swap16</a>(unsigned char *ptr)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classStk.html#e5">swap32</a>(unsigned char *ptr)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classStk.html#e6">swap64</a>(unsigned char *ptr)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, static]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a14">tick</a>(MY_FLOAT sample)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a15">tick</a>(MY_FLOAT *vector, unsigned int vectorSize)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a14">tick</a>(StkFloat sample)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a15">tick</a>(StkFloat *vector, unsigned int vectorSize)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classBiQuad.html#a16">tick</a>(StkFrames &amp;frames, unsigned int channel=1)</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classBiQuad.html#a1">~BiQuad</a>()</td><td><a class="el" href="classBiQuad.html">BiQuad</a></td><td><code> [virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classFilter.html#a2">~Filter</a>(void)</td><td><a class="el" href="classFilter.html">Filter</a></td><td><code> [protected, virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classStk.html#b1">~Stk</a>(void)</td><td><a class="el" href="classStk.html">Stk</a></td><td><code> [protected, virtual]</code></td></tr>
 </table><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

@@ -12,59 +12,62 @@
 <h1>Filter.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00028 <span class="comment">/***************************************************/</span>
 00029 
-00030 <span class="preprocessor">#if !defined(__FILTER_H)</span>
-00031 <span class="preprocessor"></span><span class="preprocessor">#define __FILTER_H</span>
+00030 <span class="preprocessor">#ifndef STK_FILTER_H</span>
+00031 <span class="preprocessor"></span><span class="preprocessor">#define STK_FILTER_H</span>
 00032 <span class="preprocessor"></span>
 00033 <span class="preprocessor">#include "Stk.h"</span>
-00034 
-<a name="l00035"></a><a class="code" href="classFilter.html">00035</a> <span class="keyword">class </span><a class="code" href="classFilter.html">Filter</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
-00036 {
-00037 <span class="keyword">public</span>:
-00039   <a class="code" href="classFilter.html#a0">Filter</a>(<span class="keywordtype">void</span>);
-00040 
+00034 <span class="preprocessor">#include &lt;vector&gt;</span>
+00035 <span class="preprocessor">#include &lt;valarray&gt;</span>
+00036 
+<a name="l00037"></a><a class="code" href="classFilter.html">00037</a> <span class="keyword">class </span><a class="code" href="classFilter.html">Filter</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
+00038 {
+00039 <span class="keyword">public</span>:
+00041   <a class="code" href="classFilter.html#a0">Filter</a>(<span class="keywordtype">void</span>);
 00042 
-00046   <a class="code" href="classFilter.html#a0">Filter</a>(<span class="keywordtype">int</span> nb, MY_FLOAT *bCoefficients, <span class="keywordtype">int</span> na, MY_FLOAT *aCoefficients);
-00047 
-00049   <span class="keyword">virtual</span> <a class="code" href="classFilter.html#a2">~Filter</a>(<span class="keywordtype">void</span>);
-00050 
-00052   <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a3">clear</a>(<span class="keywordtype">void</span>);
-00053 
+00044 
+00048   <a class="code" href="classFilter.html#a0">Filter</a>( std::vector&lt;StkFloat&gt; &amp;bCoefficients, std::vector&lt;StkFloat&gt; &amp;aCoefficients );
+00049 
+00051   <span class="keyword">virtual</span> <a class="code" href="classFilter.html#a2">~Filter</a>(<span class="keywordtype">void</span>);
+00052 
+00054   <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a3">clear</a>(<span class="keywordtype">void</span>);
 00055 
-00060   <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a4">setCoefficients</a>(<span class="keywordtype">int</span> nb, MY_FLOAT *bCoefficients, <span class="keywordtype">int</span> na, MY_FLOAT *aCoefficients);
-00061 
-00063 
-00069   <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a5">setNumerator</a>(<span class="keywordtype">int</span> nb, MY_FLOAT *bCoefficients);
-00070 
-00072 
-00080   <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a6">setDenominator</a>(<span class="keywordtype">int</span> na, MY_FLOAT *aCoefficients);
-00081 
-00083 
-00087   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a7">setGain</a>(MY_FLOAT theGain);
-00088 
-00090   <span class="keyword">virtual</span> MY_FLOAT <a class="code" href="classFilter.html#a8">getGain</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
-00091 
-00093   <span class="keyword">virtual</span> MY_FLOAT <a class="code" href="classFilter.html#a9">lastOut</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
-00094 
-00096   <span class="keyword">virtual</span> MY_FLOAT <a class="code" href="classFilter.html#a10">tick</a>(MY_FLOAT sample);
-00097 
-00099   <span class="keyword">virtual</span> MY_FLOAT *<a class="code" href="classFilter.html#a10">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
-00100 
-00101 <span class="keyword">protected</span>:
-00102   MY_FLOAT gain;
-00103   <span class="keywordtype">int</span>     nB;
-00104   <span class="keywordtype">int</span>     nA;
-00105   MY_FLOAT *b;
-00106   MY_FLOAT *a;
-00107   MY_FLOAT *outputs;
-00108   MY_FLOAT *inputs;
-00109 
-00110 };
-00111 
-00112 <span class="preprocessor">#endif</span>
+00057 
+00063   <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a4">setCoefficients</a>( std::vector&lt;StkFloat&gt; &amp;bCoefficients, std::vector&lt;StkFloat&gt; &amp;aCoefficients );
+00064 
+00066 
+00073   <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a5">setNumerator</a>( std::vector&lt;StkFloat&gt; &amp;bCoefficients );
+00074 
+00076 
+00084   <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a6">setDenominator</a>( std::vector&lt;StkFloat&gt; &amp;aCoefficients );
+00085 
+00087 
+00091   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classFilter.html#a7">setGain</a>(StkFloat gain);
+00092 
+00094   <span class="keyword">virtual</span> StkFloat <a class="code" href="classFilter.html#a8">getGain</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
+00095 
+00097   <span class="keyword">virtual</span> StkFloat <a class="code" href="classFilter.html#a9">lastOut</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
+00098 
+00100   <span class="keyword">virtual</span> StkFloat <a class="code" href="classFilter.html#a10">tick</a>(StkFloat sample);
+00101 
+00103   <span class="keyword">virtual</span> StkFloat *<a class="code" href="classFilter.html#a10">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00104 
+00106 
+00112   <span class="keyword">virtual</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classFilter.html#a10">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00113 
+00114 <span class="keyword">protected</span>:
+00115   StkFloat gain_;
+00116   std::vector&lt;StkFloat&gt; b_;
+00117   std::vector&lt;StkFloat&gt; a_;
+00118   std::vector&lt;StkFloat&gt; outputs_;
+00119   std::vector&lt;StkFloat&gt; inputs_;
+00120 
+00121 };
+00122 
+00123 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

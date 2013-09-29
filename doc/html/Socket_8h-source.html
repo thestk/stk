@@ -12,8 +12,8 @@
 <h1>Socket.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00019 <span class="comment">/***************************************************/</span>
 00020 
-00021 <span class="preprocessor">#if !defined(__SOCKET_H)</span>
-00022 <span class="preprocessor"></span><span class="preprocessor">#define __SOCKET_H</span>
+00021 <span class="preprocessor">#ifndef STK_SOCKET_H</span>
+00022 <span class="preprocessor"></span><span class="preprocessor">#define STK_SOCKET_H</span>
 00023 <span class="preprocessor"></span>
 00024 <span class="preprocessor">#include "Stk.h"</span>
 00025 
@@ -33,7 +33,7 @@
 00054 
 00056   <span class="keywordtype">void</span> <a class="code" href="classSocket.html#a4">close</a>( <span class="keywordtype">void</span> );
 00057 
-00059   <span class="keywordtype">int</span> <a class="code" href="classSocket.html#a5">socket</a>( <span class="keywordtype">void</span> ) <span class="keyword">const</span>;
+00059   <span class="keywordtype">int</span> <a class="code" href="classSocket.html#a5">id</a>( <span class="keywordtype">void</span> ) <span class="keyword">const</span>;
 00060 
 00062   <span class="keywordtype">int</span> <a class="code" href="classSocket.html#a6">port</a>( <span class="keywordtype">void</span> ) <span class="keyword">const</span>;
 00063 
@@ -56,18 +56,17 @@
 00093 
 00094  <span class="keyword">protected</span>:
 00095 
-00096   <span class="keywordtype">char</span> msg[256];
-00097   <span class="keywordtype">int</span> soket;
-00098   <span class="keywordtype">int</span> poort;
-00099   <span class="keywordtype">bool</span> server;
-00100 
-00101 };
-00102 
-00103 <span class="preprocessor">#endif // defined(__SOCKET_H)</span>
+00096   <span class="keywordtype">int</span> soket_;
+00097   <span class="keywordtype">int</span> port_;
+00098   <span class="keywordtype">bool</span> server_;
+00099 
+00100 };
+00101 
+00102 <span class="preprocessor">#endif // defined(STK_SOCKET_H)</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

@@ -13,7 +13,7 @@
 Most STK classes process single-sample data streams via their <code>tick()</code> function. In order to distinguish single-sample and sample frame calculations, the <a class="el" href="classWvIn.html">WvIn</a> and <a class="el" href="classWvOut.html">WvOut</a> classes implement both <code>tick()</code> and <code>tickFrame()</code> functions. The <code>tickFrame()</code> functions take or return a pointer to an array of audio data representing one or more sample frames. For single-channel streams, the <code>tick()</code> and <code>tickFrame()</code> functions produce equivalent results. When <code>tick()</code> is called for a multi-channel stream, however, the function either returns a sample frame average (<a class="el" href="classWvIn.html">WvIn</a>) or writes a single sample argument to all channels (<a class="el" href="classWvOut.html">WvOut</a>).<p>
 Multi-channel support for realtime audio input and output is dependent on the audio device(s) available on your system.<p>
 The following example demonstrates the use of the <a class="el" href="classWvOut.html">WvOut</a> class for creating a four channel, 16-bit AIFF formatted audio file. We will use four sinewaves of different frequencies for the first two seconds and then a single sinewave for the last two seconds.<p>
-<div class="fragment"><pre><span class="comment">// foursine.cpp</span>
+<div class="fragment"><pre><span class="comment">// foursine.cpp STK tutorial program</span>
 
 <span class="preprocessor">#include "WaveLoop.h"</span>
 <span class="preprocessor">#include "WvOut.h"</span>
@@ -31,7 +31,7 @@ The following example demonstrates the use of the <a class="el" href="classWvOut
   <span class="comment">// Define and load the sine waves</span>
   <span class="keywordflow">try</span> {
     <span class="keywordflow">for</span> ( i=0; i&lt;4; i++ ) {
-      inputs[i] = <span class="keyword">new</span> <a class="code" href="classWaveLoop.html">WaveLoop</a>( <span class="stringliteral">"rawwaves/sinewave.raw"</span>, TRUE );
+      inputs[i] = <span class="keyword">new</span> <a class="code" href="classWaveLoop.html">WaveLoop</a>( <span class="stringliteral">"rawwaves/sinewave.raw"</span>, <span class="keyword">true</span> );
       inputs[i]-&gt;<a class="code" href="classWaveLoop.html#a2">setFrequency</a>( 220.0 * (i+1) );
     }
   }
@@ -48,17 +48,17 @@ The following example demonstrates the use of the <a class="el" href="classWvOut
   }
 
   <span class="comment">// Write two seconds of four sines to the output file</span>
-  MY_FLOAT frame[4];
+  StkFloat frame[4];
   <span class="keywordflow">for</span> ( j=0; j&lt;88200; j++ ) {
     <span class="keywordflow">for</span> ( i=0; i&lt;4; i++ )
       frame[i] = inputs[i]-&gt;<a class="code" href="classWvIn.html#a16">tick</a>();
 
-    output-&gt;<a class="code" href="classWvOut.html#a9">tickFrame</a>( frame );
+    output-&gt;<a class="code" href="classWvOut.html#a12">tickFrame</a>( frame );
   }
 
   <span class="comment">// Now write the first sine to all four channels for two seconds</span>
   <span class="keywordflow">for</span> ( j=0; j&lt;88200; j++ ) {
-    output-&gt;<a class="code" href="classWvOut.html#a7">tick</a>( inputs[0]-&gt;tick() );
+    output-&gt;<a class="code" href="classWvOut.html#a9">tick</a>( inputs[0]-&gt;tick() );
   }
 
  cleanup:
@@ -71,7 +71,7 @@ The following example demonstrates the use of the <a class="el" href="classWvOut
 [<a href="polyvoices.html">Next tutorial</a>] &nbsp; [<a href="tutorial.html">Main tutorial page</a>] <HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

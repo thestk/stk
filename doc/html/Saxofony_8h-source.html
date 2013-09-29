@@ -12,12 +12,12 @@
 <h1>Saxofony.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00036 <span class="comment">/***************************************************/</span>
 00037 
-00038 <span class="preprocessor">#if !defined(__SAXOFONY_H)</span>
-00039 <span class="preprocessor"></span><span class="preprocessor">#define __SAXOFONY_H</span>
+00038 <span class="preprocessor">#ifndef STK_SAXOFONY_H</span>
+00039 <span class="preprocessor"></span><span class="preprocessor">#define STK_SAXOFONY_H</span>
 00040 <span class="preprocessor"></span>
 00041 <span class="preprocessor">#include "Instrmnt.h"</span>
 00042 <span class="preprocessor">#include "DelayL.h"</span>
-00043 <span class="preprocessor">#include "ReedTabl.h"</span>
+00043 <span class="preprocessor">#include "ReedTable.h"</span>
 00044 <span class="preprocessor">#include "OneZero.h"</span>
 00045 <span class="preprocessor">#include "Envelope.h"</span>
 00046 <span class="preprocessor">#include "Noise.h"</span>
@@ -26,48 +26,54 @@
 <a name="l00049"></a><a class="code" href="classSaxofony.html">00049</a> <span class="keyword">class </span><a class="code" href="classSaxofony.html">Saxofony</a> : <span class="keyword">public</span> <a class="code" href="classInstrmnt.html">Instrmnt</a>
 00050 {
 00051  <span class="keyword">public</span>:
-00053   <a class="code" href="classSaxofony.html#a0">Saxofony</a>(MY_FLOAT lowestFrequency);
-00054 
-00056   <a class="code" href="classSaxofony.html#a1">~Saxofony</a>();
+00053 
+00056   <a class="code" href="classSaxofony.html#a0">Saxofony</a>(StkFloat lowestFrequency);
 00057 
-00059   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a2">clear</a>();
+00059   <a class="code" href="classSaxofony.html#a1">~Saxofony</a>();
 00060 
-00062   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a3">setFrequency</a>(MY_FLOAT frequency);
+00062   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a2">clear</a>();
 00063 
-00065   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a4">setBlowPosition</a>(MY_FLOAT aPosition);
+00065   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a3">setFrequency</a>(StkFloat frequency);
 00066 
-00068   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a5">startBlowing</a>(MY_FLOAT amplitude, MY_FLOAT rate);
+00068   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a4">setBlowPosition</a>(StkFloat aPosition);
 00069 
-00071   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a6">stopBlowing</a>(MY_FLOAT rate);
+00071   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a5">startBlowing</a>(StkFloat amplitude, StkFloat rate);
 00072 
-00074   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a7">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00074   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a6">stopBlowing</a>(StkFloat rate);
 00075 
-00077   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a8">noteOff</a>(MY_FLOAT amplitude);
+00077   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a7">noteOn</a>(StkFloat frequency, StkFloat amplitude);
 00078 
-00080   MY_FLOAT <a class="code" href="classSaxofony.html#a9">tick</a>();
+00080   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a8">noteOff</a>(StkFloat amplitude);
 00081 
-00083   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a10">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value);
+00083   StkFloat <a class="code" href="classSaxofony.html#a9">tick</a>();
 00084 
-00085  <span class="keyword">protected</span>:
-00086   <a class="code" href="classDelayL.html">DelayL</a> *delays[2];
-00087   <a class="code" href="classReedTabl.html">ReedTabl</a> *reedTable;
-00088   <a class="code" href="classOneZero.html">OneZero</a> *filter;
-00089   <a class="code" href="classEnvelope.html">Envelope</a> *envelope;
-00090   <a class="code" href="classNoise.html">Noise</a> *noise;
-00091   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato;
-00092   <span class="keywordtype">long</span> length;
-00093   MY_FLOAT outputGain;
-00094   MY_FLOAT noiseGain;
-00095   MY_FLOAT vibratoGain;
-00096   MY_FLOAT position;
-00097 
-00098 };
+00086   StkFloat *<a class="code" href="classSaxofony.html#a9">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00087 
+00089 
+00095   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classSaxofony.html#a9">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00096 
+00098   <span class="keywordtype">void</span> <a class="code" href="classSaxofony.html#a12">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value);
 00099 
-00100 <span class="preprocessor">#endif</span>
+00100  <span class="keyword">protected</span>:
+00101   <a class="code" href="classDelayL.html">DelayL</a>    delays_[2];
+00102   <a class="code" href="classReedTable.html">ReedTable</a> reedTable_;
+00103   <a class="code" href="classOneZero.html">OneZero</a>   filter_;
+00104   <a class="code" href="classEnvelope.html">Envelope</a>  envelope_;
+00105   <a class="code" href="classNoise.html">Noise</a>     noise_;
+00106   <a class="code" href="classWaveLoop.html">WaveLoop</a> *vibrato_;
+00107   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> length_;
+00108   StkFloat outputGain_;
+00109   StkFloat noiseGain_;
+00110   StkFloat vibratoGain_;
+00111   StkFloat position_;
+00112 
+00113 };
+00114 
+00115 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

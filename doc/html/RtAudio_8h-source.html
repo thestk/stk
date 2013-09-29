@@ -12,7 +12,7 @@
 <h1>RtAudio.h</h1><div class="fragment"><pre>00001 <span class="comment">/************************************************************************/</span>
 00038 <span class="comment">/************************************************************************/</span>
 00039 
-00040 <span class="comment">// RtAudio: Version 3.0.1, 22 March 2004</span>
+00040 <span class="comment">// RtAudio: Version 3.0.2, pre-release for STK 4.2.0</span>
 00041 
 00042 <span class="preprocessor">#ifndef __RTAUDIO_H</span>
 00043 <span class="preprocessor"></span><span class="preprocessor">#define __RTAUDIO_H</span>
@@ -99,440 +99,466 @@
 00127 {
 00128 <span class="keyword">public</span>:
 00129 
-00130   RtApi();
-00131   <span class="keyword">virtual</span> ~RtApi();
-00132   <span class="keywordtype">void</span> openStream( <span class="keywordtype">int</span> outputDevice, <span class="keywordtype">int</span> outputChannels,
-00133                    <span class="keywordtype">int</span> inputDevice, <span class="keywordtype">int</span> inputChannels,
-00134                    RtAudioFormat format, <span class="keywordtype">int</span> sampleRate,
-00135                    <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00136   <span class="keyword">virtual</span> <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData ) = 0;
-00137   <span class="keyword">virtual</span> <span class="keywordtype">void</span> cancelStreamCallback() = 0;
-00138   <span class="keywordtype">int</span> getDeviceCount(<span class="keywordtype">void</span>);
-00139   <a class="code" href="structRtAudioDeviceInfo.html">RtAudioDeviceInfo</a> getDeviceInfo( <span class="keywordtype">int</span> device );
-00140   <span class="keywordtype">char</span> * <span class="keyword">const</span> getStreamBuffer();
-00141   <span class="keyword">virtual</span> <span class="keywordtype">void</span> tickStream() = 0;
-00142   <span class="keyword">virtual</span> <span class="keywordtype">void</span> closeStream();
-00143   <span class="keyword">virtual</span> <span class="keywordtype">void</span> startStream() = 0;
-00144   <span class="keyword">virtual</span> <span class="keywordtype">void</span> stopStream() = 0;
-00145   <span class="keyword">virtual</span> <span class="keywordtype">void</span> abortStream() = 0;
-00146 
-00147 <span class="keyword">protected</span>:
-00148 
-00149   <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> MAX_SAMPLE_RATES;
-00150   <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> SAMPLE_RATES[];
-00151 
-00152   <span class="keyword">enum</span> { FAILURE, SUCCESS };
-00153 
-00154   <span class="keyword">enum</span> StreamMode {
-00155     OUTPUT,
-00156     INPUT,
-00157     DUPLEX,
-00158     UNINITIALIZED = -75
-00159   };
-00160 
-00161   <span class="keyword">enum</span> StreamState {
-00162     STREAM_STOPPED,
-00163     STREAM_RUNNING
-00164   };
-00165 
-00166   <span class="comment">// A protected structure for audio streams.</span>
-00167   <span class="keyword">struct </span>RtApiStream {
-00168     <span class="keywordtype">int</span> device[2];          <span class="comment">// Playback and record, respectively.</span>
-00169     <span class="keywordtype">void</span> *apiHandle;        <span class="comment">// void pointer for API specific stream handle information</span>
-00170     StreamMode mode;         <span class="comment">// OUTPUT, INPUT, or DUPLEX.</span>
-00171     StreamState state;       <span class="comment">// STOPPED or RUNNING</span>
-00172     <span class="keywordtype">char</span> *userBuffer;
-00173     <span class="keywordtype">char</span> *deviceBuffer;
-00174     <span class="keywordtype">bool</span> doConvertBuffer[2]; <span class="comment">// Playback and record, respectively.</span>
-00175     <span class="keywordtype">bool</span> deInterleave[2];    <span class="comment">// Playback and record, respectively.</span>
-00176     <span class="keywordtype">bool</span> doByteSwap[2];      <span class="comment">// Playback and record, respectively.</span>
-00177     <span class="keywordtype">int</span> sampleRate;
-00178     <span class="keywordtype">int</span> bufferSize;
-00179     <span class="keywordtype">int</span> nBuffers;
-00180     <span class="keywordtype">int</span> nUserChannels[2];    <span class="comment">// Playback and record, respectively.</span>
-00181     <span class="keywordtype">int</span> nDeviceChannels[2];  <span class="comment">// Playback and record channels, respectively.</span>
-00182     RtAudioFormat userFormat;
-00183     RtAudioFormat deviceFormat[2]; <span class="comment">// Playback and record, respectively.</span>
-00184     StreamMutex mutex;
-00185     CallbackInfo callbackInfo;
-00186 
-00187     RtApiStream()
-00188       :apiHandle(0), userBuffer(0), deviceBuffer(0) {}
-00189     <span class="comment">//      mode(UNINITIALIZED), state(STREAM_STOPPED),</span>
-00190   };
-00191 
-00192   <span class="comment">// A protected device structure for audio devices.</span>
-00193   <span class="keyword">struct </span>RtApiDevice {
-00194     std::string name;      
-00195     <span class="keywordtype">bool</span> probed;           
-00196     <span class="keywordtype">void</span> *apiDeviceId;     <span class="comment">// void pointer for API specific device information</span>
-00197     <span class="keywordtype">int</span> maxOutputChannels; 
-00198     <span class="keywordtype">int</span> maxInputChannels;  
-00199     <span class="keywordtype">int</span> maxDuplexChannels; 
-00200     <span class="keywordtype">int</span> minOutputChannels; 
-00201     <span class="keywordtype">int</span> minInputChannels;  
-00202     <span class="keywordtype">int</span> minDuplexChannels; 
-00203     <span class="keywordtype">bool</span> hasDuplexSupport; 
-00204     <span class="keywordtype">bool</span> isDefault;        
-00205     std::vector&lt;int&gt; sampleRates; 
-00206     RtAudioFormat nativeFormats;  
-00208     <span class="comment">// Default constructor.</span>
-00209     RtApiDevice()
-00210       :probed(false), apiDeviceId(0), maxOutputChannels(0), maxInputChannels(0),
-00211        maxDuplexChannels(0), minOutputChannels(0), minInputChannels(0),
-00212        minDuplexChannels(0), isDefault(false), nativeFormats(0) {}
-00213   };
-00214 
-00215   <span class="keyword">typedef</span> <span class="keywordtype">signed</span> <span class="keywordtype">short</span> Int16;
-00216   <span class="keyword">typedef</span> <span class="keywordtype">signed</span> <span class="keywordtype">int</span> Int32;
-00217   <span class="keyword">typedef</span> <span class="keywordtype">float</span> Float32;
-00218   <span class="keyword">typedef</span> <span class="keywordtype">double</span> Float64;
-00219 
-00220   <span class="keywordtype">char</span> message_[256];
-00221   <span class="keywordtype">int</span> nDevices_;
-00222   std::vector&lt;RtApiDevice&gt; devices_;
-00223   RtApiStream stream_;
-00224 
-00229   <span class="keyword">virtual</span> <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>) = 0;
-00230 
-00239   <span class="keyword">virtual</span> <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
-00240 
-00249   <span class="keyword">virtual</span> <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
-00250                                 <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
-00251                                 <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00252 
-00257   <span class="keyword">virtual</span> <span class="keywordtype">int</span> getDefaultInputDevice(<span class="keywordtype">void</span>);
-00258 
-00263   <span class="keyword">virtual</span> <span class="keywordtype">int</span> getDefaultOutputDevice(<span class="keywordtype">void</span>);
-00264 
-00266   <span class="keywordtype">void</span> clearDeviceInfo( RtApiDevice *info );
-00267 
-00269   <span class="keywordtype">void</span> clearStreamInfo();
-00270 
-00272   <span class="keywordtype">void</span> error( RtError::Type type );
-00273 
-00278   <span class="keywordtype">void</span> verifyStream();
-00279 
-00284   <span class="keywordtype">void</span> convertStreamBuffer( StreamMode mode );
-00285 
-00287   <span class="keywordtype">void</span> byteSwapBuffer( <span class="keywordtype">char</span> *buffer, <span class="keywordtype">int</span> samples, RtAudioFormat format );
-00288 
-00290   <span class="keywordtype">int</span> formatBytes( RtAudioFormat format );
-00291 };
-00292 
+00130   <span class="keyword">enum</span> StreamState {
+00131     STREAM_STOPPED,
+00132     STREAM_RUNNING
+00133   };
+00134 
+00135   RtApi();
+00136   <span class="keyword">virtual</span> ~RtApi();
+00137   <span class="keywordtype">void</span> openStream( <span class="keywordtype">int</span> outputDevice, <span class="keywordtype">int</span> outputChannels,
+00138                    <span class="keywordtype">int</span> inputDevice, <span class="keywordtype">int</span> inputChannels,
+00139                    RtAudioFormat format, <span class="keywordtype">int</span> sampleRate,
+00140                    <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00141   <span class="keywordtype">void</span> openStream( <span class="keywordtype">int</span> outputDevice, <span class="keywordtype">int</span> outputChannels,
+00142                    <span class="keywordtype">int</span> inputDevice, <span class="keywordtype">int</span> inputChannels,
+00143                    RtAudioFormat format, <span class="keywordtype">int</span> sampleRate,
+00144                    <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> *numberOfBuffers );
+00145   <span class="keyword">virtual</span> <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData ) = 0;
+00146   <span class="keyword">virtual</span> <span class="keywordtype">void</span> cancelStreamCallback() = 0;
+00147   <span class="keywordtype">int</span> getDeviceCount(<span class="keywordtype">void</span>);
+00148   <a class="code" href="structRtAudioDeviceInfo.html">RtAudioDeviceInfo</a> getDeviceInfo( <span class="keywordtype">int</span> device );
+00149   <span class="keywordtype">char</span> * <span class="keyword">const</span> getStreamBuffer();
+00150   RtApi::StreamState getStreamState() <span class="keyword">const</span>;
+00151   <span class="keyword">virtual</span> <span class="keywordtype">void</span> tickStream() = 0;
+00152   <span class="keyword">virtual</span> <span class="keywordtype">void</span> closeStream();
+00153   <span class="keyword">virtual</span> <span class="keywordtype">void</span> startStream() = 0;
+00154   <span class="keyword">virtual</span> <span class="keywordtype">void</span> stopStream() = 0;
+00155   <span class="keyword">virtual</span> <span class="keywordtype">void</span> abortStream() = 0;
+00156 
+00157 <span class="keyword">protected</span>:
+00158 
+00159   <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> MAX_SAMPLE_RATES;
+00160   <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> SAMPLE_RATES[];
+00161 
+00162   <span class="keyword">enum</span> { FAILURE, SUCCESS };
+00163 
+00164   <span class="keyword">enum</span> StreamMode {
+00165     OUTPUT,
+00166     INPUT,
+00167     DUPLEX,
+00168     UNINITIALIZED = -75
+00169   };
+00170 
+00171   <span class="comment">// A protected structure used for buffer conversion.</span>
+00172   <span class="keyword">struct </span>ConvertInfo {
+00173     <span class="keywordtype">int</span> channels;
+00174     <span class="keywordtype">int</span> inJump, outJump;
+00175     RtAudioFormat inFormat, outFormat;
+00176     std::vector&lt;int&gt; inOffset;
+00177     std::vector&lt;int&gt; outOffset;
+00178   };
+00179 
+00180   <span class="comment">// A protected structure for audio streams.</span>
+00181   <span class="keyword">struct </span>RtApiStream {
+00182     <span class="keywordtype">int</span> device[2];          <span class="comment">// Playback and record, respectively.</span>
+00183     <span class="keywordtype">void</span> *apiHandle;        <span class="comment">// void pointer for API specific stream handle information</span>
+00184     StreamMode mode;         <span class="comment">// OUTPUT, INPUT, or DUPLEX.</span>
+00185     StreamState state;       <span class="comment">// STOPPED or RUNNING</span>
+00186     <span class="keywordtype">char</span> *userBuffer;
+00187     <span class="keywordtype">char</span> *deviceBuffer;
+00188     <span class="keywordtype">bool</span> doConvertBuffer[2]; <span class="comment">// Playback and record, respectively.</span>
+00189     <span class="keywordtype">bool</span> deInterleave[2];    <span class="comment">// Playback and record, respectively.</span>
+00190     <span class="keywordtype">bool</span> doByteSwap[2];      <span class="comment">// Playback and record, respectively.</span>
+00191     <span class="keywordtype">int</span> sampleRate;
+00192     <span class="keywordtype">int</span> bufferSize;
+00193     <span class="keywordtype">int</span> nBuffers;
+00194     <span class="keywordtype">int</span> nUserChannels[2];    <span class="comment">// Playback and record, respectively.</span>
+00195     <span class="keywordtype">int</span> nDeviceChannels[2];  <span class="comment">// Playback and record channels, respectively.</span>
+00196     RtAudioFormat userFormat;
+00197     RtAudioFormat deviceFormat[2]; <span class="comment">// Playback and record, respectively.</span>
+00198     StreamMutex mutex;
+00199     CallbackInfo callbackInfo;
+00200     ConvertInfo convertInfo[2];
+00201 
+00202     RtApiStream()
+00203       :apiHandle(0), userBuffer(0), deviceBuffer(0) {}
+00204   };
+00205 
+00206   <span class="comment">// A protected device structure for audio devices.</span>
+00207   <span class="keyword">struct </span>RtApiDevice {
+00208     std::string name;      
+00209     <span class="keywordtype">bool</span> probed;           
+00210     <span class="keywordtype">void</span> *apiDeviceId;     <span class="comment">// void pointer for API specific device information</span>
+00211     <span class="keywordtype">int</span> maxOutputChannels; 
+00212     <span class="keywordtype">int</span> maxInputChannels;  
+00213     <span class="keywordtype">int</span> maxDuplexChannels; 
+00214     <span class="keywordtype">int</span> minOutputChannels; 
+00215     <span class="keywordtype">int</span> minInputChannels;  
+00216     <span class="keywordtype">int</span> minDuplexChannels; 
+00217     <span class="keywordtype">bool</span> hasDuplexSupport; 
+00218     <span class="keywordtype">bool</span> isDefault;        
+00219     std::vector&lt;int&gt; sampleRates; 
+00220     RtAudioFormat nativeFormats;  
+00222     <span class="comment">// Default constructor.</span>
+00223     RtApiDevice()
+00224       :probed(false), apiDeviceId(0), maxOutputChannels(0), maxInputChannels(0),
+00225        maxDuplexChannels(0), minOutputChannels(0), minInputChannels(0),
+00226        minDuplexChannels(0), isDefault(false), nativeFormats(0) {}
+00227   };
+00228 
+00229   <span class="keyword">typedef</span> <span class="keywordtype">signed</span> <span class="keywordtype">short</span> Int16;
+00230   <span class="keyword">typedef</span> <span class="keywordtype">signed</span> <span class="keywordtype">int</span> Int32;
+00231   <span class="keyword">typedef</span> <span class="keywordtype">float</span> Float32;
+00232   <span class="keyword">typedef</span> <span class="keywordtype">double</span> Float64;
+00233 
+00234   <span class="keywordtype">char</span> message_[1024];
+00235   <span class="keywordtype">int</span> nDevices_;
+00236   std::vector&lt;RtApiDevice&gt; devices_;
+00237   RtApiStream stream_;
+00238 
+00243   <span class="keyword">virtual</span> <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>) = 0;
+00244 
+00253   <span class="keyword">virtual</span> <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
+00254 
+00263   <span class="keyword">virtual</span> <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
+00264                                 <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
+00265                                 <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00266 
+00271   <span class="keyword">virtual</span> <span class="keywordtype">int</span> getDefaultInputDevice(<span class="keywordtype">void</span>);
+00272 
+00277   <span class="keyword">virtual</span> <span class="keywordtype">int</span> getDefaultOutputDevice(<span class="keywordtype">void</span>);
+00278 
+00280   <span class="keywordtype">void</span> clearDeviceInfo( RtApiDevice *info );
+00281 
+00283   <span class="keywordtype">void</span> clearStreamInfo();
+00284 
+00286   <span class="keywordtype">void</span> error( RtError::Type type );
+00287 
+00292   <span class="keywordtype">void</span> verifyStream();
 00293 
-00294 <span class="comment">// **************************************************************** //</span>
-00295 <span class="comment">//</span>
-00296 <span class="comment">// RtAudio class declaration.</span>
-00297 <span class="comment">//</span>
-00298 <span class="comment">// RtAudio is a "controller" used to select an available audio i/o</span>
-00299 <span class="comment">// interface.  It presents a common API for the user to call but all</span>
-00300 <span class="comment">// functionality is implemented by the class RtAudioApi and its</span>
-00301 <span class="comment">// subclasses.  RtAudio creates an instance of an RtAudioApi subclass</span>
-00302 <span class="comment">// based on the user's API choice.  If no choice is made, RtAudio</span>
-00303 <span class="comment">// attempts to make a "logical" API selection.</span>
-00304 <span class="comment">//</span>
-00305 <span class="comment">// **************************************************************** //</span>
+00298   <span class="keywordtype">void</span> convertBuffer( <span class="keywordtype">char</span> *outBuffer, <span class="keywordtype">char</span> *inBuffer, ConvertInfo &amp;info );
+00299 
+00301   <span class="keywordtype">void</span> byteSwapBuffer( <span class="keywordtype">char</span> *buffer, <span class="keywordtype">int</span> samples, RtAudioFormat format );
+00302 
+00304   <span class="keywordtype">int</span> formatBytes( RtAudioFormat format );
+00305 };
 00306 
-<a name="l00307"></a><a class="code" href="classRtAudio.html">00307</a> <span class="keyword">class </span><a class="code" href="classRtAudio.html">RtAudio</a>
-00308 {
-00309 <span class="keyword">public</span>:
-00310 
-<a name="l00312"></a><a class="code" href="classRtAudio.html#w8">00312</a>   <span class="keyword">enum</span> <a class="code" href="classRtAudio.html#w8">RtAudioApi</a> {
-00313     <a class="code" href="classRtAudio.html#w8w0">UNSPECIFIED</a>,    
-00314     <a class="code" href="classRtAudio.html#w8w1">LINUX_ALSA</a>,     
-00315     <a class="code" href="classRtAudio.html#w8w2">LINUX_OSS</a>,      
-00316     <a class="code" href="classRtAudio.html#w8w3">LINUX_JACK</a>,     
-00317     <a class="code" href="classRtAudio.html#w8w4">MACOSX_CORE</a>,    
-00318     <a class="code" href="classRtAudio.html#w8w5">IRIX_AL</a>,        
-00319     <a class="code" href="classRtAudio.html#w8w6">WINDOWS_ASIO</a>,   
-00320     <a class="code" href="classRtAudio.html#w8w7">WINDOWS_DS</a>      
-00321   };
-00322 
+00307 
+00308 <span class="comment">// **************************************************************** //</span>
+00309 <span class="comment">//</span>
+00310 <span class="comment">// RtAudio class declaration.</span>
+00311 <span class="comment">//</span>
+00312 <span class="comment">// RtAudio is a "controller" used to select an available audio i/o</span>
+00313 <span class="comment">// interface.  It presents a common API for the user to call but all</span>
+00314 <span class="comment">// functionality is implemented by the class RtAudioApi and its</span>
+00315 <span class="comment">// subclasses.  RtAudio creates an instance of an RtAudioApi subclass</span>
+00316 <span class="comment">// based on the user's API choice.  If no choice is made, RtAudio</span>
+00317 <span class="comment">// attempts to make a "logical" API selection.</span>
+00318 <span class="comment">//</span>
+00319 <span class="comment">// **************************************************************** //</span>
+00320 
+<a name="l00321"></a><a class="code" href="classRtAudio.html">00321</a> <span class="keyword">class </span><a class="code" href="classRtAudio.html">RtAudio</a>
+00322 {
+00323 <span class="keyword">public</span>:
 00324 
-00334   <a class="code" href="classRtAudio.html#a0">RtAudio</a>( RtAudioApi api=UNSPECIFIED );
-00335 
-00337 
-00348   <a class="code" href="classRtAudio.html#a0">RtAudio</a>( <span class="keywordtype">int</span> outputDevice, <span class="keywordtype">int</span> outputChannels,
-00349            <span class="keywordtype">int</span> inputDevice, <span class="keywordtype">int</span> inputChannels,
-00350            RtAudioFormat format, <span class="keywordtype">int</span> sampleRate,
-00351            <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers, RtAudioApi api=UNSPECIFIED );
-00352 
-00354 
-00358   <a class="code" href="classRtAudio.html#a2">~RtAudio</a>();
-00359 
-00361 
-00387   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a3">openStream</a>( <span class="keywordtype">int</span> outputDevice, <span class="keywordtype">int</span> outputChannels,
-00388                    <span class="keywordtype">int</span> inputDevice, <span class="keywordtype">int</span> inputChannels,
-00389                    RtAudioFormat format, <span class="keywordtype">int</span> sampleRate,
-00390                    <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00391 
-00393 
-<a name="l00412"></a><a class="code" href="classRtAudio.html#a4">00412</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a4">setStreamCallback</a>(RtAudioCallback callback, <span class="keywordtype">void</span> *userData) { rtapi_-&gt;setStreamCallback( callback, userData ); };
-00413 
-00415 
-<a name="l00422"></a><a class="code" href="classRtAudio.html#a5">00422</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a5">cancelStreamCallback</a>() { rtapi_-&gt;cancelStreamCallback(); };
-00423 
-<a name="l00425"></a><a class="code" href="classRtAudio.html#a6">00425</a>   <span class="keywordtype">int</span> <a class="code" href="classRtAudio.html#a6">getDeviceCount</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> rtapi_-&gt;getDeviceCount(); };
-00426 
-00428 
-<a name="l00436"></a><a class="code" href="classRtAudio.html#a7">00436</a>   <a class="code" href="structRtAudioDeviceInfo.html">RtAudioDeviceInfo</a> <a class="code" href="classRtAudio.html#a7">getDeviceInfo</a>(<span class="keywordtype">int</span> device) { <span class="keywordflow">return</span> rtapi_-&gt;getDeviceInfo( device ); };
-00437 
-00439 
-<a name="l00444"></a><a class="code" href="classRtAudio.html#a8">00444</a>   <span class="keywordtype">char</span> * <span class="keyword">const</span> <a class="code" href="classRtAudio.html#a8">getStreamBuffer</a>() { <span class="keywordflow">return</span> rtapi_-&gt;getStreamBuffer(); };
-00445 
-00447 
-<a name="l00452"></a><a class="code" href="classRtAudio.html#a9">00452</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a9">tickStream</a>() { rtapi_-&gt;tickStream(); };
-00453 
+<a name="l00326"></a><a class="code" href="classRtAudio.html#w8">00326</a>   <span class="keyword">enum</span> <a class="code" href="classRtAudio.html#w8">RtAudioApi</a> {
+00327     <a class="code" href="classRtAudio.html#w8w0">UNSPECIFIED</a>,    
+00328     <a class="code" href="classRtAudio.html#w8w1">LINUX_ALSA</a>,     
+00329     <a class="code" href="classRtAudio.html#w8w2">LINUX_OSS</a>,      
+00330     <a class="code" href="classRtAudio.html#w8w3">LINUX_JACK</a>,     
+00331     <a class="code" href="classRtAudio.html#w8w4">MACOSX_CORE</a>,    
+00332     <a class="code" href="classRtAudio.html#w8w5">IRIX_AL</a>,        
+00333     <a class="code" href="classRtAudio.html#w8w6">WINDOWS_ASIO</a>,   
+00334     <a class="code" href="classRtAudio.html#w8w7">WINDOWS_DS</a>      
+00335   };
+00336 
+00338 
+00348   <a class="code" href="classRtAudio.html#a0">RtAudio</a>( RtAudioApi api=UNSPECIFIED );
+00349 
+00351 
+00362   <a class="code" href="classRtAudio.html#a0">RtAudio</a>( <span class="keywordtype">int</span> outputDevice, <span class="keywordtype">int</span> outputChannels,
+00363            <span class="keywordtype">int</span> inputDevice, <span class="keywordtype">int</span> inputChannels,
+00364            RtAudioFormat format, <span class="keywordtype">int</span> sampleRate,
+00365            <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers, RtAudioApi api=UNSPECIFIED );
+00366 
+00368 
+00376   <a class="code" href="classRtAudio.html#a0">RtAudio</a>( <span class="keywordtype">int</span> outputDevice, <span class="keywordtype">int</span> outputChannels,
+00377            <span class="keywordtype">int</span> inputDevice, <span class="keywordtype">int</span> inputChannels,
+00378            RtAudioFormat format, <span class="keywordtype">int</span> sampleRate,
+00379            <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> *numberOfBuffers, RtAudioApi api=UNSPECIFIED );
+00380 
+00382 
+00386   <a class="code" href="classRtAudio.html#a3">~RtAudio</a>();
+00387 
+00389 
+00415   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a4">openStream</a>( <span class="keywordtype">int</span> outputDevice, <span class="keywordtype">int</span> outputChannels,
+00416                    <span class="keywordtype">int</span> inputDevice, <span class="keywordtype">int</span> inputChannels,
+00417                    RtAudioFormat format, <span class="keywordtype">int</span> sampleRate,
+00418                    <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00419 
+00421 
+00429   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a4">openStream</a>( <span class="keywordtype">int</span> outputDevice, <span class="keywordtype">int</span> outputChannels,
+00430                    <span class="keywordtype">int</span> inputDevice, <span class="keywordtype">int</span> inputChannels,
+00431                    RtAudioFormat format, <span class="keywordtype">int</span> sampleRate,
+00432                    <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> *numberOfBuffers );
+00433 
+00435 
+<a name="l00454"></a><a class="code" href="classRtAudio.html#a6">00454</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a6">setStreamCallback</a>(RtAudioCallback callback, <span class="keywordtype">void</span> *userData) { rtapi_-&gt;setStreamCallback( callback, userData ); };
 00455 
-<a name="l00459"></a><a class="code" href="classRtAudio.html#a10">00459</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a10">closeStream</a>()  { rtapi_-&gt;closeStream(); };
-00460 
-00462 
-<a name="l00466"></a><a class="code" href="classRtAudio.html#a11">00466</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a11">startStream</a>() { rtapi_-&gt;startStream(); };
-00467 
-00469 
-<a name="l00473"></a><a class="code" href="classRtAudio.html#a12">00473</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a12">stopStream</a>() { rtapi_-&gt;stopStream(); };
-00474 
-00476 
-<a name="l00480"></a><a class="code" href="classRtAudio.html#a13">00480</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a13">abortStream</a>() { rtapi_-&gt;abortStream(); };
+00457 
+<a name="l00464"></a><a class="code" href="classRtAudio.html#a7">00464</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a7">cancelStreamCallback</a>() { rtapi_-&gt;cancelStreamCallback(); };
+00465 
+<a name="l00467"></a><a class="code" href="classRtAudio.html#a8">00467</a>   <span class="keywordtype">int</span> <a class="code" href="classRtAudio.html#a8">getDeviceCount</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> rtapi_-&gt;getDeviceCount(); };
+00468 
+00470 
+<a name="l00478"></a><a class="code" href="classRtAudio.html#a9">00478</a>   <a class="code" href="structRtAudioDeviceInfo.html">RtAudioDeviceInfo</a> <a class="code" href="classRtAudio.html#a9">getDeviceInfo</a>(<span class="keywordtype">int</span> device) { <span class="keywordflow">return</span> rtapi_-&gt;getDeviceInfo( device ); };
+00479 
 00481 
-00482 
-00483  <span class="keyword">protected</span>:
-00484 
-00485   <span class="keywordtype">void</span> initialize( RtAudioApi api );
-00486 
-00487   RtApi *rtapi_;
-00488 };
+<a name="l00486"></a><a class="code" href="classRtAudio.html#a10">00486</a>   <span class="keywordtype">char</span> * <span class="keyword">const</span> <a class="code" href="classRtAudio.html#a10">getStreamBuffer</a>() { <span class="keywordflow">return</span> rtapi_-&gt;getStreamBuffer(); };
+00487 
 00489 
-00490 
-00491 <span class="comment">// RtApi Subclass prototypes.</span>
-00492 
-00493 <span class="preprocessor">#if defined(__LINUX_ALSA__)</span>
-00494 <span class="preprocessor"></span>
-00495 <span class="keyword">class </span>RtApiAlsa: <span class="keyword">public</span> RtApi
-00496 {
-00497 <span class="keyword">public</span>:
-00498 
-00499   RtApiAlsa();
-00500   ~RtApiAlsa();
-00501   <span class="keywordtype">void</span> tickStream();
-00502   <span class="keywordtype">void</span> closeStream();
-00503   <span class="keywordtype">void</span> startStream();
-00504   <span class="keywordtype">void</span> stopStream();
-00505   <span class="keywordtype">void</span> abortStream();
-00506   <span class="keywordtype">int</span> streamWillBlock();
-00507   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
-00508   <span class="keywordtype">void</span> cancelStreamCallback();
+<a name="l00494"></a><a class="code" href="classRtAudio.html#a11">00494</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a11">tickStream</a>() { rtapi_-&gt;tickStream(); };
+00495 
+00497 
+<a name="l00501"></a><a class="code" href="classRtAudio.html#a12">00501</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a12">closeStream</a>()  { rtapi_-&gt;closeStream(); };
+00502 
+00504 
+<a name="l00508"></a><a class="code" href="classRtAudio.html#a13">00508</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a13">startStream</a>() { rtapi_-&gt;startStream(); };
 00509 
-00510   <span class="keyword">private</span>:
 00511 
-00512   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
-00513   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
-00514   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
-00515                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
-00516                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00517 };
+<a name="l00515"></a><a class="code" href="classRtAudio.html#a14">00515</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a14">stopStream</a>() { rtapi_-&gt;stopStream(); };
+00516 
 00518 
-00519 <span class="preprocessor">#endif</span>
-00520 <span class="preprocessor"></span>
-00521 <span class="preprocessor">#if defined(__LINUX_JACK__)</span>
-00522 <span class="preprocessor"></span>
-00523 <span class="keyword">class </span>RtApiJack: <span class="keyword">public</span> RtApi
-00524 {
-00525 <span class="keyword">public</span>:
+<a name="l00522"></a><a class="code" href="classRtAudio.html#a15">00522</a>   <span class="keywordtype">void</span> <a class="code" href="classRtAudio.html#a15">abortStream</a>() { rtapi_-&gt;abortStream(); };
+00523 
+00524 
+00525  <span class="keyword">protected</span>:
 00526 
-00527   RtApiJack();
-00528   ~RtApiJack();
-00529   <span class="keywordtype">void</span> tickStream();
-00530   <span class="keywordtype">void</span> closeStream();
-00531   <span class="keywordtype">void</span> startStream();
-00532   <span class="keywordtype">void</span> stopStream();
-00533   <span class="keywordtype">void</span> abortStream();
-00534   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
-00535   <span class="keywordtype">void</span> cancelStreamCallback();
-00536   <span class="comment">// This function is intended for internal use only.  It must be</span>
-00537   <span class="comment">// public because it is called by the internal callback handler,</span>
-00538   <span class="comment">// which is not a member of RtAudio.  External use of this function</span>
-00539   <span class="comment">// will most likely produce highly undesireable results!</span>
-00540   <span class="keywordtype">void</span> callbackEvent( <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> nframes );
-00541 
-00542   <span class="keyword">private</span>:
-00543 
-00544   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
-00545   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
-00546   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
-00547                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
-00548                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00549 };
-00550 
-00551 <span class="preprocessor">#endif</span>
-00552 <span class="preprocessor"></span>
-00553 <span class="preprocessor">#if defined(__LINUX_OSS__)</span>
-00554 <span class="preprocessor"></span>
-00555 <span class="keyword">class </span>RtApiOss: <span class="keyword">public</span> RtApi
-00556 {
-00557 <span class="keyword">public</span>:
-00558 
-00559   RtApiOss();
-00560   ~RtApiOss();
-00561   <span class="keywordtype">void</span> tickStream();
-00562   <span class="keywordtype">void</span> closeStream();
-00563   <span class="keywordtype">void</span> startStream();
-00564   <span class="keywordtype">void</span> stopStream();
-00565   <span class="keywordtype">void</span> abortStream();
-00566   <span class="keywordtype">int</span> streamWillBlock();
-00567   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
-00568   <span class="keywordtype">void</span> cancelStreamCallback();
-00569 
-00570   <span class="keyword">private</span>:
-00571 
-00572   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
-00573   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
-00574   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
-00575                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
-00576                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00577 };
-00578 
-00579 <span class="preprocessor">#endif</span>
-00580 <span class="preprocessor"></span>
-00581 <span class="preprocessor">#if defined(__MACOSX_CORE__)</span>
-00582 <span class="preprocessor"></span>
-00583 <span class="preprocessor">#include &lt;CoreAudio/AudioHardware.h&gt;</span>
-00584 
-00585 <span class="keyword">class </span>RtApiCore: <span class="keyword">public</span> RtApi
-00586 {
-00587 <span class="keyword">public</span>:
-00588 
-00589   RtApiCore();
-00590   ~RtApiCore();
-00591   <span class="keywordtype">int</span> getDefaultOutputDevice(<span class="keywordtype">void</span>);
-00592   <span class="keywordtype">int</span> getDefaultInputDevice(<span class="keywordtype">void</span>);
-00593   <span class="keywordtype">void</span> tickStream();
-00594   <span class="keywordtype">void</span> closeStream();
-00595   <span class="keywordtype">void</span> startStream();
-00596   <span class="keywordtype">void</span> stopStream();
-00597   <span class="keywordtype">void</span> abortStream();
-00598   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
-00599   <span class="keywordtype">void</span> cancelStreamCallback();
+00527   <span class="keywordtype">void</span> initialize( RtAudioApi api );
+00528 
+00529   RtApi *rtapi_;
+00530 };
+00531 
+00532 
+00533 <span class="comment">// RtApi Subclass prototypes.</span>
+00534 
+00535 <span class="preprocessor">#if defined(__LINUX_ALSA__)</span>
+00536 <span class="preprocessor"></span>
+00537 <span class="keyword">class </span>RtApiAlsa: <span class="keyword">public</span> RtApi
+00538 {
+00539 <span class="keyword">public</span>:
+00540 
+00541   RtApiAlsa();
+00542   ~RtApiAlsa();
+00543   <span class="keywordtype">void</span> tickStream();
+00544   <span class="keywordtype">void</span> closeStream();
+00545   <span class="keywordtype">void</span> startStream();
+00546   <span class="keywordtype">void</span> stopStream();
+00547   <span class="keywordtype">void</span> abortStream();
+00548   <span class="keywordtype">int</span> streamWillBlock();
+00549   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
+00550   <span class="keywordtype">void</span> cancelStreamCallback();
+00551 
+00552   <span class="keyword">private</span>:
+00553 
+00554   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
+00555   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
+00556   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
+00557                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
+00558                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00559 };
+00560 
+00561 <span class="preprocessor">#endif</span>
+00562 <span class="preprocessor"></span>
+00563 <span class="preprocessor">#if defined(__LINUX_JACK__)</span>
+00564 <span class="preprocessor"></span>
+00565 <span class="keyword">class </span>RtApiJack: <span class="keyword">public</span> RtApi
+00566 {
+00567 <span class="keyword">public</span>:
+00568 
+00569   RtApiJack();
+00570   ~RtApiJack();
+00571   <span class="keywordtype">void</span> tickStream();
+00572   <span class="keywordtype">void</span> closeStream();
+00573   <span class="keywordtype">void</span> startStream();
+00574   <span class="keywordtype">void</span> stopStream();
+00575   <span class="keywordtype">void</span> abortStream();
+00576   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
+00577   <span class="keywordtype">void</span> cancelStreamCallback();
+00578   <span class="comment">// This function is intended for internal use only.  It must be</span>
+00579   <span class="comment">// public because it is called by the internal callback handler,</span>
+00580   <span class="comment">// which is not a member of RtAudio.  External use of this function</span>
+00581   <span class="comment">// will most likely produce highly undesireable results!</span>
+00582   <span class="keywordtype">void</span> callbackEvent( <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> nframes );
+00583 
+00584   <span class="keyword">private</span>:
+00585 
+00586   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
+00587   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
+00588   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
+00589                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
+00590                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00591 };
+00592 
+00593 <span class="preprocessor">#endif</span>
+00594 <span class="preprocessor"></span>
+00595 <span class="preprocessor">#if defined(__LINUX_OSS__)</span>
+00596 <span class="preprocessor"></span>
+00597 <span class="keyword">class </span>RtApiOss: <span class="keyword">public</span> RtApi
+00598 {
+00599 <span class="keyword">public</span>:
 00600 
-00601   <span class="comment">// This function is intended for internal use only.  It must be</span>
-00602   <span class="comment">// public because it is called by the internal callback handler,</span>
-00603   <span class="comment">// which is not a member of RtAudio.  External use of this function</span>
-00604   <span class="comment">// will most likely produce highly undesireable results!</span>
-00605   <span class="keywordtype">void</span> callbackEvent( AudioDeviceID deviceId, <span class="keywordtype">void</span> *inData, <span class="keywordtype">void</span> *outData );
-00606 
-00607   <span class="keyword">private</span>:
-00608 
-00609   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
-00610   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
-00611   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
-00612                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
-00613                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00614 };
-00615 
-00616 <span class="preprocessor">#endif</span>
-00617 <span class="preprocessor"></span>
-00618 <span class="preprocessor">#if defined(__WINDOWS_DS__)</span>
-00619 <span class="preprocessor"></span>
-00620 <span class="keyword">class </span>RtApiDs: <span class="keyword">public</span> RtApi
-00621 {
-00622 <span class="keyword">public</span>:
-00623 
-00624   RtApiDs();
-00625   ~RtApiDs();
-00626   <span class="keywordtype">int</span> getDefaultOutputDevice(<span class="keywordtype">void</span>);
-00627   <span class="keywordtype">int</span> getDefaultInputDevice(<span class="keywordtype">void</span>);
-00628   <span class="keywordtype">void</span> tickStream();
-00629   <span class="keywordtype">void</span> closeStream();
-00630   <span class="keywordtype">void</span> startStream();
-00631   <span class="keywordtype">void</span> stopStream();
-00632   <span class="keywordtype">void</span> abortStream();
-00633   <span class="keywordtype">int</span> streamWillBlock();
-00634   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
-00635   <span class="keywordtype">void</span> cancelStreamCallback();
-00636 
-00637   <span class="keyword">private</span>:
-00638 
-00639   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
-00640   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
-00641   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
-00642                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
-00643                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00644 };
-00645 
-00646 <span class="preprocessor">#endif</span>
-00647 <span class="preprocessor"></span>
-00648 <span class="preprocessor">#if defined(__WINDOWS_ASIO__)</span>
-00649 <span class="preprocessor"></span>
-00650 <span class="keyword">class </span>RtApiAsio: <span class="keyword">public</span> RtApi
-00651 {
-00652 <span class="keyword">public</span>:
-00653 
-00654   RtApiAsio();
-00655   ~RtApiAsio();
-00656   <span class="keywordtype">void</span> tickStream();
-00657   <span class="keywordtype">void</span> closeStream();
-00658   <span class="keywordtype">void</span> startStream();
-00659   <span class="keywordtype">void</span> stopStream();
-00660   <span class="keywordtype">void</span> abortStream();
-00661   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
-00662   <span class="keywordtype">void</span> cancelStreamCallback();
-00663 
-00664   <span class="comment">// This function is intended for internal use only.  It must be</span>
-00665   <span class="comment">// public because it is called by the internal callback handler,</span>
-00666   <span class="comment">// which is not a member of RtAudio.  External use of this function</span>
-00667   <span class="comment">// will most likely produce highly undesireable results!</span>
-00668   <span class="keywordtype">void</span> callbackEvent( <span class="keywordtype">long</span> bufferIndex );
-00669 
-00670   <span class="keyword">private</span>:
-00671 
-00672   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
-00673   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
-00674   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
-00675                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
-00676                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00677 };
+00601   RtApiOss();
+00602   ~RtApiOss();
+00603   <span class="keywordtype">void</span> tickStream();
+00604   <span class="keywordtype">void</span> closeStream();
+00605   <span class="keywordtype">void</span> startStream();
+00606   <span class="keywordtype">void</span> stopStream();
+00607   <span class="keywordtype">void</span> abortStream();
+00608   <span class="keywordtype">int</span> streamWillBlock();
+00609   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
+00610   <span class="keywordtype">void</span> cancelStreamCallback();
+00611 
+00612   <span class="keyword">private</span>:
+00613 
+00614   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
+00615   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
+00616   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
+00617                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
+00618                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00619 };
+00620 
+00621 <span class="preprocessor">#endif</span>
+00622 <span class="preprocessor"></span>
+00623 <span class="preprocessor">#if defined(__MACOSX_CORE__)</span>
+00624 <span class="preprocessor"></span>
+00625 <span class="preprocessor">#include &lt;CoreAudio/AudioHardware.h&gt;</span>
+00626 
+00627 <span class="keyword">class </span>RtApiCore: <span class="keyword">public</span> RtApi
+00628 {
+00629 <span class="keyword">public</span>:
+00630 
+00631   RtApiCore();
+00632   ~RtApiCore();
+00633   <span class="keywordtype">int</span> getDefaultOutputDevice(<span class="keywordtype">void</span>);
+00634   <span class="keywordtype">int</span> getDefaultInputDevice(<span class="keywordtype">void</span>);
+00635   <span class="keywordtype">void</span> tickStream();
+00636   <span class="keywordtype">void</span> closeStream();
+00637   <span class="keywordtype">void</span> startStream();
+00638   <span class="keywordtype">void</span> stopStream();
+00639   <span class="keywordtype">void</span> abortStream();
+00640   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
+00641   <span class="keywordtype">void</span> cancelStreamCallback();
+00642 
+00643   <span class="comment">// This function is intended for internal use only.  It must be</span>
+00644   <span class="comment">// public because it is called by the internal callback handler,</span>
+00645   <span class="comment">// which is not a member of RtAudio.  External use of this function</span>
+00646   <span class="comment">// will most likely produce highly undesireable results!</span>
+00647   <span class="keywordtype">void</span> callbackEvent( AudioDeviceID deviceId, <span class="keywordtype">void</span> *inData, <span class="keywordtype">void</span> *outData );
+00648 
+00649   <span class="keyword">private</span>:
+00650 
+00651   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
+00652   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
+00653   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
+00654                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
+00655                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00656 };
+00657 
+00658 <span class="preprocessor">#endif</span>
+00659 <span class="preprocessor"></span>
+00660 <span class="preprocessor">#if defined(__WINDOWS_DS__)</span>
+00661 <span class="preprocessor"></span>
+00662 <span class="keyword">class </span>RtApiDs: <span class="keyword">public</span> RtApi
+00663 {
+00664 <span class="keyword">public</span>:
+00665 
+00666   RtApiDs();
+00667   ~RtApiDs();
+00668   <span class="keywordtype">int</span> getDefaultOutputDevice(<span class="keywordtype">void</span>);
+00669   <span class="keywordtype">int</span> getDefaultInputDevice(<span class="keywordtype">void</span>);
+00670   <span class="keywordtype">void</span> tickStream();
+00671   <span class="keywordtype">void</span> closeStream();
+00672   <span class="keywordtype">void</span> startStream();
+00673   <span class="keywordtype">void</span> stopStream();
+00674   <span class="keywordtype">void</span> abortStream();
+00675   <span class="keywordtype">int</span> streamWillBlock();
+00676   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
+00677   <span class="keywordtype">void</span> cancelStreamCallback();
 00678 
-00679 <span class="preprocessor">#endif</span>
-00680 <span class="preprocessor"></span>
-00681 <span class="preprocessor">#if defined(__IRIX_AL__)</span>
-00682 <span class="preprocessor"></span>
-00683 <span class="keyword">class </span>RtApiAl: <span class="keyword">public</span> RtApi
-00684 {
-00685 <span class="keyword">public</span>:
-00686 
-00687   RtApiAl();
-00688   ~RtApiAl();
-00689   <span class="keywordtype">int</span> getDefaultOutputDevice(<span class="keywordtype">void</span>);
-00690   <span class="keywordtype">int</span> getDefaultInputDevice(<span class="keywordtype">void</span>);
-00691   <span class="keywordtype">void</span> tickStream();
-00692   <span class="keywordtype">void</span> closeStream();
-00693   <span class="keywordtype">void</span> startStream();
-00694   <span class="keywordtype">void</span> stopStream();
-00695   <span class="keywordtype">void</span> abortStream();
-00696   <span class="keywordtype">int</span> streamWillBlock();
-00697   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
-00698   <span class="keywordtype">void</span> cancelStreamCallback();
-00699 
-00700   <span class="keyword">private</span>:
-00701 
-00702   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
-00703   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
-00704   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
-00705                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
-00706                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
-00707 };
-00708 
-00709 <span class="preprocessor">#endif</span>
-00710 <span class="preprocessor"></span>
-00711 <span class="comment">// Define the following flag to have extra information spewed to stderr.</span>
-00712 <span class="comment">//#define __RTAUDIO_DEBUG__</span>
+00679   <span class="keyword">private</span>:
+00680 
+00681   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
+00682   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
+00683   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
+00684                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
+00685                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00686 };
+00687 
+00688 <span class="preprocessor">#endif</span>
+00689 <span class="preprocessor"></span>
+00690 <span class="preprocessor">#if defined(__WINDOWS_ASIO__)</span>
+00691 <span class="preprocessor"></span>
+00692 <span class="keyword">class </span>RtApiAsio: <span class="keyword">public</span> RtApi
+00693 {
+00694 <span class="keyword">public</span>:
+00695 
+00696   RtApiAsio();
+00697   ~RtApiAsio();
+00698   <span class="keywordtype">void</span> tickStream();
+00699   <span class="keywordtype">void</span> closeStream();
+00700   <span class="keywordtype">void</span> startStream();
+00701   <span class="keywordtype">void</span> stopStream();
+00702   <span class="keywordtype">void</span> abortStream();
+00703   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
+00704   <span class="keywordtype">void</span> cancelStreamCallback();
+00705 
+00706   <span class="comment">// This function is intended for internal use only.  It must be</span>
+00707   <span class="comment">// public because it is called by the internal callback handler,</span>
+00708   <span class="comment">// which is not a member of RtAudio.  External use of this function</span>
+00709   <span class="comment">// will most likely produce highly undesireable results!</span>
+00710   <span class="keywordtype">void</span> callbackEvent( <span class="keywordtype">long</span> bufferIndex );
+00711 
+00712   <span class="keyword">private</span>:
 00713 
-00714 <span class="preprocessor">#endif</span>
+00714   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
+00715   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
+00716   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
+00717                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
+00718                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00719 };
+00720 
+00721 <span class="preprocessor">#endif</span>
+00722 <span class="preprocessor"></span>
+00723 <span class="preprocessor">#if defined(__IRIX_AL__)</span>
+00724 <span class="preprocessor"></span>
+00725 <span class="keyword">class </span>RtApiAl: <span class="keyword">public</span> RtApi
+00726 {
+00727 <span class="keyword">public</span>:
+00728 
+00729   RtApiAl();
+00730   ~RtApiAl();
+00731   <span class="keywordtype">int</span> getDefaultOutputDevice(<span class="keywordtype">void</span>);
+00732   <span class="keywordtype">int</span> getDefaultInputDevice(<span class="keywordtype">void</span>);
+00733   <span class="keywordtype">void</span> tickStream();
+00734   <span class="keywordtype">void</span> closeStream();
+00735   <span class="keywordtype">void</span> startStream();
+00736   <span class="keywordtype">void</span> stopStream();
+00737   <span class="keywordtype">void</span> abortStream();
+00738   <span class="keywordtype">int</span> streamWillBlock();
+00739   <span class="keywordtype">void</span> setStreamCallback( RtAudioCallback callback, <span class="keywordtype">void</span> *userData );
+00740   <span class="keywordtype">void</span> cancelStreamCallback();
+00741 
+00742   <span class="keyword">private</span>:
+00743 
+00744   <span class="keywordtype">void</span> initialize(<span class="keywordtype">void</span>);
+00745   <span class="keywordtype">void</span> probeDeviceInfo( RtApiDevice *info );
+00746   <span class="keywordtype">bool</span> probeDeviceOpen( <span class="keywordtype">int</span> device, StreamMode mode, <span class="keywordtype">int</span> channels, 
+00747                         <span class="keywordtype">int</span> sampleRate, RtAudioFormat format,
+00748                         <span class="keywordtype">int</span> *bufferSize, <span class="keywordtype">int</span> numberOfBuffers );
+00749 };
+00750 
+00751 <span class="preprocessor">#endif</span>
+00752 <span class="preprocessor"></span>
+00753 <span class="comment">// Define the following flag to have extra information spewed to stderr.</span>
+00754 <span class="comment">//#define __RTAUDIO_DEBUG__</span>
+00755 
+00756 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

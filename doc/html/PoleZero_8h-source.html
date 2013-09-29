@@ -12,8 +12,8 @@
 <h1>PoleZero.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00013 <span class="comment">/***************************************************/</span>
 00014 
-00015 <span class="preprocessor">#if !defined(__POLEZERO_H)</span>
-00016 <span class="preprocessor"></span><span class="preprocessor">#define __POLEZERO_H</span>
+00015 <span class="preprocessor">#ifndef STK_POLEZERO_H</span>
+00016 <span class="preprocessor"></span><span class="preprocessor">#define STK_POLEZERO_H</span>
 00017 <span class="preprocessor"></span>
 00018 <span class="preprocessor">#include "Filter.h"</span>
 00019 
@@ -27,35 +27,39 @@
 00029 
 00031   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a2">clear</a>(<span class="keywordtype">void</span>);
 00032 
-00034   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a3">setB0</a>(MY_FLOAT b0);
+00034   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a3">setB0</a>(StkFloat b0);
 00035 
-00037   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a4">setB1</a>(MY_FLOAT b1);
+00037   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a4">setB1</a>(StkFloat b1);
 00038 
-00040   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a5">setA1</a>(MY_FLOAT a1);
+00040   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a5">setA1</a>(StkFloat a1);
 00041 
 00043 
-00048   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a6">setAllpass</a>(MY_FLOAT coefficient);
+00048   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a6">setAllpass</a>(StkFloat coefficient);
 00049 
 00051 
-00057   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a7">setBlockZero</a>(MY_FLOAT thePole = 0.99);
+00057   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a7">setBlockZero</a>(StkFloat thePole = 0.99);
 00058 
 00060 
-00064   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a8">setGain</a>(MY_FLOAT theGain);
+00064   <span class="keywordtype">void</span> <a class="code" href="classPoleZero.html#a8">setGain</a>(StkFloat gain);
 00065 
-00067   MY_FLOAT <a class="code" href="classPoleZero.html#a9">getGain</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
+00067   StkFloat <a class="code" href="classPoleZero.html#a9">getGain</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
 00068 
-00070   MY_FLOAT <a class="code" href="classPoleZero.html#a10">lastOut</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
+00070   StkFloat <a class="code" href="classPoleZero.html#a10">lastOut</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
 00071 
-00073   MY_FLOAT <a class="code" href="classPoleZero.html#a11">tick</a>(MY_FLOAT sample);
+00073   StkFloat <a class="code" href="classPoleZero.html#a11">tick</a>(StkFloat sample);
 00074 
-00076   MY_FLOAT *<a class="code" href="classPoleZero.html#a11">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
-00077 };
-00078 
-00079 <span class="preprocessor">#endif</span>
+00076   StkFloat *<a class="code" href="classPoleZero.html#a11">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00077 
+00079 
+00085   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classPoleZero.html#a11">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00086 
+00087 };
+00088 
+00089 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

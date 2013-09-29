@@ -12,55 +12,56 @@
 <h1>Sphere.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00010 <span class="comment">/***************************************************/</span>
 00011 
-00012 <span class="preprocessor">#if !defined(__SPHERE_H)</span>
-00013 <span class="preprocessor"></span><span class="preprocessor">#define __SPHERE_H</span>
+00012 <span class="preprocessor">#ifndef STK_SPHERE_H</span>
+00013 <span class="preprocessor"></span><span class="preprocessor">#define STK_SPHERE_H</span>
 00014 <span class="preprocessor"></span>
-00015 <span class="preprocessor">#include "Vector3D.h"</span>
-00016 
-<a name="l00017"></a><a class="code" href="classSphere.html">00017</a> <span class="keyword">class </span><a class="code" href="classSphere.html">Sphere</a>
-00018 {
-00019 <span class="keyword">public</span>:
-00021   <a class="code" href="classSphere.html#a0">Sphere</a>(<span class="keywordtype">double</span> initRadius);
-00022 
-00024   <a class="code" href="classSphere.html#a1">~Sphere</a>();
-00025 
-00027   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a2">setPosition</a>(<span class="keywordtype">double</span> anX, <span class="keywordtype">double</span> aY, <span class="keywordtype">double</span> aZ);
-00028 
-00030   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a3">setVelocity</a>(<span class="keywordtype">double</span> anX, <span class="keywordtype">double</span> aY, <span class="keywordtype">double</span> aZ);
-00031 
-00033   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a4">setRadius</a>(<span class="keywordtype">double</span> aRadius);
-00034 
-00036   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a5">setMass</a>(<span class="keywordtype">double</span> aMass);
-00037 
-00039   <a class="code" href="classVector3D.html">Vector3D</a>* <a class="code" href="classSphere.html#a6">getPosition</a>();
-00040 
-00042   <a class="code" href="classVector3D.html">Vector3D</a>* <a class="code" href="classSphere.html#a7">getRelativePosition</a>(<a class="code" href="classVector3D.html">Vector3D</a> *aPosition);
-00043 
-00045   <span class="keywordtype">double</span> <a class="code" href="classSphere.html#a8">getVelocity</a>(<a class="code" href="classVector3D.html">Vector3D</a>* aVelocity);
-00046 
-00048   <span class="keywordtype">double</span> <a class="code" href="classSphere.html#a9">isInside</a>(<a class="code" href="classVector3D.html">Vector3D</a> *aPosition);
-00049 
-00051   <span class="keywordtype">double</span> <a class="code" href="classSphere.html#a10">getRadius</a>();
-00052 
-00054   <span class="keywordtype">double</span> <a class="code" href="classSphere.html#a11">getMass</a>();
-00055 
-00057   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a12">addVelocity</a>(<span class="keywordtype">double</span> anX, <span class="keywordtype">double</span> aY, <span class="keywordtype">double</span> aZ);
-00058 
-00060   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a13">tick</a>(<span class="keywordtype">double</span> timeIncrement);
-00061    
-00062 <span class="keyword">private</span>:
-00063   <a class="code" href="classVector3D.html">Vector3D</a> *myPosition;
-00064   <a class="code" href="classVector3D.html">Vector3D</a> *myVelocity;
-00065   <a class="code" href="classVector3D.html">Vector3D</a> workingVector;
-00066   <span class="keywordtype">double</span> myRadius;
-00067   <span class="keywordtype">double</span> myMass;
-00068 };
-00069 
-00070 <span class="preprocessor">#endif</span>
+00015 <span class="preprocessor">#include "Stk.h"</span>
+00016 <span class="preprocessor">#include "Vector3D.h"</span>
+00017 
+<a name="l00018"></a><a class="code" href="classSphere.html">00018</a> <span class="keyword">class </span><a class="code" href="classSphere.html">Sphere</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
+00019 {
+00020 <span class="keyword">public</span>:
+00022   <a class="code" href="classSphere.html#a0">Sphere</a>(StkFloat radius = 1.0 );
+00023 
+00025   <a class="code" href="classSphere.html#a1">~Sphere</a>();
+00026 
+00028   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a2">setPosition</a>(StkFloat x, StkFloat y, StkFloat z);
+00029 
+00031   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a3">setVelocity</a>(StkFloat x, StkFloat y, StkFloat z);
+00032 
+00034   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a4">setRadius</a>(StkFloat radius);
+00035 
+00037   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a5">setMass</a>(StkFloat mass);
+00038 
+00040   <a class="code" href="classVector3D.html">Vector3D</a>* <a class="code" href="classSphere.html#a6">getPosition</a>();
+00041 
+00043   <a class="code" href="classVector3D.html">Vector3D</a>* <a class="code" href="classSphere.html#a7">getRelativePosition</a>(<a class="code" href="classVector3D.html">Vector3D</a> *position);
+00044 
+00046   StkFloat <a class="code" href="classSphere.html#a8">getVelocity</a>(<a class="code" href="classVector3D.html">Vector3D</a>* velocity);
+00047 
+00049   StkFloat <a class="code" href="classSphere.html#a9">isInside</a>(<a class="code" href="classVector3D.html">Vector3D</a> *position);
+00050 
+00052   StkFloat <a class="code" href="classSphere.html#a10">getRadius</a>();
+00053 
+00055   StkFloat <a class="code" href="classSphere.html#a11">getMass</a>();
+00056 
+00058   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a12">addVelocity</a>(StkFloat x, StkFloat y, StkFloat z);
+00059 
+00061   <span class="keywordtype">void</span> <a class="code" href="classSphere.html#a13">tick</a>(StkFloat timeIncrement);
+00062    
+00063 <span class="keyword">private</span>:
+00064   <a class="code" href="classVector3D.html">Vector3D</a> position_;
+00065   <a class="code" href="classVector3D.html">Vector3D</a> velocity_;
+00066   <a class="code" href="classVector3D.html">Vector3D</a> workingVector_;
+00067   StkFloat radius_;
+00068   StkFloat mass_;
+00069 };
+00070 
+00071 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

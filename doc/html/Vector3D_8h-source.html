@@ -12,43 +12,46 @@
 <h1>Vector3D.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00009 <span class="comment">/***************************************************/</span>
 00010 
-00011 <span class="preprocessor">#if !defined(__VECTOR3D_H)</span>
-00012 <span class="preprocessor"></span><span class="preprocessor">#define __VECTOR3D_H</span>
+00011 <span class="preprocessor">#ifndef STK_VECTOR3D_H</span>
+00012 <span class="preprocessor"></span><span class="preprocessor">#define STK_VECTOR3D_H</span>
 00013 <span class="preprocessor"></span>
-<a name="l00014"></a><a class="code" href="classVector3D.html">00014</a> <span class="keyword">class </span><a class="code" href="classVector3D.html">Vector3D</a> {
+00014 <span class="preprocessor">#include "Stk.h"</span>
 00015 
-00016 <span class="keyword">public</span>:
-00018   <a class="code" href="classVector3D.html#a0">Vector3D</a>(<span class="keywordtype">double</span> initX=0.0, <span class="keywordtype">double</span> initY=0.0, <span class="keywordtype">double</span> initZ=0.0);
-00019 
-00021   <a class="code" href="classVector3D.html#a1">~Vector3D</a>();
+<a name="l00016"></a><a class="code" href="classVector3D.html">00016</a> <span class="keyword">class </span><a class="code" href="classVector3D.html">Vector3D</a> : <span class="keyword">public</span> <a class="code" href="classStk.html">Stk</a>
+00017 {
+00018 
+00019 <span class="keyword">public</span>:
+00021   <a class="code" href="classVector3D.html#a0">Vector3D</a>(StkFloat initX=0.0, StkFloat initY=0.0, StkFloat initZ=0.0);
 00022 
-00024   <span class="keywordtype">double</span> <a class="code" href="classVector3D.html#a2">getX</a>();
+00024   <a class="code" href="classVector3D.html#a1">~Vector3D</a>();
 00025 
-00027   <span class="keywordtype">double</span> <a class="code" href="classVector3D.html#a3">getY</a>();
+00027   StkFloat <a class="code" href="classVector3D.html#a2">getX</a>();
 00028 
-00030   <span class="keywordtype">double</span> <a class="code" href="classVector3D.html#a4">getZ</a>();
+00030   StkFloat <a class="code" href="classVector3D.html#a3">getY</a>();
 00031 
-00033   <span class="keywordtype">double</span> <a class="code" href="classVector3D.html#a5">getLength</a>();
+00033   StkFloat <a class="code" href="classVector3D.html#a4">getZ</a>();
 00034 
-00036   <span class="keywordtype">void</span> <a class="code" href="classVector3D.html#a6">setXYZ</a>(<span class="keywordtype">double</span> anX, <span class="keywordtype">double</span> aY, <span class="keywordtype">double</span> aZ);
+00036   StkFloat <a class="code" href="classVector3D.html#a5">getLength</a>();
 00037 
-00039   <span class="keywordtype">void</span> <a class="code" href="classVector3D.html#a7">setX</a>(<span class="keywordtype">double</span> aval);
+00039   <span class="keywordtype">void</span> <a class="code" href="classVector3D.html#a6">setXYZ</a>(StkFloat x, StkFloat y, StkFloat z);
 00040 
-00042   <span class="keywordtype">void</span> <a class="code" href="classVector3D.html#a8">setY</a>(<span class="keywordtype">double</span> aval);
+00042   <span class="keywordtype">void</span> <a class="code" href="classVector3D.html#a7">setX</a>(StkFloat x);
 00043 
-00045   <span class="keywordtype">void</span> <a class="code" href="classVector3D.html#a9">setZ</a>(<span class="keywordtype">double</span> aval);
+00045   <span class="keywordtype">void</span> <a class="code" href="classVector3D.html#a8">setY</a>(StkFloat y);
 00046 
-00047 <span class="keyword">protected</span>:
-00048   <span class="keywordtype">double</span> myX;
-00049   <span class="keywordtype">double</span> myY;
-00050   <span class="keywordtype">double</span> myZ;
-00051 };
-00052 
-00053 <span class="preprocessor">#endif</span>
+00048   <span class="keywordtype">void</span> <a class="code" href="classVector3D.html#a9">setZ</a>(StkFloat z);
+00049 
+00050 <span class="keyword">protected</span>:
+00051   StkFloat myX_;
+00052   StkFloat myY_;
+00053   StkFloat myZ_;
+00054 };
+00055 
+00056 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

@@ -12,8 +12,8 @@
 <h1>OnePole.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00013 <span class="comment">/***************************************************/</span>
 00014 
-00015 <span class="preprocessor">#if !defined(__ONEPOLE_H)</span>
-00016 <span class="preprocessor"></span><span class="preprocessor">#define __ONEPOLE_H</span>
+00015 <span class="preprocessor">#ifndef STK_ONEPOLE_H</span>
+00016 <span class="preprocessor"></span><span class="preprocessor">#define STK_ONEPOLE_H</span>
 00017 <span class="preprocessor"></span>
 00018 <span class="preprocessor">#include "Filter.h"</span>
 00019 
@@ -23,36 +23,40 @@
 00023 
 00025   <a class="code" href="classOnePole.html#a0">OnePole</a>();
 00026 
-00028   <a class="code" href="classOnePole.html#a0">OnePole</a>(MY_FLOAT thePole);
+00028   <a class="code" href="classOnePole.html#a0">OnePole</a>(StkFloat thePole);
 00029 
 00031   <a class="code" href="classOnePole.html#a2">~OnePole</a>();
 00032 
 00034   <span class="keywordtype">void</span> <a class="code" href="classOnePole.html#a3">clear</a>(<span class="keywordtype">void</span>);
 00035 
-00037   <span class="keywordtype">void</span> <a class="code" href="classOnePole.html#a4">setB0</a>(MY_FLOAT b0);
+00037   <span class="keywordtype">void</span> <a class="code" href="classOnePole.html#a4">setB0</a>(StkFloat b0);
 00038 
-00040   <span class="keywordtype">void</span> <a class="code" href="classOnePole.html#a5">setA1</a>(MY_FLOAT a1);
+00040   <span class="keywordtype">void</span> <a class="code" href="classOnePole.html#a5">setA1</a>(StkFloat a1);
 00041 
 00043 
-00050   <span class="keywordtype">void</span> <a class="code" href="classOnePole.html#a6">setPole</a>(MY_FLOAT thePole);
+00050   <span class="keywordtype">void</span> <a class="code" href="classOnePole.html#a6">setPole</a>(StkFloat thePole);
 00051 
 00053 
-00057   <span class="keywordtype">void</span> <a class="code" href="classOnePole.html#a7">setGain</a>(MY_FLOAT theGain);
+00057   <span class="keywordtype">void</span> <a class="code" href="classOnePole.html#a7">setGain</a>(StkFloat gain);
 00058 
-00060   MY_FLOAT <a class="code" href="classOnePole.html#a8">getGain</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
+00060   StkFloat <a class="code" href="classOnePole.html#a8">getGain</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
 00061 
-00063   MY_FLOAT <a class="code" href="classOnePole.html#a9">lastOut</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
+00063   StkFloat <a class="code" href="classOnePole.html#a9">lastOut</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
 00064 
-00066   MY_FLOAT <a class="code" href="classOnePole.html#a10">tick</a>(MY_FLOAT sample);
+00066   StkFloat <a class="code" href="classOnePole.html#a10">tick</a>(StkFloat sample);
 00067 
-00069   MY_FLOAT *<a class="code" href="classOnePole.html#a10">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
-00070 };
-00071 
-00072 <span class="preprocessor">#endif</span>
+00069   StkFloat *<a class="code" href="classOnePole.html#a10">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00070 
+00072 
+00078   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classOnePole.html#a10">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00079 
+00080 };
+00081 
+00082 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

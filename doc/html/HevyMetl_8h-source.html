@@ -12,28 +12,34 @@
 <h1>HevyMetl.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00029 <span class="comment">/***************************************************/</span>
 00030 
-00031 <span class="preprocessor">#if !defined(__HEVYMETL_H)</span>
-00032 <span class="preprocessor"></span><span class="preprocessor">#define __HEVYMETL_H</span>
+00031 <span class="preprocessor">#ifndef STK_HEVYMETL_H</span>
+00032 <span class="preprocessor"></span><span class="preprocessor">#define STK_HEVYMETL_H</span>
 00033 <span class="preprocessor"></span>
 00034 <span class="preprocessor">#include "FM.h"</span>
 00035 
 <a name="l00036"></a><a class="code" href="classHevyMetl.html">00036</a> <span class="keyword">class </span><a class="code" href="classHevyMetl.html">HevyMetl</a> : <span class="keyword">public</span> <a class="code" href="classFM.html">FM</a>
 00037 {
 00038  <span class="keyword">public</span>:
-00040   <a class="code" href="classHevyMetl.html#a0">HevyMetl</a>();
-00041 
-00043   <a class="code" href="classHevyMetl.html#a1">~HevyMetl</a>();
+00040 
+00043   <a class="code" href="classHevyMetl.html#a0">HevyMetl</a>();
 00044 
-00046   <span class="keywordtype">void</span> <a class="code" href="classHevyMetl.html#a2">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00046   <a class="code" href="classHevyMetl.html#a1">~HevyMetl</a>();
 00047 
-00049   MY_FLOAT <a class="code" href="classHevyMetl.html#a3">tick</a>();
-00050 };
-00051 
-00052 <span class="preprocessor">#endif</span>
+00049   <span class="keywordtype">void</span> <a class="code" href="classHevyMetl.html#a2">noteOn</a>(StkFloat frequency, StkFloat amplitude);
+00050 
+00052   StkFloat <a class="code" href="classHevyMetl.html#a3">tick</a>();
+00053 
+00055   StkFloat *<a class="code" href="classHevyMetl.html#a3">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00056 
+00058 
+00064   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classHevyMetl.html#a3">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00065 };
+00066 
+00067 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

@@ -12,30 +12,36 @@
 <h1>PercFlut.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00027 <span class="comment">/***************************************************/</span>
 00028 
-00029 <span class="preprocessor">#if !defined(__PERCFLUT_H)</span>
-00030 <span class="preprocessor"></span><span class="preprocessor">#define __PERCFLUT_H</span>
+00029 <span class="preprocessor">#ifndef STK_PERCFLUT_H</span>
+00030 <span class="preprocessor"></span><span class="preprocessor">#define STK_PERCFLUT_H</span>
 00031 <span class="preprocessor"></span>
 00032 <span class="preprocessor">#include "FM.h"</span>
 00033 
 <a name="l00034"></a><a class="code" href="classPercFlut.html">00034</a> <span class="keyword">class </span><a class="code" href="classPercFlut.html">PercFlut</a> : <span class="keyword">public</span> <a class="code" href="classFM.html">FM</a>
 00035 {
 00036  <span class="keyword">public</span>:
-00038   <a class="code" href="classPercFlut.html#a0">PercFlut</a>();
-00039 
-00041   <a class="code" href="classPercFlut.html#a1">~PercFlut</a>();
+00038 
+00041   <a class="code" href="classPercFlut.html#a0">PercFlut</a>();
 00042 
-00044   <span class="keywordtype">void</span> <a class="code" href="classPercFlut.html#a2">setFrequency</a>(MY_FLOAT frequency);
+00044   <a class="code" href="classPercFlut.html#a1">~PercFlut</a>();
 00045 
-00047   <span class="keywordtype">void</span> <a class="code" href="classPercFlut.html#a3">noteOn</a>(MY_FLOAT frequency, MY_FLOAT amplitude);
+00047   <span class="keywordtype">void</span> <a class="code" href="classPercFlut.html#a2">setFrequency</a>(StkFloat frequency);
 00048 
-00050   MY_FLOAT <a class="code" href="classPercFlut.html#a4">tick</a>();
-00051 };
-00052 
-00053 <span class="preprocessor">#endif</span>
+00050   <span class="keywordtype">void</span> <a class="code" href="classPercFlut.html#a3">noteOn</a>(StkFloat frequency, StkFloat amplitude);
+00051 
+00053   StkFloat <a class="code" href="classPercFlut.html#a4">tick</a>();
+00054 
+00056   StkFloat *<a class="code" href="classPercFlut.html#a4">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00057 
+00059 
+00065   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classPercFlut.html#a4">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00066 };
+00067 
+00068 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

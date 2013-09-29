@@ -12,8 +12,8 @@
 <h1>Sampler.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00010 <span class="comment">/***************************************************/</span>
 00011 
-00012 <span class="preprocessor">#if !defined(__SAMPLER_H)</span>
-00013 <span class="preprocessor"></span><span class="preprocessor">#define __SAMPLER_H</span>
+00012 <span class="preprocessor">#ifndef STK_SAMPLER_H</span>
+00013 <span class="preprocessor"></span><span class="preprocessor">#define STK_SAMPLER_H</span>
 00014 <span class="preprocessor"></span>
 00015 <span class="preprocessor">#include "Instrmnt.h"</span>
 00016 <span class="preprocessor">#include "ADSR.h"</span>
@@ -30,37 +30,41 @@
 00029 
 00031   <span class="keywordtype">void</span> <a class="code" href="classSampler.html#a2">clear</a>();
 00032 
-00034   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSampler.html#a3">setFrequency</a>(MY_FLOAT frequency) = 0;
+00034   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSampler.html#a3">setFrequency</a>(StkFloat frequency) = 0;
 00035 
 00037   <span class="keywordtype">void</span> <a class="code" href="classSampler.html#a4">keyOn</a>();
 00038 
 00040   <span class="keywordtype">void</span> <a class="code" href="classSampler.html#a5">keyOff</a>();
 00041 
-00043   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSampler.html#a6">noteOff</a>(MY_FLOAT amplitude);
+00043   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSampler.html#a6">noteOff</a>(StkFloat amplitude);
 00044 
-00046   <span class="keyword">virtual</span> MY_FLOAT <a class="code" href="classSampler.html#a7">tick</a>();
+00046   <span class="keyword">virtual</span> StkFloat <a class="code" href="classSampler.html#a7">tick</a>() = 0;
 00047 
-00049   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSampler.html#a8">controlChange</a>(<span class="keywordtype">int</span> number, MY_FLOAT value) = 0;
+00049   <span class="keyword">virtual</span> StkFloat *<a class="code" href="classSampler.html#a7">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize) = 0;
 00050 
-00051  <span class="keyword">protected</span>:  
-00052   <a class="code" href="classADSR.html">ADSR</a>     *adsr; 
-00053   <a class="code" href="classWvIn.html">WvIn</a>     *attacks[5];
-00054   <a class="code" href="classWaveLoop.html">WaveLoop</a> *loops[5];
-00055   <a class="code" href="classOnePole.html">OnePole</a>  *filter;
-00056   MY_FLOAT baseFrequency;
-00057   MY_FLOAT attackRatios[5];
-00058   MY_FLOAT loopRatios[5];
-00059   MY_FLOAT attackGain;
-00060   MY_FLOAT loopGain;
-00061   <span class="keywordtype">int</span> whichOne;
+00052 
+00058   <span class="keyword">virtual</span> <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classSampler.html#a7">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 ) = 0;
+00059 
+00061   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSampler.html#a10">controlChange</a>(<span class="keywordtype">int</span> number, StkFloat value) = 0;
 00062 
-00063 };
-00064 
-00065 <span class="preprocessor">#endif</span>
+00063  <span class="keyword">protected</span>:  
+00064   <a class="code" href="classADSR.html">ADSR</a> adsr_;
+00065   std::vector&lt;WvIn *&gt; attacks_;
+00066   std::vector&lt;WaveLoop *&gt; loops_;
+00067   <a class="code" href="classOnePole.html">OnePole</a> filter_;
+00068   StkFloat baseFrequency_;
+00069   std::vector&lt;StkFloat&gt; attackRatios_;
+00070   std::vector&lt;StkFloat&gt; loopRatios_;
+00071   StkFloat attackGain_;
+00072   StkFloat loopGain_;
+00073 
+00074 };
+00075 
+00076 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 

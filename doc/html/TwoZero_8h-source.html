@@ -12,8 +12,8 @@
 <h1>TwoZero.h</h1><div class="fragment"><pre>00001 <span class="comment">/***************************************************/</span>
 00013 <span class="comment">/***************************************************/</span>
 00014 
-00015 <span class="preprocessor">#if !defined(__TWOZERO_H)</span>
-00016 <span class="preprocessor"></span><span class="preprocessor">#define __TWOZERO_H</span>
+00015 <span class="preprocessor">#ifndef STK_TWOZERO_H</span>
+00016 <span class="preprocessor"></span><span class="preprocessor">#define STK_TWOZERO_H</span>
 00017 <span class="preprocessor"></span>
 00018 <span class="preprocessor">#include "Filter.h"</span>
 00019 
@@ -26,32 +26,35 @@
 00028 
 00030   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a2">clear</a>(<span class="keywordtype">void</span>);
 00031 
-00033   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a3">setB0</a>(MY_FLOAT b0);
+00033   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a3">setB0</a>(StkFloat b0);
 00034 
-00036   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a4">setB1</a>(MY_FLOAT b1);
+00036   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a4">setB1</a>(StkFloat b1);
 00037 
-00039   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a5">setB2</a>(MY_FLOAT b2);
+00039   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a5">setB2</a>(StkFloat b2);
 00040 
 00042 
-00052   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a6">setNotch</a>(MY_FLOAT frequency, MY_FLOAT radius);
+00052   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a6">setNotch</a>(StkFloat frequency, StkFloat radius);
 00053 
 00055 
-00059   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a7">setGain</a>(MY_FLOAT theGain);
+00059   <span class="keywordtype">void</span> <a class="code" href="classTwoZero.html#a7">setGain</a>(StkFloat gain);
 00060 
-00062   MY_FLOAT <a class="code" href="classTwoZero.html#a8">getGain</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
+00062   StkFloat <a class="code" href="classTwoZero.html#a8">getGain</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
 00063 
-00065   MY_FLOAT <a class="code" href="classTwoZero.html#a9">lastOut</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
+00065   StkFloat <a class="code" href="classTwoZero.html#a9">lastOut</a>(<span class="keywordtype">void</span>) <span class="keyword">const</span>;
 00066 
-00068   MY_FLOAT <a class="code" href="classTwoZero.html#a10">tick</a>(MY_FLOAT sample);
+00068   StkFloat <a class="code" href="classTwoZero.html#a10">tick</a>(StkFloat sample);
 00069 
-00071   MY_FLOAT *<a class="code" href="classTwoZero.html#a10">tick</a>(MY_FLOAT *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
-00072 };
-00073 
-00074 <span class="preprocessor">#endif</span>
+00071   StkFloat *<a class="code" href="classTwoZero.html#a10">tick</a>(StkFloat *vector, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> vectorSize);
+00072 
+00074 
+00080   <a class="code" href="classStkFrames.html">StkFrames</a>&amp; <a class="code" href="classTwoZero.html#a10">tick</a>( <a class="code" href="classStkFrames.html">StkFrames</a>&amp; frames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 1 );
+00081 };
+00082 
+00083 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>
-  <tr><td><A HREF="http://www-ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
+  <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
   <tr><td>&copy;1995-2004 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
