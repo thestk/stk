@@ -1,6 +1,17 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2011.
+By Perry R. Cook and Gary P. Scavone, 1995-2012.
+
+v4.4.4: (24 August 2012)
+- new FreeVerb class (thanks to Greg Burlet)
+- new Guitar class
+- new electric guitar project
+- cleaned / revised Shakers class
+- updated versions of RtAudio and RtMidi
+- bug fix in LentPitShift
+- bug fix in Echo constructor
+- bug fix in FileWvIn (file size when chunking)
+- bug fix in StkFrames copy constructor
 
 v4.4.3: (30 August 2011)
 - changed SINT24 to be lower 3 bytes of 32-bit word
@@ -13,7 +24,7 @@ v4.4.3: (30 August 2011)
 - added WAVE_FORMAT_EXTENSIBLE support in FileWrite
 - added sample rate variable reading and writing for MAT-files in FileRead and FileWrite
 
-v4.4.2: (4 February 2010)
+v4.4.2: (4 February 2011)
 - added various header file includes for newer compilers
 - new LentPitShift class (thanks to Francois Germain)
 - added "addTo" function to Delay class

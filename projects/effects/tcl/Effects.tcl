@@ -80,21 +80,27 @@ radiobutton .effectSelect.echo -text "Echo" -variable effect -relief flat \
     -value 0 -command {changeEffect "ControlChange    0.0 1 " 20 $effect}
 radiobutton .effectSelect.shifter -text "Pitch Shift" -variable effect -relief flat \
     -value 1 -command {changeEffect "ControlChange    0.0 1 " 20 $effect} 
+radiobutton .effectSelect.lshifter -text "Lent Pitch Shift" -variable effect -relief flat \
+    -value 2 -command {changeEffect "ControlChange    0.0 1 " 20 $effect} 
 radiobutton .effectSelect.chorus -text "Chorus" -variable effect -relief flat \
-    -value 2 -command {changeEffect "ControlChange    0.0 1 " 20 $effect}
-radiobutton .effectSelect.prcrev -text "PRC Reverb" -variable effect -relief flat \
     -value 3 -command {changeEffect "ControlChange    0.0 1 " 20 $effect}
-radiobutton .effectSelect.jcrev -text "JC Reverb" -variable effect -relief flat \
+radiobutton .effectSelect.prcrev -text "PRC Reverb" -variable effect -relief flat \
     -value 4 -command {changeEffect "ControlChange    0.0 1 " 20 $effect}
-radiobutton .effectSelect.nrev -text "NRev Reverb" -variable effect -relief flat \
+radiobutton .effectSelect.jcrev -text "JC Reverb" -variable effect -relief flat \
     -value 5 -command {changeEffect "ControlChange    0.0 1 " 20 $effect}
+radiobutton .effectSelect.nrev -text "NRev Reverb" -variable effect -relief flat \
+    -value 6 -command {changeEffect "ControlChange    0.0 1 " 20 $effect}
+radiobutton .effectSelect.freerev -text "FreeVerb" -variable effect -relief flat \
+    -value 7 -command {changeEffect "ControlChange    0.0 1 " 20 $effect}
 
 pack .effectSelect.echo -pady 2 -padx 5 -side top -anchor w -fill x
 pack .effectSelect.shifter -pady 2 -padx 5 -side top -anchor w -fill x
+pack .effectSelect.lshifter -pady 2 -padx 5 -side top -anchor w -fill x
 pack .effectSelect.chorus -pady 2 -padx 5 -side top -anchor w -fill x
 pack .effectSelect.prcrev -pady 2 -padx 5 -side top -anchor w -fill x
 pack .effectSelect.jcrev -pady 2 -padx 5 -side top -anchor w -fill x
 pack .effectSelect.nrev -pady 2 -padx 5 -side top -anchor w -fill x
+pack .effectSelect.freerev -pady 2 -padx 5 -side top -anchor w -fill x
 
 
 proc myExit {} {
@@ -131,17 +137,21 @@ proc changeEffect {tag value1 value2 } {
         .left.effect1 config -state normal -label "Echo Delay"
         .left.effect2 config -state disabled -label "Disabled"
     }
-    if ($value2==1) {
+    if {$value2>=1 && $value2<=2} {
         .left.effect1 config -state normal -label "Pitch Shift Amount (center = no shift)"
         .left.effect2 config -state disabled -label "Disabled"
     }
-    if ($value2==2) {
+    if ($value2==3) {
         .left.effect1 config -state normal -label "Chorus Modulation Frequency"
         .left.effect2 config -state normal -label "Chorus Modulation Depth"
     }
-    if {$value2>=3 && $value2<=5} {
+    if {$value2>=4 && $value2<=6} {
         .left.effect1 config -state normal -label "T60 Decay Time ( 0 - 10 seconds)"
         .left.effect2 config -state disabled -label "Disabled"
+    }
+    if ($value2==7) {
+        .left.effect1 config -state normal -label "Damping (low to high)"
+        .left.effect2 config -state normal -label "Room Size (comb feedback gain)"
     }
     puts $outID [format "%s %i %f" $tag $value1 $value2]
     flush $outID
@@ -215,5 +225,32 @@ proc setComm {} {
 		}
 }
 
+bind . <Configure> {+ center_the_toplevel %W }
+proc center_the_toplevel { w } {
 
+    # Callback on the <Configure> event for a toplevel
+    # that should be centered on the screen
 
+    # Make sure that we aren't configuring a child window
+    if { [string equal $w [winfo toplevel $w]] } {
+
+        # Calculate the desired geometry
+        set width [winfo reqwidth $w]
+        set height [winfo reqheight $w]
+        set x [expr { ( [winfo vrootwidth  $w] - $width  ) / 2 }]
+        set y [expr { ( [winfo vrootheight $w] - $height ) / 2 }]
+        #set y 0
+
+        # Hand the geometry off to the window manager
+        wm geometry $w ${width}x${height}+${x}+${y}
+
+        # Unbind <Configure> so that this procedure is
+        # not called again when the window manager finishes
+        # centering the window.  Also, revert geometry management
+        # to internal default for subsequent size changes.
+        bind $w <Configure> {}
+        wm geometry $w ""
+    }
+
+    return
+}

@@ -127,6 +127,10 @@ SOURCE=..\..\src\Clarinet.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\Fir.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\Delay.cpp
 # End Source File
 # Begin Source File
@@ -251,7 +255,7 @@ SOURCE=..\..\src\Plucked.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\PluckTwo.cpp
+SOURCE=..\..\src\Twang.cpp
 # End Source File
 # Begin Source File
 
@@ -427,6 +431,10 @@ SOURCE=..\..\include\Clarinet.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\Fir.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\Delay.h
 # End Source File
 # Begin Source File
@@ -571,7 +579,7 @@ SOURCE=..\..\include\Plucked.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\PluckTwo.h
+SOURCE=..\..\include\Twang.h
 # End Source File
 # Begin Source File
 

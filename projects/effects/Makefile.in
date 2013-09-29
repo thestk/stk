@@ -8,9 +8,9 @@ OBJECT_PATH = @object_path@
 vpath %.o $(OBJECT_PATH)
 
 OBJECTS	=	Stk.o Generator.o Envelope.o SineWave.o \
-					Filter.o Delay.o DelayL.o \
-					Effect.o Echo.o PitShift.o Chorus.o \
-					PRCRev.o JCRev.o NRev.o \
+					Filter.o Delay.o DelayL.o OnePole.o \
+					Effect.o Echo.o PitShift.o Chorus.o LentPitShift.o \
+					PRCRev.o JCRev.o NRev.o FreeVerb.o \
 					FileRead.o WvIn.o FileWvIn.o WaveLoop.o Skini.o Messager.o
 
 INCLUDE = @include@

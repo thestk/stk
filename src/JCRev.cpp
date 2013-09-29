@@ -15,7 +15,7 @@
     one-pole lowpass filters have been added inside
     the feedback comb filters.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -34,7 +34,6 @@ JCRev :: JCRev( StkFloat T60 )
   lastFrame_.resize( 1, 2, 0.0 ); // resize lastFrame_ for stereo output
 
   // Delay lengths for 44100 Hz sample rate.
-  // {1116, 1188, 1356, 1277, 1422, 1491, 1617, 1557} // FreeVerb comb delays
   int lengths[9] = {1116, 1356, 1422, 1617, 225, 341, 441, 211, 179};
   double scaler = Stk::sampleRate() / 44100.0;
 

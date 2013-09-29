@@ -1,5 +1,5 @@
-#ifndef STK_LENLentPitShift_H
-#define STK_LENLentPitShift_H
+#ifndef STK_LENTPITSHIFT_H
+#define STK_LENTPITSHIFT_H
 
 #include "Effect.h"
 #include "Delay.h"
@@ -25,13 +25,9 @@ class LentPitShift : public Effect
 
   ~LentPitShift( void ) {
     delete window;
-    window = NULL;
     delete dt;
-    dt = NULL;
     delete dpt;
-    dpt = NULL;
     delete cumDt;
-    cumDt = NULL;
   }
 
   //! Reset and clear all internal state.
@@ -70,7 +66,7 @@ class LentPitShift : public Effect
   //! Apply the effect on the input samples and store it.
   /*!
     The samples stored in the input frame vector are processed
-    and the delayed result are stored in the output frame vector
+    and the delayed result are stored in the output frame vector.
   */
   void process( );
 
@@ -195,8 +191,8 @@ inline void LentPitShift::process()
       for ( unsigned int j=0; j<2*lastPeriod_; j++,M--,N-- ) {
         sample = inputLine_.tapOut(M) * window[j] / 2.;
         // Linear interpolation
-        outputLine_.addTo(N, env[0] * sample);
-        outputLine_.addTo(N-1, env[1] * sample);
+        outputLine_.addTo(env[0] * sample, N);
+        outputLine_.addTo(env[1] * sample, N-1);
       }
       outputPtr = outputPtr + lastPeriod_ * periodRatio_; // new output pointer
     }

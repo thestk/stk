@@ -1,7 +1,7 @@
 #ifndef STK_DELAYL_H
 #define STK_DELAYL_H
 
-#include "Delay.h"
+#include "Filter.h"
 
 namespace stk {
 
@@ -20,7 +20,7 @@ namespace stk {
     delay setting.  The use of higher order Lagrange interpolators can
     typically improve (minimize) this attenuation characteristic.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 

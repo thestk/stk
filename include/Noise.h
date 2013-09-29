@@ -2,6 +2,7 @@
 #define STK_NOISE_H
 
 #include "Generator.h"
+#include <stdlib.h>
 
 namespace stk {
 
@@ -13,7 +14,7 @@ namespace stk {
     C rand() function.  The quality of the rand()
     function varies from one OS to another.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 

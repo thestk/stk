@@ -134,6 +134,14 @@ SOURCE=..\..\include\Envelope.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\OnePole.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\OnePole.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\FileRead.cpp
 # End Source File
 # Begin Source File
@@ -190,11 +198,27 @@ SOURCE=..\..\include\NRev.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\FreeVerb.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FreeVerb.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\PitShift.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\PitShift.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\LentPitShift.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\LentPitShift.h
 # End Source File
 # Begin Source File
 

@@ -14,7 +14,7 @@ namespace stk {
     coefficient.  Another method is provided to create a DC blocking
     filter.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 

@@ -20,7 +20,7 @@
     data type for the incoming stream is signed 16-bit integers,
     though any of the defined StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -242,8 +242,6 @@ int InetWvIn :: readData( void )
   if ( readPoint_ == bufferBytes_ )
     readPoint_ = 0;
   bytesFilled_ -= bytes;
-  if ( bytesFilled_ < 0 )
-    bytesFilled_ = 0;
 
   mutex_.unlock();
   return samples / data_.channels();

@@ -21,7 +21,7 @@
        - Vibrato Gain = 1
        - Loudness (Spectral Tilt) = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -106,7 +106,7 @@ bool VoicForm :: setPhoneme( const char *phoneme )
 
 void VoicForm :: setFilterSweepRate( unsigned int whichOne, StkFloat rate )
 {
-  if ( whichOne < 0 || whichOne > 3 ) {
+  if ( whichOne > 3 ) {
     oStream_ << "VoicForm::setFilterSweepRate: filter select argument outside range 0-3!";
     handleError( StkError::WARNING ); return;
   }

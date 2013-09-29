@@ -1,6 +1,6 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2011.
+By Perry R. Cook and Gary P. Scavone, 1995-2012.
 
 This distribution of the Synthesis ToolKit in C++ (STK) contains the following:
 
@@ -32,11 +32,10 @@ Macintosh OS X, and Windows computer platforms.  Generic, non-realtime
 support has been tested under NeXTStep, Sun, and other platforms and
 should work with any standard C++ compiler.
 
-The Synthesis ToolKit is free for non-commercial use.  The only
-classes of the Synthesis ToolKit that are platform-dependent concern
-sockets, threads, mutexes, and real-time audio and MIDI input and
-output.  The interface for MIDI input and the simple Tcl/Tk graphical
-user interfaces (GUIs) provided is the same, so it's easy to
+The only classes of the Synthesis ToolKit that are platform-dependent
+concern sockets, threads, mutexes, and real-time audio and MIDI input
+and output.  The interface for MIDI input and the simple Tcl/Tk
+graphical user interfaces (GUIs) provided is the same, so it's easy to
 experiment in real time using either the GUIs or MIDI.  The Synthesis
 ToolKit can generate simultaneous SND (AU), WAV, AIFF, and MAT-file
 output soundfile formats (as well as realtime sound output), so you
@@ -95,11 +94,12 @@ messages.  In most cases, this should eliminate the use of the
 Md2Skini program.
 
 Realtime audio input capabilities were added to STK with release 3.0,
-though the behavior of such is very hardware dependent.  Under Linux,
-Macintosh OS-X, and Irix, audio input and output are possible with
-very low latency.  Using the Windoze DirectSound API, minimum
-dependable output sound latency seems to be around 20 milliseconds or
-so, while input sound latency is generally higher.
+though the behavior of such is very hardware dependent.  Under Linux
+and Macintosh OS-X, audio input and output are possible with very low
+latency.  Using the Windoze DirectSound API, minimum dependable output
+sound latency seems to be around 20 milliseconds or so, while input
+sound latency is generally higher.  Performance with the ASIO audio
+API on Windoze provides much better performance.
 
 As mentioned above, it is possible to record the audio ouput of an STK
 program to .snd, .wav, .raw, .aif, and .mat (Matlab MAT-file) output
@@ -110,7 +110,7 @@ generic C++ compiler.
 
 For those who wish to make a library from the core STK classes, the
 configure script generates a Makefile in the src directory that will
-accomplish that (Linux, SGI, and Macintosh OS X only).
+accomplish that.
 
 
 DISCLAIMER:
@@ -129,7 +129,7 @@ for free, primarily for academic purposes, so if you use it, pass it
 on with this documentation, and for free.
 
 If you make a million dollars with it, it would be nice if you would
-share.  If you make compositions with it, put us in the program notes.
+share. If you make compositions with it, put us in the program notes.
 
 Some of the concepts are covered by various patents, some known to us
 and likely others which are unknown.  Many of the ones known to us are
@@ -145,7 +145,7 @@ LICENSE:
 STK WWW site: http://ccrma.stanford.edu/software/stk/
 
 The Synthesis ToolKit in C++ (STK)
-Copyright (c) 1995-2011 Perry R. Cook and Gary P. Scavone
+Copyright (c) 1995-2012 Perry R. Cook and Gary P. Scavone
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

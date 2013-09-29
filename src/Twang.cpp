@@ -17,7 +17,7 @@
     use possibly subject to patents held by Stanford
     University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -37,15 +37,9 @@ Twang :: Twang( StkFloat lowestFrequency )
   std::vector<StkFloat> coefficients( 2, 0.5 );
   loopFilter_.setCoefficients( coefficients );
 
-  lastFrame_.resize( 1, 1, 0.0 );
-
   loopGain_ = 0.995;
   pluckPosition_ = 0.4;
   this->setFrequency( 220.0 );
-}
-
-Twang :: ~Twang( void )
-{
 }
 
 void Twang :: clear( void )
@@ -53,7 +47,7 @@ void Twang :: clear( void )
   delayLine_.clear();
   combDelay_.clear();
   loopFilter_.clear();
-  lastFrame_[0] = 0.0;
+  lastOutput_ = 0.0;
 }
 
 void Twang :: setLowestFrequency( StkFloat frequency )

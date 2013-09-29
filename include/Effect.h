@@ -14,7 +14,7 @@ namespace stk {
     subclasses.  It is general enough to support both monophonic and
     polyphonic input/output classes.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -34,7 +34,7 @@ class Effect : public Stk
   virtual void clear() = 0;
 
   //! Set the mixture of input and "effected" levels in the output (0.0 = input only, 1.0 = effect only). 
-  void setEffectMix( StkFloat mix );
+  virtual void setEffectMix( StkFloat mix );
 
  protected:
 
