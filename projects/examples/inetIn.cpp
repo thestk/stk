@@ -34,20 +34,20 @@
 void usage(void) {
   // Error function in case of incorrect command-line
   // argument specifications.
-  printf("\nuseage: inetIn N fs \n");
-  printf("    where N = number of channels,\n");
-  printf("    and fs = the data sample rate.\n\n");
-  exit(0);
+  std::cout << "\nuseage: inetIn N fs \n";
+  std::cout << "    where N = number of channels,\n";
+  std::cout << "    and fs = the data sample rate.\n\n";
+  exit( 0 );
 }
 
 int main(int argc, char *argv[])
 {
   // Minimal command-line checking.
-  if (argc != 3) usage();
+  if ( argc != 3 ) usage();
 
   Stk::showWarnings( true );
-  Stk::setSampleRate( atof(argv[2]) );
-  int channels = (int) atoi(argv[1]);
+  Stk::setSampleRate( atof( argv[2] ) );
+  int channels = (int) atoi( argv[1] );
   StkFrames frame( 1, channels );
 
   // Create instances and pointers.
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     //input.listen( 2006, channels, Stk::STK_SINT16, Socket::PROTO_UDP );
     input.listen( 2006, channels, Stk::STK_SINT16, Socket::PROTO_TCP );
   }
-  catch (StkError &) {
+  catch ( StkError & ) {
     goto cleanup;
   }
 
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   try {
     output = new RtWvOut( channels );
   }
-  catch (StkError &) {
+  catch ( StkError & ) {
     goto cleanup;
   }
 

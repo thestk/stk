@@ -25,27 +25,27 @@
 #include "RtWvIn.h"
 #include "FileWvOut.h"
 
-void usage(void) {
+void usage( void ) {
   // Error function in case of incorrect command-line
   // argument specifications.
-  printf("\nuseage: record N file time fs \n");
-  printf("    where N = number of channels,\n");
-  printf("    file = the .wav file to create,\n");
-  printf("    time = the amount of time to record (in seconds),\n");
-  printf("    and fs = the sample rate.\n\n");
-  exit(0);
+  std::cout << "\nuseage: record N file time fs \n";
+  std::cout << "    where N = number of channels,\n";
+  std::cout << "    file = the .wav file to create,\n";
+  std::cout << "    time = the amount of time to record (in seconds),\n";
+  std::cout << "    and fs = the sample rate.\n\n";
+  exit( 0 );
 }
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
   // minimal command-line checking
   if ( argc != 5 ) usage();
 
   Stk::showWarnings( true );
 
-  unsigned int channels = (unsigned int) atoi(argv[1]);
-  double sampleRate = atof(argv[4]);
-  double time = atof(argv[3]);
+  unsigned int channels = (unsigned int) atoi( argv[1] );
+  double sampleRate = atof( argv[4] );
+  double time = atof( argv[3] );
   long samples, i;
   StkFrames frame( 1, channels );
 
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     input = new RtWvIn( channels );
   }
   catch ( StkError & ) {
-    exit(0);
+    exit( 1 );
   }
   
   // Open the soundfile for output.

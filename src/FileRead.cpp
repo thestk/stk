@@ -39,10 +39,11 @@ FileRead :: FileRead()
 {
 }
 
-FileRead :: FileRead( std::string fileName, bool typeRaw )
+FileRead :: FileRead( std::string fileName, bool typeRaw, unsigned int nChannels,
+                      StkFormat format, StkFloat rate )
   : fd_(0)
 {
-  open( fileName, typeRaw );
+  open( fileName, typeRaw, nChannels, format, rate );
 }
 
 FileRead :: ~FileRead()
@@ -64,7 +65,8 @@ bool FileRead :: isOpen( void )
   else return false;
 }
 
-void FileRead :: open( std::string fileName, bool typeRaw )
+void FileRead :: open( std::string fileName, bool typeRaw, unsigned int nChannels,
+                       StkFormat format, StkFloat rate )
 {
   // If another file is open, close it.
   close();
@@ -79,7 +81,7 @@ void FileRead :: open( std::string fileName, bool typeRaw )
   // Attempt to determine file type from header (unless RAW).
   bool result = false;
   if ( typeRaw )
-    result = getRawInfo( fileName.c_str() );
+    result = getRawInfo( fileName.c_str(), nChannels, format, rate );
   else {
     char header[12];
     if ( fread( &header, 4, 3, fd_ ) != 3 ) goto error;
@@ -121,7 +123,7 @@ void FileRead :: open( std::string fileName, bool typeRaw )
   handleError( StkError::FILE_ERROR );
 }
 
-bool FileRead :: getRawInfo( const char *fileName )
+bool FileRead :: getRawInfo( const char *fileName, unsigned int nChannels, StkFormat format, StkFloat rate )
 {
   // Use the system call "stat" to determine the file length.
   struct stat filestat;
@@ -130,14 +132,22 @@ bool FileRead :: getRawInfo( const char *fileName )
     return false;
   }
 
-  // STK rawwave files have no header and are assumed to contain a
-  // monophonic stream of 16-bit signed integers in big-endian byte
-  // order at a sample rate of 22050 Hz.
-  channels_ = 1;
-  fileSize_ = (long) filestat.st_size / 2;  // length in 2-byte samples
+  // Rawwave files have no header and by default, are assumed to
+  // contain a monophonic stream of 16-bit signed integers in
+  // big-endian byte order at a sample rate of 22050 Hz.  However,
+  // different parameters can be specified if desired.
   dataOffset_ = 0;
-  fileRate_ = 22050.0;
-  dataType_ = STK_SINT16;
+  channels_ = nChannels;
+  dataType_ = format;
+  fileRate_ = rate;
+  int sampleBytes = 0;
+  if ( format == STK_SINT8 ) sampleBytes = 1;
+  else if ( format == STK_SINT16 ) sampleBytes = 2;
+  else if ( format == STK_SINT32 || format == STK_FLOAT32 ) sampleBytes = 4;
+  else if ( format == STK_FLOAT64 ) sampleBytes = 8;
+
+  fileSize_ = (long) filestat.st_size / sampleBytes / channels_;  // length in frames
+
   byteswap_ = false;
 #ifdef __LITTLE_ENDIAN__
   byteswap_ = true;

@@ -104,7 +104,7 @@ RtWvOut :: RtWvOut( unsigned int nChannels, StkFloat sampleRate, int device, int
   }
 
   data_.resize( size * nBuffers, nChannels );
-  unsigned int offset = (unsigned int ) (data_.size() / 2.0);
+  unsigned int offset = (unsigned int ) (data_.frames() / 2.0);
   writeIndex_ = offset;    // start writing half-way into buffer
   framesFilled_ = offset;
 }

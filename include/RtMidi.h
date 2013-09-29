@@ -8,7 +8,7 @@
     RtMidi WWW site: http://music.mcgill.ca/~gary/rtmidi/
 
     RtMidi: realtime MIDI i/o C++ classes
-    Copyright (c) 2003-2005 Gary P. Scavone
+    Copyright (c) 2003-2007 Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -35,7 +35,7 @@
 */
 /**********************************************************************/
 
-// RtMidi: Version 1.0.5, in development
+// RtMidi: Version 1.0.7
 
 #ifndef RTMIDI_H
 #define RTMIDI_H
@@ -121,7 +121,7 @@ class RtMidiIn : public RtMidi
   */
   void openPort( unsigned int portNumber = 0 );
 
-  //! Create a virtual input port to allow software connections (OS X and ALSA only).
+  //! Create a virtual input port, with optional name, to allow software connections (OS X and ALSA only).
   /*!
       This function creates a virtual MIDI input port to which other
       software applications can connect.  This type of functionality
@@ -261,7 +261,7 @@ class RtMidiOut : public RtMidi
   //! Close an open MIDI connection (if one exists).
   void closePort();
 
-  //! Create a virtual output port to allow software connections (OS X and ALSA only).
+  //! Create a virtual output port, with optional name, to allow software connections (OS X and ALSA only).
   /*!
       This function creates a virtual MIDI output port to which other
       software applications can connect.  This type of functionality

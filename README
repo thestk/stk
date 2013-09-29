@@ -70,8 +70,9 @@ SYSTEM REQUIREMENTS:
 See the individual README's (eg. README-linux) in the /doc directory
 for platform specific information and system requirements.  In
 general, you will use the configure script to create Makefiles on unix
-platforms or the VC++ workspace files to compile the example programs.
-To use the Tcl/Tk GUIs, you will need Tcl/Tk version 8.0 or higher.
+platforms (and MinGW) or the VC++ workspace files to compile the
+example programs.  To use the Tcl/Tk GUIs, you will need Tcl/Tk
+version 8.0 or higher.
 
 
 WHAT'S NEW (AND NOT SO NEW):
@@ -141,6 +142,11 @@ freely useable here, but we'll try to note within the various classes
 where certain things are likely to be protected by patents.
 
 LICENSE:
+
+STK WWW site: http://ccrma.stanford.edu/software/stk/
+
+The Synthesis ToolKit in C++ (STK)
+Copyright (c) 1995-2007 Perry R. Cook and Gary P. Scavone
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

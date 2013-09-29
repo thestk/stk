@@ -20,7 +20,7 @@ void usage(void) {
   std::cout << "   track = the track to play (0 = 1st track),\n";
   std::cout << "   and an optional port integer identifier can be specified\n";
   std::cout << "   (default = 0) or a value of -1 to use a virtual MIDI output port.\n\n";
-  exit(0);
+  exit( 0 );
 }
 
 int main( int argc, char *argv[] )
@@ -67,7 +67,7 @@ int main( int argc, char *argv[] )
 
   // Install an interrupt handler function.  Type "ctrl-c" to quit the
   // program.
-  (void) signal(SIGINT, finish);
+  (void) signal( SIGINT, finish );
   
   try {
     MidiFileIn midiFile( argv[1] );

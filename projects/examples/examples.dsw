@@ -3,6 +3,18 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
+Project: "audioprobe"=".\audioprobe.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "bethree"=".\bethree.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -99,6 +111,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "midiprobe"=".\midiprobe.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "play"=".\play.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -112,18 +136,6 @@ Package=<4>
 ###############################################################################
 
 Project: "playsmf"=".\playsmf.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "probe"=".\probe.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{

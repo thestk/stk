@@ -3,6 +3,9 @@ AC_INIT(STK, 4.3, gary@music.mcgill.ca, stk)
 AC_CONFIG_SRCDIR(src/Stk.cpp)
 AC_CONFIG_FILES(src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile)
 
+# Fill GXX with something before test.
+AC_SUBST( GXX, ["no"] )
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX(g++ CC c++ cxx)
@@ -39,9 +42,10 @@ AC_MSG_RESULT($realtime)
 # Check for math library
 AC_CHECK_LIB(m, cos, , AC_MSG_ERROR(math library is needed!))
 
+# Checks for functions
 if test $realtime = yes; then
-  AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR(realtime support requires the pthread library!))
-  AC_CHECK_FUNCS(gettimeofday select socket)
+  AC_CHECK_FUNCS(select socket)
+  AC_CHECK_FUNC(gettimeofday, [cflags=$cflags" -DHAVE_GETTIMEOFDAY"], )
 fi
 
 # Check for debug
@@ -94,6 +98,8 @@ if test $realtime = yes; then
       AC_MSG_RESULT(using ALSA)
       audio_apis="-D__LINUX_ALSA__ $audio_apis"
     fi
+
+    AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR(realtime support requires the pthread library!))
     ;;
 
     *-apple*)
@@ -123,6 +129,35 @@ if test $realtime = yes; then
         [AC_MSG_ERROR(CoreAudio header files not found!)] )
       AC_SUBST( frameworks, ["-framework CoreAudio -framework CoreFoundation -framework CoreMidi"] )
     fi
+
+    AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR(realtime support requires the pthread library!))
+    ;;
+
+    *-mingw32*)
+    AC_SUBST( sound_api, [_NO_API_] )
+    AC_ARG_WITH(asio, [  --with-asio = choose ASIO API support (windoze only)], [AC_SUBST( sound_api, [-D__WINDOWS_ASIO__] ) AC_MSG_RESULT(using ASIO)], )
+    if [test $sound_api = -D__WINDOWS_ASIO__;] then
+      audio_apis="-D__WINDOWS_ASIO__"
+      AC_SUBST( objects, ["asio.o asiodrivers.o asiolist.o iasiothiscallresolver.o"] )
+    fi
+
+    # Look for DirectSound flag
+    AC_ARG_WITH(ds, [  --with-ds = choose DirectSound API support (windoze only)], [AC_SUBST( sound_api, [-D__WINDOWS_DS__] ) AC_MSG_RESULT(using DirectSound)], )
+    if test $sound_api = -D__WINDOWS_DS__; then
+      audio_apis="-D__WINDOWS_DS__ $audio_apis"
+      LIBS="-ldsound $LIBS"
+    fi
+
+    # If no audio api flags specified, use DirectSound
+    if [test $sound_api = _NO_API_;] then
+      AC_SUBST( sound_api, [-D__WINDOWS_DS__] )
+      AC_MSG_RESULT(using DirectSound)
+      audio_apis="-D__WINDOWS_DS__"
+      LIBS="-ldsound $LIBS"
+    fi
+
+    audio_apis="-D__WINDOWS_MM__ $audio_apis"
+    LIBS="-lole32 -lwinmm -lWsock32 $LIBS"
     ;;
 
     *)

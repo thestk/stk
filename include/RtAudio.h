@@ -42,7 +42,7 @@
   \file RtAudio.h
  */
 
-// RtAudio: Version 4.0
+// RtAudio: Version 4.0.3
 
 #ifndef __RTAUDIO_H
 #define __RTAUDIO_H
@@ -679,20 +679,20 @@ protected:
 //
 // **************************************************************** //
 
-inline RtAudio::Api RtAudio :: getCurrentApi( void ) throw() { return rtapi_->getCurrentApi(); };
-inline unsigned int RtAudio :: getDeviceCount( void ) throw() { return rtapi_->getDeviceCount(); };
-inline RtAudio::DeviceInfo RtAudio :: getDeviceInfo( unsigned int device ) { return rtapi_->getDeviceInfo( device ); };
-inline unsigned int RtAudio :: getDefaultInputDevice( void ) throw() { return rtapi_->getDefaultInputDevice(); };
-inline unsigned int RtAudio :: getDefaultOutputDevice( void ) throw() { return rtapi_->getDefaultOutputDevice(); };
-inline void RtAudio :: closeStream( void ) throw() { return rtapi_->closeStream(); };
-inline void RtAudio :: startStream( void ) { return rtapi_->startStream(); };
-inline void RtAudio :: stopStream( void )  { return rtapi_->stopStream(); };
-inline void RtAudio :: abortStream( void ) { return rtapi_->abortStream(); };
-inline bool RtAudio :: isStreamOpen( void ) throw() { return rtapi_->isStreamOpen(); };
-inline bool RtAudio :: isStreamRunning( void ) throw() { return rtapi_->isStreamRunning(); };
-inline long RtAudio :: getStreamLatency( void ) { return rtapi_->getStreamLatency(); };
-inline double RtAudio :: getStreamTime( void ) { return rtapi_->getStreamTime(); };
-inline void RtAudio :: showWarnings( bool value ) throw() { rtapi_->showWarnings( value ); };
+inline RtAudio::Api RtAudio :: getCurrentApi( void ) throw() { return rtapi_->getCurrentApi(); }
+inline unsigned int RtAudio :: getDeviceCount( void ) throw() { return rtapi_->getDeviceCount(); }
+inline RtAudio::DeviceInfo RtAudio :: getDeviceInfo( unsigned int device ) { return rtapi_->getDeviceInfo( device ); }
+inline unsigned int RtAudio :: getDefaultInputDevice( void ) throw() { return rtapi_->getDefaultInputDevice(); }
+inline unsigned int RtAudio :: getDefaultOutputDevice( void ) throw() { return rtapi_->getDefaultOutputDevice(); }
+inline void RtAudio :: closeStream( void ) throw() { return rtapi_->closeStream(); }
+inline void RtAudio :: startStream( void ) { return rtapi_->startStream(); }
+inline void RtAudio :: stopStream( void )  { return rtapi_->stopStream(); }
+inline void RtAudio :: abortStream( void ) { return rtapi_->abortStream(); }
+inline bool RtAudio :: isStreamOpen( void ) throw() { return rtapi_->isStreamOpen(); }
+inline bool RtAudio :: isStreamRunning( void ) throw() { return rtapi_->isStreamRunning(); }
+inline long RtAudio :: getStreamLatency( void ) { return rtapi_->getStreamLatency(); }
+inline double RtAudio :: getStreamTime( void ) { return rtapi_->getStreamTime(); }
+inline void RtAudio :: showWarnings( bool value ) throw() { rtapi_->showWarnings( value ); }
 
 // RtApi Subclass prototypes.
 
@@ -794,6 +794,8 @@ public:
 
   private:
 
+  std::vector<RtAudio::DeviceInfo> devices_;
+  void saveDeviceInfo( void );
   bool coInitialized_;
   bool probeDeviceOpen( unsigned int device, StreamMode mode, unsigned int channels, 
                         unsigned int firstChannel, unsigned int sampleRate,
@@ -911,7 +913,7 @@ class RtApiDummy: public RtApi
 {
 public:
 
-  RtApiDummy() { errorText_ = "RtApiDummy: This class provides no functionality."; error( WARNING ); };
+  RtApiDummy() { errorText_ = "RtApiDummy: This class provides no functionality."; error( RtError::WARNING ); };
   RtAudio::Api getCurrentApi( void ) { return RtAudio::RTAUDIO_DUMMY; };
   unsigned int getDeviceCount( void ) { return 0; };
   RtAudio::DeviceInfo getDeviceInfo( unsigned int device ) { RtAudio::DeviceInfo info; return info; };

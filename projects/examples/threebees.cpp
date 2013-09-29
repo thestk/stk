@@ -7,9 +7,7 @@
 #include "SKINI.msg"
 
 #include <algorithm>
-#if !defined(__OS_WINDOWS__) // Windoze bogosity for VC++ 6.0
-  using std::min;
-#endif
+using std::min;
 
 // The TickData structure holds all the class instances and data that
 // are shared by the various processing functions.
