@@ -21,10 +21,11 @@ MY_FLOAT float_random(MY_FLOAT max) // Return random float between 0.0 and max
 
 void usage(void) {
   /* Error function in case of incorrect command-line argument specifications */
-  printf("\nuseage: ragamat flag \n");
-  printf("    where flag = -ip for realtime SKINI input by pipe\n");
-  printf("                 (won't work under Win95/98),\n");
-  printf("    and flag = -is for realtime SKINI input by socket.\n");
+  printf("\nuseage: ragamat flags \n");
+  printf("    where flag = -s RATE to specify a sample rate,\n");
+  printf("    flag = -ip for realtime SKINI input by pipe\n");
+  printf("           (won't work under Win95/98),\n");
+  printf("    and flag = -is <port> for realtime SKINI input by socket.\n");
   exit(0);
 }
 
@@ -41,10 +42,6 @@ int main(int argc,char *argv[])
   Messager *messager;
   MY_FLOAT t60 = 4.0;  // in seconds
 
-  // If you want to change the default sample rate (set in Stk.h), do
-  // it before instantiating any objects!!
-  Stk::setSampleRate( 22050.0 );
-
   MY_FLOAT drone_prob = 0.01, note_prob = 0.0;
   MY_FLOAT drum_prob = 0.0, voic_prob = 0.0;
   MY_FLOAT droneFreqs[3] = {55.0,82.5,220.0};
@@ -57,21 +54,36 @@ int main(int argc,char *argv[])
   int ragaDown[2][13] = {{57, 60, 62, 64, 65, 67, 69, 71, 72, 76, 79, 81},
                          {48, 52, 53, 55, 57, 59, 60, 64, 66, 68, 70, 72}};
 
-  if (argc != 2) usage();
+  // If you want to change the default sample rate (set in Stk.h), do
+  // it before instantiating any objects!  If the sample rate is
+  // specified in the command line, it will override this setting.
+  Stk::setSampleRate(22050.0);
 
-  int controlMask = 0;
-  if (!strcmp(argv[1],"-is") )
-    controlMask |= STK_SOCKET;
-  else if (!strcmp(argv[1],"-ip") )
-    controlMask |= STK_PIPE;
-  else
-    usage();
+  if (argc < 2 || argc > 6) usage();
+
+  int port = -1;
+  int i, controlMask = 0;
+  for ( i=1; i<argc; i++ ) {
+    if (!strcmp(argv[i],"-is") ) {
+      controlMask |= STK_SOCKET;
+      if (i+1 < argc && argv[i+1][0] != '-' ) port = atoi(argv[++i]);
+    }
+    else if (!strcmp(argv[i],"-ip") )
+      controlMask |= STK_PIPE;
+    else if (!strcmp(argv[i],"-s") && (i+1 < argc) && argv[i+1][0] != '-')
+      Stk::setSampleRate( atoi(argv[++i]) );
+    else
+      usage();
+  }
   
   try {
     output = new RtWvOut(2);
 
     // Instantiate the input message controller.
-    messager = new Messager( controlMask );
+    if ( controlMask & STK_SOCKET && port >= 0 )
+      messager = new Messager( controlMask, port );
+    else
+      messager = new Messager( controlMask );
   }
   catch (StkError &) {
     exit(0);
@@ -94,7 +106,6 @@ int main(int argc,char *argv[])
   drones[1]->noteOn(droneFreqs[1],0.1);
   drones[2]->noteOn(droneFreqs[2],0.1);
 
-  int i;
   MY_FLOAT outSamples[2];
   for (i=0;i<Stk::sampleRate();i++) { /* warm everybody up a little */
     outSamples[0] = reverbs[0]->tick(drones[0]->tick() + drones[2]->tick());

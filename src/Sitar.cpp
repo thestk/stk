@@ -1,11 +1,21 @@
- /******************************************/  
-/*  Karplus-Strong Sitar1 string model   */
-/*  by Perry Cook, 1995-96                */
-/*					  */
-/*  There exist at least two patents,     */
-/*  assigned to Stanford, bearing the     */
-/*  names of Karplus and/or Strong.       */
-/******************************************/
+/***************************************************/
+/*! \class Sitar
+    \brief STK sitar string model class.
+
+    This class implements a sitar plucked string
+    physical model based on the Karplus-Strong
+    algorithm.
+
+    This is a digital waveguide model, making its
+    use possibly subject to patents held by
+    Stanford University, Yamaha, and others.
+    There exist at least two patents, assigned to
+    Stanford, bearing the names of Karplus and/or
+    Strong.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+*/
+/***************************************************/
 
 #include "Sitar.h"
 #include <math.h>

@@ -8,6 +8,7 @@
 - \ref rt
 - \ref tcl
 - \ref midi
+- \ref polyphony
 
 <HR>
 
@@ -16,9 +17,9 @@
 The top level distribution contains the following directories:
 
 <UL>
-<LI> The <I><B>src</B></I> directory contains the source .cpp files for almost all the STK unit generator and algorithm classes.</LI><P>
+<LI> The <I><B>src</B></I> directory contains the source .cpp files for all the STK unit generator and algorithm classes.</LI><P>
 
-<LI> The <I><B>include</B></I> directory contains the header files for almost all the STK unit generator and algorithm classes.</LI><P>
+<LI> The <I><B>include</B></I> directory contains the header files for all the STK unit generator and algorithm classes.</LI><P>
 
 <LI> The <I><B>rawwaves</B></I> directory contains various raw, monophonic, 16-bit, big-endian soundfiles used with the STK classes.</LI><P>
 
@@ -42,15 +43,38 @@ This release of STK comes with four separate "project" directories:
 \section compiling Compiling:
 
 <UL>
+<LI><B>Windows95/98/2000/XP:</B> Realtime support is available using either DirectSound or ASIO audio drivers.  For DirectSound support, use the <TT>__WINDOWS_DS__</TT> preprocessor definition and link with the <TT>dsound.lib</TT>, <TT>winmm.lib</TT>, and <TT>Wsock32.lib</TT> libraries. For ASIO support, use the <TT>__WINDOWS_ASIO__</TT> preprocessor definition, include all the files in the <TT>src/asio/</TT> directory (i.e. <TT>asio.h,cpp</TT>, <TT>asiodrivers.h,cpp</TT>, ...), and link with the <TT>winmm.lib</TT>, and <TT>Wsock32.lib</TT> libraries.  In addition, the <TT>__LITTLE_ENDIAN__</TT> preprocessor definition is necessary for all Windows systems.  A distribution of the release is available with precompiled binaries (using DirectSound) for all the projects.  In order for these binaries to function properly, your system must have the DirectX 5.0 (or higher) runtime libraries installed (available from <A HREF="http://www.microsoft.com/directx/">Microsoft</A>).  Further, the <I><B>effects</B></I> project requires that your soundcard and drivers provide full duplex mode capabilities.  Visual C++ 6.0 project files are provided in each project directory as well should you wish to compile your own binaries.  It is important to link with the non-debug libraries when compiling "release" program versions and debug libraries when compiling "debug" program versions.</LI>
+
+<LI><B>WindowsNT:</B> DirectX support for NT is inadequate, so it is not possible to use STK under WindowsNT with realtime DirectX support.  It may be possible to use STK under WindowsNT with realtime ASIO support, though this has not been tested.</LI>
+
+<LI><B>Unix Systems:</B> A GNU <TT>configure</TT> shell script is included in the distribution for unix-based systems.  From the top-level distribution directory, type <TT>'./configure'</TT> and the script will create <TT>Makefiles</TT> in each project directory specific to the characteristics of the host computer.  Then from within any given project directory (example <TT>demo</TT>), type <TT>'make'</TT> to compile the project.  In addition, an STK library can be compiled from within the <TT>src</TT> directory.
+
+Several options can be supplied to the <TT>configure</TT> script to customize the build behavior:
+<UL>
+<LI><TT>--disable-realtime</TT> to only compile generic non-realtime classes</LI>
+<LI><TT>--enable-debug</TT> to enable various debug output</LI>
+<LI><TT>--enable-midiator</TT> to enable native MS-124W MIDI support (linux only)</LI>
+<LI><TT>--with-alsa</TT> to choose native ALSA API support (linux only)</LI>
+</UL>
+<P>
+In addition, it is possible to specify the location of the STK rawwaves and the STK include path as follows:
+\code
+./configure RAWWAVE_PATH="/home/gary/rawwaves/"
+./configure INCLUDE_PATH="/home/gary/include/"
+\endcode
+
+For novice STK users, the default configuration should be adequate.
+</UL>
+
+For those who wish to create their own system-specific <TT>Makefiles</TT>:
+<UL>
+<LI><B>Linux:</B> Realtime support is enabled with either the <TT>__LINUX_OSS__</TT> or <TT>__LINUX_ALSA__</TT> preprocessor definitions, which are used to select the underlying audio/MIDI system API.  Realtime programs must also link with the <TT>pthread</TT> library.  When using the ALSA API, it is also necessary to link with the <TT>asound</TT> library.  In addition, the <TT>__LITTLE_ENDIAN__</TT> preprocessor definition is necessary if compiling on a little-endian system.  Special support exists under Linux for the MIDIator serial MIDI device, enabled using the <TT>__MIDIATOR__</TT> preprocessor definition (together with either the <TT>__LINUX_ALSA__</TT> or <TT>__LINUX_OSS__</TT> definitions).  See the README-Linux file for further system configuration information.</LI>
+
+<LI><B>Macintosh OS X:</B> Realtime support is enabled with the <TT>__MACOSX_CORE__</TT> preprocessor definitions, which incorporates the CoreAudio audio/MIDI API.  Realtime programs must also link with the <TT>pthread</TT> library and the <TT>CoreAudio</TT>, <TT>CoreMIDI</TT>, and <TT>CoreFoundation</TT> frameworks.  See the README-MacOSX file for further system configuration information.</LI>
+
+<LI><B>SGI:</B> Realtime support is enabled with the <TT>__IRIX_AL__</TT> preprocessor definition and linkage with the <TT>audio</TT>, <TT>md</TT>, and <TT>pthread</TT> libraries.  STK 4.0 (and higher) is confirmed to compile using CC version 7.30.  There may be problems with old compiler versions.</LI>
+
 <LI><B>Generic (non-realtime):</B> Most STK classes are operating system <I>independent</I> and can be compiled using any current C++ compiler. STK assumes big-endian host byte order by default, so if your system is little-endian (i.e. Intel processor), you must provide the <TT>__LITTLE_ENDIAN__</TT> preprocessor definition to your compiler.  The <I><B>demo</B></I> project will compile without realtime support, allowing the use of SKINI scorefiles for input control and output to a variety of soundfile formats.  The following classes <I>cannot</I> be used without realtime support: RtAudio, RtWvIn, RtWvOut, RtDuplex, RtMidi, Socket, Thread, TcpWvIn, TcpWvOut.  Because of this, it is not possible to compile the <I><B>effects</B></I>, <I><B>ragamatic</B></I>, and most of the <I><B>examples</B></I> projects for non-realtime use.</LI>
-
-<LI><B>Linux:</B> Realtime support is enabled with either the <TT>__LINUX_OSS__</TT> or <TT>__LINUX_ALSA__</TT> preprocessor definitions, which are used to select the underlying audio/MIDI system API.  Realtime programs must also link with the <TT>pthread</TT> library.  When using the ALSA API, it is also necessary to link with the <TT>asound</TT> library.  In addition, the <TT>__LITTLE_ENDIAN__</TT> preprocessor definition is necessary if compiling on a little-endian system.  Assuming your system has the <A HREF="http://gnu.cetcol.net.co/">GNU</A> Makefile utilities installed, typing <TT>make</TT> within a particular project directory will initiate the compilation process.  The <TT>Makefile</TT> will have to be modified to change the default audio/MIDI system API and for big-endian processors.  Special support exists under Linux for the MIDIator serial MIDI device, enabled using the __MIDIATOR__ preprocessor definition (together with either the __LINUX_ALSA__ or __LINUX_OSS__ definitions).  See the README-Linux file for further system configuration information.</LI>
-
-<LI><B>SGI:</B> Realtime support is enabled with the <TT>__IRIX_AL__</TT> preprocessor definition and linkage with the <TT>audio</TT>, <TT>md</TT>, and <TT>pthread</TT> libraries.  If your system has the <A HREF="http://gnu.cetcol.net.co/">GNU</A> Makefile utilities installed, typing <TT>make</TT> (or <TT>gmake</TT>) within a particular project directory will initiate the compilation process.  If your system does not have the GNU Makefile utilities, you should first try to download and install them.  If this is not possible, a generic Makefile is provided with the <I><B>demo</B></I> project (Makefile.sgi).  It can be invoked by typing <TT>make -f Makefile.sgi</TT> within that project directory.  STK 4.0 is confirmed to compile using CC version 7.30.  There may be problems with old compiler versions.</LI>
-
-<LI><B>Windows95/98/2000/XP:</B> Realtime support is enabled with the <TT>__WINDOWS_DS__</TT> preprocessor definition and linkage with the <TT>dsound.lib</TT>, <TT>winmm.lib</TT>, and <TT>Wsock32.lib</TT> libraries. In addition, the <TT>__LITTLE_ENDIAN__</TT> preprocessor definition is necessary for all Windows systems.  A distribution of the release is available with precompiled binaries for all the projects.  In order for these binaries to function properly, your system must have the DirectX 5.0 (or higher) runtime libraries installed (available from <A HREF="http://www.microsoft.com/directx/">Microsoft</A>).  Further, the <I><B>effects</B></I> project requires that your soundcard and drivers provide full duplex mode capabilities.  Visual C++ 6.0 project file are provided in each project directory as well should you wish to compile your own binaries.  It is important to link with the non-debug libraries when compiling "release" program versions and debug libraries when compiling "debug" program versions.</LI>
-
-<LI><B>WindowsNT:</B> I've given up trying to make things work under NT.  You'll have to switch to Windows 2000 (which does seem to work).</LI>
 </UL>
 
 
@@ -91,12 +115,14 @@ The <I><B>demo</B></I> project demonstrates the behavior of all the distributed 
 <LI>BeeThree: Cheezy organ FM synthesis model</LI>
 <LI>Moog: Swept filter sampler</LI>
 <LI>FMVoices: Three-formant FM voice synthesis</LI>
+<LI>VoicForm: Four-formant resonance filter voice synthesis</LI>
 <LI>Resonate: Noise through a BiQuad filter</LI>
 <LI>Drummer: Sampling synthesis</LI>
 <LI>BandedWG: Banded waveguide meta-object for bowed bars, tibetan bowls, etc.</LI>
 <LI>Shakers: Various stochastic event models of shaker instruments</LI>
 <LI>ModalBar: Various four-resonance presets (marimba, vibraphone, etc...)</LI>
 <LI>Mesh2D: Two-dimensional, rectilinear digital waveguide mesh</LI>
+<LI>Whistle: Hybrid physical/spectral model of a police whistle</LI>
 </UL>
 
 \section nort Demo: Non-Realtime Use
@@ -106,13 +132,13 @@ See the information above with respect to compiling STK for non-realtime use.
 In non-realtime mode, it is assumed that input control messages are provided from a SKINI scorefile and that audio output is written to a soundfile (.snd, .wav, .aif, .mat, .raw).  A number of SKINI scorefiles are provided in the <I>scores</I> directory of the <I><B>demo</B></I> project.  Assuming a successful compilation of the <I><B>demo</B></I> program, typing:
 
 \code
-cat scores/bookert.ski | demo BeeThree -w myfile.wav
+cat scores/bookert.ski | demo BeeThree -ow myfile.wav
 \endcode
 
 or (on WindowsXX and/or Unix)
 
 \code
-demo BeeThree -w myfile.wav < scores\bookert.ski
+demo BeeThree -ow myfile.wav < scores\bookert.ski
 \endcode
 
 from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I> using the STK BeeThree instrument and write the resulting audio data to a WAV formatted soundfile called "myfile.wav".  Typing <TT>demo</TT> without any arguments will provide a full program usage description.
@@ -120,7 +146,7 @@ from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I>
 
 \section rt Demo: Realtime Use
 
-STK realtime audio and MIDI input/output and realtime SKINI control input via socketing support is provided for Linux, SGI, and Windows95/98/2000/XP operating systems.  STK realtime SKINI control input via piping is possible under Linux, SGI, and Windows2000/XP only.
+STK realtime audio and MIDI input/output and realtime SKINI control input via socketing support is provided for Linux, SGI, Mac OS X, and Windows95/98/2000/XP operating systems.  STK realtime SKINI control input via piping is possible under Linux, SGI, Mac OS X, and Windows2000/XP only.
 <P>
 Control input and audio output options are typically specified as command-line arguments to STK programs.  For example, the <I><B>demo</B></I> program is invoked as:
 
@@ -134,8 +160,11 @@ where instruments include those described above and flags can be any or all of:
 <LI><I>-ow <file name></I> for WAV soundfile output,</LI>
 <LI><I>-os <file name></I> for SND (AU) soundfile output,</LI>
 <LI><I>-om <file name></I> for MAT-file output,</LI>
-<LI><I>-ip</I> or <I>-is</I> for realtime SKINI control input via piping or socketing, respectively,</LI>
+<LI><I>-ip</I> for realtime SKINI control input via piping,</LI>
+<LI><I>-is <port></I> > for realtime SKINI control input via socketing (with an optional port number),</LI>
 <LI><I>-im <file name></I> for MIDI control input</LI>
+<LI><I>-s RATE</I> to specify a sample rate</LI>
+<LI><I>-n NUMBER</I> to specify multivoice polyphony</LI>
 </UL>
 The <-ip> and <-is> flags must be used when piping or socketing realtime SKINI control data to an STK program.  The <-im> flag must be used to read MIDI control input from your MIDI port.  Note that you can use all three input types simultaneously.
 
@@ -156,7 +185,7 @@ from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I>
 
 \section tcl Realtime Control Input using Tcl/Tk Graphical User Interfaces:
 
-There are a number of <A HREF="http://dev.scriptics.com">Tcl/Tk</A> GUIs supplied with the STK projects.  These scripts require Tcl/Tk version 8.0 or later, which can be downloaded for free over the WWW.  On Unix and Windows2000/XP platforms, you can run the various executable scripts (e.g. StkDemo.bat) provided with each project to start everything up (you may need to symbolically link the wish80 executable to the name <I>wish</I>).  The PhysicalDemo script just implements the following command-line sequence:
+There are a number of <A HREF="http://dev.scriptics.com">Tcl/Tk</A> GUIs supplied with the STK projects.  These scripts require Tcl/Tk version 8.0 or later, which can be downloaded for free over the WWW.  On Unix and Windows2000/XP platforms, you can run the various executable scripts (e.g. StkDemo.bat) provided with each project to start everything up (you may need to symbolically link the wishXX executable to the name <I>wish</I>).  The Physical.bat script just implements the following command-line sequence:
 
 \code
 wish < tcl/Physical.tcl | demo Clarinet -or -ip
@@ -178,6 +207,15 @@ On all supported realtime platforms, you can direct realtime MIDI input to the S
 
 \code
 demo Clarinet -or -im
+\endcode
+
+
+\section polyphony Polyphony:
+
+The <I><B>demo</B></I> program supports an arbitrary number of voices via the <TT>-n NUMBER</TT> command-line flag and argument.  For example, you can play eight BeeThree instruments with realtime output and control them from a MIDI device by typing:
+
+\code
+demo BeeThree -n 8 -or -im
 \endcode
 
 */

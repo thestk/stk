@@ -133,6 +133,13 @@ The irix (SGI) and linux operating systems are both flavors of unix and thus beh
 CC -Wall -D__IRIX_AL__ -o sineosc Stk.cpp WvIn.cpp WaveLoop.cpp WvOut.cpp RtWvOut.cpp RtAudio.cpp sineosc.cpp -lpthread
 \endcode
 
+\subsection compileOSX Macintosh OS X
+
+The Macintosh OS X operating systems is another flavor of unix and thus behaves similarly.  Making the same assumptions as in the linux case, the following compile statement should work:
+\code
+CC -Wall -D__MACOSX_CORE__ -o sineosc Stk.cpp WvIn.cpp WaveLoop.cpp WvOut.cpp RtWvOut.cpp RtAudio.cpp sineosc.cpp -lpthread -framework CoreAudio
+\endcode
+
 \subsection compileWin Windows
 
 I have personally only worked with Visual C++ when compiling programs under windoze.  I'll assume you've become familiar with Visual C+ and don't need a tutorial on its particular idiosyncrasies.  In creating the VC++ project, add the Stk, WvIn, WaveLoop, WvOut, RtWvOut, and RtAudio class files, as well as the <TT>sineosc.cpp</TT> and <TT>sinewave.raw</TT> files.  You will also need to link to the DirectSound library (<TT>dsound.lib</TT>), select the multithreaded library, and provide the <TT>__WINDOWS_DS__</TT> and <TT>__LITTLE_ENDIAN__</TT> preprocessor definitions.
@@ -140,7 +147,7 @@ I have personally only worked with Visual C++ when compiling programs under wind
 
 \section rtvsnonrt "Realtime" vs. "Non-Realtime"
 
-Most of the Synthesis ToolKit classes are platform independent.  That means that they should compile on any reasonably current C++ compiler.  The functionality needed for realtime audio and MIDI input/output, as well as realtime control message acquistion, is inherently platform and operating-system (OS) <I>dependent</I>.  STK classes which require specific platform/OS support include RtAudio, RtWvOut, RtWvIn, RtDuplex, RtMidi, TcpWvIn, TcpWvOut, Socket, and Thread.  These classes currently can only be compiled on Linux, Irix, and Windows (except Windows NT) systems using the <TT>__LINUX_OSS__</TT>, <TT>__LINUX_ALSA__</TT>, <TT>__IRIX_AL__</TT>, or <TT>__WINDOWS_DS__</TT> preprocessor definitions.
+Most of the Synthesis ToolKit classes are platform independent.  That means that they should compile on any reasonably current C++ compiler.  The functionality needed for realtime audio and MIDI input/output, as well as realtime control message acquistion, is inherently platform and operating-system (OS) <I>dependent</I>.  STK classes which require specific platform/OS support include RtAudio, RtWvOut, RtWvIn, RtDuplex, RtMidi, TcpWvIn, TcpWvOut, Socket, and Thread.  These classes currently can only be compiled on Linux, Irix, Macintosh OS X, and Windows (except Windows NT) systems using the <TT>__LINUX_OSS__</TT>, <TT>__LINUX_ALSA__</TT>, <TT>__IRIX_AL__</TT>, <TT>__MACOSX_CORE__</TT>, or <TT>__WINDOWS_DS__</TT> preprocessor definitions.
 
 Without the "realtime" classes, it is still possible to read SKINI scorefiles for control input and to read and write to/from a variety of audio file formats (WAV, SND, AIFF, MAT-file, and RAW).  If compiling for a "little-endian" host processor, the <TT>__LITTLE_ENDIAN__</TT> preprocessor definition should be provided.
 

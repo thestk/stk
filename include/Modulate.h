@@ -49,7 +49,7 @@ class Modulate : public Stk
   MY_FLOAT lastOut() const;
 
  protected:
-  WaveLoop  *vibrato;
+  WaveLoop *vibrato;
   SubNoise *noise;
   OnePole  *filter;
   MY_FLOAT vibratoGain;

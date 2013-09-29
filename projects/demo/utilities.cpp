@@ -2,8 +2,9 @@
 //
 // Gary P. Scavone, 1999.
 
+#include <stdlib.h>
+#include <string.h>
 #include "utilities.h"
-#include "Messager.h"
 
 // STK Instrument Classes
 #include "Clarinet.h"
@@ -24,6 +25,7 @@
 #include "PercFlut.h"
 #include "BeeThree.h"
 #include "FMVoices.h"
+#include "VoicForm.h"
 #include "Moog.h"
 #include "Simple.h"
 #include "Drummer.h"
@@ -32,13 +34,13 @@
 #include "ModalBar.h"
 #include "Mesh2D.h"
 #include "Resonate.h"
+#include "Whistle.h"
 
-// STK WvOut classes
 #if defined(__STK_REALTIME__)
   #include "RtWvOut.h"
 #endif
 
-#define NUM_INSTS 26
+#define NUM_INSTS 28
 
 // The order of the following list is important.  The location of a particular
 // instrument in the list should correspond to that instrument's ProgramChange
@@ -46,14 +48,14 @@
 char insts[NUM_INSTS][10] = { "Clarinet", "BlowHole", "Saxofony", "Flute", "Brass",
                               "BlowBotl", "Bowed", "Plucked", "StifKarp", "Sitar", "Mandolin",
                               "Rhodey", "Wurley", "TubeBell", "HevyMetl", "PercFlut",
-                              "BeeThree", "FMVoices", "Moog", "Simple", "Drummer",
-                              "BandedWG", "Shakers", "ModalBar", "Mesh2D", "Resonate" };
+                              "BeeThree", "FMVoices", "VoicForm", "Moog", "Simple", "Drummer",
+                              "BandedWG", "Shakers", "ModalBar", "Mesh2D", "Resonate", "Whistle" };
 
 int voiceByNumber(int number, Instrmnt **instrument)
 {
   int temp = number;
   
-  if      (number==0)  *instrument = new Clarinet(10.0);
+  if     (number==0)  *instrument = new Clarinet(10.0);
   else if (number==1)  *instrument = new BlowHole(10.0);
   else if (number==2)  *instrument = new Saxofony(10.0);
   else if (number==3)  *instrument = new Flute(10.0);
@@ -73,14 +75,16 @@ int voiceByNumber(int number, Instrmnt **instrument)
   else if (number==16) *instrument = new BeeThree;
   else if (number==17) *instrument = new FMVoices;
 
-  else if (number==18) *instrument = new Moog();
-  else if (number==19) *instrument = new Simple();
-  else if (number==20) *instrument = new Drummer();
-  else if (number==21) *instrument = new BandedWG();
-  else if (number==22) *instrument = new Shakers();
-  else if (number==23) *instrument = new ModalBar();
-  else if (number==24) *instrument = new Mesh2D(10, 10);
-  else if (number==25) *instrument = new Resonate();
+  else if (number==18) *instrument = new VoicForm();
+  else if (number==19) *instrument = new Moog();
+  else if (number==20) *instrument = new Simple();
+  else if (number==21) *instrument = new Drummer();
+  else if (number==22) *instrument = new BandedWG();
+  else if (number==23) *instrument = new Shakers();
+  else if (number==24) *instrument = new ModalBar();
+  else if (number==25) *instrument = new Mesh2D(10, 10);
+  else if (number==26) *instrument = new Resonate();
+  else if (number==27) *instrument = new Whistle();
 
   else {
     printf("\nUnknown instrument or program change requested!\n");
@@ -113,15 +117,17 @@ void usage(char *function) {
   int i, j;
 
   printf("\nuseage: %s Instrument flag(s) \n", function);
-  printf("        where flag = -os <file name> for .snd audio output file,\n");
+  printf("        where flag = -s RATE to specify a sample rate,\n");
+  printf("        -n NUMBER specifies the number of voices to allocate,\n");
   printf("        -ow <file name> for .wav audio output file,\n");
+  printf("        -os <file name> for .snd audio output file,\n");
   printf("        -om <file name> for .mat audio output file,\n");
   printf("        -oa <file name> for .aif audio output file,\n");
 #if defined(__STK_REALTIME__)
   printf("        -or for realtime audio output,\n");
   printf("        -ip for realtime control input by pipe,\n");
   printf("         (won't work under Win95/98),\n");
-  printf("        -is for realtime control input by socket,\n");
+  printf("        -is <port> for realtime control input by socket,\n");
   printf("        -im for realtime control input by MIDI,\n");
 #endif
   printf("        and Instrument = one of these:\n");
@@ -145,9 +151,9 @@ int checkArgs(int numArgs, char *args[])
 {
   int w, i = 2, j = 0;
   int numOutputs = 0;
-  char flags[16] = "";
+  char flags[2][50] = {""};
 
-  if (numArgs < 3 || numArgs > 10) usage(args[0]);
+  if (numArgs < 3 || numArgs > 17) usage(args[0]);
 
   while (i < numArgs) {
     if (args[i][0] == '-') {
@@ -156,14 +162,23 @@ int checkArgs(int numArgs, char *args[])
              (args[i][2] == 'w') || (args[i][2] == 'm')
              || (args[i][2] == 'a') )
           numOutputs++;
+        flags[0][j] = 'o';
+        flags[1][j++] = args[i][2];
       }
       else if (args[i][1] == 'i') {
         if ( (args[i][2] != 's') && (args[i][2] != 'p') &&
              (args[i][2] != 'm') ) usage(args[0]);
+        flags[0][j] = 'i';
+        flags[1][j++] = args[i][2];
+      }
+      else if (args[i][1] == 's' && (i+1 < numArgs) && args[i+1][0] != '-' ) {
+        Stk::setSampleRate( atoi(args[i+1]) );
+        flags[0][j++] = 's';
+      }
+      else if (args[i][1] == 'n' && (i+1 < numArgs) && args[i+1][0] != '-' ) {
+        flags[0][j++] = 'n';
       }
       else usage(args[0]);
-      flags[j] = args[i][2];
-      j++;
     }
     i++;
   }
@@ -172,7 +187,7 @@ int checkArgs(int numArgs, char *args[])
   for (i=0; i<=j; i++) {
     w = i+1;
     while (w <= j) {
-      if (flags[i] == flags[w]) {
+      if (flags[0][i] == flags[0][w] && flags[1][i] == flags[1][w] ) {
         printf("\nError: Multiple command line flags of the same type specified.\n\n");
         usage(args[0]);
       }
@@ -186,10 +201,28 @@ int checkArgs(int numArgs, char *args[])
   return numOutputs;
 }
 
-int parseArgs(int numArgs, char *args[], WvOut **output)
+int countVoices(int nArgs, char *args[])
+{
+  int i = 2, nInstruments = 1;
+
+  while (i < nArgs) {
+    if ( strncmp( args[i], "-n", 2) == 0 ) {
+      if ( i+1 < nArgs && args[i+1][0] != '-' ) {
+        nInstruments = atoi( args[i+1] );
+        if ( nInstruments < 1 ) nInstruments = 1;
+      }
+    }
+    i++;
+  }
+
+  return nInstruments;
+}
+
+void parseArgs(int numArgs, char *args[], WvOut **output, Messager **messager)
 {
   int i = 2, j = 0;
   int inputMask = 0;
+  int port = -1;
   char fileName[256];
 
   while (i < numArgs) {
@@ -207,6 +240,9 @@ int parseArgs(int numArgs, char *args[], WvOut **output)
       case 's':
 #if defined(__STK_REALTIME__)
         inputMask |= STK_SOCKET;
+        // Check for an optional socket port argument.
+        if ((i+1 < numArgs) && args[i+1][0] != '-')
+          port = atoi(args[++i]);
         break;
 #else
         usage(args[0]);
@@ -230,7 +266,7 @@ int parseArgs(int numArgs, char *args[], WvOut **output)
 
       case 'r':
 #if defined(__STK_REALTIME__)
-        output[j] = (WvOut *) new RtWvOut();
+        output[j] = (WvOut *) new RtWvOut(2);
         j++;
         break;
 #else
@@ -284,5 +320,11 @@ int parseArgs(int numArgs, char *args[], WvOut **output)
     }
     i++;
   }
-  return inputMask;
+
+  // Instantiate the messager.
+  if ( inputMask & STK_SOCKET && port >= 0 )
+    *messager = new Messager( inputMask, port );
+  else
+    *messager = new Messager( inputMask );
+
 }

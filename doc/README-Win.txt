@@ -11,13 +11,13 @@ STK is currently distributed with Visual C++ 6.0 project and workspace files.  I
 
 IMPORTANT VC++ NOTE: When compiling "release" versions of STK programs, link to the release multithreaded library.  When compiling "debug" versions, link to the debug multithreaded library.  Compiler errors will result otherwise.  Also, the Microsoft folk are up to their old habits of trying to change standards.  The .NET compiler will complain about cerr for some reason.
 
-The STK realtime sound input capabilities under Windoze are only supported using the DirectSoundCapture API.  The latency is pretty horrendous, but what do you expect?  Also, there is a chance you don't have DirectSoundCapture support on your computer.  If not, you should download the DirectX 6.0 (or higher) runtime libraries from Microsoft's WWW site (http://www.microsoft.com/directx/download.asp) in order to run the pre-compiled STK executables for Windoze.  The last time I checked, there was no DirectSoundCapture support for WindowsNT ... you'll have to switch to Windows 2000 or XP.  I stopped supporting the WinMM audio output code with release 3.2.
+Both the DirectSound and Steinberg ASIO audio APIs are supported for realtime audio input/output.  The Visual C++ project files included with this distribution are configured to use the DirectSound API.  In order to use the ASIO API, it is necessary to change the preprocessor definition from __WINDOWS_DS__ to __WINDOWS_ASIO__, as well as include all the files in the /src/asio/ directory (i.e. asio.h, asio.cpp, ...).  If you have a good quality soundcard and a native ASIO driver (not emulated), you are likely to get much better input/output response using that.
 
-Realtime sound output under Windoze is supported using the DirectSound (dsound.lib) API. All new versions of WindowsXX come with the DirectSound library, but early versions did not.  If you have trouble running the distributed executables, then you probably don't have DirectSound installed on your system.  You can download the necessary DirectSound stuff from Microsoft's WWW pages (http://www.microsoft.com/directx/download.asp).
+When using the DirectSound API for audio input, latency is typically pretty horrendous (should we be surprised?).  Also, there is a slight chance you don't have DirectSoundCapture support on your computer.  If not, you should download the DirectX 6.0 (or higher) runtime libraries from Microsoft's WWW site (http://www.microsoft.com/directx/download.asp) in order to run the pre-compiled STK executables for Windoze.  The last time I checked, there was no DirectSoundCapture support for WindowsNT ... you'll have to switch to Windows 2000 or XP or use an ASIO driver.  I stopped supporting the WinMM audio output code with release 3.2.
 
 Realtime MIDI input is supported using the winmm.lib API.
 
-Visual C++ 6.0 workspaces have been created for the various STK projects.  Everything has already been configured for you.  The intermediate .obj files will be written to either the "release" or "debug" directories, but the executable files will be written to the main project directories (where they need to be for proper execution).  If you should somehow lose or hose the VC++ workspace file for a project, then you will have to do a LOT of configuring to recreate it ... it's probably easier just to download the distribution again from our WWW sites.  Anyway, for your benefit and mine, here is a list of things that need to be added to the various "Project Settings":
+Visual C++ 6.0 workspaces have been created for the various STK projects.  Everything has already been configured for you.  The intermediate .obj files will be written to either the "Release" or "Debug" directories, but the executable files will be written to the main project directories (where they need to be for proper execution).  If you should somehow lose or hose the VC++ workspace file for a project, then you will have to do a LOT of configuring to recreate it ... it's probably easier just to download the distribution again from our WWW sites.  Anyway, for your benefit and mine, here is a list of things that need to be added to the various "Project Settings":
 
 1. Under General: Set "Output files:" to <blank> (this will put the executable in the main project directory.
 
@@ -40,16 +40,22 @@ In order for socketing to work, it is necessary to have the TCP protocol install
 Finally, to use it all -
 
 
+WINDOWS XP/2000:
+
+There is a big advantage in using Windows XP/2000 over 95/98 with STK in that piping works, just as under unix.  Also, the scheduler in 2000/XP seems to be much better, so socketed messages don't get clumped together like they do in Windows 95/98.  Simply fire up a script file (ex. StkDemo.bat) by either double-clicking on it or typing it within a shell.
+
+
+WINDOWS 95/98:
+
 PLAY SKINI SCOREFILES IN REALTIME:
 
 	demo Clarinet -or < scores/streetsf.ski
-
 
 USE TCL/TK GUIs FOR REALTIME CONTROL:
 
 1. Open a DOS console window and start syntmono (eg. demo Clarinet -or -is).
 
-2. Double click on a Tcl/Tk file in TCLSpecs (eg. TCLPhys.tcl) from the Windows Explorer to start the GUI.  Select the "communications" menu item and "Socket" and make the connection.
+2. Double click on a Tcl/Tk file in the tcl/ subdirectory of the demo directory (eg. Demo.tcl) from the Windows Explorer to start the GUI.  Select the "communications" menu item and "Socket" and make the connection.
 
 3. Start moving the sliders to control the instrument.
 
@@ -61,13 +67,8 @@ USE REALTIME MIDI INPUT FOR CONTROL:
    This assumes you already have MIDI setup correctly for your computer.
 
 
-WINDOWS 2000/XP:
-
-There is a big advantage in using Windows 2000/XP over 95/98 with STK in that piping works, just as under unix.  Also, the scheduler in 2000/XP seems to be much better, so socketed messages don't get clumped together like they do in Windows 95/98.  The script files (ex. Demo) can be renamed with .bat extensions, allowing them to work in the same way as in unix systems.
-
-
 WINDOWS NT ONLY:
 
-Realtime piping seems to work under WindowsNT in much the same way as on Unix platforms.  Thus, it is possible to pipe realtime control data to syntmono under WindowsNT as well.
+Realtime piping seems to work under WindowsNT in much the same way as on Unix platforms.  Thus, it is possible to pipe realtime control data to syntmono under WindowsNT as well.  Note, however, that the DirectSoundCapture API does not exist for WindowsNT, so it is necessary to use an ASIO audio driver and the STK ASIO support.
 
 

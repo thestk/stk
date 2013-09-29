@@ -29,7 +29,7 @@ Simple :: Simple()
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  loop = new WaveLoop( strcat(file,"rawwaves/impuls10.raw"), TRUE );
+  loop = new WaveLoop( strcat(file,"impuls10.raw"), TRUE );
 
   filter = new OnePole(0.5);
   noise = new Noise;

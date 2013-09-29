@@ -39,7 +39,7 @@ ModalBar :: ModalBar()
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  wave = new WvIn( strcat(file,"rawwaves/marmstk1.raw"), TRUE );
+  wave = new WvIn( strcat(file,"marmstk1.raw"), TRUE );
   wave->setRate((MY_FLOAT) 0.5 * 22050.0 / Stk::sampleRate() );
 
   // Set the resonances for preset 0 (marimba).

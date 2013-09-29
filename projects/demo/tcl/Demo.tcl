@@ -31,114 +31,145 @@ menu .menu.communication -tearoff 0
 .menu.communication add radio -label "Socket" -variable commtype \
     -value "socket" -command { setComm }
 
-# Configure instrument change menu
+# Configure instrument change menu.  Use a unique number for each
+# voice.  The STK program change value is found by dividing by 100,
+# while the remainder corresponds to within-class preset values.
 menu .menu.instrument -tearoff 0
-.menu add cascade -label "Instrument" -menu .menu.instrument \
+.menu add cascade -label "Instruments" -menu .menu.instrument \
     -underline 0
 .menu.instrument add radio -label "Clarinet" -variable patchnum \
     -value 0 -command { patchChange $patchnum }
 .menu.instrument add radio -label "BlowHole" -variable patchnum \
-    -value 1 -command { patchChange $patchnum }
+    -value 100 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Saxofony" -variable patchnum \
-    -value 2 -command { patchChange $patchnum }
+    -value 200 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Flute" -variable patchnum \
-    -value 3 -command { patchChange $patchnum }
+    -value 300 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Brass" -variable patchnum \
-    -value 4 -command { patchChange $patchnum }
+    -value 400 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Blown Bottle" -variable patchnum \
-    -value 5 -command { patchChange $patchnum }
+    -value 500 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Bowed String" -variable patchnum \
-    -value 6 -command { patchChange $patchnum }
+    -value 600 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Plucked String" -variable patchnum \
-    -value 7 -command { patchChange $patchnum }
+    -value 700 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Stiff String" -variable patchnum \
-    -value 8 -command { patchChange $patchnum }
+    -value 800 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Sitar" -variable patchnum \
-    -value 9 -command { patchChange $patchnum }
+    -value 900 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Mandolin" -variable patchnum \
-    -value 10 -command { patchChange $patchnum }
+    -value 1000 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Rhodey" -variable patchnum \
-    -value 11 -command { patchChange $patchnum }
+    -value 1100 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Wurley" -variable patchnum \
-    -value 12 -command { patchChange $patchnum }
+    -value 1200 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Tubular Bell" -variable patchnum \
-    -value 13 -command { patchChange $patchnum }
+    -value 1300 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Heavy Metal" -variable patchnum \
-    -value 14 -command { patchChange $patchnum }
+    -value 1400 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Percussive Flute" -variable patchnum \
-    -value 15 -command { patchChange $patchnum }
+    -value 1500 -command { patchChange $patchnum }
 .menu.instrument add radio -label "B3 Organ" -variable patchnum \
-    -value 16 -command { patchChange $patchnum }
-.menu.instrument add radio -label "FM Voices" -variable patchnum \
-    -value 17 -command { patchChange $patchnum }
+    -value 1600 -command { patchChange $patchnum }
+.menu.instrument add radio -label "FM Voice" -variable patchnum \
+    -value 1700 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Formant Voice" -variable patchnum \
+    -value 1800 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Moog" -variable patchnum \
-    -value 18 -command { patchChange $patchnum }
+    -value 1900 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Simple" -variable patchnum \
-    -value 19 -command { patchChange $patchnum }
+    -value 2000 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Drum Kit" -variable patchnum \
-    -value 20 -command { patchChange $patchnum }
+    -value 2100 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Banded Bar" -variable patchnum \
-    -value 21 -command { patchChange $patchnum }
+    -value 2200 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Banded Marimba" -variable patchnum \
-    -value 22 -command { patchChange $patchnum }
+    -value 2201 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Banded Glass" -variable patchnum \
-    -value 23 -command { patchChange $patchnum }
+    -value 2202 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Banded Bowl" -variable patchnum \
-    -value 24 -command { patchChange $patchnum }
+    -value 2203 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Maraca" -variable patchnum \
-    -value 25 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Sekere" -variable patchnum \
-    -value 26 -command { patchChange $patchnum }
+    -value 2300 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Cabasa" -variable patchnum \
-    -value 27 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Bamboo" -variable patchnum \
-    -value 28 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Waterdrop" -variable patchnum \
-    -value 29 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Tambourine" -variable patchnum \
-    -value 30 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Sleigh Bell" -variable patchnum \
-    -value 31 -command { patchChange $patchnum }
+    -value 2301 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Sekere" -variable patchnum \
+    -value 2302 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Guiro" -variable patchnum \
-    -value 32 -command { patchChange $patchnum }
+    -value 2303 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Waterdrop" -variable patchnum \
+    -value 2304 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Bamboo" -variable patchnum \
+    -value 2305 -command { patchChange $patchnum } \
+    -columnbreak 1
+
+.menu.instrument add radio -label "Tambourine" -variable patchnum \
+    -value 2306 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Sleigh Bell" -variable patchnum \
+    -value 2307 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Sticks" -variable patchnum \
-    -value 33 -command { patchChange $patchnum }
+    -value 2308 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Crunch" -variable patchnum \
-    -value 34 -command { patchChange $patchnum }
+    -value 2309 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Wrench" -variable patchnum \
-    -value 35 -command { patchChange $patchnum }
+    -value 2310 -command { patchChange $patchnum }
 .menu.instrument add radio -label "SandPaper" -variable patchnum \
-    -value 36 -command { patchChange $patchnum }
+    -value 2311 -command { patchChange $patchnum }
 .menu.instrument add radio -label "CokeCan" -variable patchnum \
-    -value 37 -command { patchChange $patchnum }
+    -value 2312 -command { patchChange $patchnum }
+.menu.instrument add radio -label "NeXT Mug" -variable patchnum \
+    -value 2313 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Penny" -variable patchnum \
+    -value 2314 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Nickle" -variable patchnum \
+    -value 2315 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Dime" -variable patchnum \
+    -value 2316 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Quarter" -variable patchnum \
+    -value 2317 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Franc" -variable patchnum \
+    -value 2318 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Peso" -variable patchnum \
+    -value 2319 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Big Rocks" -variable patchnum \
+    -value 2320 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Little Rocks" -variable patchnum \
+    -value 2321 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Tuned Bamboo" -variable patchnum \
+    -value 2322 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Marimba" -variable patchnum \
-    -value 38 -command { patchChange $patchnum }
+    -value 2400 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Vibraphone" -variable patchnum \
-    -value 39 -command { patchChange $patchnum }
+    -value 2401 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Agogo Bell" -variable patchnum \
-    -value 40 -command { patchChange $patchnum }
+    -value 2402 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Wood 1" -variable patchnum \
-    -value 41 -command { patchChange $patchnum }
+    -value 2403 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Reso" -variable patchnum \
-    -value 42 -command { patchChange $patchnum }
+    -value 2404 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Wood 2" -variable patchnum \
-    -value 43 -command { patchChange $patchnum }
+    -value 2405 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Beats" -variable patchnum \
-    -value 44 -command { patchChange $patchnum }
+    -value 2406 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Two Fixed" -variable patchnum \
+    -value 2407 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Clump" -variable patchnum \
+    -value 2408 -command { patchChange $patchnum }
 .menu.instrument add radio -label "2D Mesh" -variable patchnum \
-    -value 45 -command { patchChange $patchnum }
+    -value 2500 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Resonate" -variable patchnum \
-    -value 46 -command { patchChange $patchnum }
+    -value 2600 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Police Whistle" -variable patchnum \
+    -value 2700 -command { patchChange $patchnum }
 
 . configure -menu .menu
 
 # Configure message box
-label .note -font {Times 10 normal} -background white \
-    -foreground darkred -relief raised -height 3 \
+label .note -font {Times 12 normal} -background white \
+    -foreground darkred -relief raised \
     -wraplength 300 -width 60 \
     -text "Select instruments using the menu above. Impulsively excited instruments can be plucked/struck using the NoteOn button or the spacebar."
 pack .note -padx 5 -pady 10
-
 
 # Configure bitmap display
 if {[file isdirectory bitmaps]} {
@@ -249,33 +280,13 @@ proc noteOff {pitchVal pressVal} {
 proc patchChange {value} {
     global outID bitmappath cont1 cont2 cont4 cont11 oldpatch press pitch temp
     if {$value!=$oldpatch} {
-        if {$value < 21} {
-            puts $outID [format "ProgramChange    0.0  1  %2i" $value]
-            flush $outID
-        }
-        if {($value > 20 && $value < 25) && ($oldpatch < 21 || $oldpatch > 24)} {
-            puts $outID [format "ProgramChange    0.0  1  21" $value]
-            flush $outID
-        }
-        if {($value > 24 && $value < 38) && ($oldpatch < 25 || $oldpatch > 37)} {
-            puts $outID [format "ProgramChange    0.0  1  22"]
-            flush $outID
-        }
-        if {($value > 37 && $value < 45) && ($oldpatch < 38 || $oldpatch > 44)} {
-            puts $outID [format "ProgramChange    0.0  1  23"]
-            flush $outID
-        }
-        if {$value == 45} {
-            puts $outID [format "ProgramChange    0.0  1  24"]
-            flush $outID
-        }
-        if {$value == 46} {
-            puts $outID [format "ProgramChange    0.0  1  25"]
-            flush $outID
-        }
+        set program [expr $value / 100]
+        puts $outID [format "ProgramChange    0.0  1  %2i" $program]
+        flush $outID
+
         # This stuff below sets up the correct bitmaps, slider labels, and control
         # parameters.
-        if {$value==0}	{ # Clarinet
+        if {$program==0}	{ # Clarinet
             .pretty config -bitmap @$bitmappath/Klar.xbm
             .left.bPressure config -state normal -label "Breath Pressure"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -292,7 +303,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
-        if {$value==1}	{ # BlowHole
+        if {$program==1}	{ # BlowHole
             .pretty config -bitmap @$bitmappath/Klar.xbm
             .left.bPressure config -state normal -label "Breath Pressure"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -309,7 +320,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
-        if {$value==2}	{ # Saxofony
+        if {$program==2}	{ # Saxofony
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
             .left.bPressure config -state normal -label "Breath Pressure"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -326,7 +337,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
-        if {$value==3}	{ # Flute
+        if {$program==3}	{ # Flute
             .pretty config -bitmap @$bitmappath/KFloot.xbm
             .left.bPressure config -state normal -label "Breath Pressure"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -343,7 +354,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
-        if {$value==4}	{ # Brass
+        if {$program==4}	{ # Brass
             .pretty config -bitmap @$bitmappath/KHose.xbm
             .left.bPressure config -state normal -label "Breath Pressure"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -362,7 +373,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 11 $cont11
             puts $outID [format "NoteOn           0.0  1  %3.2f  %3.2f" $pitch $press]
         }
-        if {$value==5}	{ # Bottle
+        if {$program==5}	{ # Bottle
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
             .left.bPressure config -state normal -label "Breath Pressure"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -377,7 +388,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
-        if {$value==6}	{ # Bowed String
+        if {$program==6}	{ # Bowed String
             .pretty config -bitmap @$bitmappath/KFiddl.xbm
             .left.bPressure config -state normal -label "Volume"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -394,7 +405,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
-        if {$value==7}	{ # Yer Basic Pluck
+        if {$program==7}	{ # Yer Basic Pluck
             .pretty config -bitmap @$bitmappath/KPluk.xbm
             .left.bPressure config -state normal -label "Pluck Strength"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -403,7 +414,7 @@ proc patchChange {value} {
             .right.cont11 config -state disabled -label "Disabled"
             .right.cont1 config -state disabled -label "Disabled"
         }
-        if {$value==8}	{ # Stiff String
+        if {$program==8}	{ # Stiff String
             .pretty config -bitmap @$bitmappath/KPluk.xbm
             .left.bPressure config -state normal -label "Pluck Strength"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -418,7 +429,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
-        if {$value==9}	{ # Sitar
+        if {$program==9}	{ # Sitar
             .pretty config -bitmap @$bitmappath/KPluk.xbm
             .left.bPressure config -state normal -label "Pluck Strength"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -427,7 +438,7 @@ proc patchChange {value} {
             .right.cont11 config -state disabled -label "Disabled"
             .right.cont1 config -state disabled -label "Disabled"
         }
-        if {$value==10}	{ # Mandolin
+        if {$program==10}	{ # Mandolin
             .pretty config -bitmap @$bitmappath/KPluk.xbm
             .left.bPressure config -state normal -label "Microphone Position and Gain"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -446,7 +457,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 11 $cont11
             changePress $press
         }
-        if {$value>=11 && $value <=16}	{ # FM Instruments
+        if {$program>=11 && $program <=16}	{ # FM Instruments
             .pretty config -bitmap @$bitmappath/KFMod.xbm
             .left.bPressure config -state normal -label "ADSR 2 and 4 Targets"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -455,16 +466,23 @@ proc patchChange {value} {
             .right.cont11 config -state normal -label "Vibrato Rate"
             .right.cont1 config -state normal -label "Vibrato Amount"
         }
-        if {$value==17}	{ # FM Voices
+        if {$program>=17 && $program <=18}	{ # FM Voices or Voice Formants
             .pretty config -bitmap @$bitmappath/KVoiceFM.xbm
             .left.bPressure config -state normal -label "Loudness (Spectral Tilt)"
             .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state normal -label "Formant Q"
             .right.cont4 config -state normal -label "Vowel (Bass, Tenor, Alto, Sop.)"
             .right.cont11 config -state normal -label "Vibrato Rate"
             .right.cont1 config -state normal -label "Vibrato Amount"
+            if {$program == 17} {
+                .left.cont2 config -state normal -label "Formant Q"
+            }
+            if {$program == 18} {
+                .left.cont2 config -state normal -label "Voiced/Unvoiced Mix"
+            }
+            set cont1 26.0
+            printWhatz "ControlChange    0.0  1 " 1  $cont1
         }
-        if {$value==18}	{ # Moog
+        if {$program==19}	{ # Moog
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
             .left.bPressure config -state normal -label "Volume"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -477,7 +495,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
-        if {$value==19}	{ # Simple
+        if {$program==20}	{ # Simple
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
             .left.bPressure config -state normal -label "Volume"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -491,7 +509,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
-        if {$value==20}	{ # Drum Kit
+        if {$program==21}	{ # Drum Kit
             # Given the vastly different interface for the Drum Kit, we open
             # a new GUI popup window with the appropriate controls and lock
             # focus there until the user hits the "Close" button.  We then
@@ -560,7 +578,7 @@ proc patchChange {value} {
                     patchChange $patchnum}
             pack $p.close -side bottom -padx 5 -pady 10
         }
-        if {$value>=21 && $value<=24 }	{ # Banded Waveguide Instruments
+        if {$program==22}	{ # Banded Waveguide Instruments
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
             .left.bPressure config -state normal -label "Strike/Bow Velocity"
             .left.pitch config -state normal -label "MIDI Note Number"
@@ -568,12 +586,7 @@ proc patchChange {value} {
             .right.cont4 config -state normal -label "Bow Motion"
             .right.cont11 config -state normal -label "Integration Control"
             .right.cont1 config -state normal -label "Mode Resonance"
-            switch $value {
-                21 {set preset 0}
-                22 {set preset 1}
-                23 {set preset 2}
-                24 {set preset 3}
-            }
+            set preset [expr $value-2200]
             set press 100.0
             set cont1 127.0
             set cont2 0.0
@@ -586,7 +599,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 11 $cont11
             flush $outID
         }
-        if {$value>=25 && $value <=37}	{ # Shakers
+        if {$program==23}	{ # Shakers
             .pretty config -bitmap @$bitmappath/phism.xbm
             .left.bPressure config -state normal -label "Shake Energy"
             .left.pitch config -state disabled -label "Disabled"
@@ -594,41 +607,35 @@ proc patchChange {value} {
             .right.cont4 config -state normal -label "Number of Objects"
             .right.cont11 config -state normal -label "(<--High) Damping (Low-->)"
             .right.cont1 config -state normal -label "Resonance Center Frequency"
-            switch $value {
-                25 {
-                    set pitch 0
+            set pitch [expr $value-2300]
+            switch $pitch {
+                0 {
                     .pretty config -bitmap @$bitmappath/maraca.xbm
                 }
-                26 {set pitch 2}
-                27 {
-                    set pitch 1
+                1 {
                     .pretty config -bitmap @$bitmappath/cabasa.xbm
                 }
-                28 {
-                    set pitch 5
-                    .pretty config -bitmap @$bitmappath/bamboo.xbm
-                }
-                29 {set pitch 4}
-                30 {
-                    set pitch 6
-                    .pretty config -bitmap @$bitmappath/tambourine.xbm
-                }
-                31 {
-                    set pitch 7
-                    .pretty config -bitmap @$bitmappath/sleighbell.xbm
-                }
-                32 {
-                    set pitch 3
+                3 {
                     .pretty config -bitmap @$bitmappath/guiro.xbm
                 }
-                33 {set pitch 8}
-                34 {set pitch 9}
-                35 {
-                    set pitch 10
+                5 {
+                    .pretty config -bitmap @$bitmappath/bamboo.xbm
+                }
+                6 {
+                    .pretty config -bitmap @$bitmappath/tambourine.xbm
+                }
+                7 {
+                    .pretty config -bitmap @$bitmappath/sleighbell.xbm
+                }
+                10 {
                     .pretty config -bitmap @$bitmappath/rachet.xbm
                 }
-                36 {set pitch 11}
-                37 {set pitch 12}
+                12 {
+                    .pretty config -bitmap @$bitmappath/cokecan.xbm
+                }
+                22 {
+                    .pretty config -bitmap @$bitmappath/bamboo.xbm
+                }
             }
             set cont1 64.0
             set cont2 64.0
@@ -641,27 +648,19 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 11 $cont11
             flush $outID
         }
-        if {$value>=38 && $value<=44 }	{ # Modal Instruments
+        if {$program==24}	{ # Modal Instruments
             .pretty config -bitmap @$bitmappath/KModal.xbm
             .left.bPressure config -state normal -label "Strike Vigor"
             .left.pitch config -state normal -label "MIDI Note Number"
             .left.cont2 config -state normal -label "Stick Hardness"
             .right.cont4 config -state normal -label "Stick Position"
-            if {$value == 39} {
+            set preset [expr $value-2400]
+            if {$preset == 1} {
                 .right.cont11 config -state normal -label "Vibrato Gain"
             } else {
                 .right.cont11 config -state disabled -label "Disabled"
             }
             .right.cont1 config -state normal -label "Direct Stick Mix"
-            switch $value {
-                38 {set preset 0}
-                39 {set preset 1}
-                40 {set preset 2}
-                41 {set preset 3}
-                42 {set preset 4}
-                43 {set preset 5}
-                44 {set preset 6}
-            }
             set cont1 20.0
             set cont2 64.0
             set cont4 64.0
@@ -673,7 +672,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 11 $cont11
             flush $outID
         }
-        if { $value==45 }	{ # Mesh2D
+        if { $program==25 }	{ # Mesh2D
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
             .left.bPressure config -state normal -label "Strike Vigor"
             .left.pitch config -state disabled -label "Disabled"
@@ -691,7 +690,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 11 $cont11
             flush $outID
         }
-        if { $value==46 }	{ # Resonate
+        if { $program==26 }	{ # Resonate
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
             .left.bPressure config -state normal -label "Gain"
             .left.pitch config -state disabled -label "Disabled"
@@ -703,6 +702,24 @@ proc patchChange {value} {
             set cont4 120.0
             set cont11 64.0
             set cont1 0.0
+            printWhatz "ControlChange    0.0  1 " 4  $cont4
+            printWhatz "ControlChange    0.0  1 " 11 $cont11
+            printWhatz "ControlChange    0.0  1 " 1  $cont1
+            printWhatz "ControlChange    0.0  1 " 2  $cont2
+            flush $outID
+        }
+        if { $program==27 }	{ # Whistle
+            .pretty config -bitmap @$bitmappath/prcFunny.xbm
+            .left.bPressure config -state normal -label "Gain"
+            .left.pitch config -state normal -label "Whistle Pitch"
+            .left.cont2 config -state normal -label "Blowing Modulation"
+            .right.cont4 config -state normal -label "Noise Gain"
+            .right.cont11 config -state normal -label "Fipple Frequency Modulation"
+            .right.cont1 config -state normal -label "Fipple Gain Modulation"
+            set cont2 64.0
+            set cont4 40.0
+            set cont11 64.0
+            set cont1 64.0
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
             printWhatz "ControlChange    0.0  1 " 1  $cont1
@@ -735,7 +752,7 @@ proc printWhatz {tag value1 value2 } {
 
 proc changePress {value} {
     global outID patchnum
-    if { $patchnum<7 || $patchnum>9 } {
+    if { $patchnum<700 || $patchnum>900 } {
       puts $outID [format "AfterTouch       0.0  1  %3.2f" $value]
       flush $outID
     }
@@ -743,7 +760,7 @@ proc changePress {value} {
 
 proc changePitch {value} {
     global outID
-    puts $outID [format "PitchBend        0.0  1  %3.2f" $value]
+    puts $outID [format "PitchChange      0.0  1  %3.2f" $value]
     flush $outID
 }
 

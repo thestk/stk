@@ -2,7 +2,7 @@ The Synthesis ToolKit in C++ (STK)
 
 By Perry R. Cook and Gary P. Scavone, 1995-2002.
 
-Please read the file README for more general STK information.
+Please read the file README and INSTALL for more general STK information.
 
 Realtime support for Linux is currently using either the Open Sound System (OSS) or the Advanced Linux Sound Architecture (ALSA) sound and MIDI APIs.  The free version of OSS works as well (and in some cases better than the commercial OSS version ... such as with my Maestro 2e chipset).  In general, the ALSA drivers also seem to perform well.  You can read more about ALSA at http://www.alsa-project.org/.  ALSA is open source and holds great promise for audio under Linux.  The API is selected during compilation using either the __LINUX_ALSA__ or __LINUX_OSS__ definitions.
 

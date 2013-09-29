@@ -23,10 +23,10 @@
 class JCRev : public Reverb
 {
  public:
-  // Class constructor taking a T60 decay time argument.
+  //! Class constructor taking a T60 decay time argument.
   JCRev(MY_FLOAT T60);
 
-  // Class destructor.
+  //! Class destructor.
   ~JCRev();
 
   //! Reset and clear all internal state.

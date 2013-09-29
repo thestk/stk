@@ -23,6 +23,7 @@ struct SKINISpec skini_msgs[__SK_MaxMsgTypes_] =
  {"ChannelPressure"  ,__SK_ChannelPressure_,               SK_DBL,    NOPE},
  {"PitchWheel"       ,     __SK_PitchWheel_,               SK_DBL,    NOPE},
  {"PitchBend"        ,      __SK_PitchBend_,               SK_DBL,    NOPE},
+ {"PitchChange"      ,    __SK_PitchChange_,               SK_DBL,    NOPE},
                                                                  
  {"Clock"            ,          __SK_Clock_,                 NOPE,    NOPE},
  {"Undefined"        ,                  249,                 NOPE,    NOPE},

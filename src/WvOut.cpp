@@ -667,14 +667,16 @@ void WvOut :: writeData( unsigned long frames )
   if ( dataType == STK_SINT8 ) {
     signed char sample;
     for ( unsigned long k=0; k<frames*channels; k++ ) {
-      sample = (signed char) (data[k]*127.0);
+      sample = (signed char) (data[k] * 127.0 );
+      //sample = ((signed char) (( data[k] + 1.0 ) * 127.5 + 0.5)) - 128;
       if ( fwrite(&sample, 1, 1, fd) != 1 ) goto error;
     }
   }
   else if ( dataType == STK_SINT16 ) {
     SINT16 sample;
     for ( unsigned long k=0; k<frames*channels; k++ ) {
-      sample = (SINT16) (data[k]*32767.0);
+      sample = (SINT16) (data[k] * 32767.0);
+      //sample = ((SINT16) (( data[k] + 1.0 ) * 32767.5 + 0.5)) - 32768;
       if ( byteswap ) swap16( (unsigned char *)&sample );
       if ( fwrite(&sample, 2, 1, fd) != 1 ) goto error;
     }
@@ -682,7 +684,8 @@ void WvOut :: writeData( unsigned long frames )
   else if ( dataType == STK_SINT32 ) {
     SINT32 sample;
     for ( unsigned long k=0; k<frames*channels; k++ ) {
-      sample = (SINT32) (data[k]*2147483647.0);
+      sample = (SINT32) (data[k] * 2147483647.0);
+      //sample = ((SINT32) (( data[k] + 1.0 ) * 2147483647.5 + 0.5)) - 2147483648;
       if ( byteswap ) swap32( (unsigned char *)&sample );
       if ( fwrite(&sample, 4, 1, fd) != 1 ) goto error;
     }

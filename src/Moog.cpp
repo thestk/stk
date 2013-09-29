@@ -30,11 +30,11 @@ Moog :: Moog()
   char file[128];
   strcpy(temp, RAWWAVE_PATH);
   strcpy(file,temp);
-  attacks[0] = new WvIn( strcat(file,"rawwaves/mandpluk.raw"), TRUE );
+  attacks[0] = new WvIn( strcat(file,"mandpluk.raw"), TRUE );
   strcpy(file,temp);
-  loops[0] = new WaveLoop( strcat(file,"rawwaves/impuls20.raw"), TRUE );
+  loops[0] = new WaveLoop( strcat(file,"impuls20.raw"), TRUE );
   strcpy(file,temp);
-  loops[1] = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE ); // vibrato
+  loops[1] = new WaveLoop( strcat(file,"sinewave.raw"), TRUE ); // vibrato
   loops[1]->setFrequency((MY_FLOAT) 6.122);
 
   filters[0] = new FormSwep();

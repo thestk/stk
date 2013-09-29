@@ -37,13 +37,9 @@
 #include <string.h>
 #include <iostream.h>
 
-#define STK_MIDI        0x0001
-#define STK_PIPE        0x0002
-#define STK_SOCKET      0x0004
+int socket_port = 2001;
 
-#define STK_SOCKET_PORT 2001
-
-Messager :: Messager(int inputMask)
+Messager :: Messager(int inputMask, int port)
 {
   sources = inputMask;
   rtDelta = RT_BUFFER_SIZE;
@@ -62,8 +58,20 @@ Messager :: Messager(int inputMask)
   // server.
   if ( sources ) {
 
-    if ( sources & STK_MIDI )
-      midi = new RtMidi();
+    if ( sources & STK_MIDI ) {
+      // Attempt to open a MIDI device, but don't throw an exception
+      // if other input sources are specified.
+      try {
+        midi = new RtMidi();
+      }
+      catch (StkError &exception) {
+        if ( sources == STK_MIDI ) {
+          throw exception;
+        }
+        // Disable the MIDI input and keep going.
+        sources &= ~STK_MIDI;
+      }
+    }
     
     // If STK_PIPE is not specified, let the users know they can exit
     // the program via the console if necessary.
@@ -71,9 +79,10 @@ Messager :: Messager(int inputMask)
       cout << "\nType `Exit<cr>' to quit.\n" << endl;
 
     sources |= STK_SOCKET;
-    soket = new Socket(STK_SOCKET_PORT);
+    socket_port = port;
+    soket = new Socket(port);
     if (inputMask & STK_SOCKET)
-      printf("\nSocket server listening for connection(s) on port %d ...\n\n", STK_SOCKET_PORT);
+      printf("\nSocket server listening for connection(s) on port %d ...\n\n", port);
 
     nSockets = 0;
     maxfd = 0;
@@ -300,7 +309,7 @@ bool Messager :: socketMessage()
   return false;
 }
 
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   #include <errno.h> 
 
@@ -320,7 +329,7 @@ bool Messager :: readSocket(int fd)
   nextMessage = (messageIndex + nMessages) % MAX_MESSAGES;
   memset(message[nextMessage], 0, MESSAGE_LENGTH);
 
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if ( defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__) )
   errno = 0;
   while (bufferSize != -1 && errno != EAGAIN) {
 #elif defined(__OS_WINDOWS__)
@@ -356,7 +365,7 @@ THREAD_RETURN THREAD_TYPE stdinHandler(void *)
 
   Socket *s;
   try {
-    s = new Socket( STK_SOCKET_PORT, "localhost" );
+    s = new Socket( socket_port, "localhost" );
   }
   catch (StkError &) {
     fprintf(stderr, "Messager: Couldn't create stdin input thread!\n");

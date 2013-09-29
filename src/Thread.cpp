@@ -21,7 +21,7 @@ Thread :: Thread()
 
 Thread :: ~Thread()
 {
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   pthread_cancel(thread);
   pthread_join(thread, NULL);
@@ -37,7 +37,7 @@ Thread :: ~Thread()
 bool Thread :: start( THREAD_FUNCTION routine, void * ptr )
 {
   bool result = false;
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   if ( pthread_create(&thread, NULL, *routine, ptr) == 0 )
     result = true;
@@ -54,7 +54,7 @@ bool Thread :: start( THREAD_FUNCTION routine, void * ptr )
 bool Thread :: wait( long milliseconds )
 {
   bool result = false;
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   pthread_cancel(thread);
   pthread_join(thread, NULL);
@@ -77,7 +77,7 @@ bool Thread :: wait( long milliseconds )
 
 void Thread :: test(void)
 {
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   pthread_testcancel();
 
@@ -88,7 +88,7 @@ void Thread :: test(void)
 Mutex :: Mutex()
 {
 
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   pthread_mutex_init(&mutex, NULL);
 
@@ -101,7 +101,7 @@ Mutex :: Mutex()
 
 Mutex :: ~Mutex()
 {
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   pthread_mutex_destroy(&mutex);
 
@@ -114,7 +114,7 @@ Mutex :: ~Mutex()
 
 void Mutex :: lock()
 {
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   pthread_mutex_lock(&mutex);
 
@@ -127,7 +127,7 @@ void Mutex :: lock()
 
 void Mutex :: unlock()
 {
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   pthread_mutex_unlock(&mutex);
 

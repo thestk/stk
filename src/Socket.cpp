@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   #include <sys/socket.h>
   #include <sys/types.h>
@@ -30,6 +30,7 @@
   #include <netdb.h>
   #include <unistd.h>
   #include <fcntl.h>
+  #include <netinet/in.h>
 
 #elif defined(__OS_WINDOWS__)
 
@@ -103,7 +104,7 @@ Socket :: Socket(int port, const char *hostname )
 
 Socket :: ~Socket()
 {
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   ::close( soket );
 
@@ -179,7 +180,7 @@ void Socket :: setBlocking( int socket, bool enable )
 {
   if ( !isValid( socket ) ) return;
 
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   int tmp = ::fcntl(socket, F_GETFL, 0);
   if ( tmp >= 0 )
@@ -204,7 +205,7 @@ void Socket :: close( int socket )
 {
   if ( !isValid( socket ) ) return;
 
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__))
+#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
   ::close( socket );
 

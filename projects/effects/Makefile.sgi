@@ -4,43 +4,40 @@
 # the core STK classes.
 STK_PATH = ../../src/
 
-O_FILES		=	$(STK_PATH)Stk.o $(STK_PATH)Envelope.o $(STK_PATH)Filter.o \
-						$(STK_PATH)DelayL.o $(STK_PATH)Delay.o $(STK_PATH)SKINI.o \
-						$(STK_PATH)WvIn.o $(STK_PATH)Reverb.o $(STK_PATH)PRCRev.o \
-						$(STK_PATH)JCRev.o $(STK_PATH)NRev.o $(STK_PATH)RtAudio.o \
-						$(STK_PATH)RtMidi.o $(STK_PATH)RtDuplex.o $(STK_PATH)Messager.o \
-						$(STK_PATH)WaveLoop.o $(STK_PATH)Thread.o $(STK_PATH)Socket.o
+OBJECTS	=	$(STK_PATH)Stk.o $(STK_PATH)Envelope.o $(STK_PATH)Filter.o \
+					$(STK_PATH)DelayL.o $(STK_PATH)Delay.o $(STK_PATH)SKINI.o \
+					$(STK_PATH)WvIn.o $(STK_PATH)Reverb.o $(STK_PATH)PRCRev.o \
+					$(STK_PATH)JCRev.o $(STK_PATH)NRev.o $(STK_PATH)RtAudio.o \
+					$(STK_PATH)RtMidi.o $(STK_PATH)RtDuplex.o $(STK_PATH)Messager.o \
+					$(STK_PATH)WaveLoop.o $(STK_PATH)Thread.o $(STK_PATH)Socket.o
 
 O_LOCAL_FILES = Echo.o PitShift.o Chorus.o 
 
 RM = /bin/rm 
 
-INSTR = effects
+PROGRAMS = effects
 CC = CC -O2 -D__IRIX_AL__ # -g -fullwarn -D__SGI_CC__
 LIBRARY = -L/usr/sgitcl/lib -laudio -lmd -lm -lpthread
 INCLUDE = -I../../include/
 
 .SUFFIXES:	.cpp
-.cpp.o: $(O_FILES)
+.cpp.o: $(OBJECTS)
 	$(CC) $(INCLUDE) -c -o $@ $< 
 
-all: $(INSTR)
+all: $(PROGRAMS)
 
-effects: effects.cpp $(O_FILES) $(O_LOCAL_FILES)
-	$(CC) -o effects effects.cpp $(O_FILES) $(O_LOCAL_FILES) $(LIBRARY) $(INCLUDE) 
+effects: effects.cpp $(OBJECTS) $(O_LOCAL_FILES)
+	$(CC) -o effects effects.cpp $(OBJECTS) $(O_LOCAL_FILES) $(LIBRARY) $(INCLUDE) 
 
 clean : 
 	rm *.o
 	rm $(STK_PATH)*.o
-	rm $(INSTR)
-
-cleanIns : 
-	rm $(INSTR)
+	rm $(PROGRAMS)
 
 strip : 
-	strip $(INSTR)
+	strip $(PROGRAMS)
 
-# $(O_FILES) :
+# Project specific objects:
 
 Echo.o: Echo.cpp
 	$(CC) $(INCLUDE) -c Echo.cpp

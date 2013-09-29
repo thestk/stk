@@ -1,17 +1,31 @@
 /*! \page system System Requirements
 
-<B>General</B>
+<B>General:</B>
 <UL>
 <LI>A MIDI interface to use MIDI input controls. (NOTE: This may be built into the soundcard on your computer.)</LI>
 <LI><A HREF="http://dev.scriptics.com">Tcl/Tk</A> version 8.0 or higher to use the simple Tcl/Tk GUIs provided with the STK distribution (available free over the WWW for all supported realtime platforms).</LI>
 </UL>
-<B>Linux (specific)</B>
+
+<B>Linux (specific):</B>
 <UL>
 <LI>A soundcard to use realtime audio input/output capabilities.  In order to use the <I><B>effects</B></I> project, the soundcard and drivers must support full duplex mode.</LI>
 <LI><A HREF="http://www.opensound.com">OSS</A> or <A HREF="http://www.alsa-project.org/">ALSA</A> device drivers for realtime sound output and MIDI input.</LI>
 </UL>
 
-<B>Windows95/98/2000/XP (specific)</B>
+<B>Macintosh OS X (specific):</B>
+<UL>
+<LI>A C++ compiler does not ship by default with OS X.  It is necessary to download the Developer Kit from the Apple WWW site in order to compile STK.</LI>
+<LI>The tcl/tk interpreter does not ship by default with OS X, but must be downloaded from the internet.  Once installed, it is suggested that a link be made to the executable from a standard search path (/usr/bin/wish).  In any event, it will not be possible to use the supplied startup scripts in the demo directory (i.e. StkDemo.bat) because the tcl/tk script startup sequence is slightly different than for all the other systems.  Assuming you have made the link mentioned above, the STK demo program and tcl/tk script can be started by typing:
+
+\code
+  wish tcl/Demo.tcl | demo Clarinet -or -ip
+\endcode
+
+Initial tests have shown somewhat poor response between changes made in the tcl/tk script and the resulting audio updates.</LI>
+
+</UL>
+
+<B>Windows95/98/2000/XP (specific):</B>
 <UL>
 <LI>A soundcard to use realtime audio input/output capabilities.  In order to use the <I><B>effects</B></I> project, the soundcard and drivers must support full duplex mode.</LI>
 <LI><A HREF="http://www.microsoft.com/directx/">DirectX</A> 5.0 (or higher) runtime libraries to use the precompiled binaries.</LI>
@@ -19,9 +33,9 @@
 <LI>For compiling the source (if not already in your system): <UL><LI><A HREF="Misc/dsound.h">dsound.h</A> header file (DirectX 6.1) - put somewhere in your header search path</LI><LI><A HREF="Misc/dsound.lib">dsound.lib</A> library file (DirectX 6.1) - put somewhere in your library search path</LI></UL></LI>
 </UL>
 
-<B>WindowsNT (specific)</B>
+<B>WindowsNT (specific):</B>
 <UL>
-<LI>STK is no longer supported under WindowsNT because DirectX support for NT is minimal.  Unless DirectX 5.0 or higher becomes available for NT, STK won't work.</LI>
+<LI>DirectX support for NT is inadequate, so it is not possible to use STK under WindowsNT with realtime DirectX support.  It may be possible to use STK under WindowsNT with realtime ASIO support, though this has not been tested.</LI>
 </UL>
 
 <P>

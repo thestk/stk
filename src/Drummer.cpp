@@ -125,7 +125,6 @@ void Drummer :: noteOn(MY_FLOAT instrument, MY_FLOAT amplitude)
     // Concatenate the STK RAWWAVE_PATH to the rawwave file
     char path[128];
     strcpy(path, RAWWAVE_PATH);
-    strcat(path, "rawwaves/");
     strcat(path, waveNames[genMIDIMap[noteNum]]);
     waves[nSounding-1] = new WvIn(path, TRUE);
     if (Stk::sampleRate() != 22050.0)

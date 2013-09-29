@@ -43,7 +43,7 @@ class PitShift : public Stk
   MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
 
  protected:  
-  Delay *delayLine[2];
+  DelayL *delayLine[2];
   MY_FLOAT lastOutput;
   MY_FLOAT delay[2];
   MY_FLOAT env[2];

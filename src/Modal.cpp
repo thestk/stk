@@ -41,7 +41,7 @@ Modal :: Modal(int modes)
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE);
+  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE);
 
   // Set some default values.
   vibrato->setFrequency( 6.0 );

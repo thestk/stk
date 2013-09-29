@@ -29,6 +29,7 @@ DelayA :: DelayA()
 {
   this->setDelay( 0.5 );
   apInput = 0.0;
+  doNextOut = true;
 }
 
 DelayA :: DelayA(MY_FLOAT theDelay, long maxDelay)
@@ -45,6 +46,7 @@ DelayA :: DelayA(MY_FLOAT theDelay, long maxDelay)
 
   inPoint = 0;
   this->setDelay(theDelay);
+  doNextOut = true;
 }
 
 DelayA :: ~DelayA()
@@ -95,6 +97,18 @@ void DelayA :: setDelay(MY_FLOAT theDelay)
     ((MY_FLOAT) 1.0 + alpha);         // coefficient for all pass
 }
 
+MY_FLOAT DelayA :: nextOut(void)
+{
+  if ( doNextOut ) {
+    // Do allpass interpolation delay.
+    nextOutput = -coeff * outputs[0];
+    nextOutput += apInput + (coeff * inputs[outPoint]);
+    doNextOut = false;
+  }
+
+  return nextOutput;
+}
+
 MY_FLOAT DelayA :: tick(MY_FLOAT sample)
 {
   inputs[inPoint++] = sample;
@@ -103,15 +117,13 @@ MY_FLOAT DelayA :: tick(MY_FLOAT sample)
   if (inPoint == length)
     inPoint -= length;
 
-  // Take delay-line output and increment modulo length.
-  MY_FLOAT temp = inputs[outPoint++];
+  outputs[0] = nextOut();
+  doNextOut = true;
+
+  // Save the allpass input and increment modulo length.
+  apInput = inputs[outPoint++];
   if (outPoint == length)
     outPoint -= length;
-
-  // Do allpass interpolation delay.
-  outputs[0] = -coeff * outputs[0];
-  outputs[0] += apInput + (coeff * temp);
-  apInput = temp;
 
   return outputs[0];
 }

@@ -25,10 +25,10 @@
 class NRev : public Reverb
 {
  public:
-  // Class constructor taking a T60 decay time argument.
+  //! Class constructor taking a T60 decay time argument.
   NRev(MY_FLOAT T60);
 
-  // Class destructor.
+  //! Class destructor.
   ~NRev();
 
   //! Reset and clear all internal state.

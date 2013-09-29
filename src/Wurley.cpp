@@ -43,10 +43,10 @@ Wurley :: Wurley()
   for ( i=0; i<4; i++ )
     strcpy( files[i], RAWWAVE_PATH);
 
-  strcat(files[0], "rawwaves/sinewave.raw");
-  strcat(files[1], "rawwaves/sinewave.raw");
-  strcat(files[2], "rawwaves/sinewave.raw");
-  strcat(files[3], "rawwaves/fwavblnk.raw");
+  strcat(files[0], "sinewave.raw");
+  strcat(files[1], "sinewave.raw");
+  strcat(files[2], "sinewave.raw");
+  strcat(files[3], "fwavblnk.raw");
 
   for ( i=0; i<4; i++ )
     waves[i] = new WaveLoop( files[i], TRUE );

@@ -112,16 +112,16 @@ MY_FLOAT Delay :: energy(void) const
 MY_FLOAT Delay :: contentsAt(long tapDelay) const
 {
   long i = tapDelay;
-  if (i < 1) {
+  if (i < 0) {
     cerr << "Delay: contentsAt(" << tapDelay << ") too small!" << endl;
-    i=1;
+    i = 0;
   }
   else if (i > delay) {
     cerr << "Delay: contentsAt(" << tapDelay << ") too big!" << endl;
     i = (long) delay;
   }
 
-  long tap = inPoint - tapDelay;
+  long tap = inPoint - i;
   if (tap < 0) // Check for wraparound.
     tap += length;
 
@@ -131,6 +131,11 @@ MY_FLOAT Delay :: contentsAt(long tapDelay) const
 MY_FLOAT Delay :: lastOut(void) const
 {
   return Filter::lastOut();
+}
+
+MY_FLOAT Delay :: nextOut(void) const
+{
+  return inputs[outPoint];
 }
 
 MY_FLOAT Delay :: tick(MY_FLOAT sample)

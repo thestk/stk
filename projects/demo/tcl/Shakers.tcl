@@ -209,6 +209,8 @@ proc changePress {value} {
     flush $outID
 }
 
+eval patchChange $patchnum
+
 # Socket connection procedure
 set d .socketdialog
 

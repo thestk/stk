@@ -41,13 +41,16 @@ Brass :: Brass(MY_FLOAT lowestFrequency)
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE );
+  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
   vibrato->setFrequency( 6.137 );
   vibratoGain = 0.0;
 
   this->clear();
 	maxPressure = (MY_FLOAT) 0.0;
   lipTarget = 0.0;
+
+  // Necessary to initialize variables.
+  setFrequency( 220.0 );
 }
 
 Brass :: ~Brass()

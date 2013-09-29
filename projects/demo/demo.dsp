@@ -207,6 +207,10 @@ SOURCE=..\..\src\ModalBar.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\Modulate.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\Moog.cpp
 # End Source File
 # Begin Source File
@@ -228,6 +232,10 @@ SOURCE=..\..\src\OneZero.cpp
 # Begin Source File
 
 SOURCE=..\..\src\PercFlut.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Phonemes.cpp
 # End Source File
 # Begin Source File
 
@@ -299,6 +307,10 @@ SOURCE=..\..\src\Simple.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\SingWave.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\Sitar.cpp
 # End Source File
 # Begin Source File
@@ -311,11 +323,19 @@ SOURCE=..\..\src\Socket.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\Sphere.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\StifKarp.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\Stk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\SubNoise.cpp
 # End Source File
 # Begin Source File
 
@@ -339,7 +359,23 @@ SOURCE=.\utilities.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\Vector3D.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Voicer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\VoicForm.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\WaveLoop.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Whistle.cpp
 # End Source File
 # Begin Source File
 
@@ -475,6 +511,10 @@ SOURCE=..\..\include\ModalBar.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\Modulate.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\Moog.h
 # End Source File
 # Begin Source File
@@ -496,6 +536,10 @@ SOURCE=..\..\include\OneZero.h
 # Begin Source File
 
 SOURCE=..\..\include\PercFlut.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\Phonemes.h
 # End Source File
 # Begin Source File
 
@@ -567,6 +611,10 @@ SOURCE=..\..\include\Simple.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\SingWave.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\Sitar.h
 # End Source File
 # Begin Source File
@@ -576,6 +624,10 @@ SOURCE=..\..\include\SKINI.h
 # Begin Source File
 
 SOURCE=..\..\include\Socket.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\Sphere.h
 # End Source File
 # Begin Source File
 
@@ -611,7 +663,19 @@ SOURCE=.\utilities.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\Vector3D.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\Voicer.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\WaveLoop.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\Whistle.h
 # End Source File
 # Begin Source File
 

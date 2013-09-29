@@ -42,7 +42,7 @@ Flute :: Flute(MY_FLOAT lowestFrequency)
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE );
+  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
   vibrato->setFrequency( 5.925 );
 
   this->clear();
@@ -57,6 +57,7 @@ Flute :: Flute(MY_FLOAT lowestFrequency)
   jetRatio = (MY_FLOAT) 0.32;
 
 	maxPressure = (MY_FLOAT) 0.0;
+  lastFrequency = 220.0;
 }
 
 Flute :: ~Flute()
@@ -184,7 +185,7 @@ void Flute :: controlChange(int number, MY_FLOAT value)
   }
 
   if (number == __SK_JetDelay_) // 2
-    this->setJetDelay( 0.08 + (0.48 * norm) );
+    this->setJetDelay( (MY_FLOAT) (0.08 + (0.48 * norm)) );
   else if (number == __SK_NoiseLevel_) // 4
     noiseGain = ( norm * 0.4);
   else if (number == __SK_ModFrequency_) // 11

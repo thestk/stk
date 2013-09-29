@@ -27,6 +27,7 @@
 
 DelayL :: DelayL()
 {
+  doNextOut = true;
 }
 
 DelayL :: DelayL(MY_FLOAT theDelay, long maxDelay)
@@ -43,6 +44,7 @@ DelayL :: DelayL(MY_FLOAT theDelay, long maxDelay)
 
   inPoint = 0;
   this->setDelay(theDelay);
+  doNextOut = true;
 }
 
 DelayL :: ~DelayL()
@@ -82,26 +84,36 @@ MY_FLOAT DelayL :: getDelay(void) const
   return delay;
 }
 
+MY_FLOAT DelayL :: nextOut(void)
+{
+  if ( doNextOut ) {
+    // First 1/2 of interpolation
+    nextOutput = inputs[outPoint] * omAlpha;
+    // Second 1/2 of interpolation
+    if (outPoint+1 < length)
+      nextOutput += inputs[outPoint+1] * alpha;
+    else
+      nextOutput += inputs[0] * alpha;
+    doNextOut = false;
+  }
+
+  return nextOutput;
+}
+
 MY_FLOAT DelayL :: tick(MY_FLOAT sample)
 {
   inputs[inPoint++] = sample;
 
-  // Check for end condition
+  // Increment input pointer modulo length.
   if (inPoint == length)
     inPoint -= length;
 
-  // First 1/2 of interpolation
-  outputs[0] = inputs[outPoint++] * omAlpha;
-  // Check for end condition
-  if (outPoint < length) {
-    // Second 1/2 of interpolation
-    outputs[0] += inputs[outPoint] * alpha;
-  }                                          
-  else { // if at end ...
-    // Second 1/2 of interpolation
-    outputs[0] += inputs[0] * alpha;
-    outPoint -= length;                             
-  }
+  outputs[0] = nextOut();
+  doNextOut = true;
+
+  // Increment output pointer modulo length.
+  if (++outPoint >= length)
+    outPoint -= length;
 
   return outputs[0];
 }

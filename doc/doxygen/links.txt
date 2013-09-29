@@ -1,0 +1,11 @@
+/*! \page links Miscellaneous Links
+
+- <A HREF="http://www-ccrma.stanford.edu/~gary/rtaudio/">The RtAudio WWW site</A>
+
+- <A HREF="http://kern.humdrum.net/">Kern Scores: A Library of Electronic Musical Scores</A> (with automatic conversion to SKINI format)
+
+- <A HREF="http://www.music.columbia.edu/PeRColate/">PeRColate: A Port of STK for Max/MSP</A>
+
+- <A HREF="http://mathmorphs.swiki.net/32/">A Partial Port of STK to Squeak</A>
+
+*/

@@ -2,6 +2,23 @@ The Synthesis ToolKit in C++ (STK)
 
 By Perry R. Cook and Gary P. Scavone, 1995-2002.
 
+v4.1: (8 October 2002)
+- Macintosh OS X support added
+- new Whistle class
+- added Voicer, SingWave, and VoicForm classes
+- improvements/fixes to the banded waveguide instruments
+- demo program now uses Voicer, allowing polyphony
+- demo tcl/tk scripts changed to use SKINI PitchChange instead of PitchBend
+- demo program response to PitchBend modified to octave up/down
+- several RtAudio fixes and improvements (OS X and Windows ASIO support added)
+- added nextOut() method to Delay classes
+- documentation fixes for Reverb classes
+- RAWWAVE_PATH changed to include the "rawwave" directory
+- "configure" support added for unix systems
+- multivoice flag (-n NUMBER) added as command line option to demo program
+- sample rate flag added as command line option to all example programs
+- socket port number added as command line option to all example programs
+
 v4.0: (April 2002)
 - new documentation and tutorial
 - several new instruments, including Saxofony, BlowBotl, and StifKarp

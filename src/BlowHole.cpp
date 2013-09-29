@@ -86,7 +86,7 @@ BlowHole :: BlowHole(MY_FLOAT lowestFrequency)
   // Concatenate the STK RAWWAVE_PATH to the rawwave file
   char file[128];
   strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"rawwaves/sinewave.raw"), TRUE );
+  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
   vibrato->setFrequency((MY_FLOAT) 5.735);
   outputGain = (MY_FLOAT) 1.0;
   noiseGain = (MY_FLOAT) 0.2;
@@ -234,11 +234,11 @@ void BlowHole :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Clarinet: Control value less than zero!" << endl;
+    cerr << "BlowHole: Control value less than zero!" << endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Clarinet: Control value greater than 128.0!" << endl;
+    cerr << "BlowHole: Control value greater than 128.0!" << endl;
   }
 
   if (number == __SK_ReedStiffness_) // 2

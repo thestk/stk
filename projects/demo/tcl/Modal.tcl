@@ -10,7 +10,7 @@ set commtype "stdout"
 set preset 0
 
 # Configure main window
-wm title . "STK Modal Bar GUI"
+wm title . "STK Modal Bar Interface"
 wm iconname . "modal"
 . config -bg black
 
@@ -194,7 +194,7 @@ proc changePress {value} {
 
 proc changePitch {value} {
     global outID
-    puts $outID [format "PitchBend        0.0  1  %3.2f" $value]
+    puts $outID [format "PitchChange      0.0  1  %3.2f" $value]
     flush $outID
 }
 
