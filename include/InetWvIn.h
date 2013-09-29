@@ -31,7 +31,7 @@ namespace stk {
     data type for the incoming stream is signed 16-bit integers,
     though any of the defined StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -141,7 +141,7 @@ inline StkFloat InetWvIn :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= data_.channels() ) {
-    errorString_ << "InetWvIn::lastOut(): channel argument and data stream are incompatible!";
+    oStream_ << "InetWvIn::lastOut(): channel argument and data stream are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

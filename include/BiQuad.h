@@ -13,7 +13,7 @@ namespace stk {
     Methods are provided for creating a resonance or notch in the
     frequency response while maintaining a constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -59,6 +59,8 @@ public:
     filter frequency response has a resonance at the given \e
     frequency.  The closer the poles are to the unit-circle (\e radius
     close to one), the narrower the resulting resonance width.
+    An unstable filter will result for \e radius >= 1.0.  The
+    \e frequency value should be between zero and half the sample rate.
   */
   void setResonance( StkFloat frequency, StkFloat radius, bool normalize = false );
 
@@ -66,8 +68,9 @@ public:
   /*!
     This method determines the filter coefficients corresponding to
     two complex-conjugate zeros with the given \e frequency (in Hz)
-    and \e radius from the z-plane origin.  No filter normalization
-    is attempted.
+    and \e radius from the z-plane origin.  No filter normalization is
+    attempted.  The \e frequency value should be between zero and half
+    the sample rate.  The \e radius value should be positive.
   */
   void setNotch( StkFloat frequency, StkFloat radius );
 
@@ -130,7 +133,7 @@ inline StkFrames& BiQuad :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "BiQuad::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "BiQuad::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -155,7 +158,7 @@ inline StkFrames& BiQuad :: tick( StkFrames& iFrames, StkFrames& oFrames, unsign
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "BiQuad::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "BiQuad::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

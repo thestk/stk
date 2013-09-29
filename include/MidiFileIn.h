@@ -40,10 +40,10 @@ class MidiFileIn : public Stk
   ~MidiFileIn();
 
   //! Return the MIDI file format (0, 1, or 2).
-  int getFileFormat() const;
+  int getFileFormat() const { return format_; };
 
   //! Return the number of tracks in the MIDI file.
-  unsigned int getNumberOfTracks() const;
+  unsigned int getNumberOfTracks() const { return nTracks_; };
 
   //! Return the MIDI file division value from the file header.
   /*!
@@ -51,7 +51,7 @@ class MidiFileIn : public Stk
       MIDI File Specification.  In particular, if the MSB is set, the
       file uses time-code representations for delta-time values.
   */
-  int getDivision() const;
+  int getDivision() const { return division_; };
 
   //! Move the specified track event reader to the beginning of its track.
   /*!

@@ -20,19 +20,21 @@ namespace stk {
     FileRead currently supports uncompressed WAV,
     AIFF/AIFC, SND (AU), MAT-file (Matlab), and
     STK RAW file formats.  Signed integer (8-,
-    16-, and 32-bit) and floating-point (32- and
+    16-, 24-, and 32-bit) and floating-point (32- and
     64-bit) data types are supported.  Compressed
     data types are not supported.
 
-    STK RAW files have no header and are assumed
-    to contain a monophonic stream of 16-bit
-    signed integers in big-endian byte order at a
-    sample rate of 22050 Hz.  MAT-file data should
-    be saved in an array with each data channel
-    filling a matrix row.  The sample rate for
-    MAT-files is assumed to be 44100 Hz.
+    STK RAW files have no header and are assumed to
+    contain a monophonic stream of 16-bit signed
+    integers in big-endian byte order at a sample
+    rate of 22050 Hz.  MAT-file data should be saved
+    in an array with each data channel filling a
+    matrix row.  The sample rate for MAT-files should
+    be specified in a variable named "fs".  If no
+    such variable is found, the sample rate is
+    assumed to be 44100 Hz.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -77,6 +79,9 @@ public:
   //! Return the number of audio channels in the file.
   unsigned int channels( void ) const { return channels_; };
 
+  //! Return the data format of the file.
+  StkFormat format( void ) const { return dataType_; };
+
   //! Return the file sample rate in Hz.
   /*!
     WAV, SND, and AIF formatted files specify a sample rate in
@@ -117,6 +122,9 @@ protected:
 
   // Get MAT-file header information.
   bool getMatInfo( const char *fileName );
+
+  // Helper function for MAT-file parsing.
+  bool findNextMatArray( SINT32 *chunkSize, SINT32 *rows, SINT32 *columns, SINT32 *nametype );
 
   FILE *fd_;
   bool byteswap_;

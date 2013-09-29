@@ -27,6 +27,11 @@ namespace stk {
  
 Blit:: Blit( StkFloat frequency )
 {
+  if ( frequency <= 0.0 ) {
+    oStream_ << "Blit::Blit: argument (" << frequency << ") must be positive!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
   nHarmonics_ = 0;
   this->setFrequency( frequency );
   this->reset();
@@ -44,10 +49,10 @@ void Blit :: reset()
 
 void Blit :: setFrequency( StkFloat frequency )
 {
-#if defined(_STK_DEBUG_)
-  errorString_ << "Blit::setFrequency: frequency = " << frequency << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
+  if ( frequency <= 0.0 ) {
+    oStream_ << "Blit::setFrequency: argument (" << frequency << ") must be positive!";
+    handleError( StkError::WARNING ); return;
+  }
 
   p_ = Stk::sampleRate() / frequency;
   rate_ = PI / p_;
@@ -68,11 +73,6 @@ void Blit :: updateHarmonics( void )
   }
   else
     m_ = 2 * nHarmonics_ + 1;
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Blit::updateHarmonics: nHarmonics_ = " << nHarmonics_ << ", m_ = " << m_ << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 } // stk namespace

@@ -13,7 +13,7 @@ namespace stk {
     over time from one frequency setting to another.  It provides
     methods for controlling the sweep rate and target frequency.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -35,12 +35,14 @@ class FormSwep : public Filter
     This method determines the filter coefficients corresponding to
     two complex-conjugate poles with the given \e frequency (in Hz)
     and \e radius from the z-plane origin.  The filter zeros are
-    placed at z = 1, z = -1, and the coefficients are then normalized to
-    produce a constant unity gain (independent of the filter \e gain
-    parameter).  The resulting filter frequency response has a
+    placed at z = 1, z = -1, and the coefficients are then normalized
+    to produce a constant unity gain (independent of the filter \e
+    gain parameter).  The resulting filter frequency response has a
     resonance at the given \e frequency.  The closer the poles are to
     the unit-circle (\e radius close to one), the narrower the
-    resulting resonance width.
+    resulting resonance width.  An unstable filter will result for \e
+    radius >= 1.0.  The \e frequency value should be between zero and
+    half the sample rate.
   */
   void setResonance( StkFloat frequency, StkFloat radius );
 
@@ -152,7 +154,7 @@ inline StkFrames& FormSwep :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "FormSwep::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "FormSwep::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -169,7 +171,7 @@ inline StkFrames& FormSwep :: tick( StkFrames& iFrames, StkFrames& oFrames, unsi
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "FormSwep::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "FormSwep::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

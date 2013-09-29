@@ -13,7 +13,7 @@ namespace stk {
     provided for creating a resonance in the frequency response while
     maintaining a nearly constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -53,8 +53,10 @@ class TwoPole : public Filter
     resulting filter frequency response has a resonance at the given
     \e frequency.  The closer the poles are to the unit-circle (\e
     radius close to one), the narrower the resulting resonance width.
-    An unstable filter will result for \e radius >= 1.0.  For a better
-    resonance filter, use a BiQuad filter. \sa BiQuad filter class
+    An unstable filter will result for \e radius >= 1.0.  The
+    \e frequency value should be between zero and half the sample rate.
+    For a better resonance filter, use a BiQuad filter. \sa BiQuad
+    filter class
   */
   void setResonance(StkFloat frequency, StkFloat radius, bool normalize = false);
 
@@ -105,7 +107,7 @@ inline StkFrames& TwoPole :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "TwoPole::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "TwoPole::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -127,7 +129,7 @@ inline StkFrames& TwoPole :: tick( StkFrames& iFrames, StkFrames& oFrames, unsig
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "TwoPole::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "TwoPole::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

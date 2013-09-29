@@ -11,7 +11,7 @@
     of simultaneous voices) via a #define in the
     Drummer.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -69,21 +69,9 @@ Drummer :: ~Drummer( void )
 
 void Drummer :: noteOn( StkFloat instrument, StkFloat amplitude )
 {
-#if defined(_STK_DEBUG_)
-  errorString_ << "Drummer::NoteOn: instrument = " << instrument << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
-
-  StkFloat gain = amplitude;
-  if ( amplitude > 1.0 ) {
-    errorString_ << "Drummer::noteOn: amplitude parameter is greater than 1.0 ... setting to 1.0!";
-    handleError( StkError::WARNING );
-    gain = 1.0;
-  }
-  else if ( amplitude < 0.0 ) {
-    errorString_ << "Drummer::noteOn: amplitude parameter is less than 0.0 ... doing nothing!";
-    handleError( StkError::WARNING );
-    return;
+  if ( amplitude < 0.0 || amplitude > 1.0 ) {
+    oStream_ << "Drummer::noteOn: amplitude parameter is out of bounds!";
+    handleError( StkError::WARNING ); return;
   }
 
   // Yes, this is tres kludgey.
@@ -100,8 +88,8 @@ void Drummer :: noteOn( StkFloat instrument, StkFloat amplitude )
         nSounding_++;
       }
       waves_[iWave].reset();
-      filters_[iWave].setPole( 0.999 - (gain * 0.6) );
-      filters_[iWave].setGain( gain );
+      filters_[iWave].setPole( 0.999 - (amplitude * 0.6) );
+      filters_[iWave].setGain( amplitude );
       break;
     }
   }
@@ -123,22 +111,24 @@ void Drummer :: noteOn( StkFloat instrument, StkFloat amplitude )
     }
     soundOrder_[iWave] = nSounding_ - 1;
     soundNumber_[iWave] = noteNumber;
-    std::cout << "iWave = " << iWave << ", nSounding = " << nSounding_ << ", soundOrder[] = " << soundOrder_[iWave] << std::endl;
+    //std::cout << "iWave = " << iWave << ", nSounding = " << nSounding_ << ", soundOrder[] = " << soundOrder_[iWave] << std::endl;
 
     // Concatenate the STK rawwave path to the rawwave file
     waves_[iWave].openFile( (Stk::rawwavePath() + waveNames[ genMIDIMap[ noteNumber ] ]).c_str(), true );
     if ( Stk::sampleRate() != 22050.0 )
       waves_[iWave].setRate( 22050.0 / Stk::sampleRate() );
-    filters_[iWave].setPole( 0.999 - (gain * 0.6) );
-    filters_[iWave].setGain( gain );
+    filters_[iWave].setPole( 0.999 - (amplitude * 0.6) );
+    filters_[iWave].setGain( amplitude );
   }
 
+  /*
 #if defined(_STK_DEBUG_)
-  errorString_ << "Drummer::noteOn: number sounding = " << nSounding_ << ", notes: ";
-  for ( int i=0; i<nSounding_; i++ ) errorString_ << soundNumber_[i] << "  ";
-  errorString_ << '\n';
-  handleError( StkError::DEBUG_WARNING );
+  oStream_ << "Drummer::noteOn: number sounding = " << nSounding_ << ", notes: ";
+  for ( int i=0; i<nSounding_; i++ ) oStream_ << soundNumber_[i] << "  ";
+  oStream_ << '\n';
+  handleError( StkError::WARNING );
 #endif
+  */
 }
 
 void Drummer :: noteOff( StkFloat amplitude )

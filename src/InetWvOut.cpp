@@ -17,13 +17,14 @@
     data type is signed 16-bit integers but any of the defined
     StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
 #include "InetWvOut.h"
 #include "TcpClient.h"
 #include "UdpSocket.h"
+#include <sstream>
 
 namespace stk {
 
@@ -53,7 +54,7 @@ void InetWvOut :: connect( int port, Socket::ProtocolType protocol, std::string 
     disconnect();
 
   if ( nChannels == 0 ) {
-    errorString_ << "InetWvOut::connect: the channel argument (" << nChannels << ") must be greater than zero!";
+    oStream_ << "InetWvOut::connect: the channel argument must be greater than zero!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -62,7 +63,7 @@ void InetWvOut :: connect( int port, Socket::ProtocolType protocol, std::string 
   else if ( format == STK_SINT32 || format == STK_FLOAT32 ) dataBytes_ = 4;
   else if ( format == STK_FLOAT64 ) dataBytes_ = 8;
   else {
-    errorString_ << "InetWvOut::connect: unknown data type specified (" << format << ").";
+    oStream_ << "InetWvOut::connect: unknown data type specified.";
     handleError( StkError::FUNCTION_ARGUMENT );
   } 
   dataType_ = format;
@@ -161,7 +162,7 @@ void InetWvOut :: writeData( unsigned long frames )
 
   long bytes = dataBytes_ * samples;
   if ( soket_->writeBuffer( (const void *)buffer_, bytes, 0 ) < 0 ) {
-    errorString_ << "InetWvOut: connection to socket server failed!";
+    oStream_ << "InetWvOut: connection to socket server failed!";
     handleError( StkError::PROCESS_SOCKET );
   }
 }
@@ -182,8 +183,8 @@ void InetWvOut :: tick( const StkFloat sample )
 {
   if ( !soket_ || !soket_->isValid( soket_->id() ) ) {
 #if defined(_STK_DEBUG_)
-    errorString_ << "InetWvOut::tick(): a valid socket connection does not exist!";
-    handleError( StkError::DEBUG_WARNING );
+    oStream_ << "InetWvOut::tick(): a valid socket connection does not exist!";
+    handleError( StkError::DEBUG_PRINT );
 #endif
     return;
   }
@@ -201,15 +202,15 @@ void InetWvOut :: tick( const StkFrames& frames )
 {
   if ( !soket_ || !soket_->isValid( soket_->id() ) ) {
 #if defined(_STK_DEBUG_)
-    errorString_ << "InetWvOut::tick(): a valid socket connection does not exist!";
-    handleError( StkError::DEBUG_WARNING );
+    oStream_ << "InetWvOut::tick(): a valid socket connection does not exist!";
+    handleError( StkError::DEBUG_PRINT );
 #endif
     return;
   }
 
 #if defined(_STK_DEBUG_)
   if ( data_.channels() != frames.channels() ) {
-    errorString_ << "InetWvOut::tick(): incompatible channel value in StkFrames argument!";
+    oStream_ << "InetWvOut::tick(): incompatible channel value in StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

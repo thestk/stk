@@ -14,7 +14,7 @@ namespace stk {
     specified \e rate.  It also responds to simple \e keyOn and \e
     keyOff messages, ramping to 1.0 on keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -38,9 +38,16 @@ class Envelope : public Generator
   void keyOff( void ) { this->setTarget( 0.0 ); };
 
   //! Set the \e rate.
+  /*!
+    The \e rate must be positive (though a value of 0.0 is allowed).
+   */
   void setRate( StkFloat rate );
 
-  //! Set the \e rate based on a time duration.
+  //! Set the \e rate based on a positive time duration (seconds).
+  /*!
+    The \e rate is calculated such that the envelope will ramp from
+    a value of 0.0 to 1.0 in the specified time duration.
+   */
   void setTime( StkFloat time );
 
   //! Set the target value.
@@ -78,45 +85,6 @@ class Envelope : public Generator
   int state_;
 };
 
-inline void Envelope :: setRate( StkFloat rate )
-{
-#if defined(_STK_DEBUG_)
-  if ( rate < 0.0 ) {
-    errorString_ << "Envelope::setRate: negative rates not allowed ... correcting!";
-    handleError( StkError::WARNING );
-    rate_ = -rate;
-  }
-  else
-#endif
-    rate_ = rate;
-}
-
-inline void Envelope :: setTime( StkFloat time )
-{
-#if defined(_STK_DEBUG_)
-  if ( time < 0.0 ) {
-    errorString_ << "Envelope::setTime: negative times not allowed ... correcting!";
-    handleError( StkError::WARNING );
-    rate_ = 1.0 / ( -time * Stk::sampleRate() );
-  }
-  else
-#endif
-    rate_ = 1.0 / ( time * Stk::sampleRate() );
-}
-
-inline void Envelope :: setTarget( StkFloat target )
-{
-  target_ = target;
-  if ( value_ != target_ ) state_ = 1;
-}
-
-inline void Envelope :: setValue( StkFloat value )
-{
-  state_ = 0;
-  target_ = value;
-  value_ = value;
-}
-
 inline StkFloat Envelope :: tick( void )
 {
   if ( state_ ) {
@@ -144,7 +112,7 @@ inline StkFrames& Envelope :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "Envelope::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Envelope::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

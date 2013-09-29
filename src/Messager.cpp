@@ -28,7 +28,7 @@
     This class is primarily for use in STK example programs but it is
     generic enough to work in many other contexts.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -85,11 +85,11 @@ bool Messager :: setScoreFile( const char* filename )
 {
   if ( data_.sources ) {
     if ( data_.sources == STK_FILE ) {
-      errorString_ << "Messager::setScoreFile: already reading a scorefile!";
+      oStream_ << "Messager::setScoreFile: already reading a scorefile!";
       handleError( StkError::WARNING );
     }
     else {
-      errorString_ << "Messager::setScoreFile: already reading realtime control input ... cannot do scorefile input too!";
+      oStream_ << "Messager::setScoreFile: already reading realtime control input ... cannot do scorefile input too!";
       handleError( StkError::WARNING );
     }
     return false;
@@ -141,20 +141,20 @@ void Messager :: pushMessage( Skini::Message& message )
 bool Messager :: startStdInput()
 {
   if ( data_.sources == STK_FILE ) {
-    errorString_ << "Messager::startStdInput: already reading a scorefile ... cannot do realtime control input too!";
+    oStream_ << "Messager::startStdInput: already reading a scorefile ... cannot do realtime control input too!";
     handleError( StkError::WARNING );
     return false;
   }
 
   if ( data_.sources & STK_STDIN ) {
-    errorString_ << "Messager::startStdInput: stdin input thread already started.";
+    oStream_ << "Messager::startStdInput: stdin input thread already started.";
     handleError( StkError::WARNING );
     return false;
   }
 
   // Start the stdin input thread.
   if ( !stdinThread_.start( (THREAD_FUNCTION)&stdinHandler, &data_ ) ) {
-    errorString_ << "Messager::startStdInput: unable to start stdin input thread!";
+    oStream_ << "Messager::startStdInput: unable to start stdin input thread!";
     handleError( StkError::WARNING );
     return false;
   }
@@ -208,7 +208,13 @@ void midiHandler( double timeStamp, std::vector<unsigned char> *bytes, void *ptr
   if ( ( message.type != 0xC0 ) && ( message.type != 0xD0 ) ) {
     if ( bytes->size() < 3 ) return;
     message.intValues[1] = bytes->at(2);
-    message.floatValues[1] = (StkFloat) message.intValues[1];
+    if ( message.type == 0xE0 ) { // combine pithbend into single "14-bit" value
+      message.intValues[0] += message.intValues[1] <<= 7;
+      message.floatValues[0] = (StkFloat) message.intValues[0];
+      message.intValues[1] = 0;
+    }
+    else
+      message.floatValues[1] = (StkFloat) message.intValues[1];
   }
 
   while ( data->queue.size() >= data->queueLimit ) Stk::sleep( 50 );
@@ -221,13 +227,13 @@ void midiHandler( double timeStamp, std::vector<unsigned char> *bytes, void *ptr
 bool Messager :: startMidiInput( int port )
 {
   if ( data_.sources == STK_FILE ) {
-    errorString_ << "Messager::startMidiInput: already reading a scorefile ... cannot do realtime control input too!";
+    oStream_ << "Messager::startMidiInput: already reading a scorefile ... cannot do realtime control input too!";
     handleError( StkError::WARNING );
     return false;
   }
 
   if ( data_.sources & STK_MIDI ) {
-    errorString_ << "Messager::startMidiInput: MIDI input already started.";
+    oStream_ << "Messager::startMidiInput: MIDI input already started.";
     handleError( StkError::WARNING );
     return false;
   }
@@ -236,7 +242,7 @@ bool Messager :: startMidiInput( int port )
   // (to allow the user to exit).
   if ( !( data_.sources & STK_STDIN ) ) {
     if ( this->startStdInput() == false ) {
-      errorString_ << "Messager::startMidiInput: unable to start input from stdin.";
+      oStream_ << "Messager::startMidiInput: unable to start input from stdin.";
       handleError( StkError::WARNING );
       return false;
     }
@@ -249,7 +255,7 @@ bool Messager :: startMidiInput( int port )
     else data_.midi->openPort( (unsigned int)port );
   }
   catch ( RtError &error ) {
-    errorString_ << "Messager::startMidiInput: error creating RtMidiIn instance (" << error.getMessage() << ").";
+    oStream_ << "Messager::startMidiInput: error creating RtMidiIn instance (" << error.getMessage() << ").";
     handleError( StkError::WARNING );
     return false;
   }
@@ -261,13 +267,13 @@ bool Messager :: startMidiInput( int port )
 bool Messager :: startSocketInput( int port )
 {
   if ( data_.sources == STK_FILE ) {
-    errorString_ << "Messager::startSocketInput: already reading a scorefile ... cannot do realtime control input too!";
+    oStream_ << "Messager::startSocketInput: already reading a scorefile ... cannot do realtime control input too!";
     handleError( StkError::WARNING );
     return false;
   }
 
   if ( data_.sources & STK_SOCKET ) {
-    errorString_ << "Messager::startSocketInput: socket input thread already started.";
+    oStream_ << "Messager::startSocketInput: socket input thread already started.";
     handleError( StkError::WARNING );
     return false;
   }
@@ -280,7 +286,7 @@ bool Messager :: startSocketInput( int port )
     return false;
   }
 
-  errorString_ << "Socket server listening for connection(s) on port " << port << "...";
+  oStream_ << "Socket server listening for connection(s) on port " << port << "...";
   handleError( StkError::STATUS );
 
   // Initialize socket descriptor information.
@@ -291,7 +297,7 @@ bool Messager :: startSocketInput( int port )
 
   // Start the socket thread.
   if ( !socketThread_.start( (THREAD_FUNCTION)&socketHandler, &data_ ) ) {
-    errorString_ << "Messager::startSocketInput: unable to start socket input thread!";
+    oStream_ << "Messager::startSocketInput: unable to start socket input thread!";
     handleError( StkError::WARNING );
     return false;
   }

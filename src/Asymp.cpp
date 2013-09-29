@@ -19,7 +19,7 @@
     to \e keyOn and \e keyOff messages by ramping to
     1.0 on keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -63,9 +63,8 @@ void Asymp :: keyOff( void )
 void Asymp :: setTau( StkFloat tau )
 {
   if ( tau <= 0.0 ) {
-    errorString_ << "Asymp::setTau: negative or zero tau not allowed ... ignoring!";
-    handleError( StkError::WARNING );
-    return;
+    oStream_ << "Asymp::setTau: negative or zero tau not allowed!";
+    handleError( StkError::WARNING ); return;
   }
 
   factor_ = std::exp( -1.0 / ( tau * Stk::sampleRate() ) );
@@ -75,14 +74,23 @@ void Asymp :: setTau( StkFloat tau )
 void Asymp :: setTime( StkFloat time )
 {
   if ( time <= 0.0 ) {
-    errorString_ << "Asymp::setTime: negative or zero times not allowed ... ignoring!";
-    handleError( StkError::WARNING );
-    return;
+    oStream_ << "Asymp::setTime: negative or zero times not allowed!";
+    handleError( StkError::WARNING ); return;
   }
 
   StkFloat tau = -time / std::log( TARGET_THRESHOLD );
   factor_ = std::exp( -1.0 / ( tau * Stk::sampleRate() ) );
   constant_ = ( 1.0 - factor_ ) * target_;
+}
+
+void Asymp :: setT60( StkFloat t60 )
+{
+  if ( t60 <= 0.0 ) {
+    oStream_ << "Asymp::setT60: negative or zero t60 not allowed!";
+    handleError( StkError::WARNING ); return;
+  }
+
+  setTau( t60 / 6.91 );
 }
 
 void Asymp :: setTarget( StkFloat target )

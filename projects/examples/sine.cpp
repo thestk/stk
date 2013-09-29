@@ -63,8 +63,8 @@ int main( int argc, char *argv[] )
 
   // Open the soundfile for output.  Other file format options
   // include: FILE_SND, FILE_AIF, FILE_MAT, and FILE_RAW.  Other data
-  // type options include: STK_SINT8, STK_SINT32, StkFloat32, and
-  // StkFloat64.
+  // type options include: STK_SINT8, STK_INT24, STK_SINT32,
+  // STK_FLOAT32, and STK_FLOAT64.
   try {
     output.openFile( argv[2], channels, FileWrite::FILE_WAV, Stk::STK_SINT16 );
   }

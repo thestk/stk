@@ -31,7 +31,7 @@ namespace stk {
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -42,7 +42,7 @@ class Clarinet : public Instrmnt
   /*!
     An StkError will be thrown if the rawwave path is incorrectly set.
   */
-  Clarinet( StkFloat lowestFrequency );
+  Clarinet( StkFloat lowestFrequency = 8.0 );
 
   //! Class destructor.
   ~Clarinet( void );
@@ -71,6 +71,16 @@ class Clarinet : public Instrmnt
   //! Compute and return one output sample.
   StkFloat tick( unsigned int channel = 0 );
 
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument must be less than the number of
+    channels in the StkFrames argument (the first channel is specified
+    by 0).  However, range checking is only performed if _STK_DEBUG_
+    is defined during compilation, in which case an out-of-range value
+    will trigger an StkError exception.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+
  protected:
 
   DelayL delayLine_;
@@ -79,11 +89,10 @@ class Clarinet : public Instrmnt
   Envelope envelope_;
   Noise noise_;
   SineWave vibrato_;
-  long length_;
+
   StkFloat outputGain_;
   StkFloat noiseGain_;
   StkFloat vibratoGain_;
-
 };
 
 inline StkFloat Clarinet :: tick( unsigned int )
@@ -109,6 +118,33 @@ inline StkFloat Clarinet :: tick( unsigned int )
   lastFrame_[0] *= outputGain_;
 
   return lastFrame_[0];
+}
+
+inline StkFrames& Clarinet :: tick( StkFrames& frames, unsigned int channel )
+{
+  unsigned int nChannels = lastFrame_.channels();
+#if defined(_STK_DEBUG_)
+  if ( channel > frames.channels() - nChannels ) {
+    oStream_ << "Clarinet::tick(): channel and StkFrames arguments are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  StkFloat *samples = &frames[channel];
+  unsigned int j, hop = frames.channels() - nChannels;
+  if ( nChannels == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
+      *samples++ = tick();
+  }
+  else {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
+      *samples++ = tick();
+      for ( j=1; j<nChannels; j++ )
+        *samples++ = lastFrame_[j];
+    }
+  }
+
+  return frames;
 }
 
 } // stk namespace

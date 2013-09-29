@@ -12,7 +12,7 @@
     the overloaded one that takes an StkFrames object for
     multi-channel and/or multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -127,7 +127,7 @@ StkFloat FileLoop :: tick( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= data_.channels() ) {
-    errorString_ << "FileLoop::tick(): channel argument and soundfile data are incompatible!";
+    oStream_ << "FileLoop::tick(): channel argument and soundfile data are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -197,7 +197,7 @@ StkFrames& FileLoop :: tick( StkFrames& frames )
 {
   if ( !file_.isOpen() ) {
 #if defined(_STK_DEBUG_)
-    errorString_ << "FileLoop::tick(): no file data is loaded!";
+    oStream_ << "FileLoop::tick(): no file data is loaded!";
     handleError( StkError::WARNING );
 #endif
     return frames;
@@ -206,7 +206,7 @@ StkFrames& FileLoop :: tick( StkFrames& frames )
   unsigned int nChannels = lastFrame_.channels();
 #if defined(_STK_DEBUG_)
   if ( nChannels != frames.channels() ) {
-    errorString_ << "FileLoop::tick(): StkFrames argument is incompatible with file data!";
+    oStream_ << "FileLoop::tick(): StkFrames argument is incompatible with file data!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

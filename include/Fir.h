@@ -23,7 +23,7 @@ namespace stk {
     This structure results in one extra multiply per computed sample,
     but allows easy control of the overall filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -101,7 +101,7 @@ inline StkFrames& Fir :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "Fir::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Fir::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -127,7 +127,7 @@ inline StkFrames& Fir :: tick( StkFrames& iFrames, StkFrames& oFrames, unsigned 
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "Fir::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Fir::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

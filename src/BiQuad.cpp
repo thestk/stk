@@ -6,7 +6,7 @@
     Methods are provided for creating a resonance or notch in the
     frequency response while maintaining a constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -46,13 +46,24 @@ void BiQuad :: setCoefficients( StkFloat b0, StkFloat b1, StkFloat b2, StkFloat 
 void BiQuad :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
 {
   if ( !ignoreSampleRateChange_ ) {
-    errorString_ << "BiQuad::sampleRateChanged: you may need to recompute filter coefficients!";
+    oStream_ << "BiQuad::sampleRateChanged: you may need to recompute filter coefficients!";
     handleError( StkError::WARNING );
   }
 }
 
-void BiQuad :: setResonance(StkFloat frequency, StkFloat radius, bool normalize)
+void BiQuad :: setResonance( StkFloat frequency, StkFloat radius, bool normalize )
 {
+#if defined(_STK_DEBUG_)
+  if ( frequency < 0.0 || frequency > 0.5 * Stk::sampleRate() ) {
+    oStream_ << "BiQuad::setResonance: frequency argument (" << frequency << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+  if ( radius < 0.0 || radius >= 1.0 ) {
+    oStream_ << "BiQuad::setResonance: radius argument (" << radius << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
   a_[2] = radius * radius;
   a_[1] = -2.0 * radius * cos( TWO_PI * frequency / Stk::sampleRate() );
 
@@ -64,14 +75,25 @@ void BiQuad :: setResonance(StkFloat frequency, StkFloat radius, bool normalize)
   }
 }
 
-void BiQuad :: setNotch(StkFloat frequency, StkFloat radius)
+void BiQuad :: setNotch( StkFloat frequency, StkFloat radius )
 {
+#if defined(_STK_DEBUG_)
+  if ( frequency < 0.0 || frequency > 0.5 * Stk::sampleRate() ) {
+    oStream_ << "BiQuad::setNotch: frequency argument (" << frequency << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+  if ( radius < 0.0 ) {
+    oStream_ << "BiQuad::setNotch: radius argument (" << radius << ") is negative!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
   // This method does not attempt to normalize the filter gain.
   b_[2] = radius * radius;
   b_[1] = (StkFloat) -2.0 * radius * cos( TWO_PI * (double) frequency / Stk::sampleRate() );
 }
 
-void BiQuad :: setEqualGainZeroes()
+void BiQuad :: setEqualGainZeroes( void )
 {
   b_[0] = 1.0;
   b_[1] = 0.0;

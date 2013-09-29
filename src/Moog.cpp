@@ -14,7 +14,7 @@
        - Vibrato Gain = 1
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -46,13 +46,14 @@ Moog :: ~Moog( void )
 
 void Moog :: setFrequency( StkFloat frequency )
 {
-  baseFrequency_ = frequency;
+#if defined(_STK_DEBUG_)
   if ( frequency <= 0.0 ) {
-    errorString_ << "Moog::setFrequency: parameter is less than or equal to zero!";
-    handleError( StkError::WARNING );
-    baseFrequency_ = 220.0;
+    oStream_ << "Moog::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
   }
+#endif
 
+  baseFrequency_ = frequency;
   StkFloat rate = attacks_[0]->getSize() * 0.01 * baseFrequency_ / Stk::sampleRate();
   attacks_[0]->setRate( rate );
   loops_[0]->setFrequency( baseFrequency_ );
@@ -77,45 +78,33 @@ void Moog :: noteOn( StkFloat frequency, StkFloat amplitude )
 
   filters_[0].setSweepRate( filterRate_ * 22050.0 / Stk::sampleRate() );
   filters_[1].setSweepRate( filterRate_ * 22050.0 / Stk::sampleRate() );
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Moog::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Moog :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "Moog::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
-  }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "Moog::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
-
-  if (number == __SK_FilterQ_) // 2
-    filterQ_ = 0.80 + ( 0.1 * norm );
-  else if (number == __SK_FilterSweepRate_) // 4
-    filterRate_ = norm * 0.0002;
-  else if (number == __SK_ModFrequency_) // 11
-    this->setModulationSpeed( norm * 12.0 );
-  else if (number == __SK_ModWheel_)  // 1
-    this->setModulationDepth( norm );
-  else if (number == __SK_AfterTouch_Cont_) // 128
-    adsr_.setTarget( norm );
-  else {
-    errorString_ << "Moog::controlChange: undefined control number (" << number << ")!";
-    handleError( StkError::WARNING );
-  }
-
 #if defined(_STK_DEBUG_)
-    errorString_ << "Moog::controlChange: number = " << number << ", value = " << value << '.';
-    handleError( StkError::DEBUG_WARNING );
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "Moog::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
+  StkFloat normalizedValue = value * ONE_OVER_128;
+  if (number == __SK_FilterQ_) // 2
+    filterQ_ = 0.80 + ( 0.1 * normalizedValue );
+  else if (number == __SK_FilterSweepRate_) // 4
+    filterRate_ = normalizedValue * 0.0002;
+  else if (number == __SK_ModFrequency_) // 11
+    this->setModulationSpeed( normalizedValue * 12.0 );
+  else if (number == __SK_ModWheel_)  // 1
+    this->setModulationDepth( normalizedValue );
+  else if (number == __SK_AfterTouch_Cont_) // 128
+    adsr_.setTarget( normalizedValue );
+#if defined(_STK_DEBUG_)
+  else {
+    oStream_ << "Moog::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 #endif
 }
 

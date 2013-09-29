@@ -134,7 +134,7 @@ inline void LentPitShift::process()
   for ( n=0; n<inputFrames.size(); n++ ) {
     x_t = inputLine_.tick( inputFrames[ n ] );
     for ( delay_=1; delay_<= tMax_; delay_++ ) {
-      x_t_T = inputLine_.contentsAt( delay_ );
+      x_t_T = inputLine_.tapOut( delay_ );
       coeff = x_t - x_t_T;
       dt[delay_] += coeff * coeff;
     }
@@ -193,7 +193,7 @@ inline void LentPitShift::process()
       M = tMax_ - inputPtr + lastPeriod_ - 1; // New reading pointer
       N = 2*tMax_ - (unsigned long)floor(outputPtr + tMax_) + lastPeriod_ - 1; // New writing pointer
       for ( unsigned int j=0; j<2*lastPeriod_; j++,M--,N-- ) {
-        sample = inputLine_.contentsAt(M) * window[j] / 2.;
+        sample = inputLine_.tapOut(M) * window[j] / 2.;
         // Linear interpolation
         outputLine_.addTo(N, env[0] * sample);
         outputLine_.addTo(N-1, env[1] * sample);
@@ -228,7 +228,7 @@ inline StkFrames& LentPitShift :: tick( StkFrames& frames, unsigned int channel 
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "LentPitShift::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "LentPitShift::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -246,7 +246,7 @@ inline StkFrames& LentPitShift :: tick( StkFrames& iFrames, StkFrames& oFrames, 
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "LentPitShift::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "LentPitShift::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

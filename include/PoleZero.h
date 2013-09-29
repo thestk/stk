@@ -14,7 +14,7 @@ namespace stk {
     coefficient.  Another method is provided to create a DC blocking
     filter.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -43,17 +43,18 @@ class PoleZero : public Filter
   //! Set the filter for allpass behavior using \e coefficient.
   /*!
     This method uses \e coefficient to create an allpass filter,
-    which has unity gain at all frequencies.  Note that the \e
-    coefficient magnitude must be less than one to maintain stability.
+    which has unity gain at all frequencies.  Note that the
+    \e coefficient magnitude must be less than one to maintain
+    filter stability.
   */
   void setAllpass( StkFloat coefficient );
 
   //! Create a DC blocking filter with the given pole position in the z-plane.
   /*!
     This method sets the given pole position, together with a zero
-    at z=1, to create a DC blocking filter.  \e thePole should be
-    close to one to minimize low-frequency attenuation.
-
+    at z=1, to create a DC blocking filter.  The argument magnitude
+    should be close to (but less than) one to minimize low-frequency
+    attenuation.
   */
   void setBlockZero( StkFloat thePole = 0.99 );
 
@@ -89,7 +90,7 @@ inline StkFrames& PoleZero :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "PoleZero::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "PoleZero::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

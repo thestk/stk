@@ -13,7 +13,7 @@
        - Envelope Rate = 11
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -53,62 +53,52 @@ void Simple :: noteOn( StkFloat frequency, StkFloat amplitude )
   this->keyOn();
   this->setFrequency( frequency );
   filter_.setGain( amplitude ); 
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Simple::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 void Simple :: noteOff( StkFloat amplitude )
 {
   this->keyOff();
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Simple::NoteOff: amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Simple :: setFrequency( StkFloat frequency )
 {
+#if defined(_STK_DEBUG_)
+  if ( frequency <= 0.0 ) {
+    oStream_ << "Simple::setFrequency: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
   biquad_.setResonance( frequency, 0.98, true );
   loop_->setFrequency( frequency );
 }
 
 void Simple :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "Simple::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
+#if defined(_STK_DEBUG_)
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "Simple::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
   }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "Simple::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
+#endif
 
+  StkFloat normalizedValue = value * ONE_OVER_128;
   if (number == __SK_Breath_) // 2
-    filter_.setPole( 0.99 * (1.0 - (norm * 2.0)) );
+    filter_.setPole( 0.99 * (1.0 - (normalizedValue * 2.0)) );
   else if (number == __SK_NoiseLevel_) // 4
-    loopGain_ = norm;
+    loopGain_ = normalizedValue;
   else if (number == __SK_ModFrequency_) { // 11
-    norm /= 0.2 * Stk::sampleRate();
-    adsr_.setAttackRate( norm );
-    adsr_.setDecayRate( norm );
-    adsr_.setReleaseRate( norm );
+    normalizedValue /= 0.2 * Stk::sampleRate();
+    adsr_.setAttackRate( normalizedValue );
+    adsr_.setDecayRate( normalizedValue );
+    adsr_.setReleaseRate( normalizedValue );
   }
   else if (number == __SK_AfterTouch_Cont_) // 128
-    adsr_.setTarget( norm );
+    adsr_.setTarget( normalizedValue );
+#if defined(_STK_DEBUG_)
   else {
-    errorString_ << "Simple::controlChange: undefined control number (" << number << ")!";
+    oStream_ << "Simple::controlChange: undefined control number (" << number << ")!";
     handleError( StkError::WARNING );
   }
-
-#if defined(_STK_DEBUG_)
-    errorString_ << "Simple::controlChange: number = " << number << ", value = " << value << '.';
-    handleError( StkError::DEBUG_WARNING );
 #endif
 }
 

@@ -27,7 +27,7 @@
     See the FileRead class for a description of the supported audio
     file formats.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -37,7 +37,7 @@
 namespace stk {
 
 FileWvIn :: FileWvIn( unsigned long chunkThreshold, unsigned long chunkSize )
-  : finished_(true), interpolate_(false), time_(0.0),
+  : finished_(true), interpolate_(false), time_(0.0), rate_(0.0),
     chunkThreshold_(chunkThreshold), chunkSize_(chunkSize)
 {
   Stk::addSampleRateAlert( this );
@@ -45,7 +45,7 @@ FileWvIn :: FileWvIn( unsigned long chunkThreshold, unsigned long chunkSize )
 
 FileWvIn :: FileWvIn( std::string fileName, bool raw, bool doNormalize,
                       unsigned long chunkThreshold, unsigned long chunkSize )
-  : finished_(true), interpolate_(false), time_(0.0),
+  : finished_(true), interpolate_(false), time_(0.0), rate_(0.0),
     chunkThreshold_(chunkThreshold), chunkSize_(chunkSize)
 {
   openFile( fileName, raw, doNormalize );
@@ -142,11 +142,6 @@ void FileWvIn :: normalize( StkFloat peak )
 
 void FileWvIn :: setRate( StkFloat rate )
 {
-#if defined(_STK_DEBUG_)
-  errorString_ << "FileWvIn::setRate: changing file read rate from " << rate_ << " to " << rate << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
-
   rate_ = rate;
 
   // If negative rate and at beginning of sound, move pointer to end
@@ -174,7 +169,7 @@ StkFloat FileWvIn :: tick( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= data_.channels() ) {
-    errorString_ << "FileWvIn::tick(): channel argument and soundfile data are incompatible!";
+    oStream_ << "FileWvIn::tick(): channel argument and soundfile data are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -231,8 +226,8 @@ StkFrames& FileWvIn :: tick( StkFrames& frames )
 {
   if ( !file_.isOpen() ) {
 #if defined(_STK_DEBUG_)
-    errorString_ << "FileWvIn::tick(): no file data is loaded!";
-    handleError( StkError::DEBUG_WARNING );
+    oStream_ << "FileWvIn::tick(): no file data is loaded!";
+    handleError( StkError::DEBUG_PRINT );
 #endif
     return frames;
   }
@@ -240,7 +235,7 @@ StkFrames& FileWvIn :: tick( StkFrames& frames )
   unsigned int nChannels = lastFrame_.channels();
 #if defined(_STK_DEBUG_)
   if ( nChannels != frames.channels() ) {
-    errorString_ << "FileWvIn::tick(): StkFrames argument is incompatible with file data!";
+    oStream_ << "FileWvIn::tick(): StkFrames argument is incompatible with file data!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

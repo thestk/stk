@@ -32,14 +32,14 @@ namespace stk {
 */
 /***************************************************/
 
-const short NXMAX = 12;
-const short NYMAX = 12;
+const unsigned short NXMAX = 12;
+const unsigned short NYMAX = 12;
 
 class Mesh2D : public Instrmnt
 {
  public:
   //! Class constructor, taking the x and y dimensions in samples.
-  Mesh2D( short nX, short nY );
+  Mesh2D( unsigned short nX, unsigned short nY );
 
   //! Class destructor.
   ~Mesh2D( void );
@@ -48,10 +48,10 @@ class Mesh2D : public Instrmnt
   void clear( void );
 
   //! Set the x dimension size in samples.
-  void setNX( short lenX );
+  void setNX( unsigned short lenX );
 
   //! Set the y dimension size in samples.
-  void setNY( short lenY );
+  void setNY( unsigned short lenY );
 
   //! Set the x, y input position on a 0.0 - 1.0 scale.
   void setInputPosition( StkFloat xFactor, StkFloat yFactor );
@@ -77,14 +77,24 @@ class Mesh2D : public Instrmnt
   //! Compute and return one output sample.
   StkFloat tick( unsigned int channel = 0 );
 
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument must be less than the number of
+    channels in the StkFrames argument (the first channel is specified
+    by 0).  However, range checking is only performed if _STK_DEBUG_
+    is defined during compilation, in which case an out-of-range value
+    will trigger an StkError exception.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+
  protected:
 
   StkFloat tick0();
   StkFloat tick1();
   void clearMesh();
 
-  short NX_, NY_;
-  short xInput_, yInput_;
+  unsigned short NX_, NY_;
+  unsigned short xInput_, yInput_;
   OnePole  filterX_[NXMAX];
   OnePole  filterY_[NYMAX];
   StkFloat v_[NXMAX-1][NYMAX-1]; // junction velocities
@@ -101,6 +111,33 @@ class Mesh2D : public Instrmnt
 
   int counter_; // time in samples
 };
+
+inline StkFrames& Mesh2D :: tick( StkFrames& frames, unsigned int channel )
+{
+  unsigned int nChannels = lastFrame_.channels();
+#if defined(_STK_DEBUG_)
+  if ( channel > frames.channels() - nChannels ) {
+    oStream_ << "Mesh2D::tick(): channel and StkFrames arguments are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  StkFloat *samples = &frames[channel];
+  unsigned int j, hop = frames.channels() - nChannels;
+  if ( nChannels == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
+      *samples++ = tick();
+  }
+  else {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
+      *samples++ = tick();
+      for ( j=1; j<nChannels; j++ )
+        *samples++ = lastFrame_[j];
+    }
+  }
+
+  return frames;
+}
 
 } // stk namespace
 

@@ -24,7 +24,7 @@
          - Two Fixed = 7
          - Clump = 8
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -52,35 +52,24 @@ ModalBar :: ~ModalBar( void )
 
 void ModalBar :: setStickHardness( StkFloat hardness )
 {
-  stickHardness_ = hardness;
-  if ( hardness < 0.0 ) {
-    errorString_ << "ModalBar::setStickHardness: parameter is less than zero ... setting to 0.0!";
-    handleError( StkError::WARNING );
-    stickHardness_ = 0.0;
-  }
-  else if ( hardness > 1.0 ) {
-    errorString_ << "ModalBar::setStickHarness: parameter is greater than one ... setting to 1.0!";
-    handleError( StkError::WARNING );
-    stickHardness_ = 1.0;
+  if ( hardness < 0.0 || hardness > 1.0 ) {
+    oStream_ << "ModalBar::setStickHardness: parameter is out of range!";
+    handleError( StkError::WARNING ); return;
   }
 
+  stickHardness_ = hardness;
   wave_->setRate( (0.25 * pow(4.0, stickHardness_) ) );
   masterGain_ = 0.1 + (1.8 * stickHardness_);
 }
 
 void ModalBar :: setStrikePosition( StkFloat position )
 {
+  if ( position < 0.0 || position > 1.0 ) {
+    oStream_ << "ModalBar::setStrikePosition: parameter is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+
   strikePosition_ = position;
-  if ( position < 0.0 ) {
-    errorString_ << "ModalBar::setStrikePosition: parameter is less than zero ... setting to 0.0!";
-    handleError( StkError::WARNING );
-    strikePosition_ = 0.0;
-  }
-  else if ( position > 1.0 ) {
-    errorString_ << "ModalBar::setStrikePosition: parameter is greater than one ... setting to 1.0!";
-    handleError( StkError::WARNING );
-    strikePosition_ = 1.0;
-  }
 
   // Hack only first three modes.
   StkFloat temp2 = position * PI;
@@ -160,40 +149,33 @@ void ModalBar :: setPreset( int preset )
 
 void ModalBar :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "ModalBar::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
+#if defined(_STK_DEBUG_)
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "ModalBar::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
   }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "ModalBar::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
+#endif
 
+  StkFloat normalizedValue = value * ONE_OVER_128;
   if (number == __SK_StickHardness_) // 2
-    this->setStickHardness( norm );
+    this->setStickHardness( normalizedValue );
   else if (number == __SK_StrikePosition_) // 4
-    this->setStrikePosition( norm );
+    this->setStrikePosition( normalizedValue );
   else if (number == __SK_ProphesyRibbon_) // 16
 		this->setPreset((int) value);
   else if (number == __SK_Balance_) // 8
-    vibratoGain_ = norm * 0.3;
+    vibratoGain_ = normalizedValue * 0.3;
   else if (number == __SK_ModWheel_) // 1
-    directGain_ = norm;
+    directGain_ = normalizedValue;
   else if (number == __SK_ModFrequency_) // 11
-    vibrato_.setFrequency( norm * 12.0 );
+    vibrato_.setFrequency( normalizedValue * 12.0 );
   else if (number == __SK_AfterTouch_Cont_)	// 128
-    envelope_.setTarget( norm );
+    envelope_.setTarget( normalizedValue );
+#if defined(_STK_DEBUG_)
   else {
-    errorString_ << "ModalBar::controlChange: undefined control number (" << number << ")!";
+    oStream_ << "ModalBar::controlChange: undefined control number (" << number << ")!";
     handleError( StkError::WARNING );
   }
-
-#if defined(_STK_DEBUG_)
-    errorString_ << "ModalBar::controlChange: number = " << number << ", value = " << value << '.';
-    handleError( StkError::DEBUG_WARNING );
 #endif
 }
 

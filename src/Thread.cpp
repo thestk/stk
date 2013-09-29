@@ -16,7 +16,7 @@
 
     THREAD_RETURN THREAD_TYPE thread_function(void *ptr)
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -36,7 +36,7 @@ Thread :: ~Thread()
 bool Thread :: start( THREAD_FUNCTION routine, void * ptr )
 {
   if ( thread_ ) {
-    errorString_ << "Thread:: a thread is already running!";
+    oStream_ << "Thread:: a thread is already running!";
     handleError( StkError::WARNING );
     return false;
   }

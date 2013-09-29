@@ -19,7 +19,7 @@
     Alternately, control changes can be sent to all voices in a given
     group.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -30,6 +30,11 @@ namespace stk {
 
 Voicer :: Voicer( StkFloat decayTime )
 {
+  if ( decayTime < 0.0 ) {
+    oStream_ << "Voicer::Voicer: argument (" << decayTime << ") must be positive!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
   tags_ = 23456;
   muteTime_ = (int) ( decayTime * Stk::sampleRate() );
   lastFrame_.resize( 1, 1, 0.0 );
@@ -73,7 +78,7 @@ void Voicer :: removeInstrument( Instrmnt *instrument )
       lastFrame_.resize( 1, maxChannels );
   }
   else {
-    errorString_ << "Voicer::removeInstrument: instrument pointer not found in current voices!";
+    oStream_ << "Voicer::removeInstrument: instrument pointer not found in current voices!";
     handleError( StkError::WARNING );
   }
 }

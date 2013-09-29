@@ -19,7 +19,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -32,7 +32,7 @@ FM :: FM( unsigned int operators )
   : nOperators_(operators)
 {
   if ( nOperators_ == 0 ) {
-    errorString_ << "FM: Invalid number of operators (" << operators << ") argument to constructor!";
+    oStream_ << "FM::FM: Number of operators must be greater than zero!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -91,8 +91,14 @@ void FM :: loadWaves( const char **filenames )
 
 void FM :: setFrequency( StkFloat frequency )
 {    
-  baseFrequency_ = frequency;
+#if defined(_STK_DEBUG_)
+  if ( frequency <= 0.0 ) {
+    oStream_ << "FM::setFrequency: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
 
+  baseFrequency_ = frequency;
   for ( unsigned int i=0; i<nOperators_; i++ )
     waves_[i]->setFrequency( baseFrequency_ * ratios_[i] );
 }
@@ -100,14 +106,12 @@ void FM :: setFrequency( StkFloat frequency )
 void FM :: setRatio( unsigned int waveIndex, StkFloat ratio )
 {
   if ( waveIndex < 0 ) {
-    errorString_ << "FM::setRatio: waveIndex parameter is less than zero!";
-    handleError( StkError::WARNING );
-    return;
+    oStream_ << "FM::setRatio: waveIndex parameter is less than zero!";
+    handleError( StkError::WARNING ); return;
   }
   else if ( waveIndex >= nOperators_ ) {
-    errorString_ << "FM:setRatio: waveIndex parameter is greater than the number of operators!";
-    handleError( StkError::WARNING );
-    return;
+    oStream_ << "FM:setRatio: waveIndex parameter is greater than the number of operators!";
+    handleError( StkError::WARNING ); return;
   }
 
   ratios_[waveIndex] = ratio;
@@ -120,14 +124,12 @@ void FM :: setRatio( unsigned int waveIndex, StkFloat ratio )
 void FM :: setGain( unsigned int waveIndex, StkFloat gain )
 {
   if ( waveIndex < 0 ) {
-    errorString_ << "FM::setGain: waveIndex parameter is less than zero!";
-    handleError( StkError::WARNING );
-    return;
+    oStream_ << "FM::setGain: waveIndex parameter is less than zero!";
+    handleError( StkError::WARNING ); return;
   }
   else if ( waveIndex >= nOperators_ ) {
-    errorString_ << "FM::setGain: waveIndex parameter is greater than the number of operators!";
-    handleError( StkError::WARNING );
-    return;
+    oStream_ << "FM::setGain: waveIndex parameter is greater than the number of operators!";
+    handleError( StkError::WARNING ); return;
   }
 
   gains_[waveIndex] = gain;
@@ -148,49 +150,37 @@ void FM :: keyOff( void )
 void FM :: noteOff( StkFloat amplitude )
 {
   this->keyOff();
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "FM::NoteOff: amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void FM :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "FM::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
-  }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "FM::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
-
-  if (number == __SK_Breath_) // 2
-    this->setControl1( norm );
-  else if (number == __SK_FootControl_) // 4
-    this->setControl2( norm );
-  else if (number == __SK_ModFrequency_) // 11
-    this->setModulationSpeed( norm * 12.0);
-  else if (number == __SK_ModWheel_) // 1
-    this->setModulationDepth( norm );
-  else if (number == __SK_AfterTouch_Cont_)	{ // 128
-    //adsr_[0]->setTarget( norm );
-    adsr_[1]->setTarget( norm );
-    //adsr_[2]->setTarget( norm );
-    adsr_[3]->setTarget( norm );
-  }
-  else {
-    errorString_ << "FM::controlChange: undefined control number (" << number << ")!";
-    handleError( StkError::WARNING );
-  }
-
 #if defined(_STK_DEBUG_)
-    errorString_ << "FM::controlChange: number = " << number << ", value = " << value << '.';
-    handleError( StkError::DEBUG_WARNING );
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "FM::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
+  StkFloat normalizedValue = value * ONE_OVER_128;
+  if (number == __SK_Breath_) // 2
+    this->setControl1( normalizedValue );
+  else if (number == __SK_FootControl_) // 4
+    this->setControl2( normalizedValue );
+  else if (number == __SK_ModFrequency_) // 11
+    this->setModulationSpeed( normalizedValue * 12.0);
+  else if (number == __SK_ModWheel_) // 1
+    this->setModulationDepth( normalizedValue );
+  else if (number == __SK_AfterTouch_Cont_)	{ // 128
+    //adsr_[0]->setTarget( normalizedValue );
+    adsr_[1]->setTarget( normalizedValue );
+    //adsr_[2]->setTarget( normalizedValue );
+    adsr_[3]->setTarget( normalizedValue );
+  }
+#if defined(_STK_DEBUG_)
+  else {
+    oStream_ << "FM::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 #endif
 }
 

@@ -30,7 +30,7 @@ namespace stk {
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -87,6 +87,16 @@ class FM : public Instrmnt
 
   //! Compute and return one output sample.
   virtual StkFloat tick( unsigned int ) = 0;
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument must be less than the number of
+    channels in the StkFrames argument (the first channel is specified
+    by 0).  However, range checking is only performed if _STK_DEBUG_
+    is defined during compilation, in which case an out-of-range value
+    will trigger an StkError exception.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 0 ) = 0;
 
  protected:
 

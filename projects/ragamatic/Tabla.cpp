@@ -8,12 +8,13 @@
     sample rates.  You can specify the maximum polyphony (maximum
     number of simultaneous voices) in Tabla.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
 #include "Tabla.h"
 #include <cmath>
+#include <sstream>
 
 namespace stk {
 
@@ -49,21 +50,9 @@ static char tablaWaves[TABLA_NUMWAVES][16] =
 
 void Tabla :: noteOn( StkFloat instrument, StkFloat amplitude )
 {
-#if defined(_STK_DEBUG_)
-  errorString_ << "Tabla::noteOn: instrument = " << instrument << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
-
-  StkFloat gain = amplitude;
-  if ( amplitude > 1.0 ) {
-    errorString_ << "Tabla::noteOn: amplitude parameter is greater than 1.0 ... setting to 1.0.";
-    handleError( StkError::WARNING );
-    gain = 1.0;
-  }
-  else if ( amplitude < 0.0 ) {
-    errorString_ << "Tabla::noteOn: amplitude parameter is less than 0.0 ... doing nothing.";
-    handleError( StkError::WARNING );
-    return;
+  if ( amplitude < 0.0 || amplitude > 1.0 ) {
+    oStream_ << "Tabla::noteOn: amplitude parameter is out of bounds!";
+    handleError( StkError::WARNING ); return;
   }
 
   int noteNumber = ( (int) instrument ) % 16;
@@ -79,8 +68,8 @@ void Tabla :: noteOn( StkFloat instrument, StkFloat amplitude )
         nSounding_++;
       }
       waves_[iWave].reset();
-      filters_[iWave].setPole( 0.999 - (gain * 0.6) );
-      filters_[iWave].setGain( gain );
+      filters_[iWave].setPole( 0.999 - (amplitude * 0.6) );
+      filters_[iWave].setGain( amplitude );
       break;
     }
   }
@@ -107,16 +96,18 @@ void Tabla :: noteOn( StkFloat instrument, StkFloat amplitude )
     waves_[iWave].openFile( (std::string("rawwaves/") + tablaWaves[ noteNumber ]).c_str(), true );
     if ( Stk::sampleRate() != 22050.0 )
       waves_[iWave].setRate( 22050.0 / Stk::sampleRate() );
-    filters_[iWave].setPole( 0.999 - (gain * 0.6) );
-    filters_[iWave].setGain( gain );
+    filters_[iWave].setPole( 0.999 - (amplitude * 0.6) );
+    filters_[iWave].setGain( amplitude );
   }
 
+  /*
 #if defined(_STK_DEBUG_)
-  errorString_ << "Tabla::noteOn: number sounding = " << nSounding_ << '\n';
-  for (int i=0; i<nSounding_; i++) errorString_ << soundNumber_[i] << "  ";
-  errorString_ << '\n';
+  oStream; errorStream << "Tabla::noteOn: number sounding = " << nSounding_ << '\n';
+  for (int i=0; i<nSounding_; i++) oStream << soundNumber_[i] << "  ";
+  oStream << '\n'; errorString_ = oStream.str();
   handleError( StkError::DEBUG_WARNING );
 #endif
+  */
 }
 
 void Tabla :: noteOff( StkFloat amplitude )

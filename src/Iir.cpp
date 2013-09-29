@@ -20,7 +20,7 @@
     This structure results in one extra multiply per computed sample,
     but allows easy control of the overall filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -42,12 +42,12 @@ Iir :: Iir( std::vector<StkFloat> &bCoefficients, std::vector<StkFloat> &aCoeffi
 {
   // Check the arguments.
   if ( bCoefficients.size() == 0 || aCoefficients.size() == 0 ) {
-    errorString_ << "Iir: a and b coefficient vectors must both have size > 0!";
+    oStream_ << "Iir: a and b coefficient vectors must both have size > 0!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
   if ( aCoefficients[0] == 0.0 ) {
-    errorString_ << "Iir: a[0] coefficient cannot == 0!";
+    oStream_ << "Iir: a[0] coefficient cannot == 0!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -76,7 +76,7 @@ void Iir :: setNumerator( std::vector<StkFloat> &bCoefficients, bool clearState 
 {
   // Check the argument.
   if ( bCoefficients.size() == 0 ) {
-    errorString_ << "Iir::setNumerator: coefficient vector must have size > 0!";
+    oStream_ << "Iir::setNumerator: coefficient vector must have size > 0!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -95,12 +95,12 @@ void Iir :: setDenominator( std::vector<StkFloat> &aCoefficients, bool clearStat
 {
   // Check the argument.
   if ( aCoefficients.size() == 0 ) {
-    errorString_ << "Iir::setDenominator: coefficient vector must have size > 0!";
+    oStream_ << "Iir::setDenominator: coefficient vector must have size > 0!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
   if ( aCoefficients[0] == 0.0 ) {
-    errorString_ << "Iir::setDenominator: a[0] coefficient cannot == 0!";
+    oStream_ << "Iir::setDenominator: a[0] coefficient cannot == 0!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 

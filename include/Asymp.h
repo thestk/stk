@@ -26,7 +26,7 @@ namespace stk {
     to \e keyOn and \e keyOff messages by ramping to
     1.0 on keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -59,6 +59,9 @@ class Asymp : public Generator
 
   //! Set the asymptotic rate based on a time duration (must be > 0).
   void setTime( StkFloat time );
+
+  //! Set the asymptotic rate such that the target value is perceptually reached (to within -60dB of the target) in \e t60 seconds.
+  void setT60( StkFloat t60 );
 
   //! Set the target value.
   void setTarget( StkFloat target );
@@ -125,7 +128,7 @@ inline StkFrames& Asymp :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "Asymp::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Asymp::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

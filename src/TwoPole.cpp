@@ -6,7 +6,7 @@
     provided for creating a resonance in the frequency response while
     maintaining a nearly constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -35,13 +35,24 @@ TwoPole :: ~TwoPole()
 void TwoPole :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
 {
   if ( !ignoreSampleRateChange_ ) {
-    errorString_ << "TwoPole::sampleRateChanged: you may need to recompute filter coefficients!";
+    oStream_ << "TwoPole::sampleRateChanged: you may need to recompute filter coefficients!";
     handleError( StkError::WARNING );
   }
 }
 
 void TwoPole :: setResonance( StkFloat frequency, StkFloat radius, bool normalize )
 {
+#if defined(_STK_DEBUG_)
+  if ( frequency < 0.0 || frequency > 0.5 * Stk::sampleRate() ) {
+    oStream_ << "TwoPole::setResonance: frequency argument (" << frequency << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+  if ( radius < 0.0 || radius >= 1.0 ) {
+    oStream_ << "TwoPole::setResonance: radius argument (" << radius << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
   a_[2] = radius * radius;
   a_[1] = (StkFloat) -2.0 * radius * cos(TWO_PI * frequency / Stk::sampleRate());
 

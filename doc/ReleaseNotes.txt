@@ -1,6 +1,17 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2010.
+By Perry R. Cook and Gary P. Scavone, 1995-2011.
+
+v4.4.3: (30 August 2011)
+- changed SINT24 to be lower 3 bytes of 32-bit word
+- bug fixes to vectorized tick functions in Effects classes
+- updated versions of RtAudio and RtMidi
+- fix to ADSR bugs
+- updates to the internal argument checking and reporting scheme
+- updates to Bowed class (thanks to Esteban Maestre!)
+- fixes for 24-bit support in FileRead and FileWrite
+- added WAVE_FORMAT_EXTENSIBLE support in FileWrite
+- added sample rate variable reading and writing for MAT-files in FileRead and FileWrite
 
 v4.4.2: (4 February 2010)
 - added various header file includes for newer compilers

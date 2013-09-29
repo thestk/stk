@@ -6,7 +6,7 @@
 #include "SKINI.msg"
 #include "WvOut.h"
 #include "Instrmnt.h"
-#include "PRCRev.h"
+#include "JCRev.h"
 #include "Voicer.h"
 #include "Skini.h"
 #include "RtAudio.h"
@@ -36,7 +36,7 @@ struct TickData {
   WvOut **wvout;
   Instrmnt **instrument;
   Voicer *voicer;
-  PRCRev reverb;
+  JCRev reverb;
   Messager messager;
   Skini::Message message;
   StkFloat volume;
@@ -53,7 +53,7 @@ struct TickData {
 
   // Default constructor.
   TickData()
-    : wvout(0), instrument(0), voicer(0), volume(1.0), t60(1.0),
+    : wvout(0), instrument(0), voicer(0), volume(1.0), t60(0.75),
       nWvOuts(0), nVoices(1), currentVoice(0), channels(2), counter(0),
       realtime( false ), settling( false ), haveMessage( false ) {}
 };
@@ -120,10 +120,7 @@ void processMessage( TickData* data )
     break;
 
   case __SK_PitchBend_:
-    short temp;
-    temp = data->message.intValues[1] << 7;
-    temp += data->message.intValues[0];
-    data->voicer->pitchBend( (StkFloat) temp );
+    data->voicer->pitchBend( value1 );
     break;
 
   case __SK_Volume_:

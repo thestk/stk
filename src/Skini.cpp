@@ -19,13 +19,14 @@
 
     See also SKINI.txt.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
 #include "Skini.h"
 #include "SKINI.tbl"
 #include <cstdlib>
+#include <sstream>
 
 namespace stk {
 
@@ -40,14 +41,14 @@ Skini :: ~Skini()
 bool Skini :: setFile( std::string fileName )
 {
   if ( file_.is_open() ) {
-    errorString_ << "Skini::setFile: already reaading a file!";
+    oStream_ << "Skini::setFile: already reaading a file!";
     handleError( StkError::WARNING );
     return false;
   }
 
   file_.open( fileName.c_str() );
   if ( !file_ ) {
-    errorString_ << "Skini::setFile: unable to open file (" << fileName << ")";
+    oStream_ << "Skini::setFile: unable to open file (" << fileName << ")";
     handleError( StkError::WARNING );
     return false;
   }
@@ -65,7 +66,7 @@ long Skini :: nextMessage( Message& message )
 
     // Read a line from the file and skip over invalid messages.
     if ( std::getline( file_, line ).eof() ) {
-      errorString_ << "// End of Score.  Thanks for using SKINI!!";
+      oStream_ << "// End of Score.  Thanks for using SKINI!!";
       handleError( StkError::STATUS );
       file_.close();
       message.type = 0;
@@ -105,7 +106,7 @@ long Skini :: parseString( std::string& line, Message& message )
   std::string::size_type lastPos = line.find_first_not_of(" ,\t", 0);
   std::string::size_type pos     = line.find_first_of("/", lastPos);
   if ( std::string::npos != pos ) {
-    errorString_ << "// Comment Line: " << line;
+    oStream_ << "// Comment Line: " << line;
     handleError( StkError::STATUS );
     return message.type;
   }
@@ -126,7 +127,7 @@ long Skini :: parseString( std::string& line, Message& message )
   }
 
   if ( iSkini >= __SK_MaxMsgTypes_ )  {
-    errorString_ << "Skini::parseString: couldn't parse this line:\n   " << line;
+    oStream_ << "Skini::parseString: couldn't parse this line:\n   " << line;
     handleError( StkError::WARNING );
     return message.type;
   }
@@ -138,7 +139,7 @@ long Skini :: parseString( std::string& line, Message& message )
   if ( tokens[1][0] == '=' ) {
     tokens[1].erase( tokens[1].begin() );
     if ( tokens[1].empty() ) {
-      errorString_ << "Skini::parseString: couldn't parse time field in line:\n   " << line;
+      oStream_ << "Skini::parseString: couldn't parse time field in line:\n   " << line;
       handleError( StkError::WARNING );
       return message.type = 0;
     }
@@ -156,7 +157,7 @@ long Skini :: parseString( std::string& line, Message& message )
   while ( dataType != NOPE ) {
 
     if ( tokens.size() <= (unsigned int) (iValue+3) ) {
-      errorString_ <<  "Skini::parseString: inconsistency between type table and parsed line:\n   " << line;
+      oStream_ <<  "Skini::parseString: inconsistency between type table and parsed line:\n   " << line;
       handleError( StkError::WARNING );
       return message.type = 0;
     }

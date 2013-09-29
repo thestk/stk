@@ -17,14 +17,14 @@ namespace stk {
 
     FileWrite currently supports uncompressed WAV, AIFF, AIFC, SND
     (AU), MAT-file (Matlab), and STK RAW file formats.  Signed integer
-    (8-, 16-, and 32-bit) and floating- point (32- and 64-bit) data
-    types are supported.  STK RAW files use 16-bit integers by
+    (8-, 16-, 24-, and 32-bit) and floating- point (32- and 64-bit)
+    data types are supported.  STK RAW files use 16-bit integers by
     definition.  MAT-files will always be written as 64-bit floats.
     If a data type specification does not match the specified file
     type, the data type will automatically be modified.  Compressed
     data types are not supported.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -76,28 +76,28 @@ class FileWrite : public Stk
  protected:
 
   // Write STK RAW file header.
-  bool setRawFile( const char *fileName );
+  bool setRawFile( std::string fileName );
 
   // Write WAV file header.
-  bool setWavFile( const char *fileName );
+  bool setWavFile( std::string fileName );
 
   // Close WAV file, updating the header.
   void closeWavFile( void );
 
   // Write SND (AU) file header.
-  bool setSndFile( const char *fileName );
+  bool setSndFile( std::string fileName );
 
   // Close SND file, updating the header.
   void closeSndFile( void );
 
   // Write AIFF file header.
-  bool setAifFile( const char *fileName );
+  bool setAifFile( std::string fileName );
 
   // Close AIFF file, updating the header.
   void closeAifFile( void );
 
   // Write MAT-file header.
-  bool setMatFile( const char *fileName );
+  bool setMatFile( std::string fileName );
 
   // Close MAT-file, updating the header.
   void closeMatFile( void );

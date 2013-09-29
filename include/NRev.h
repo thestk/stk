@@ -18,7 +18,7 @@ namespace stk {
     another allpass in series, followed by two allpass filters in
     parallel with corresponding right and left outputs.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -93,7 +93,7 @@ inline StkFloat NRev :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel > 1 ) {
-    errorString_ << "NRev::lastOut(): channel argument must be less than 2!";
+    oStream_ << "NRev::lastOut(): channel argument must be less than 2!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -105,7 +105,7 @@ inline StkFloat NRev :: tick( StkFloat input, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel > 1 ) {
-    errorString_ << "NRev::tick(): channel argument must be less than 2!";
+    oStream_ << "NRev::tick(): channel argument must be less than 2!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

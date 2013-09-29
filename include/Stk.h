@@ -39,7 +39,7 @@ namespace stk {
     STK WWW site: http://ccrma.stanford.edu/software/stk/
 
     The Synthesis ToolKit in C++ (STK)
-    Copyright (c) 1995-2010 Perry R. Cook and Gary P. Scavone
+    Copyright (c) 1995-2011 Perry R. Cook and Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -87,7 +87,7 @@ public:
   enum Type {
     STATUS,
     WARNING,
-    DEBUG_WARNING,
+    DEBUG_PRINT,
     MEMORY_ALLOCATION,
     MEMORY_ACCESS,
     FUNCTION_ARGUMENT,
@@ -135,7 +135,7 @@ public:
   typedef unsigned long StkFormat;
   static const StkFormat STK_SINT8;   /*!< -128 to +127 */
   static const StkFormat STK_SINT16;  /*!< -32768 to +32767 */
-  static const StkFormat STK_SINT24;  /*!< Upper 3 bytes of 32-bit signed integer. */
+  static const StkFormat STK_SINT24;  /*!< Lower 3 bytes of 32-bit signed integer. */
   static const StkFormat STK_SINT32;  /*!< -2147483648 to +2147483647. */
   static const StkFormat STK_FLOAT32; /*!< Normalized between plus/minus 1.0. */
   static const StkFormat STK_FLOAT64; /*!< Normalized between plus/minus 1.0. */
@@ -189,6 +189,13 @@ public:
   //! Static cross-platform method to sleep for a number of milliseconds.
   static void sleep( unsigned long milliseconds );
 
+  //! Static method to check whether a value is within a specified range.
+  static bool inRange( StkFloat value, StkFloat min, StkFloat max ) {
+    if ( value < min ) return false;
+    else if ( value > max ) return false;
+    else return true;
+  }
+
   //! Static function for error reporting and handling using c-strings.
   static void handleError( const char *message, StkError::Type type );
 
@@ -210,7 +217,7 @@ private:
 
 protected:
 
-  std::ostringstream errorString_;
+  static std::ostringstream oStream_;
   bool ignoreSampleRateChange_;
 
   //! Default constructor.
@@ -228,7 +235,7 @@ protected:
   //! Remove class pointer from list for sample rate change notification.
   void removeSampleRateAlert( Stk *ptr );
 
-  //! Internal function for error reporting that assumes message in \c errorString_ variable.
+  //! Internal function for error reporting that assumes message in \c oStream_ variable.
   void handleError( StkError::Type type );
 };
 
@@ -251,10 +258,13 @@ protected:
 
       StkFloat* ptr = &myStkFrames[0];
 
+    Note that this class can also be used as a table with interpolating
+    lookup.
+
     Possible future improvements in this class could include functions
     to convert to and return other data types.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 

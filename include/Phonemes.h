@@ -13,7 +13,7 @@ namespace stk {
     set of 32 static phoneme formant parameters
     and provide access to those values.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -21,8 +21,9 @@ class Phonemes : public Stk
 {
 public:
 
-  Phonemes(void);
-  ~Phonemes(void);
+  Phonemes( void );
+
+  ~Phonemes( void );
 
   //! Returns the phoneme name for the given index (0-31).
   static const char *name( unsigned int index );

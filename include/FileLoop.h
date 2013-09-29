@@ -19,7 +19,7 @@ namespace stk {
     the overloaded one that takes an StkFrames object for
     multi-channel and/or multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -53,6 +53,9 @@ class FileLoop : protected FileWvIn
 
   //! Clear outputs and reset time (file) pointer to zero.
   void reset( void ) { FileWvIn::reset(); };
+
+  //! Return the number of audio channels in the data or stream.
+  unsigned int channelsOut( void ) const { return data_.channels(); };
 
   //! Normalize data to a maximum of +-1.0.
   /*!

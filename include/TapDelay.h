@@ -17,7 +17,7 @@ namespace stk {
     A non-interpolating delay line is typically used in fixed
     delay-length applications, such as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -116,7 +116,7 @@ inline StkFloat TapDelay :: lastOut( unsigned int tap ) const
 {
 #if defined(_STK_DEBUG_)
   if ( tap >= lastFrame_.size() ) ) {
-    errorString_ << "TapDelay::lastOut(): tap argument and number of taps are incompatible!";
+    oStream_ << "TapDelay::lastOut(): tap argument and number of taps are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -128,7 +128,7 @@ inline StkFrames& TapDelay :: tick( StkFloat input, StkFrames& outputs )
 {
 #if defined(_STK_DEBUG_)
   if ( outputs.channels() < outPoint_.size() ) {
-    errorString_ << "TapDelay::tick(): number of taps > channels in StkFrames argument!";
+    oStream_ << "TapDelay::tick(): number of taps > channels in StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -155,11 +155,11 @@ inline StkFrames& TapDelay :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "TapDelay::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "TapDelay::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
   if ( frames.channels() < outPoint_.size() ) {
-    errorString_ << "TapDelay::tick(): number of taps > channels in StkFrames argument!";
+    oStream_ << "TapDelay::tick(): number of taps > channels in StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -185,11 +185,11 @@ inline StkFrames& TapDelay :: tick( StkFrames& iFrames, StkFrames& oFrames, unsi
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() ) {
-    errorString_ << "TapDelay::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "TapDelay::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
   if ( oFrames.channels() < outPoint_.size() ) {
-    errorString_ << "TapDelay::tick(): number of taps > channels in output StkFrames argument!";
+    oStream_ << "TapDelay::tick(): number of taps > channels in output StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

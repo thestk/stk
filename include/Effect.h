@@ -14,7 +14,7 @@ namespace stk {
     subclasses.  It is general enough to support both monophonic and
     polyphonic input/output classes.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -49,12 +49,12 @@ class Effect : public Stk
 inline void Effect :: setEffectMix( StkFloat mix )
 {
   if ( mix < 0.0 ) {
-    errorString_ << "Effect::setEffectMix: mix parameter is less than zero ... setting to zero!";
+    oStream_ << "Effect::setEffectMix: mix parameter is less than zero ... setting to zero!";
     handleError( StkError::WARNING );
     effectMix_ = 0.0;
   }
   else if ( mix > 1.0 ) {
-    errorString_ << "Effect::setEffectMix: mix parameter is greater than 1.0 ... setting to one!";
+    oStream_ << "Effect::setEffectMix: mix parameter is greater than 1.0 ... setting to one!";
     handleError( StkError::WARNING );
     effectMix_ = 1.0;
   }

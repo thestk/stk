@@ -133,7 +133,7 @@ inline StkFrames& Blit :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "Blit::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Blit::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

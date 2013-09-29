@@ -29,7 +29,7 @@ namespace stk {
        - String Sustain = 11
        - String Stretch = 1
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -37,7 +37,7 @@ class StifKarp : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  StifKarp( StkFloat lowestFrequency );
+  StifKarp( StkFloat lowestFrequency = 8.0 );
 
   //! Class destructor.
   ~StifKarp( void );
@@ -77,6 +77,16 @@ class StifKarp : public Instrmnt
   //! Compute and return one output sample.
   StkFloat tick( unsigned int channel = 0 );
 
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument must be less than the number of
+    channels in the StkFrames argument (the first channel is specified
+    by 0).  However, range checking is only performed if _STK_DEBUG_
+    is defined during compilation, in which case an out-of-range value
+    will trigger an StkError exception.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+
  protected:
 
   DelayA  delayLine_;
@@ -110,6 +120,33 @@ inline StkFloat StifKarp :: tick( unsigned int )
   lastFrame_[0] = delayLine_.tick(temp);
   lastFrame_[0] = lastFrame_[0] - combDelay_.tick( lastFrame_[0] );
   return lastFrame_[0];
+}
+
+inline StkFrames& StifKarp :: tick( StkFrames& frames, unsigned int channel )
+{
+  unsigned int nChannels = lastFrame_.channels();
+#if defined(_STK_DEBUG_)
+  if ( channel > frames.channels() - nChannels ) {
+    oStream_ << "StifKarp::tick(): channel and StkFrames arguments are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  StkFloat *samples = &frames[channel];
+  unsigned int j, hop = frames.channels() - nChannels;
+  if ( nChannels == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
+      *samples++ = tick();
+  }
+  else {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
+      *samples++ = tick();
+      for ( j=1; j<nChannels; j++ )
+        *samples++ = lastFrame_[j];
+    }
+  }
+
+  return frames;
 }
 
 } // stk namespace

@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -66,6 +66,13 @@ Rhodey :: ~Rhodey( void )
 
 void Rhodey :: setFrequency( StkFloat frequency )
 {
+#if defined(_STK_DEBUG_)
+  if ( frequency <= 0.0 ) {
+    oStream_ << "Rhodey::setFrequency: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
   baseFrequency_ = frequency * 2.0;
 
   for (unsigned int i=0; i<nOperators_; i++ )
@@ -80,11 +87,6 @@ void Rhodey :: noteOn( StkFloat frequency, StkFloat amplitude )
   gains_[3] = amplitude * fmGains_[67];
   this->setFrequency( frequency );
   this->keyOn();
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Rhodey::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 } // stk namespace

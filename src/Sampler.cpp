@@ -5,7 +5,7 @@
     This instrument provides an ADSR envelope, a one-pole filter, and
     structures for an arbitrary number of attack and looped files.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -48,11 +48,6 @@ void Sampler :: keyOff( void )
 void Sampler :: noteOff( StkFloat amplitude )
 {
   this->keyOff();
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Sampler::NoteOff: amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 } // stk namespace

@@ -17,7 +17,7 @@ namespace stk {
     allpass and comb delay filters.  This class implements two series
     allpass units and two parallel comb filters.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -80,8 +80,8 @@ public:
 
 protected:
 
-  Delay allpassDelays_[2];
-  Delay combDelays_[2];
+  Delay    allpassDelays_[2];
+  Delay    combDelays_[2];
   StkFloat allpassCoefficient_;
   StkFloat combCoefficient_[2];
 
@@ -91,7 +91,7 @@ inline StkFloat PRCRev :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel > 1 ) {
-    errorString_ << "PRCRev::lastOut(): channel argument must be less than 2!";
+    oStream_ << "PRCRev::lastOut(): channel argument must be less than 2!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -103,7 +103,7 @@ inline StkFloat PRCRev :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel > 1 ) {
-    errorString_ << "PRCRev::tick(): channel argument must be less than 2!";
+    oStream_ << "PRCRev::tick(): channel argument must be less than 2!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -122,8 +122,8 @@ inline StkFloat PRCRev :: lastOut( unsigned int channel )
   allpassDelays_[1].tick(temp1);
   temp1 = -(allpassCoefficient_ * temp1) + temp;
     
-  temp2 = temp1 + (combCoefficient_[0] * combDelays_[0].lastOut());
-  temp3 = temp1 + (combCoefficient_[1] * combDelays_[1].lastOut());
+  temp2 = temp1 + ( combCoefficient_[0] * combDelays_[0].lastOut() );
+  temp3 = temp1 + ( combCoefficient_[1] * combDelays_[1].lastOut() );
 
   lastFrame_[0] = effectMix_ * (combDelays_[0].tick(temp2));
   lastFrame_[1] = effectMix_ * (combDelays_[1].tick(temp3));

@@ -17,12 +17,13 @@
     read/write methods.  Values less than or equal to zero indicate
     the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
 #include "UdpSocket.h"
 #include <cstring>
+#include <sstream>
 
 namespace stk {
 
@@ -36,7 +37,7 @@ UdpSocket :: UdpSocket(int port )
 
   WSAStartup(wVersionRequested, &wsaData);
   if (wsaData.wVersion != wVersionRequested) {
-    errorString_ << "UdpSocket: Incompatible Windows socket library version!";
+    oStream_ << "UdpSocket: Incompatible Windows socket library version!";
     handleError( StkError::PROCESS_SOCKET );
   }
 #endif
@@ -44,7 +45,7 @@ UdpSocket :: UdpSocket(int port )
   // Create the UDP socket
   soket_ = ::socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
   if ( soket_ < 0 ) {
-    errorString_ << "UdpSocket: Couldn't create UDP socket!";
+    oStream_ << "UdpSocket: Couldn't create UDP socket!";
     handleError( StkError::PROCESS_SOCKET );
   }
 
@@ -55,7 +56,7 @@ UdpSocket :: UdpSocket(int port )
 
   // Bind socket to the appropriate port and interface (INADDR_ANY)
   if ( bind(soket_, (struct sockaddr *)&address, sizeof(address)) < 0 ) {
-    errorString_ << "UdpSocket: Couldn't bind socket in constructor!";
+    oStream_ << "UdpSocket: Couldn't bind socket in constructor!";
     handleError( StkError::PROCESS_SOCKET );
   }
 
@@ -76,7 +77,7 @@ void UdpSocket :: setAddress( struct sockaddr_in *address, int port, std::string
 {
   struct hostent *hostp;
   if ( (hostp = gethostbyname( hostname.c_str() )) == 0 ) {
-    errorString_ << "UdpSocket::setAddress: unknown host (" << hostname << ")!";
+    oStream_ << "UdpSocket::setAddress: unknown host (" << hostname << ")!";
     handleError( StkError::PROCESS_SOCKET_IPADDR );
   }
 

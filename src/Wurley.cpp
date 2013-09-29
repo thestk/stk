@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -66,7 +66,14 @@ Wurley :: ~Wurley( void )
 }
 
 void Wurley :: setFrequency( StkFloat frequency )
-{    
+{
+#if defined(_STK_DEBUG_)
+  if ( frequency <= 0.0 ) {
+    oStream_ << "Wurley::setFrequency: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
   baseFrequency_ = frequency;
   waves_[0]->setFrequency( baseFrequency_ * ratios_[0]);
   waves_[1]->setFrequency( baseFrequency_ * ratios_[1]);
@@ -82,11 +89,6 @@ void Wurley :: noteOn( StkFloat frequency, StkFloat amplitude )
   gains_[3] = amplitude * fmGains_[68];
   this->setFrequency( frequency );
   this->keyOn();
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Wurley::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 } // stk namespace

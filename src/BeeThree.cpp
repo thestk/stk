@@ -28,7 +28,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -74,11 +74,6 @@ void BeeThree :: noteOn( StkFloat frequency, StkFloat amplitude )
   gains_[3] = amplitude * fmGains_[95];
   this->setFrequency( frequency );
   this->keyOn();
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "BeeThree::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 } // stk namespace

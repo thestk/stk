@@ -22,7 +22,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -62,6 +62,13 @@ PercFlut :: ~PercFlut( void )
 
 void PercFlut :: setFrequency( StkFloat frequency )
 {    
+#if defined(_STK_DEBUG_)
+  if ( frequency <= 0.0 ) {
+    oStream_ << "PercFlut::setFrequency: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
   baseFrequency_ = frequency;
 }
 
@@ -73,11 +80,6 @@ void PercFlut :: noteOn( StkFloat frequency, StkFloat amplitude )
   gains_[3] = amplitude * fmGains_[85] * 0.5;
   this->setFrequency( frequency );
   this->keyOn();
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "PercFlut::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 } // stk namespace

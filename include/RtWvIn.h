@@ -24,7 +24,7 @@ namespace stk {
     that takes an StkFrames object for multi-channel and/or
     multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -112,7 +112,7 @@ inline StkFloat RtWvIn :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= data_.channels() ) {
-    errorString_ << "RtWvIn::lastOut(): channel argument and audio stream are incompatible!";
+    oStream_ << "RtWvIn::lastOut(): channel argument and audio stream are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

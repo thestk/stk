@@ -175,7 +175,7 @@ inline StkFloat Granulate :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= lastFrame_.channels() ) {
-    errorString_ << "Granulate::lastOut(): channel argument is invalid!";
+    oStream_ << "Granulate::lastOut(): channel argument is invalid!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -188,7 +188,7 @@ inline StkFrames& Granulate :: tick( StkFrames& frames, unsigned int channel )
   unsigned int nChannels = lastFrame_.channels();
 #if defined(_STK_DEBUG_)
   if ( channel > frames.channels() - nChannels ) {
-    errorString_ << "Granulate::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Granulate::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

@@ -22,7 +22,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -70,11 +70,6 @@ void HevyMetl :: noteOn( StkFloat frequency, StkFloat amplitude )
   gains_[3] = amplitude * fmGains_[68];
   this->setFrequency( frequency );
   this->keyOn();
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "HevyMetl::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 } // stk namespace
