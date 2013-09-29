@@ -1,0 +1,72 @@
+/*! \page realtime Realtime Audio
+
+In this section, we modify the <TT>sineosc.cpp</TT> program in order to send the output to the default audio playback device on your system.
+
+\code
+// rtsine.cpp
+
+#include "WaveLoop.h"
+#include "RtWvOut.h"
+
+int main()
+{
+  // Set the global sample rate before creating class instances.
+  Stk::setSampleRate( 44100.0 );
+
+  WaveLoop *input = 0;
+  RtWvOut *output = 0;
+
+  try {
+    // Define and load the sine wave file
+    input = new WaveLoop( "rawwaves/sinewave.raw", TRUE );
+
+    // Define and open the default realtime output device for one-channel playback
+    output = new RtWvOut(1);
+  }
+  catch (StkError &) {
+    goto cleanup;
+  }
+
+  input->setFrequency(440.0);
+
+  // Play the oscillator for 40000 samples
+  int i;
+  for ( i=0; i<40000; i++ ) {
+    try {
+      output->tick(input->tick());
+    }
+    catch (StkError &) {
+      goto cleanup;
+    }
+  }
+
+ cleanup:
+  delete input;
+  delete output;
+
+  return 0;
+}
+\endcode
+
+The class RtWvOut is a protected subclass of WvOut.  A number of optional constructor arguments can be used to fine tune its performance for a given system.
+
+Though not used here, an RtWvIn class exists as well which can be used to read realtime audio data from an input device.  See the <TT>record.cpp</TT> example program in the <TT>examples</TT> project for more information.
+
+It is possible to use an instance of RtWvOut and an instance of RtWvIn to simultaneously read and write realtime audio to and from a hardware device or devices.  However, it is recommended to instead use a single instance of RtDuplex to achieve this behavior, in that it guarantees better synchronization between the input and output data.  See the <TT>effects</TT> project or the <TT>io.cpp</TT> example program in the <TT>examples</TT> project for more information.
+
+When using any realtime STK class (RtAudio, RtWvOut, RtWvIn, RtDuplex, RtMidi, TcpWvIn, TcpWvOut, Socket, and Thread), it is necessary to specify an audio/MIDI API preprocessor definition and link with the appropriate libraries or frameworks.  For example, the above program could be compiled on a Linux system using the GNU g++ compiler and the ALSA audio/MIDI API as follows (assuming all necessary files exist in the project directory):
+
+\code
+g++ -Wall -D__LINUX_ALSA__ -D__LITTLE_ENDIAN__ -o rtsine Stk.cpp WvIn.cpp WaveLoop.cpp WvOut.cpp \
+    RtWvOut.cpp RtAudio.cpp rtsine.cpp -lpthread -lasound -lstk
+\endcode
+
+On a Macintosh OS X system, the syntax would be:
+
+\code
+CC -D__MACOSX_CORE__ -o rtsine Stk.cpp WvIn.cpp WaveLoop.cpp WvOut.cpp RtWvOut.cpp RtAudio.cpp \
+   rtsine.cpp -lpthread -lstdc++ -lstk -framework CoreAudio -framework CoreMIDI -framework CoreFoundation
+\endcode
+
+[<A HREF="instruments.html">Next tutorial</A>] &nbsp; [<A HREF="tutorial.html">Main tutorial page</A>]
+*/

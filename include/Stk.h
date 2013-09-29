@@ -155,7 +155,7 @@ typedef double FLOAT64;
 
 #define ONE_OVER_128 (MY_FLOAT) 0.0078125
 
-#if defined(__WINDOWS_DS__)
+#if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__)
   #define __OS_WINDOWS__
   #define __STK_REALTIME__
 #elif defined(__LINUX_OSS__) || defined(__LINUX_ALSA__)

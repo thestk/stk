@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="Moogy" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="controlbee" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Console Application" 0x0103
 
-CFG=Moogy - Win32 Debug
+CFG=controlbee - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "Moogy.mak".
+!MESSAGE NMAKE /f "controlbee.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "Moogy.mak" CFG="Moogy - Win32 Debug"
+!MESSAGE NMAKE /f "controlbee.mak" CFG="controlbee - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "Moogy - Win32 Release" (based on "Win32 (x86) Console Application")
-!MESSAGE "Moogy - Win32 Debug" (based on "Win32 (x86) Console Application")
+!MESSAGE "controlbee - Win32 Release" (based on "Win32 (x86) Console Application")
+!MESSAGE "controlbee - Win32 Debug" (based on "Win32 (x86) Console Application")
 !MESSAGE 
 
 # Begin Project
@@ -28,21 +28,21 @@ CFG=Moogy - Win32 Debug
 CPP=cl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "Moogy - Win32 Release"
+!IF  "$(CFG)" == "controlbee - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "Release"
-# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Output_Dir "controlbee___Win32_Release"
+# PROP BASE Intermediate_Dir "controlbee___Win32_Release"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir ""
-# PROP Intermediate_Dir "release"
+# PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "../../include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WINDOWS_DS__" /D "__LITTLE_ENDIAN__" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "../../include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__LITTLE_ENDIAN__" /D "__WINDOWS_DS__" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,23 +50,24 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dsound.lib /nologo /subsystem:console /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dsound.lib Wsock32.lib winmm.lib /nologo /subsystem:console /machine:I386
+# SUBTRACT LINK32 /pdb:none
 
-!ELSEIF  "$(CFG)" == "Moogy - Win32 Debug"
+!ELSEIF  "$(CFG)" == "controlbee - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "Moogy___Win32_Debug"
-# PROP BASE Intermediate_Dir "Moogy___Win32_Debug"
+# PROP BASE Output_Dir "controlbee___Win32_Debug"
+# PROP BASE Intermediate_Dir "controlbee___Win32_Debug"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir ""
-# PROP Intermediate_Dir "debug"
+# PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__WINDOWS_DS__" /D "__LITTLE_ENDIAN__" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "__LITTLE_ENDIAN__" /D "__WINDOWS_DS__" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -74,14 +75,14 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dsound.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib dsound.lib Wsock32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
 # Begin Target
 
-# Name "Moogy - Win32 Release"
-# Name "Moogy - Win32 Debug"
+# Name "controlbee - Win32 Release"
+# Name "controlbee - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -91,7 +92,11 @@ SOURCE=..\..\src\ADSR.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\BiQuad.cpp
+SOURCE=..\..\src\BeeThree.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\controlbee.cpp
 # End Source File
 # Begin Source File
 
@@ -103,7 +108,7 @@ SOURCE=..\..\src\Filter.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\FormSwep.cpp
+SOURCE=..\..\src\FM.cpp
 # End Source File
 # Begin Source File
 
@@ -111,15 +116,7 @@ SOURCE=..\..\src\Instrmnt.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Moog.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Moogy.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\OnePole.cpp
+SOURCE=..\..\src\Messager.cpp
 # End Source File
 # Begin Source File
 
@@ -127,15 +124,31 @@ SOURCE=..\..\src\RtAudio.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\RtMidi.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\RtWvOut.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Sampler.cpp
+SOURCE=..\..\src\SKINI.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Socket.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\Stk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Thread.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\TwoZero.cpp
 # End Source File
 # Begin Source File
 
@@ -159,7 +172,7 @@ SOURCE=..\..\include\ADSR.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\BiQuad.h
+SOURCE=..\..\include\BeeThree.h
 # End Source File
 # Begin Source File
 
@@ -171,7 +184,7 @@ SOURCE=..\..\include\Filter.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\FormSwep.h
+SOURCE=..\..\include\FM.h
 # End Source File
 # Begin Source File
 
@@ -179,11 +192,15 @@ SOURCE=..\..\include\Instrmnt.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\Moog.h
+SOURCE=..\..\include\Messager.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\OnePole.h
+SOURCE=..\..\include\RtAudio.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\RtMidi.h
 # End Source File
 # Begin Source File
 
@@ -191,7 +208,7 @@ SOURCE=..\..\include\RtWvOut.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\Sampler.h
+SOURCE=..\..\include\SKINI.h
 # End Source File
 # Begin Source File
 
@@ -199,7 +216,15 @@ SOURCE=..\..\include\Stk.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\TwoZero.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\WaveLoop.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\WvIn.h
 # End Source File
 # Begin Source File
 

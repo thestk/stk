@@ -1,6 +1,6 @@
 /*! \page skini Synthesis toolKit Instrument Network Interface (SKINI)
 
-This describes the latest (version 1.1) implementation of SKINI for the Synthesis Toolkit in C++ (STK) by Perry R. Cook.
+This describes the latest (version 1.1) implementation of SKINI for the Synthesis ToolKit in C++ (STK) by Perry R. Cook.
 
 \code
         Too good to be true?
@@ -18,7 +18,7 @@ Differences from MIDI, and motivations, include:
 
 - Text-based messages are used, with meaningful names wherever possible.  This allows any language or system capable of formatted printing to generate SKINI. Similarly, any system capable of reading in a string and turning delimited fields into strings, floats, and ints can consume SKINI for control.  More importantly, humans can actually read, and even write if they want, SKINI files and streams.  Use an editor and search/replace or macros to change a channel or control number.  Load a SKINI score into a spread sheet to apply transformations to time, control parameters, MIDI velocities, etc.  Put a monkey on a special typewriter and get your next great work.  Life's too short to debug bit/nybble packed variable length mumble messages.  Disk space gets cheaper, available bandwidth increases, music takes up so little space and bandwidth compared to video and grapics.  Live a little.
 
-- Floating point numbers are used wherever possible. Note Numbers, Velocities, Controller Values, and Delta and Absolute Times are all represented and scanned as ASCII double-precision floats.  MIDI byte values are preserved, so that incoming MIDI bytes from an interface can be put directly into SKINI messages.  60.0 or 60 is middle C, 127.0 or 127 is maximum velocity etc.  But, unlike MIDI, 60.5 can cause a 50cent sharp middle C to be played.  As with MIDI byte values like velocity, use of the integer and SKINI-added fractional parts is up to the implementor of the algorithm being controlled by SKINI messages. But the extra precision is there to be used or ignored.
+- Floating point numbers are used wherever possible. Note Numbers, Velocities, Controller Values, and Delta and Absolute Times are all represented and scanned as ASCII double-precision floats.  MIDI byte values are preserved, so that incoming MIDI bytes from an interface can be put directly into SKINI messages.  60.0 or 60 is middle C, 127.0 or 127 is maximum velocity etc.  But, unlike MIDI, 60.5 can cause a 50 cent sharp middle C to be played.  As with MIDI byte values like velocity, use of the integer and SKINI-added fractional parts is up to the implementor of the algorithm being controlled by SKINI messages. But the extra precision is there to be used or ignored.
 
 \section why Why SKINI?
 

@@ -1,0 +1,70 @@
+/*! \page multichannel Multi-Channel I/O
+
+The ToolKit WvIn and WvOut classes (and their subclasses) support multi-channel audio data input and output.  A set of interleaved audio samples representing a single time "slice" is referred to as a <I>sample frame</I>.  At a sample rate of 44.1 kHz, a four-channel audio stream will have 44100 sample frames per second and a total of 176400 individual samples per second.
+
+Most STK classes process single-sample data streams via their <TT>tick()</TT> function.  In order to distinguish single-sample and sample frame calculations, the WvIn and WvOut classes implement both <TT>tick()</TT> and <TT>tickFrame()</TT> functions.  The <TT>tickFrame()</TT> functions take or return a pointer to an array of audio data representing one or more sample frames.  For single-channel streams, the <TT>tick()</TT> and <TT>tickFrame()</TT> functions produce equivalent results.  When <TT>tick()</TT> is called for a multi-channel stream, however, the function either returns a sample frame average (WvIn) or writes a single sample argument to all channels (WvOut).
+
+Multi-channel support for realtime audio input and output is dependent on the audio device(s) available on your system.
+
+The following example demonstrates the use of the WvOut class for creating a four channel, 16-bit AIFF formatted audio file.  We will use four sinewaves of different frequencies for the first two seconds and then a single sinewave for the last two seconds.
+
+\code
+// foursine.cpp
+
+#include "WaveLoop.h"
+#include "WvOut.h"
+
+int main()
+{
+  // Set the global sample rate before creating class instances.
+  Stk::setSampleRate( 44100.0 );
+
+  int i, j;
+  WvOut *output = 0;
+  WaveLoop *inputs[4];
+  for ( i=0; i<4; i++ ) inputs[i] = 0;
+
+  // Define and load the sine waves
+  try {
+    for ( i=0; i<4; i++ ) {
+      inputs[i] = new WaveLoop( "rawwaves/sinewave.raw", TRUE );
+      inputs[i]->setFrequency( 220.0 * (i+1) );
+    }
+  }
+  catch (StkError &) {
+    goto cleanup;
+  }
+
+  // Define and open a 16-bit, four-channel AIFF formatted output file
+  try {
+    output = new WvOut( "foursine.aif", 4, WvOut::WVOUT_AIF, Stk::STK_SINT16 );
+  }
+  catch (StkError &) {
+    goto cleanup;
+  }
+
+  // Write two seconds of four sines to the output file
+  MY_FLOAT frame[4];
+  for ( j=0; j<88200; j++ ) {
+    for ( i=0; i<4; i++ )
+      frame[i] = inputs[i]->tick();
+
+    output->tickFrame( frame );
+  }
+
+  // Now write the first sine to all four channels for two seconds
+  for ( j=0; j<88200; j++ ) {
+    output->tick( inputs[0]->tick() );
+  }
+
+ cleanup:
+  for ( i=0; i<4; i++ ) delete inputs[i];
+  delete output;
+
+  return 0;
+}
+\endcode
+
+
+[<A HREF="polyvoices.html">Next tutorial</A>] &nbsp; [<A HREF="tutorial.html">Main tutorial page</A>]
+*/
