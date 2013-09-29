@@ -2,7 +2,7 @@
 AC_INIT(STK, 4.4, gary@music.mcgill.ca, stk)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR(src/Stk.cpp)
-AC_CONFIG_FILES(Makefile src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile)
+AC_CONFIG_FILES(Makefile src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile projects/eguitar/Makefile)
 
 # Fill GXX with something before test.
 AC_SUBST( GXX, ["no"] )
@@ -121,8 +121,9 @@ if test $realtime = yes; then
 
     # Look for OSS flag
     AC_ARG_WITH(oss, [  --with-oss = choose OSS API support (linux only)], [
-    api="$api -D__LINUX_OSS__"
-    AC_MSG_RESULT(using OSS)], )
+    api="$api -D__LINUX_OSS__ -D__LINUX_ALSA__"
+    AC_MSG_RESULT(using OSS)
+    AC_CHECK_LIB(asound, snd_pcm_open, , AC_MSG_ERROR(OSS support requires ALSA for RtMidi!))], )
 
     # If no audio api flags specified, use ALSA
     if [test "$api" == "";] then
@@ -131,11 +132,6 @@ if test $realtime = yes; then
       AC_CHECK_LIB(asound, snd_pcm_open, , AC_MSG_ERROR(ALSA support requires the asound library!))
     fi
 
-    # Look for ALSA library because we need it for RtMidi
-    AC_CHECK_LIB(asound, snd_pcm_open, , AC_MSG_ERROR(STK in Linux requires the ALSA asound library for RtMidi!))
-    api="$api -D__LINUX_ALSASEQ__" 
-
-    AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR(realtime support requires the pthread library!))
     ;;
 
     *-apple*)

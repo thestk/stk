@@ -10,7 +10,7 @@
     A non-interpolating delay line is typically used in fixed
     delay-length applications, such as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -49,11 +49,6 @@ void Delay :: setDelay( unsigned long delay )
 {
   if ( delay > inputs_.size() - 1 ) { // The value is too big.
     oStream_ << "Delay::setDelay: argument (" << delay << ") greater than maximum!\n";
-    handleError( StkError::WARNING ); return;
-  }
-
-  if ( delay < 0 ) {
-    oStream_ << "Delay::setDelay: argument (" << delay << ") less than zero!\n";
     handleError( StkError::WARNING ); return;
   }
 

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <cstdlib>
+//#include <cstdlib>
 
 /*! \namespace stk
     \brief The STK namespace.
@@ -39,7 +39,7 @@ namespace stk {
     STK WWW site: http://ccrma.stanford.edu/software/stk/
 
     The Synthesis ToolKit in C++ (STK)
-    Copyright (c) 1995-2011 Perry R. Cook and Gary P. Scavone
+    Copyright (c) 1995-2012 Perry R. Cook and Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -264,7 +264,7 @@ protected:
     Possible future improvements in this class could include functions
     to convert to and return other data types.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 

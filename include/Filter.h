@@ -15,7 +15,7 @@ namespace stk {
     filter subclasses.  It is general enough to support both
     monophonic and polyphonic input/output classes.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -97,7 +97,7 @@ inline StkFloat Filter :: phaseDelay( StkFloat frequency )
     handleError( StkError::WARNING ); return 0.0;
   }
 
-  StkFloat omegaT = 2 * M_PI * frequency / Stk::sampleRate();
+  StkFloat omegaT = 2 * PI * frequency / Stk::sampleRate();
   StkFloat real = 0.0, imag = 0.0;
   for ( unsigned int i=0; i<b_.size(); i++ ) {
     real += b_[i] * std::cos( i * omegaT );
@@ -115,7 +115,7 @@ inline StkFloat Filter :: phaseDelay( StkFloat frequency )
   }
 
   phase -= std::atan2( imag, real );
-  phase = std::fmod( -phase, 2 * M_PI );
+  phase = std::fmod( -phase, 2 * PI );
   return phase / omegaT;
 }
 

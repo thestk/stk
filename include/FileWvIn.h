@@ -35,7 +35,7 @@ namespace stk {
     See the FileRead class for a description of the supported audio
     file formats.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -89,7 +89,7 @@ public:
   virtual void normalize( StkFloat peak );
 
   //! Return the file size in sample frames.
-  virtual unsigned long getSize( void ) const { return data_.frames(); };
+  virtual unsigned long getSize( void ) const { return file_.fileSize(); };
 
   //! Return the input file sample rate in Hz (not the data read rate).
   /*!

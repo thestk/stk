@@ -4,7 +4,7 @@
 
     This class implements an echo effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -34,6 +34,7 @@ void Echo :: setMaximumDelay( unsigned long delay )
     handleError( StkError::WARNING ); return;
   }
 
+  length_ = delay;
   delayLine_.setMaximumDelay( delay );
 }
 

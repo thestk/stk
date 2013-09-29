@@ -22,7 +22,7 @@
     STK WWW site: http://ccrma.stanford.edu/software/stk/
 
     The Synthesis ToolKit in C++ (STK)
-    Copyright (c) 1995-2011 Perry R. Cook and Gary P. Scavone
+    Copyright (c) 1995-2012 Perry R. Cook and Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -51,6 +51,7 @@
 /***************************************************/
 
 #include "Stk.h"
+#include <stdlib.h>
 
 namespace stk {
 
@@ -228,7 +229,7 @@ void Stk :: handleError( std::string message, StkError::Type type )
 //
 
 StkFrames :: StkFrames( unsigned int nFrames, unsigned int nChannels )
-  : nFrames_( nFrames ), nChannels_( nChannels )
+  : data_( 0 ), nFrames_( nFrames ), nChannels_( nChannels )
 {
   size_ = nFrames_ * nChannels_;
   bufferSize_ = size_;
@@ -242,13 +243,12 @@ StkFrames :: StkFrames( unsigned int nFrames, unsigned int nChannels )
     }
 #endif
   }
-  else data_ = 0;
 
   dataRate_ = Stk::sampleRate();
 }
 
 StkFrames :: StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels )
-  : nFrames_( nFrames ), nChannels_( nChannels )
+  : data_( 0 ), nFrames_( nFrames ), nChannels_( nChannels )
 {
   size_ = nFrames_ * nChannels_;
   bufferSize_ = size_;
@@ -262,7 +262,6 @@ StkFrames :: StkFrames( const StkFloat& value, unsigned int nFrames, unsigned in
 #endif
     for ( long i=0; i<(long)size_; i++ ) data_[i] = value;
   }
-  else data_ = 0;
 
   dataRate_ = Stk::sampleRate();
 }
@@ -273,7 +272,7 @@ StkFrames :: ~StkFrames()
 }
 
 StkFrames :: StkFrames( const StkFrames& f )
-  : size_(0), bufferSize_(0)
+  : data_(0), size_(0), bufferSize_(0)
 {
   resize( f.frames(), f.channels() );
   dataRate_ = Stk::sampleRate();
@@ -282,6 +281,7 @@ StkFrames :: StkFrames( const StkFrames& f )
 
 StkFrames& StkFrames :: operator= ( const StkFrames& f )
 {
+  data_ = 0;
   size_ = 0;
   bufferSize_ = 0;
   resize( f.frames(), f.channels() );

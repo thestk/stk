@@ -19,7 +19,7 @@
        - Frequency = 101
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
     Contributions by Esteban Maestre, 2011.
 */
 /***************************************************/

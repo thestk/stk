@@ -4,7 +4,7 @@
 STATICLIB = libstk.a
 SHAREDLIB = @sharedlib@
 MAJOR = 4
-RELEASE = 4.4.3
+RELEASE = 4.4.4
 
 AR = ar -rsc
 RM = /bin/rm
@@ -18,10 +18,10 @@ OBJECTS	=	Stk.o Generator.o Noise.o Blit.o BlitSaw.o BlitSquare.o Granulate.o \
 					Filter.o Fir.o Iir.o OneZero.o OnePole.o PoleZero.o TwoZero.o TwoPole.o \
 					BiQuad.o FormSwep.o Delay.o DelayL.o DelayA.o \
 					\
-					Effect.o PRCRev.o JCRev.o NRev.o \
+					Effect.o PRCRev.o JCRev.o NRev.o FreeVerb.o \
 					Chorus.o Echo.o PitShift.o LentPitShift.o \
 					Function.o ReedTable.o JetTable.o BowTable.o Cubic.o \
-					Voicer.o Vector3D.o Sphere.o Twang.o \
+					Voicer.o Vector3D.o Sphere.o Twang.o Guitar.o \
 					\
 					Instrmnt.o Clarinet.o BlowHole.o Saxofony.o Flute.o Brass.o BlowBotl.o \
 					Bowed.o Plucked.o StifKarp.o Sitar.o Mandolin.o Mesh2D.o \

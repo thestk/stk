@@ -14,9 +14,10 @@ namespace stk {
     messages, keeping track of its state.  The \e state = ADSR::IDLE
     before being triggered and after the envelope value reaches 0.0 in
     the ADSR::RELEASE state.  All rate, target and level settings must
-    be non-negative.  All time settings must be positive.
+    be non-negative.  All time settings are in seconds and must be
+    positive.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -45,22 +46,22 @@ class ADSR : public Generator
   //! Set target = 0, state = \e ADSR::RELEASE.
   void keyOff( void );
 
-  //! Set the attack rate.
+  //! Set the attack rate (gain / sample).
   void setAttackRate( StkFloat rate );
 
   //! Set the target value for the attack (default = 1.0).
   void setAttackTarget( StkFloat target );
 
-  //! Set the decay rate.
+  //! Set the decay rate (gain / sample).
   void setDecayRate( StkFloat rate );
 
   //! Set the sustain level.
   void setSustainLevel( StkFloat level );
 
-  //! Set the release rate.
+  //! Set the release rate (gain / sample).
   void setReleaseRate( StkFloat rate );
 
-  //! Set the attack rate based on a time duration.
+  //! Set the attack rate based on a time duration (seconds).
   void setAttackTime( StkFloat time );
 
   //! Set the decay rate based on a time duration (seconds).
@@ -69,7 +70,7 @@ class ADSR : public Generator
   //! Set the release rate based on a time duration (seconds).
   void setReleaseTime( StkFloat time );
 
-  //! Set sustain level and attack, decay, and release time durations.
+  //! Set sustain level and attack, decay, and release time durations (seconds).
   void setAllTimes( StkFloat aTime, StkFloat dTime, StkFloat sLevel, StkFloat rTime );
 
   //! Set a sustain target value and attack or decay from current value to target.

@@ -19,7 +19,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -105,11 +105,7 @@ void FM :: setFrequency( StkFloat frequency )
 
 void FM :: setRatio( unsigned int waveIndex, StkFloat ratio )
 {
-  if ( waveIndex < 0 ) {
-    oStream_ << "FM::setRatio: waveIndex parameter is less than zero!";
-    handleError( StkError::WARNING ); return;
-  }
-  else if ( waveIndex >= nOperators_ ) {
+  if ( waveIndex >= nOperators_ ) {
     oStream_ << "FM:setRatio: waveIndex parameter is greater than the number of operators!";
     handleError( StkError::WARNING ); return;
   }
@@ -123,11 +119,7 @@ void FM :: setRatio( unsigned int waveIndex, StkFloat ratio )
 
 void FM :: setGain( unsigned int waveIndex, StkFloat gain )
 {
-  if ( waveIndex < 0 ) {
-    oStream_ << "FM::setGain: waveIndex parameter is less than zero!";
-    handleError( StkError::WARNING ); return;
-  }
-  else if ( waveIndex >= nOperators_ ) {
+  if ( waveIndex >= nOperators_ ) {
     oStream_ << "FM::setGain: waveIndex parameter is greater than the number of operators!";
     handleError( StkError::WARNING ); return;
   }

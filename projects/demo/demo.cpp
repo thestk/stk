@@ -80,11 +80,11 @@ void processMessage( TickData* data )
     return;
 
   case __SK_NoteOn_:
-    if ( value2 == 0.0 ) // velocity is zero ... really a NoteOff
-      data->voicer->noteOff( value1, 64.0 );
-    else // a NoteOn
+    if ( value2 > 0.0 ) { // velocity > 0
       data->voicer->noteOn( value1, value2 );
-    break;
+      break;
+    }
+    // else a note off, so continue to next case
 
   case __SK_NoteOff_:
     data->voicer->noteOff( value1, value2 );

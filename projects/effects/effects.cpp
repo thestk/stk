@@ -6,9 +6,10 @@
 #include "PRCRev.h"
 #include "JCRev.h"
 #include "NRev.h"
+#include "FreeVerb.h"
 #include "Echo.h"
 #include "PitShift.h"
-//#include "LentPitShift.h"
+#include "LentPitShift.h"
 #include "Chorus.h"
 #include "Messager.h"
 #include "RtAudio.h"
@@ -41,9 +42,10 @@ struct TickData {
   PRCRev   prcrev;
   JCRev    jcrev;
   NRev     nrev;
+  FreeVerb frev;
   Echo     echo;
   PitShift shifter;
-  //LentPitShift shifter;
+  LentPitShift lshifter;
   Chorus   chorus;
   Envelope envelope;
   Messager messager;
@@ -101,25 +103,29 @@ void processMessage( TickData* data )
 
     case 22: // effect parameter change 1
       data->echo.setDelay( (unsigned long) (temp * Stk::sampleRate() * 0.95) );
-      //      data->shifter.setShift( temp * 3 + 0.25);
-      data->shifter.setShift( 1.4 * temp + 0.3);
+      data->lshifter.setShift( 1.4 * temp + 0.3 );
+      data->shifter.setShift( 1.4 * temp + 0.3 );
       data->chorus.setModFrequency( temp );
       data->prcrev.setT60( temp * 10.0 );
       data->jcrev.setT60( temp * 10.0 );
       data->nrev.setT60( temp * 10.0 );
+      data->frev.setDamping( temp );
       break;
 
     case 23: // effect parameter change 2
       data->chorus.setModDepth( temp * 0.2 );
+      data->frev.setRoomSize( temp );
       break;
 
     case 44: // effect mix
       data->echo.setEffectMix( temp );
       data->shifter.setEffectMix( temp );
+      data->lshifter.setEffectMix( temp );
       data->chorus.setEffectMix( temp );
       data->prcrev.setEffectMix( temp );
       data->jcrev.setEffectMix( temp );
       data->nrev.setEffectMix( temp );
+      data->frev.setEffectMix( temp );
       break;
 
     default:
@@ -165,30 +171,36 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     counter = min( nTicks, data->counter );
     data->counter -= counter;
     for ( i=0; i<counter; i++ ) {
-      if ( data->effectId < 2 ) { // Echo and PitShift ... mono output
+      if ( data->effectId < 3 ) { // Echo, PitShift and LentPitShift ... mono output
         if ( data->effectId == 0 )
           sample = data->envelope.tick() * data->echo.tick( *iSamples++ );
-        else
+        else if ( data->effectId == 1 )
           sample = data->envelope.tick() * data->shifter.tick( *iSamples++ );
+        else
+          sample = data->envelope.tick() * data->lshifter.tick( *iSamples++ );
         *oSamples++ = sample; // two channels interleaved
         *oSamples++ = sample;
       }
       else { // Chorus or a reverb ... stereo output
-        if ( data->effectId == 2 ) {
+        if ( data->effectId == 3 ) {
           data->chorus.tick( *iSamples++ );
           effect = (Effect *) &(data->chorus);
         }
-        else if ( data->effectId == 3 ) {
+        else if ( data->effectId == 4 ) {
           data->prcrev.tick( *iSamples++ );
           effect = (Effect *) &(data->prcrev);
         }
-        else if ( data->effectId == 4 ) {
+        else if ( data->effectId == 5 ) {
           data->jcrev.tick( *iSamples++ );
           effect = (Effect *) &(data->jcrev);
         }
-        else {
+        else if ( data->effectId == 6 ) {
           data->nrev.tick( *iSamples++ );
           effect = (Effect *) &(data->nrev);
+        }
+        else {
+          data->frev.tick( *iSamples++ );
+          effect = (Effect *) &(data->frev);
         }
         const StkFrames& samples = effect->lastFrame();
         *oSamples++ = data->envelope.tick() * samples[0];

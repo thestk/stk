@@ -17,7 +17,7 @@
     type, the data type will automatically be modified.  Compressed
     data types are not supported.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -35,7 +35,8 @@ const FileWrite::FILE_TYPE FileWrite :: FILE_SND = 3;
 const FileWrite::FILE_TYPE FileWrite :: FILE_AIF = 4;
 const FileWrite::FILE_TYPE FileWrite :: FILE_MAT = 5;
 
-// WAV header structure. See ftp://ftp.isi.edu/in-notes/rfc2361.txt
+// WAV header structure. See
+// http://www-mmsp.ece.mcgill.ca/documents/audioformats/WAVE/Docs/rfc2361.txt
 // for information regarding format codes.
 struct WaveHeader {
   char riff[4];           // "RIFF"
@@ -214,7 +215,6 @@ bool FileWrite :: setRawFile( std::string fileName )
 
 bool FileWrite :: setWavFile( std::string fileName )
 {
-  std::string name( fileName );
   if ( fileName.find( ".wav" ) == std::string::npos ) fileName += ".wav";
   fd_ = fopen( fileName.c_str(), "wb" );
   if ( !fd_ ) {

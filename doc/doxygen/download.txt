@@ -1,13 +1,27 @@
 /*! \page download Download, Release Notes, and Bug Fixes
 
-\section down Download Version 4.4.3 (30 August 2011):
+\section down Download Version 4.4.4 (24 August 2012):
 
 <UL>
-<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.4.3.tar.gz">Source distribution</A></LI>
+<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.4.4.tar.gz">Source distribution</A></LI>
 </UL>
 
 
 \section notes Release Notes:
+
+\subsection v4dot4dot4 Version 4.4.4
+
+<ul>
+<li>New FreeVerb class (thanks to Greg Burlet)</li>
+<li>New Guitar class</li>
+<li>New electric guitar project</li>
+<li>Updated versions of RtAudio and RtMidi</li>
+<li>Cleaned / revised Shakers class</li>
+<li>Bug fix in LentPitShift</li>
+<li>Bug fix in Echo constructor</li>
+<li>Bug fix in FileWvIn (file size when chunking)</li>
+<li>Bug fix in StkFrames copy constructor</li>
+</ul>
 
 \subsection v4dot4dot3 Version 4.4.3
 

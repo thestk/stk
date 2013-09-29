@@ -27,7 +27,6 @@ It appears that socket support in Tcl/Tk uses the Nagle algorithm, which produce
 <UL>
 <LI>A soundcard to use realtime audio input/output capabilities.  In order to use the <I><B>effects</B></I> project, the soundcard and drivers must support full duplex mode.</LI>
 <LI><A HREF="http://www.microsoft.com/directx/">DirectX</A> 5.0 (or higher) runtime libraries.</LI>
-<LI>Visual C++ .NET or MinGW for compiling.</LI>
 <LI>For compiling the source (if not already in your system): <UL><LI><A HREF="Misc/dsound.h">dsound.h</A> header file (DirectX 6.1) - put somewhere in your header search path</LI><LI><A HREF="Misc/dsound.lib">dsound.lib</A> library file (DirectX 6.1) - put somewhere in your library search path</LI></UL></LI>
 </UL>
 

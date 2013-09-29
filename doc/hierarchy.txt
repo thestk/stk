@@ -1,6 +1,6 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
 
-By Perry R. Cook and Gary P. Scavone, 1995-2011.
+By Perry R. Cook and Gary P. Scavone, 1995-2012.
 
 STK Classes - See the HTML documentation in the html directory for complete information.
 
@@ -27,11 +27,13 @@ Stk -|                  UdpSocket
      |
      |- StkFrames
      |
-     |- Effect - (Echo, Chorus, PitShift, PRCRev, JCRev, NRev)
+     |- Effect - (Echo, Chorus, PitShift, LentPitShift, PRCRev, JCRev, NRev, FreeVerb)
      |
      |- Voicer, Message, Skini, MidiFileIn, Phonemes, Sphere, Vector3D
      |
      |- Messager
+     |
+     |- Twang, Guitar
      |
      |            .- FM - (HevyMetl, PercFlut, Rhodey, Wurley, TubeBell, BeeThree, FMVoices)
      |            |
@@ -43,7 +45,7 @@ Stk -|                  UdpSocket
      |            |
      |            |- Resonate
      |            |
-     |            |- PluckedTwo - Mandolin
+     |            |- Mandolin
      .- Instrmnt -|
                   |- Drummer
                   |
@@ -115,45 +117,48 @@ Each class is listed either with some of the unit generators it uses,
 or in terms of the algorithm it implements.  All inherit from Instrmnt,
 which inherits from Stk.
 
-Simple.cpp      Simple Instrument              Pulse oscillator + resonant filtered noise
-Plucked.cpp     Basic Plucked String           DelayA, OneZero, OnePole, Noise
-StifKarp.cpp    Plucked String with Stiffness  DelayA, DelayL, OneZero, BiQuad, Noise
-PluckTwo.cpp    Not So Basic Pluck             DelayL, DlineA, OneZero
-Mandolin.cpp    Commuted Mandolin              <<flavor of PluckTwo>>
-Bowed.cpp       So So Bowed String             DelayL, BowTabl, OnePole, BiQuad, WaveLoop, ADSR
-Brass.cpp       Not So Bad Brass Instrument    DelayA, BiQuad, PoleZero, ADSR, WaveLoop
-Clarinet.cpp    Pretty Good Clarinet           DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop
-BlowHole.cpp    Clarinet w/ Tone & Vent Holes  DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop, PoleZero
-Saxofony.cpp    A Faux Saxophone               DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop
-Flute.cpp       Pretty Good Flute              JetTabl, DelayL, OnePole, PoleZero, Noise, ADSR, WaveLoop
-BlowBotl.cpp    Blown Bottle                   JetTabl, BiQuad, PoleZero, Noise, ADSR, WaveLoop
-BandedWG.cpp    Banded Waveguide Meta-Object   Delay, BowTabl, ADSR, BiQuad
-Modal.cpp       N Resonances                   Envelope, WaveLoop, BiQuad, OnePole
-ModalBar.cpp    Various presets                4 Resonance Models
-FM.cpp          N Operator FM Master           ADSR, WaveLoop, TwoZero
-HevyMetl.cpp    Distorted FM Synthesizer       3 Cascade with FB Modulator
-PercFlut.cpp    Percussive Flute               3 Cascade Operators
-Rhodey.cpp      Rhodes-Like Electric Piano     2 Parallel Simple FMs
-Wurley.cpp      Wurlitzer Electric Piano       2 Parallel Simple FMs
-TubeBell.cpp    Classic FM Bell                2 Parallel Simple FMs
-FMVoices.cpp    3 Formant FM Voice             3 Carriers Share 1 Modulator
-VoicForm.cpp    4 Formant Voice Synthesis      FormSwep, SingWave, OnePole, OneZero, Envelope, Noise
-BeeThree.cpp    Cheezy Additive Organ          4 Oscillators Additive
-Sampler.cpp     Sampling Synthesizer           5 each ADSR, WvIn, WaveLoop, OnePole
-Moog.cpp        Swept Filter                   Sampler with Swept Filter
-Resonate.cpp    Filtered Noise                 ADSR, BiQuad, Noise
-Drummer.cpp     Drum Synthesizer               Bunch of WvIns, and OnePole
-Shakers.cpp     PhISM statistical model for shakers and real-world sound effects
-Mesh2D.cpp      Two-dimensional, rectilinear digital waveguide mesh.
-Whistle.cpp     Hybrid physical/spectral model of a police whistle.
+Simple.cpp       Simple Instrument              Pulse oscillator + resonant filtered noise
+Plucked.cpp      Basic Plucked String           DelayA, OneZero, OnePole, Noise
+Twang.cpp        Not So Basic Pluck             DelayL, DlineA, Fir, allows commuted synthesis
+Mandolin.cpp     Commuted Mandolin              2 Twangs
+Guitar.cpp       N-String Guitar                N Twangs, bridge coupling, allows feedback and body filter
+StifKarp.cpp     Plucked String with Stiffness  DelayA, DelayL, OneZero, BiQuad, Noise
+Bowed.cpp        So So Bowed String             DelayL, BowTabl, OnePole, BiQuad, WaveLoop, ADSR
+Brass.cpp        Not So Bad Brass Instrument    DelayA, BiQuad, PoleZero, ADSR, WaveLoop
+Clarinet.cpp     Pretty Good Clarinet           DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop
+BlowHole.cpp     Clarinet w/ Tone & Vent Holes  DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop, PoleZero
+Saxofony.cpp     A Faux Saxophone               DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop
+Flute.cpp        Pretty Good Flute              JetTabl, DelayL, OnePole, PoleZero, Noise, ADSR, WaveLoop
+BlowBotl.cpp     Blown Bottle                   JetTabl, BiQuad, PoleZero, Noise, ADSR, WaveLoop
+BandedWG.cpp     Banded Waveguide Meta-Object   Delay, BowTabl, ADSR, BiQuad
+Modal.cpp        N Resonances                   Envelope, WaveLoop, BiQuad, OnePole
+ModalBar.cpp     Various presets                4 Resonance Models
+FM.cpp           N Operator FM Master           ADSR, WaveLoop, TwoZero
+HevyMetl.cpp     Distorted FM Synthesizer       3 Cascade with FB Modulator
+PercFlut.cpp     Percussive Flute               3 Cascade Operators
+Rhodey.cpp       Rhodes-Like Electric Piano     2 Parallel Simple FMs
+Wurley.cpp       Wurlitzer Electric Piano       2 Parallel Simple FMs
+TubeBell.cpp     Classic FM Bell                2 Parallel Simple FMs
+FMVoices.cpp     3 Formant FM Voice             3 Carriers Share 1 Modulator
+VoicForm.cpp     4 Formant Voice Synthesis      FormSwep, SingWave, OnePole, OneZero, Envelope, Noise
+BeeThree.cpp     Cheezy Additive Organ          4 Oscillators Additive
+Sampler.cpp      Sampling Synthesizer           5 each ADSR, WvIn, WaveLoop, OnePole
+Moog.cpp         Swept Filter                   Sampler with Swept Filter
+Resonate.cpp     Filtered Noise                 ADSR, BiQuad, Noise
+Drummer.cpp      Drum Synthesizer               Bunch of WvIns, and OnePole
+Shakers.cpp      PhISM statistical model for shakers and real-world sound effects
+Mesh2D.cpp       Two-dimensional, rectilinear digital waveguide mesh.
+Whistle.cpp      Hybrid physical/spectral model of a police whistle.
 
-Effect.h      Effects Processor Base Class
-JCRev.cpp       Chowning Reverberator           3 series allpass units, 4 parallel combs, 2 stereo delays
-NRev.cpp        Another famous CCRMA Reverb	    8 allpass, 6 parallel comb filters
-PRCRev.cpp      Dirt Cheap Reverb by Cook	      2 allpass, 2 comb filters
-Flanger.cpp     Flanger Effects Processor       DelayL, WaveLoop
-Chorus.cpp      Chorus Effects Processor        DelayL, WaveLoop
-PitShift.cpp    Cheap Pitch Shifter             DelayL
+Effect.h         Effects Processor Base Class
+JCRev.cpp        Chowning Reverberator           3 series allpass units, 4 parallel combs, 2 stereo delays
+NRev.cpp         Another famous CCRMA Reverb	    8 allpass, 6 parallel comb filters
+PRCRev.cpp       Dirt Cheap Reverb by Cook	      2 allpass, 2 comb filters
+FreeVerb.cpp     Jezar at Dreampoint's FreeVerb  4 allpass, 8 lowpass comb filters
+Flanger.cpp      Flanger Effects Processor       DelayL, WaveLoop
+Chorus.cpp       Chorus Effects Processor        DelayL, WaveLoop
+PitShift.cpp     Cheap Pitch Shifter             DelayL
+LentPitShift.cpp Pitch Shifter based Lent Algorithm
 
 
 ***********   OTHER SUPPORT CLASSES AND FILES   **************

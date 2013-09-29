@@ -17,7 +17,7 @@
     Currently, FileWvOut is non-interpolating and the output rate is
     always Stk::sampleRate().
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 

@@ -1,10 +1,10 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2011.
+By Perry R. Cook and Gary P. Scavone, 1995-2012.
 
 Please read the file README for more general STK information.
 
-The configure script supports MinGW.  As well, STK is distributed with Visual C++ .NET project and workspace files.  It no longer compiles with Visual C++ 6.0.
+The configure script supports MinGW.  As well, STK is distributed with Visual C++ .NET project and workspace files (though these may no longer work with current versions of Visual Studio).  It no longer compiles with Visual C++ 6.0.
 
 With Windows XP/7, piping works as under unix.  Simply fire up the script files (ex. StkDemo.bat) by either double-clicking on them or from within a shell.
 

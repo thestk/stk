@@ -17,7 +17,7 @@ namespace stk {
     allpass and comb delay filters.  This class implements two series
     allpass units and two parallel comb filters.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 

@@ -1,5 +1,5 @@
 # Tcl/Tk Demo GUI for the Synthesis Toolkit (STK)
-# by Gary P. Scavone, CCRMA, Stanford University, 1999-2002.
+# by Gary P. Scavone, CCRMA, Stanford University, 1999-2012.
 
 # Set initial control values
 set pitch 64.0
@@ -11,8 +11,6 @@ set cont4 20.0
 set cont7 128.0
 set cont11 64.0
 set cont44 24.0
-set outID "stdout"
-set commtype "stdout"
 set patchnum 0
 set oldpatch 0
 set temp 0
@@ -22,19 +20,10 @@ wm title . "STK Demo GUI"
 wm iconname . "demo"
 . config -bg black
 
-# Configure "communications" menu
-menu .menu -tearoff 0
-menu .menu.communication -tearoff 0 
-.menu add cascade -label "Communication" -menu .menu.communication \
-    -underline 0
-.menu.communication add radio -label "Console" -variable commtype \
-    -value "stdout" -command { setComm }
-.menu.communication add radio -label "Socket" -variable commtype \
-    -value "socket" -command { setComm }
-
 # Configure instrument change menu.  Use a unique number for each
 # voice.  The STK program change value is found by dividing by 100,
 # while the remainder corresponds to within-class preset values.
+menu .menu -tearoff 0
 menu .menu.instrument -tearoff 0
 .menu add cascade -label "Instruments" -menu .menu.instrument \
     -underline 0
@@ -96,45 +85,45 @@ menu .menu.instrument -tearoff 0
     -value 2301 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Sekere" -variable patchnum \
     -value 2302 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Guiro" -variable patchnum \
+.menu.instrument add radio -label "Tambourine" -variable patchnum \
     -value 2303 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Waterdrop" -variable patchnum \
+.menu.instrument add radio -label "Sleigh Bells" -variable patchnum \
     -value 2304 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Bamboo" -variable patchnum \
+.menu.instrument add radio -label "Bamboo Chimes" -variable patchnum \
     -value 2305 -command { patchChange $patchnum } \
     -columnbreak 1
 
-.menu.instrument add radio -label "Tambourine" -variable patchnum \
+.menu.instrument add radio -label "Sandpaper" -variable patchnum \
     -value 2306 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Sleigh Bell" -variable patchnum \
+.menu.instrument add radio -label "Coke Can" -variable patchnum \
     -value 2307 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Sticks" -variable patchnum \
     -value 2308 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Crunch" -variable patchnum \
     -value 2309 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Wrench" -variable patchnum \
-    -value 2310 -command { patchChange $patchnum }
-.menu.instrument add radio -label "SandPaper" -variable patchnum \
-    -value 2311 -command { patchChange $patchnum }
-.menu.instrument add radio -label "CokeCan" -variable patchnum \
-    -value 2312 -command { patchChange $patchnum }
-.menu.instrument add radio -label "NeXT Mug" -variable patchnum \
-    -value 2313 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Mug & Penny" -variable patchnum \
-    -value 2314 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Mug & Nickle" -variable patchnum \
-    -value 2315 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Mug & Dime" -variable patchnum \
-    -value 2316 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Mug & Quarter" -variable patchnum \
-    -value 2317 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Mug & Franc" -variable patchnum \
-    -value 2318 -command { patchChange $patchnum }
-.menu.instrument add radio -label "Mug & Peso" -variable patchnum \
-    -value 2319 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Big Rocks" -variable patchnum \
-    -value 2320 -command { patchChange $patchnum }
+    -value 2310 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Little Rocks" -variable patchnum \
+    -value 2311 -command { patchChange $patchnum }
+.menu.instrument add radio -label "NeXT Mug" -variable patchnum \
+    -value 2312 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Penny" -variable patchnum \
+    -value 2313 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Nickle" -variable patchnum \
+    -value 2314 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Dime" -variable patchnum \
+    -value 2315 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Quarter" -variable patchnum \
+    -value 2316 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Franc" -variable patchnum \
+    -value 2317 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Mug & Peso" -variable patchnum \
+    -value 2318 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Guiro" -variable patchnum \
+    -value 2319 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Wrench" -variable patchnum \
+    -value 2320 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Water Drops" -variable patchnum \
     -value 2321 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Tuned Bamboo" -variable patchnum \
     -value 2322 -command { patchChange $patchnum }
@@ -183,7 +172,7 @@ button .pretty -bitmap @$bitmappath/Klar.xbm \
     -background white -foreground black
 pack .pretty -padx 5 -pady 10
 
-# Configure "note-on" buttons
+# Configure "note on" buttons
 frame .noteOn -bg black
 
 button .noteOn.on -text NoteOn -bg grey66 -command { noteOn $pitch $press }
@@ -200,50 +189,50 @@ frame .left -bg black
 frame .right -bg black
 
 scale .left.volume -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0  1 " 7} \
--orient horizontal -label "Volume" \
--tickinterval 32 -showvalue true -bg grey66  \
--variable cont7
+    -command {printWhatz "ControlChange    0.0  1 " 7} \
+    -orient horizontal -label "Volume" \
+    -tickinterval 32 -showvalue true -bg grey66  \
+    -variable cont7
 
 scale .left.bPressure -from 0 -to 128 -length 200 \
--command {changePress } -variable press \
--orient horizontal -label "Breath Pressure" \
--tickinterval 32 -showvalue true -bg grey66
+    -command {changePress } -variable press \
+    -orient horizontal -label "Breath Pressure" \
+    -tickinterval 32 -showvalue true -bg grey66
 
 scale .left.pitch -from 0 -to 128 -length 200 \
--command {changePitch } -variable pitch \
--orient horizontal -label "MIDI Note Number" \
--tickinterval 32 -showvalue true -bg grey66
+    -command {changePitch } -variable pitch \
+    -orient horizontal -label "MIDI Note Number" \
+    -tickinterval 32 -showvalue true -bg grey66
 
 scale .left.cont2 -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0  1 " 2} \
--orient horizontal -label "Reed Stiffness" \
--tickinterval 32 -showvalue true -bg grey66  \
--variable cont2
+    -command {printWhatz "ControlChange    0.0  1 " 2} \
+    -orient horizontal -label "Reed Stiffness" \
+    -tickinterval 32 -showvalue true -bg grey66  \
+    -variable cont2
 
 scale .right.reverb -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0  1 " 44} \
--orient horizontal -label "Reverb Mix" \
--tickinterval 32 -showvalue true -bg grey66  \
--variable cont44
+    -command {printWhatz "ControlChange    0.0  1 " 44} \
+    -orient horizontal -label "Reverb Mix" \
+    -tickinterval 32 -showvalue true -bg grey66  \
+    -variable cont44
 
 scale .right.cont4 -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0  1 " 4} \
--orient horizontal -label "Breath Noise" \
--tickinterval 32 -showvalue true -bg grey66  \
--variable cont4
+    -command {printWhatz "ControlChange    0.0  1 " 4} \
+    -orient horizontal -label "Breath Noise" \
+    -tickinterval 32 -showvalue true -bg grey66  \
+    -variable cont4
 
 scale .right.cont11 -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0  1 " 11} \
--orient horizontal -label "Vibrato Rate" \
--tickinterval 32 -showvalue true -bg grey66  \
--variable cont11 
+    -command {printWhatz "ControlChange    0.0  1 " 11} \
+    -orient horizontal -label "Vibrato Rate" \
+    -tickinterval 32 -showvalue true -bg grey66  \
+    -variable cont11 
 
 scale .right.cont1 -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0  1 " 1} \
--orient horizontal -label "Vibrato Amount" \
--tickinterval 32 -showvalue true -bg grey66  \
--variable cont1
+    -command {printWhatz "ControlChange    0.0  1 " 1} \
+    -orient horizontal -label "Vibrato Amount" \
+    -tickinterval 32 -showvalue true -bg grey66  \
+    -variable cont1
 
 pack .left.volume -padx 10 -pady 10
 pack .left.bPressure -padx 10 -pady 10
@@ -261,31 +250,57 @@ pack .right -side right
 set p .drumwindow
 
 proc myExit {} {
-    global pitch outID
-    puts $outID [format "ExitProgram"]
-    flush $outID
-    close $outID
+    global pitch
+    puts [format "ExitProgram"]
+    flush stdout
+    close stdout
     exit
 }
 
 proc noteOn {pitchVal pressVal} {
-    global outID
-    puts $outID [format "NoteOn           0.0  1  %3.2f  %3.2f" $pitchVal $pressVal]
-    flush $outID
+    puts [format "NoteOn           0.0  1  %3.2f  %3.2f" $pitchVal $pressVal]
+    flush stdout
 }
 
 proc noteOff {pitchVal pressVal} {
-    global outID
-    puts $outID [format "NoteOff          0.0  1  %3.2f %3.2f" $pitchVal $pressVal]
-    flush $outID
+    puts [format "NoteOff          0.0  1  %3.2f %3.2f" $pitchVal $pressVal]
+    flush stdout
+}
+
+# Set bindings
+bind . <KeyPress> { noteOn $pitch $press }
+bind . <Destroy> +myExit
+
+proc playDrum {value}	{
+    global velocity
+    puts [format "NoteOn           0.0  1  %3i  %3.2f" $value $velocity]
+    flush stdout
+}
+
+proc printWhatz {tag value1 value2 } {
+    puts [format "%s %2i  %3.2f" $tag $value1 $value2]
+    flush stdout
+}
+
+proc changePress {value} {
+    global patchnum
+    if { $patchnum<700 || ($patchnum>900 && $patchnum<2500) || $patchnum>=2600 } {
+      puts [format "AfterTouch       0.0  1  %3.2f" $value]
+      flush stdout
+    }
+}
+
+proc changePitch {value} {
+    puts [format "PitchChange      0.0  1  %3.2f" $value]
+    flush stdout
 }
 
 proc patchChange {value} {
-    global outID bitmappath cont1 cont2 cont4 cont11 oldpatch press pitch temp
+    global bitmappath cont1 cont2 cont4 cont11 oldpatch press pitch temp
     if {$value!=$oldpatch} {
         set program [expr $value / 100]
-        puts $outID [format "ProgramChange    0.0  1  %2i" $program]
-        flush $outID
+        puts [format "ProgramChange    0.0  1  %2i" $program]
+        flush stdout
 
         # This stuff below sets up the correct bitmaps, slider labels, and control
         # parameters.
@@ -374,7 +389,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 2  $cont2
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
-            puts $outID [format "NoteOn           0.0  1  %3.2f  %3.2f" $pitch $press]
+            puts [format "NoteOn           0.0  1  %3.2f  %3.2f" $pitch $press]
         }
         if {$program==5}	{ # Bottle
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
@@ -595,12 +610,12 @@ proc patchChange {value} {
             set cont2 0.0
             set cont4 0.0
             set cont11 0.0
-            puts $outID [format "ControlChange    0.0  1  16  %3.2f" $preset]
-            puts $outID [format "NoteOn          0.0  1  %3.2f  %3.2f" $pitch $press]
+            puts [format "ControlChange    0.0  1  16  %3.2f" $preset]
+            puts [format "NoteOn          0.0  1  %3.2f  %3.2f" $pitch $press]
             printWhatz "ControlChange    0.0  1 " 1  $cont1
             printWhatz "ControlChange    0.0  1 " 2  $cont2
             printWhatz "ControlChange    0.0  1 " 11 $cont11
-            flush $outID
+            flush stdout
         }
         if {$program==23}	{ # Shakers
             .pretty config -bitmap @$bitmappath/phism.xbm
@@ -619,22 +634,22 @@ proc patchChange {value} {
                     .pretty config -bitmap @$bitmappath/cabasa.xbm
                 }
                 3 {
-                    .pretty config -bitmap @$bitmappath/guiro.xbm
+                    .pretty config -bitmap @$bitmappath/tambourine.xbm
+                }
+                4 {
+                    .pretty config -bitmap @$bitmappath/sleighbell.xbm
                 }
                 5 {
                     .pretty config -bitmap @$bitmappath/bamboo.xbm
                 }
-                6 {
-                    .pretty config -bitmap @$bitmappath/tambourine.xbm
-                }
                 7 {
-                    .pretty config -bitmap @$bitmappath/sleighbell.xbm
-                }
-                10 {
-                    .pretty config -bitmap @$bitmappath/rachet.xbm
-                }
-                12 {
                     .pretty config -bitmap @$bitmappath/cokecan.xbm
+                }
+                19 {
+                    .pretty config -bitmap @$bitmappath/guiro.xbm
+                }
+                20 {
+                    .pretty config -bitmap @$bitmappath/rachet.xbm
                 }
                 22 {
                     .pretty config -bitmap @$bitmappath/bamboo.xbm
@@ -644,12 +659,12 @@ proc patchChange {value} {
             set cont2 64.0
             set cont4 64.0
             set cont11 64.0
-            puts $outID [format "NoteOn          0.0  1  %3.2f  %3.2f" $pitch $press]
+            puts [format "NoteOn          0.0  1  %3.2f  %3.2f" $pitch $press]
             printWhatz "ControlChange    0.0  1 " 1  $cont1
             printWhatz "ControlChange    0.0  1 " 2  $cont2
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
-            flush $outID
+            flush stdout
         }
         if {$program==24}	{ # Modal Instruments
             .pretty config -bitmap @$bitmappath/KModal.xbm
@@ -673,7 +688,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 2  $cont2
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
-            flush $outID
+            flush stdout
         }
         if { $program==25 }	{ # Mesh2D
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
@@ -691,7 +706,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 2  $cont2
             printWhatz "ControlChange    0.0  1 " 4  $cont4
             printWhatz "ControlChange    0.0  1 " 11 $cont11
-            flush $outID
+            flush stdout
         }
         if { $program==26 }	{ # Resonate
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
@@ -709,7 +724,7 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 11 $cont11
             printWhatz "ControlChange    0.0  1 " 1  $cont1
             printWhatz "ControlChange    0.0  1 " 2  $cont2
-            flush $outID
+            flush stdout
         }
         if { $program==27 }	{ # Whistle
             .pretty config -bitmap @$bitmappath/prcFunny.xbm
@@ -727,105 +742,38 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 11 $cont11
             printWhatz "ControlChange    0.0  1 " 1  $cont1
             printWhatz "ControlChange    0.0  1 " 2  $cont2
-            flush $outID
+            flush stdout
         }
         set oldpatch $value
     }
 }
 
-#bind all <KeyPress> {
-bind . <KeyPress> {
-    noteOn $pitch $press 
-}
+bind . <Configure> {+ center_the_toplevel %W }
+proc center_the_toplevel { w } {
 
-# Bind an X windows "close" event with the Exit routine
-bind . <Destroy> +myExit
+    # Callback on the <Configure> event for a toplevel
+    # that should be centered on the screen
 
-proc playDrum {value}	{
-    global velocity outID
-    puts $outID [format "NoteOn           0.0  1  %3i  %3.2f" $value $velocity]
-    flush $outID
-}
+    # Make sure that we aren't configuring a child window
+    if { [string equal $w [winfo toplevel $w]] } {
 
-proc printWhatz {tag value1 value2 } {
-    global outID
-    puts $outID [format "%s %2i  %3.2f" $tag $value1 $value2]
-    flush $outID
-}
+        # Calculate the desired geometry
+        set width [winfo reqwidth $w]
+        set height [winfo reqheight $w]
+        set x [expr { ( [winfo vrootwidth  $w] - $width  ) / 2 }]
+        set y [expr { ( [winfo vrootheight $w] - $height ) / 2 }]
+        #set y 0
 
-proc changePress {value} {
-    global outID patchnum
-    if { $patchnum<700 || ($patchnum>900 && $patchnum<2500) || $patchnum>=2600 } {
-      puts $outID [format "AfterTouch       0.0  1  %3.2f" $value]
-      flush $outID
+        # Hand the geometry off to the window manager
+        wm geometry $w ${width}x${height}+${x}+${y}
+
+        # Unbind <Configure> so that this procedure is
+        # not called again when the window manager finishes
+        # centering the window.  Also, revert geometry management
+        # to internal default for subsequent size changes.
+        bind $w <Configure> {}
+        wm geometry $w ""
     }
-}
 
-proc changePitch {value} {
-    global outID
-    puts $outID [format "PitchChange      0.0  1  %3.2f" $value]
-    flush $outID
-}
-
-# Socket connection procedure
-set d .socketdialog
-
-proc setComm {} {
-		global outID commtype d
-		if {$commtype == "stdout"} {
-				if { [string compare "stdout" $outID] } {
-						set i [tk_dialog .dialog "Break Socket Connection?" {You are about to break an existing socket connection ... is this what you want to do?} "" 0 Cancel OK]
-						switch $i {
-								0 {set commtype "socket"}
-								1 {close $outID
-								   set outID "stdout"}
-						}
-				}
-		} elseif { ![string compare "stdout" $outID] } {
-				set sockport 2001
-        set sockhost localhost
-				toplevel $d
-				wm title $d "STK Client Socket Connection"
-				wm resizable $d 0 0
-				grab $d
-				label $d.message -text "Specify a socket host and port number below (if different than the STK defaults shown) and then click the \"Connect\" button to invoke a socket-client connection attempt to the STK socket server." \
-								-background white -font {Helvetica 10 bold} \
-								-wraplength 3i -justify left
-				frame $d.sockhost
-				entry $d.sockhost.entry -width 15
-				label $d.sockhost.text -text "Socket Host:" \
-								-font {Helvetica 10 bold}
-				frame $d.sockport
-				entry $d.sockport.entry -width 15
-				label $d.sockport.text -text "Socket Port:" \
-								-font {Helvetica 10 bold}
-				pack $d.message -side top -padx 5 -pady 10
-				pack $d.sockhost.text -side left -padx 1 -pady 2
-				pack $d.sockhost.entry -side right -padx 5 -pady 2
-				pack $d.sockhost -side top -padx 5 -pady 2
-				pack $d.sockport.text -side left -padx 1 -pady 2
-				pack $d.sockport.entry -side right -padx 5 -pady 2
-				pack $d.sockport -side top -padx 5 -pady 2
-				$d.sockhost.entry insert 0 $sockhost
-				$d.sockport.entry insert 0 $sockport
-				frame $d.buttons
-				button $d.buttons.cancel -text "Cancel" -bg grey66 \
-								-command { set commtype "stdout"
-				                   set outID "stdout"
-				                   destroy $d }
-				button $d.buttons.connect -text "Connect" -bg grey66 \
-								-command {
-						set sockhost [$d.sockhost.entry get]
-						set sockport [$d.sockport.entry get]
-					  set err [catch {socket $sockhost $sockport} outID]
-
-						if {$err == 0} {
-								destroy $d
-						} else {
-								tk_dialog $d.error "Socket Error" {Error: Unable to make socket connection.  Make sure the STK socket server is first running and that the port number is correct.} "" 0 OK 
-				}   }
-				pack $d.buttons.cancel -side left -padx 5 -pady 10
-				pack $d.buttons.connect -side right -padx 5 -pady 10
-				pack $d.buttons -side bottom -padx 5 -pady 10
-		}
+    return
 }

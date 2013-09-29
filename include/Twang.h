@@ -27,7 +27,7 @@ namespace stk {
     use possibly subject to patents held by Stanford
     University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2011.
+    by Perry R. Cook and Gary P. Scavone, 1995-2012.
 */
 /***************************************************/
 
@@ -36,9 +36,6 @@ class Twang : public Stk
  public:
   //! Class constructor, taking the lowest desired playing frequency.
   Twang( StkFloat lowestFrequency = 50.0 );
-
-  //! Class destructor.
-  ~Twang( void );
 
   //! Reset and clear all internal state.
   void clear( void );
@@ -70,7 +67,11 @@ class Twang : public Stk
   void setLoopFilter( std::vector<StkFloat> coefficients );
 
   //! Return an StkFrames reference to the last output sample frame.
-  const StkFrames& lastFrame( void ) const { return lastFrame_; };
+  //const StkFrames& lastFrame( void ) const { return lastFrame_; };
+
+  //! Return the last computed output value.
+  // StkFloat lastOut( void ) { return lastFrame_[0]; };
+  StkFloat lastOut( void ) { return lastOutput_; };
 
   //! Compute and return one output sample.
   StkFloat tick( StkFloat input );
@@ -103,7 +104,7 @@ class Twang : public Stk
   DelayL   combDelay_;
   Fir      loopFilter_;
 
-  StkFrames lastFrame_;
+  StkFloat lastOutput_;
   StkFloat frequency_;
   StkFloat loopGain_;
   StkFloat pluckPosition_;
@@ -111,10 +112,11 @@ class Twang : public Stk
 
 inline StkFloat Twang :: tick( StkFloat input )
 {
-  lastFrame_[0] = delayLine_.tick( input + loopFilter_.tick( delayLine_.lastOut() ) );
-  lastFrame_[0] -= combDelay_.tick( lastFrame_[0] ); // comb filtering on output
+  lastOutput_ = delayLine_.tick( input + loopFilter_.tick( delayLine_.lastOut() ) );
+  lastOutput_ -= combDelay_.tick( lastOutput_ ); // comb filtering on output
+  lastOutput_ *= 0.5;
 
-  return lastFrame_[0] * 0.5;
+  return lastOutput_;
 }
 
 inline StkFrames& Twang :: tick( StkFrames& frames, unsigned int channel )
