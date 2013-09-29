@@ -3,7 +3,7 @@
 - \ref directory
 - \ref compiling
 - \ref control
-- \ref instruments
+- \ref voices
 - \ref nort
 - \ref rt
 - \ref tcl
@@ -92,7 +92,7 @@ All STK programs in this distribution take input control data in the form of <A 
 <A HREF="http://dev.scriptics.com">Tcl/Tk</A> graphical user interfaces (GUI) are provided with this distribution which can generate realtime SKINI messages.  Note that the Messager class allows multiple simultaneous socket client connections, together with MIDI and/or piped input.  The <I><B>Md2Skini</B></I> program (in the <I><B>demo</B></I> directory) is mostly obsolete but can be used to create SKINI scorefiles from realtime MIDI input.  
 
 
-\section instruments Demo: STK Instruments
+\section voices Demo: STK Instruments
 
 The <I><B>demo</B></I> project demonstrates the behavior of all the distributed STK instruments.  The instruments available with this release include:
 <UL>

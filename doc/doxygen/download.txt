@@ -1,13 +1,25 @@
 /*! \page download Download and Release Notes
 
-<B>Version 4.1, 8 October 2002</B><P>
-<A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.tar.gz">STK Version 4.1: Source distribution</A> (1.2 MB tar/gzipped)<BR>
-<A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.binaries.tar.gz">STK Version 4.1: Source distribution with precompiled windows binaries</A> (1.7 MB tar/gzipped)<BR>
-<A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1-1.i386.rpm">STK Version 4.1: Linux RPM using ALSA API</A> (1.2 MB)<BR>
-<A HREF="http://www-ccrma.stanford.edu/software/stk/release/stkmanual.pdf">STK Manual (PDF)</A> (1.2 MB) Note: HTML version in /doc/html/ directory of distribution<BR>
-<P>
+<B>Version 4.1.1, 24 October 2002</B><P>
+<UL>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.1.tar.gz">Source distribution</A> (1.2 MB tar/gzipped)</LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.1.binaries.tar.gz">Source with precompiled Windows binaries</A> (2.0 MB tar/gzipped)</LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.1-1.i386.rpm">Linux RPM</A> (1.2 MB) <B>Note: Library and Makefiles built for ALSA, though the rpm can be rebuilt to use OSS</B></LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stkmanual.pdf">STK Manual (PDF)</A> (1.62 MB) <B>Note: HTML version already in /doc/html/ directory of distribution</B></LI>
+</UL>
+
 
 \section notes Release Notes:
+
+\subsection v4dot1dot3 Version 4.1.1
+
+<UL>
+<LI>Bug fix in RtAudio for Macintosh OS X and Windows ASIO duplex operation.</LI>
+<LI>Windows ASIO fix in Stk.h.</LI>
+<LI>Documentation updates.</LI>
+<LI>Expanded tutorial.</LI>
+<LI>Fixed RtDuplex omission in src Makefile.</LI>
+</UL>
 
 \subsection v4dot1 Version 4.1
 
@@ -27,7 +39,6 @@
 <LI>Multivoice flag (-n NUMBER) added as command line option to demo program.</LI>
 <LI>Sample rate flag added as command line option to example programs.</LI>
 <LI>Socket port number added as command line option to example programs.</LI>
-
 </UL>
 
 \subsection v4 Version 4.0

@@ -1,0 +1,130 @@
+/*! \page controlin Control Input
+
+Each Synthesis ToolKit instrument exposes its relevant control parameters via public functions such as setFrequency() and controlChange().  Programmers are free to implement the control scheme of their choice in exposing those parameters to the user.
+
+A text-based control protocol called <A HREF="skini.html">SKINI</A> is provided with the Synthesis ToolKit.  SKINI extends the MIDI protocol in incremental ways, providing a text-based messaging scheme in human-readable format and making use of floating-point numbers wherever possible.  Each SKINI message consists  of a message type (e.g., NoteOn, PitchBend), a time specification (absolute or delta), a channel number (scanned as a long integer), and a maximum of two subsequent message-specific field values.  Knowing this, it should be relatively clear what the following SKINI "scorefile" specifies:
+
+\code
+NoteOn          0.000082  2  55.0  82.3
+NoteOff         1.000000  2  55.0  64.0
+NoteOn          0.000082  2  69.0  82.8
+StringDetune    0.100000  2  10.0
+StringDetune    0.100000  2  30.0
+StringDetune    0.100000  2  50.0
+StringDetune    0.100000  2  40.0
+StringDetune    0.100000  2  22.0
+StringDetune    0.100000  2  12.0
+NoteOff         1.000000  2  69.0  64.0
+\endcode
+
+MIDI messages (with the exception of Sysex) are easily represented within the SKINI protocol.
+
+The class Messager can be used to acquire and parse MIDI messages from a MIDI device and SKINI messages from STDIN and socket connections.  Many of the example programs included with the ToolKit distribution use a Messager instance to accept control input from the accompanying tcl/tk graphical user interfaces, from external MIDI devices, or from SKINI scorefiles.
+
+In the following example, we'll modify the <TT>bethree.cpp</TT> program from the previous tutorial chapter and incorporate a Messager class to allow control via a SKINI scorefile.
+
+\code
+// controlbee.cpp
+
+#include "BeeThree.h"
+#include "RtWvOut.h"
+#include "Messager.h"
+#include "SKINI.msg"
+#include <math.h>
+
+int main()
+{
+  // Set the global sample rate before creating class instances.
+  Stk::setSampleRate( 44100.0 );
+
+  Instrmnt *instrument = 0;
+  RtWvOut *output = 0;
+  Messager *messager = 0;
+  bool done = FALSE;
+
+  try {
+    // Define and load the BeeThree instrument
+    instrument = new BeeThree();
+
+    // Define and open the default realtime output device for one-channel playback
+    output = new RtWvOut(1);
+  }
+  catch (StkError &) {
+    goto cleanup;
+  }
+
+  try {
+    // Create a Messager instance to read from a redirected SKINI scorefile.
+    messager = new Messager();
+  }
+  catch (StkError &) {
+    goto cleanup;
+  }
+
+  // Play the instrument until the end of the scorefile.
+  int i, nTicks, type;
+  MY_FLOAT byte2, byte3, frequency;
+  while (!done) {
+
+    // Look for new messages and return a delta time (in samples).
+    type = messager->nextMessage();
+    if (type < 0)
+      done = TRUE;
+
+    nTicks = messager->getDelta();
+    try {
+      for ( i=0; i<nTicks; i++ )
+        output->tick( instrument->tick() );
+    }
+    catch (StkError &) {
+      goto cleanup;
+    }
+
+    if ( type > 0 ) {
+      // Process the new control message.
+      byte2 = messager->getByteTwo();
+      byte3 = messager->getByteThree();
+
+      switch(type) {
+
+      case __SK_NoteOn_:
+        frequency = (MY_FLOAT) 220.0 * pow( 2.0, (byte2 - 57.0) / 12.0 );
+        instrument->noteOn( frequency, byte3 * ONE_OVER_128 );
+        break;
+
+      case __SK_NoteOff_:
+        instrument->noteOff( byte3 * ONE_OVER_128 );
+        break;
+
+      case __SK_ControlChange_:
+        instrument->controlChange( (int) byte2, byte3 );
+        break;
+
+      case __SK_AfterTouch_:
+        instrument->controlChange( 128, byte2 );
+        break;
+      }
+    }
+  }
+
+ cleanup:
+  delete instrument;
+  delete output;
+  delete messager;
+
+  return 0;
+}
+\endcode
+
+Assuming the program is compiled as <TT>controlbee</TT> and the SKINI scorefile <A HREF="tutorial/bookert.ski"><TT>bookert.ski</TT></A> is in the <TT>scores</TT> directory, the scorefile could be redirected to the program as:
+
+\code
+controlbee < scores/bookert.ski
+\endcode
+
+Only a few basic SKINI message type case statements are included in this example.  It is easy to extend the program to support a much more elaborate set of instrument control parameters.
+
+This example could also be easily extended to accept "realtime" control input messages via STDIN, socket, or MIDI connections.  The Messager class constructor takes an optional argument consisting of a bitmask of the following options: <TT>STK_PIPE</TT>, <TT>STK_SOCKET</TT>, and/or <TT>STK_MIDI</TT>.
+
+[<A HREF="multichannel.html">Next tutorial</A>] &nbsp; [<A HREF="tutorial.html">Main tutorial page</A>]
+*/

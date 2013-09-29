@@ -2,6 +2,13 @@ The Synthesis ToolKit in C++ (STK)
 
 By Perry R. Cook and Gary P. Scavone, 1995-2002.
 
+v4.1.1: (24 October 2002)
+- bug fix in RtAudio for Macintosh OS X and Windows ASIO duplex operation
+- windows ASIO fix in Stk.h
+- documentation updates
+- expanded tutorial
+- fixed RtDuplex omission in src Makefile
+
 v4.1: (8 October 2002)
 - Macintosh OS X support added
 - new Whistle class
