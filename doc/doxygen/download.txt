@@ -1,14 +1,20 @@
 /*! \page download Download and Release Notes
 
-<B>Version 4.1.2, 15 March 2004</B><P>
+<B>Version 4.1.3, 22 March 2004</B><P>
 <UL>
-<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.2.tar.gz">Source distribution</A></LI>
-<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.2.binaries.tar.gz">Source with precompiled Windows binaries</A></LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.3.tar.gz">Source distribution</A></LI>
+<LI><A HREF="http://www-ccrma.stanford.edu/software/stk/release/stk-4.1.3.binaries.tar.gz">Source with precompiled Windows binaries</A></LI>
 <LI><A HREF="http://www-ccrma.stanford.edu/planetccrma/software/">Linux RPMs from Planet CCRMA</A></LI>
 </UL>
 
 
 \section notes Release Notes:
+
+\subsection v4dot1dot3 Version 4.1.3
+
+<ul>
+<li>Bug fix in RtAudio for Windows DirectSound output only support</li>
+</ul>
 
 \subsection v4dot1dot2 Version 4.1.2
 
