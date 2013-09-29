@@ -23,15 +23,17 @@
        - String Detuning = 1
        - Microphone Position = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Mandolin.h"
 #include "SKINI.msg"
 
-Mandolin :: Mandolin(StkFloat lowestFrequency)
-  : PluckTwo(lowestFrequency)
+namespace stk {
+
+Mandolin :: Mandolin( StkFloat lowestFrequency )
+  : PluckTwo( lowestFrequency )
 {
   // Concatenate the STK rawwave path to the rawwave files
   soundfile_[0] = new FileWvIn( (Stk::rawwavePath() + "mand1.raw").c_str(), true );
@@ -52,7 +54,7 @@ Mandolin :: Mandolin(StkFloat lowestFrequency)
   waveDone_ = soundfile_[mic_]->isFinished();
 }
 
-Mandolin :: ~Mandolin()
+Mandolin :: ~Mandolin( void )
 {
   for ( int i=0; i<12; i++ )
     delete soundfile_[i];
@@ -83,7 +85,7 @@ void Mandolin :: pluck( StkFloat amplitude )
   dampTime_ = (long) lastLength_;   // See tick method below.
 }
 
-void Mandolin :: pluck(StkFloat amplitude, StkFloat position)
+void Mandolin :: pluck( StkFloat amplitude, StkFloat position )
 {
   // Pluck position puts zeroes at position * length.
   pluckPosition_ = position;
@@ -101,7 +103,7 @@ void Mandolin :: pluck(StkFloat amplitude, StkFloat position)
   this->pluck( amplitude );
 }
 
-void Mandolin :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Mandolin :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->pluck( amplitude );
@@ -112,7 +114,7 @@ void Mandolin :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Mandolin :: setBodySize(StkFloat size)
+void Mandolin :: setBodySize( StkFloat size )
 {
   // Scale the commuted body response by its sample rate (22050).
   StkFloat rate = size * 22050.0 / Stk::sampleRate();
@@ -120,37 +122,7 @@ void Mandolin :: setBodySize(StkFloat size)
     soundfile_[i]->setRate( rate );
 }
 
-StkFloat Mandolin :: computeSample()
-{
-  StkFloat temp = 0.0;
-  if ( !waveDone_ ) {
-    // Scale the pluck excitation with comb
-    // filtering for the duration of the file.
-    temp = soundfile_[mic_]->tick() * pluckAmplitude_;
-    temp = temp - combDelay_.tick(temp);
-    waveDone_ = soundfile_[mic_]->isFinished();
-  }
-
-  // Damping hack to help avoid overflow on re-plucking.
-  if ( dampTime_ >=0 ) {
-    dampTime_ -= 1;
-    // Calculate 1st delay filtered reflection plus pluck excitation.
-    lastOutput_ = delayLine_.tick( filter_.tick( temp + (delayLine_.lastOut() * 0.7) ) );
-    // Calculate 2nd delay just like the 1st.
-    lastOutput_ += delayLine2_.tick( filter2_.tick( temp + (delayLine2_.lastOut() * 0.7) ) );
-  }
-  else { // No damping hack after 1 period.
-    // Calculate 1st delay filtered reflection plus pluck excitation.
-    lastOutput_ = delayLine_.tick( filter_.tick( temp + (delayLine_.lastOut() * loopGain_) ) );
-    // Calculate 2nd delay just like the 1st.
-    lastOutput_ += delayLine2_.tick( filter2_.tick( temp + (delayLine2_.lastOut() * loopGain_) ) );
-  }
-
-  lastOutput_ *= 0.3;
-  return lastOutput_;
-}
-
-void Mandolin :: controlChange(int number, StkFloat value)
+void Mandolin :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -184,3 +156,5 @@ void Mandolin :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

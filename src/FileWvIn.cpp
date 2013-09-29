@@ -4,14 +4,15 @@
 
     This class inherits from WvIn.  It provides a "tick-level"
     interface to the FileRead class.  It also provides variable-rate
-    "playback" functionality.  Audio file support is provided by the
-    FileRead class.  Linear interpolation is used for fractional "read
-    rates".
+    playback functionality.  Audio file support is provided by the
+    FileRead class.  Linear interpolation is used for fractional read
+    rates.
 
-    FileWvIn supports multi-channel data.  It is important to distinguish
-    the tick() methods, which return samples produced by averaging
-    across sample frames, from the tickFrame() methods, which return
-    references to multi-channel sample frames.
+    FileWvIn supports multi-channel data.  It is important to
+    distinguish the tick() method that computes a single frame (and
+    returns only the specified sample of a multi-channel frame) from
+    the overloaded one that takes an StkFrames object for
+    multi-channel and/or multi-frame data.
 
     FileWvIn will either load the entire content of an audio file into
     local memory or incrementally read file data from disk in chunks.
@@ -20,18 +21,20 @@
     chunkThreshold (in sample frames) will be read incrementally in
     chunks of \e chunkSize each (also in sample frames).
 
-    When the end of a file is reached, subsequent calls to the tick()
-    functions return zero-valued data.
+    When the file end is reached, subsequent calls to the tick()
+    functions return zeros and isFinished() returns \e true.
 
     See the FileRead class for a description of the supported audio
     file formats.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "FileWvIn.h"
 #include <cmath>
+
+namespace stk {
 
 FileWvIn :: FileWvIn( unsigned long chunkThreshold, unsigned long chunkSize )
   : finished_(true), interpolate_(false), time_(0.0),
@@ -65,6 +68,7 @@ void FileWvIn :: closeFile( void )
 {
   if ( file_.isOpen() ) file_.close();
   finished_ = true;
+  lastFrame_.resize( 0, 0 );
 }
 
 void FileWvIn :: openFile( std::string fileName, bool raw, bool doNormalize )
@@ -91,8 +95,8 @@ void FileWvIn :: openFile( std::string fileName, bool raw, bool doNormalize )
   // Load all or part of the data.
   file_.read( data_, 0, doNormalize );
 
-  // Resize our lastOutputs container.
-  lastOutputs_.resize( 1, file_.channels() );
+  // Resize our lastFrame container.
+  lastFrame_.resize( 1, file_.channels() );
 
   // Set default rate based on file sampling rate.
   this->setRate( data_.dataRate() / Stk::sampleRate() );
@@ -105,8 +109,7 @@ void FileWvIn :: openFile( std::string fileName, bool raw, bool doNormalize )
 void FileWvIn :: reset(void)
 {
   time_ = (StkFloat) 0.0;
-  for ( unsigned int i=0; i<lastOutputs_.size(); i++ )
-    lastOutputs_[i] = 0.0;
+  for ( unsigned int i=0; i<lastFrame_.size(); i++ ) lastFrame_[i] = 0.0;
   finished_ = false;
 }
 
@@ -129,11 +132,11 @@ void FileWvIn :: normalize( StkFloat peak )
       max = (StkFloat) fabs((double) data_[i]);
   }
 
-  if (max > 0.0) {
+  if ( max > 0.0 ) {
     max = 1.0 / max;
     max *= peak;
     for ( i=0; i<data_.size(); i++ )
-	    data_[i] *= max;
+      data_[i] *= max;
   }
 }
 
@@ -162,27 +165,26 @@ void FileWvIn :: addTime( StkFloat time )
   if ( time_ < 0.0 ) time_ = 0.0;
   if ( time_ > file_.fileSize() - 1.0 ) {
     time_ = file_.fileSize() - 1.0;
-    for ( unsigned int i=0; i<lastOutputs_.size(); i++ )
-      lastOutputs_[i] = 0.0;
+    for ( unsigned int i=0; i<lastFrame_.size(); i++ ) lastFrame_[i] = 0.0;
     finished_ = true;
   }
 }
 
-StkFloat FileWvIn :: lastOut( void ) const
+StkFloat FileWvIn :: tick( unsigned int channel )
 {
-  if ( finished_ ) return 0.0;
-  return WvIn :: lastOut();
-}
+#if defined(_STK_DEBUG_)
+  if ( channel >= data_.channels() ) {
+    errorString_ << "FileWvIn::tick(): channel argument and soundfile data are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
 
-void FileWvIn :: computeFrame( void )
-{
-  if ( finished_ ) return;
+  if ( finished_ ) return 0.0;
 
   if ( time_ < 0.0 || time_ > (StkFloat) ( file_.fileSize() - 1.0 ) ) {
-    for ( unsigned int i=0; i<lastOutputs_.size(); i++ )
-      lastOutputs_[i] = 0.0;
+    for ( unsigned int i=0; i<lastFrame_.size(); i++ ) lastFrame_[i] = 0.0;
     finished_ = true;
-    return;
+    return 0.0;
   }
 
   StkFloat tyme = time_;
@@ -211,15 +213,46 @@ void FileWvIn :: computeFrame( void )
   }
 
   if ( interpolate_ ) {
-    for ( unsigned int i=0; i<lastOutputs_.size(); i++ )
-    lastOutputs_[i] = data_.interpolate( tyme, i );
+    for ( unsigned int i=0; i<lastFrame_.size(); i++ )
+      lastFrame_[i] = data_.interpolate( tyme, i );
   }
   else {
-    for ( unsigned int i=0; i<lastOutputs_.size(); i++ )
-      lastOutputs_[i] = data_( (size_t) tyme, i );
+    for ( unsigned int i=0; i<lastFrame_.size(); i++ )
+      lastFrame_[i] = data_( (size_t) tyme, i );
   }
 
   // Increment time, which can be negative.
   time_ += rate_;
+
+  return lastFrame_[channel];
 }
 
+StkFrames& FileWvIn :: tick( StkFrames& frames )
+{
+  if ( !file_.isOpen() ) {
+#if defined(_STK_DEBUG_)
+    errorString_ << "FileWvIn::tick(): no file data is loaded!";
+    handleError( StkError::DEBUG_WARNING );
+#endif
+    return frames;
+  }
+
+  unsigned int nChannels = lastFrame_.channels();
+#if defined(_STK_DEBUG_)
+  if ( nChannels != frames.channels() ) {
+    errorString_ << "FileWvIn::tick(): StkFrames argument is incompatible with file data!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  unsigned int j, counter = 0;
+  for ( unsigned int i=0; i<frames.frames(); i++ ) {
+    this->tick();
+    for ( j=0; j<nChannels; j++ )
+      frames[counter++] = lastFrame_[j];
+  }
+
+  return frames;
+}
+
+} // stk namespace

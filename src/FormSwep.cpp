@@ -2,63 +2,83 @@
 /*! \class FormSwep
     \brief STK sweepable formant filter class.
 
-    This public BiQuad filter subclass implements
-    a formant (resonance) which can be "swept"
-    over time from one frequency setting to another.
-    It provides methods for controlling the sweep
-    rate and target frequency.
+    This class implements a formant (resonance) which can be "swept"
+    over time from one frequency setting to another.  It provides
+    methods for controlling the sweep rate and target frequency.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "FormSwep.h"
+#include <cmath>
 
-FormSwep :: FormSwep() : BiQuad()
+namespace stk {
+
+FormSwep :: FormSwep( void )
 {
-  frequency_ = (StkFloat) 0.0;
-  radius_ = (StkFloat) 0.0;
-  targetGain_ = (StkFloat) 1.0;
-  targetFrequency_ = (StkFloat) 0.0;
-  targetRadius_ = (StkFloat) 0.0;
-  deltaGain_ = (StkFloat) 0.0;
-  deltaFrequency_ = (StkFloat) 0.0;
-  deltaRadius_ = (StkFloat) 0.0;
-  sweepState_ = (StkFloat)  0.0;
-  sweepRate_ = (StkFloat) 0.002;
+  frequency_ = 0.0;
+  radius_ = 0.0;
+  targetGain_ = 1.0;
+  targetFrequency_ = 0.0;
+  targetRadius_ = 0.0;
+  deltaGain_ = 0.0;
+  deltaFrequency_ = 0.0;
+  deltaRadius_ = 0.0;
+  sweepState_ = 0.0;
+  sweepRate_ = 0.002;
   dirty_ = false;
-  this->clear();
+
+  b_.resize( 3, 0.0 );
+  a_.resize( 3, 0.0 );
+  a_[0] = 1.0;
+  inputs_.resize( 3, 1, 0.0 );
+  outputs_.resize( 3, 1, 0.0 );
+
+  Stk::addSampleRateAlert( this );
 }
 
 FormSwep :: ~FormSwep()
 {
+  Stk::removeSampleRateAlert( this );
 }
 
-void FormSwep :: setResonance(StkFloat frequency, StkFloat radius)
+void FormSwep :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
 {
-  dirty_ = false;
+  if ( !ignoreSampleRateChange_ ) {
+    errorString_ << "FormSwep::sampleRateChanged: you may need to recompute filter coefficients!";
+    handleError( StkError::WARNING );
+  }
+}
+
+void FormSwep :: setResonance( StkFloat frequency, StkFloat radius )
+{
   radius_ = radius;
   frequency_ = frequency;
 
-  BiQuad::setResonance( frequency_, radius_, true );
+  a_[2] = radius * radius;
+  a_[1] = -2.0 * radius * cos( TWO_PI * frequency / Stk::sampleRate() );
+
+  // Use zeros at +- 1 and normalize the filter peak gain.
+  b_[0] = 0.5 - 0.5 * a_[2];
+  b_[1] = 0.0;
+  b_[2] = -b_[0];
 }
 
-void FormSwep :: setStates(StkFloat frequency, StkFloat radius, StkFloat gain)
+void FormSwep :: setStates( StkFloat frequency, StkFloat radius, StkFloat gain )
 {
   dirty_ = false;
 
   if ( frequency_ != frequency || radius_ != radius )
-    BiQuad::setResonance( frequency, radius, true );
+    this->setResonance( frequency, radius );
 
-  frequency_ = frequency;
-  radius_ = radius;
   gain_ = gain;
   targetFrequency_ = frequency;
   targetRadius_ = radius;
   targetGain_ = gain;
 }
 
-void FormSwep :: setTargets(StkFloat frequency, StkFloat radius, StkFloat gain)
+void FormSwep :: setTargets( StkFloat frequency, StkFloat radius, StkFloat gain )
 {
   dirty_ = true;
   startFrequency_ = frequency_;
@@ -70,42 +90,21 @@ void FormSwep :: setTargets(StkFloat frequency, StkFloat radius, StkFloat gain)
   deltaFrequency_ = frequency - frequency_;
   deltaRadius_ = radius - radius_;
   deltaGain_ = gain - gain_;
-  sweepState_ = (StkFloat) 0.0;
+  sweepState_ = 0.0;
 }
 
-void FormSwep :: setSweepRate(StkFloat rate)
+void FormSwep :: setSweepRate( StkFloat rate )
 {
   sweepRate_ = rate;
   if ( sweepRate_ > 1.0 ) sweepRate_ = 1.0;
   if ( sweepRate_ < 0.0 ) sweepRate_ = 0.0;
 }
 
-void FormSwep :: setSweepTime(StkFloat time)
+void FormSwep :: setSweepTime( StkFloat time )
 {
   sweepRate_ = 1.0 / ( time * Stk::sampleRate() );
   if ( sweepRate_ > 1.0 ) sweepRate_ = 1.0;
   if ( sweepRate_ < 0.0 ) sweepRate_ = 0.0;
 }
 
-StkFloat FormSwep :: computeSample( StkFloat input )
-{                                     
-  if (dirty_)  {
-    sweepState_ += sweepRate_;
-    if ( sweepState_ >= 1.0 )   {
-      sweepState_ = 1.0;
-      dirty_ = false;
-      radius_ = targetRadius_;
-      frequency_ = targetFrequency_;
-      gain_ = targetGain_;
-    }
-    else  {
-      radius_ = startRadius_ + (deltaRadius_ * sweepState_);
-      frequency_ = startFrequency_ + (deltaFrequency_ * sweepState_);
-      gain_ = startGain_ + (deltaGain_ * sweepState_);
-    }
-    BiQuad::setResonance( frequency_, radius_, true );
-  }
-
-  return BiQuad::computeSample( input );
-}
-
+} // stk namespace

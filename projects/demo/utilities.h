@@ -6,9 +6,9 @@
 #include "FileWvOut.h"
 #include "Messager.h"
 
-int voiceByNumber(int number, Instrmnt **instrument);
+int voiceByNumber(int number, stk::Instrmnt **instrument);
 
-int voiceByName(char *name, Instrmnt **instrument);
+int voiceByName(char *name, stk::Instrmnt **instrument);
 
 void usage(char *function);
 
@@ -16,4 +16,4 @@ int checkArgs(int numArgs, char *args[]);
 
 int countVoices(int nArgs, char *args[]);
 
-bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager);
+bool parseArgs(int numArgs, char *args[], stk::WvOut **output, stk::Messager& messager);

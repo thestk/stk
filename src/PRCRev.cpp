@@ -10,15 +10,19 @@
     two series allpass units and two parallel comb
     filters.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "PRCRev.h"
-#include <math.h>
+#include <cmath>
 
-PRCRev :: PRCRev(StkFloat T60)
+namespace stk {
+
+PRCRev :: PRCRev( StkFloat T60 )
 {
+  lastFrame_.resize( 1, 2, 0.0 ); // resize lastFrame_ for stereo output
+
   // Delay lengths for 44100 Hz sample rate.
   int lengths[4]= {353, 1097, 1777, 2137};
   double scaler = Stk::sampleRate() / 44100.0;
@@ -34,7 +38,7 @@ PRCRev :: PRCRev(StkFloat T60)
     }
   }
 
-  for (i=0; i<2; i++)	{
+  for ( i=0; i<2; i++ )	{
 	  allpassDelays_[i].setMaximumDelay( lengths[i] );
 	  allpassDelays_[i].setDelay( lengths[i] );
 
@@ -48,18 +52,14 @@ PRCRev :: PRCRev(StkFloat T60)
   this->clear();
 }
 
-PRCRev :: ~PRCRev()
-{
-}
-
-void PRCRev :: clear()
+void PRCRev :: clear( void )
 {
   allpassDelays_[0].clear();
   allpassDelays_[1].clear();
   combDelays_[0].clear();
   combDelays_[1].clear();
-  lastOutput_[0] = 0.0;
-  lastOutput_[1] = 0.0;
+  lastFrame_[0] = 0.0;
+  lastFrame_[1] = 0.0;
 }
 
 void PRCRev :: setT60( StkFloat T60 )
@@ -68,31 +68,44 @@ void PRCRev :: setT60( StkFloat T60 )
   combCoefficient_[1] = pow(10.0, (-3.0 * combDelays_[1].getDelay() / (T60 * Stk::sampleRate())));
 }
 
-StkFloat PRCRev :: computeSample(StkFloat input)
+StkFrames& PRCRev :: tick( StkFrames& frames, unsigned int channel )
 {
-  StkFloat temp, temp0, temp1, temp2, temp3;
+#if defined(_STK_DEBUG_)
+  if ( channel >= frames.channels() - 1 ) {
+    errorString_ << "PRCRev::tick(): channel and StkFrames arguments are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
 
-  temp = allpassDelays_[0].lastOut();
-  temp0 = allpassCoefficient_ * temp;
-  temp0 += input;
-  allpassDelays_[0].tick(temp0);
-  temp0 = -(allpassCoefficient_ * temp0) + temp;
-    
-  temp = allpassDelays_[1].lastOut();
-  temp1 = allpassCoefficient_ * temp;
-  temp1 += temp0;
-  allpassDelays_[1].tick(temp1);
-  temp1 = -(allpassCoefficient_ * temp1) + temp;
-    
-  temp2 = temp1 + (combCoefficient_[0] * combDelays_[0].lastOut());
-  temp3 = temp1 + (combCoefficient_[1] * combDelays_[1].lastOut());
+  StkFloat *samples = &frames[channel];
+  unsigned int hop = frames.channels();
+  for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
+    *samples = tick( *samples );
+    *samples++;
+    *samples = lastFrame_[1];
+  }
 
-  lastOutput_[0] = effectMix_ * (combDelays_[0].tick(temp2));
-  lastOutput_[1] = effectMix_ * (combDelays_[1].tick(temp3));
-  temp = (1.0 - effectMix_) * input;
-  lastOutput_[0] += temp;
-  lastOutput_[1] += temp;
-    
-  return Effect::lastOut();
+  return frames;
 }
 
+StkFrames& PRCRev :: tick( StkFrames& iFrames, StkFrames& oFrames, unsigned int iChannel, unsigned int oChannel )
+{
+#if defined(_STK_DEBUG_)
+  if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() - 1 ) {
+    errorString_ << "PRCRev::tick(): channel and StkFrames arguments are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  StkFloat *iSamples = &iFrames[iChannel];
+  StkFloat *oSamples = &oFrames[oChannel];
+  unsigned int iHop = iFrames.channels(), oHop = oFrames.channels();
+  for ( unsigned int i=0; i<iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
+    *oSamples++ = tick( *iSamples );
+    *oSamples = lastFrame_[1];
+  }
+
+  return iFrames;
+}
+
+} // stk namespace

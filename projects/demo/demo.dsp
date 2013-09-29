@@ -119,10 +119,6 @@ SOURCE=..\..\src\Bowed.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\BowTable.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\Brass.cpp
 # End Source File
 # Begin Source File
@@ -151,10 +147,6 @@ SOURCE=..\..\src\Drummer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Effect.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\Envelope.cpp
 # End Source File
 # Begin Source File
@@ -175,10 +167,6 @@ SOURCE=..\..\src\FileWvOut.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Filter.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\Flute.cpp
 # End Source File
 # Begin Source File
@@ -195,27 +183,11 @@ SOURCE=..\..\src\FormSwep.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Function.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\Generator.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\HevyMetl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Instrmnt.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\JCRev.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\JetTable.cpp
 # End Source File
 # Begin Source File
 
@@ -291,10 +263,6 @@ SOURCE=..\..\src\PRCRev.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\ReedTable.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\Resonate.cpp
 # End Source File
 # Begin Source File
@@ -367,10 +335,6 @@ SOURCE=..\..\src\Stk.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\SubNoise.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\TcpServer.cpp
 # End Source File
 # Begin Source File
@@ -395,10 +359,6 @@ SOURCE=.\utilities.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Vector3D.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\Voicer.cpp
 # End Source File
 # Begin Source File
@@ -407,7 +367,7 @@ SOURCE=..\..\src\VoicForm.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\WaveLoop.cpp
+SOURCE=..\..\src\FileLoop.cpp
 # End Source File
 # Begin Source File
 
@@ -416,14 +376,6 @@ SOURCE=..\..\src\Whistle.cpp
 # Begin Source File
 
 SOURCE=..\..\src\Wurley.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvOut.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -707,10 +659,6 @@ SOURCE=..\..\include\Stk.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\SubNoise.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\TcpServer.h
 # End Source File
 # Begin Source File
@@ -743,7 +691,7 @@ SOURCE=..\..\include\Voicer.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\WaveLoop.h
+SOURCE=..\..\include\FileLoop.h
 # End Source File
 # Begin Source File
 

@@ -26,19 +26,21 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Wurley.h"
 
-Wurley :: Wurley()
+namespace stk {
+
+Wurley :: Wurley( void )
   : FM()
 {
   // Concatenate the STK rawwave path to the rawwave files
   for ( unsigned int i=0; i<3; i++ )
-    waves_[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  waves_[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), true );
+    waves_[i] = new FileLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  waves_[3] = new FileLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), true );
 
   this->setRatio(0, 1.0);
   this->setRatio(1, 4.0);
@@ -59,11 +61,11 @@ Wurley :: Wurley()
   vibrato_.setFrequency( 8.0 );
 }  
 
-Wurley :: ~Wurley()
+Wurley :: ~Wurley( void )
 {
 }
 
-void Wurley :: setFrequency(StkFloat frequency)
+void Wurley :: setFrequency( StkFloat frequency )
 {    
   baseFrequency_ = frequency;
   waves_[0]->setFrequency( baseFrequency_ * ratios_[0]);
@@ -72,7 +74,7 @@ void Wurley :: setFrequency(StkFloat frequency)
   waves_[3]->setFrequency( ratios_[3] );
 }
 
-void Wurley :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Wurley :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   gains_[0] = amplitude * fmGains_[99];
   gains_[1] = amplitude * fmGains_[82];
@@ -87,27 +89,4 @@ void Wurley :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-StkFloat Wurley :: computeSample()
-{
-  StkFloat temp, temp2;
-
-  temp = gains_[1] * adsr_[1]->tick() * waves_[1]->tick();
-  temp = temp * control1_;
-
-  waves_[0]->addPhaseOffset( temp );
-  waves_[3]->addPhaseOffset( twozero_.lastOut() );
-  temp = gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
-  twozero_.tick(temp);
-
-  waves_[2]->addPhaseOffset( temp );
-  temp = ( 1.0 - (control2_ * 0.5)) * gains_[0] * adsr_[0]->tick() * waves_[0]->tick();
-  temp += control2_ * 0.5 * gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
-
-  // Calculate amplitude modulation and apply it to output.
-  temp2 = vibrato_.tick() * modDepth_;
-  temp = temp * (1.0 + temp2);
-    
-  lastOutput_ = temp * 0.5;
-  return lastOutput_;
-}
-
+} // stk namespace

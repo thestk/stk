@@ -2,34 +2,26 @@
 /*! \class DelayL
     \brief STK linear interpolating delay line class.
 
-    This Delay subclass implements a fractional-
-    length digital delay-line using first-order
-    linear interpolation.  A fixed maximum length
-    of 4095 and a delay of zero is set using the
-    default constructor.  Alternatively, the
-    delay and maximum length can be set during
-    instantiation with an overloaded constructor.
+    This class implements a fractional-length digital delay-line using
+    first-order linear interpolation.  If the delay and maximum length
+    are not specified during instantiation, a fixed maximum length of
+    4095 and a delay of zero is set.
 
-    Linear interpolation is an efficient technique
-    for achieving fractional delay lengths, though
-    it does introduce high-frequency signal
-    attenuation to varying degrees depending on the
-    fractional delay setting.  The use of higher
-    order Lagrange interpolators can typically
-    improve (minimize) this attenuation characteristic.
+    Linear interpolation is an efficient technique for achieving
+    fractional delay lengths, though it does introduce high-frequency
+    signal attenuation to varying degrees depending on the fractional
+    delay setting.  The use of higher order Lagrange interpolators can
+    typically improve (minimize) this attenuation characteristic.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "DelayL.h"
 
-DelayL :: DelayL() : Delay()
-{
-  doNextOut_ = true;
-}
+namespace stk {
 
-DelayL :: DelayL(StkFloat delay, unsigned long maxDelay)
+DelayL :: DelayL( StkFloat delay, unsigned long maxDelay )
 {
   if ( delay < 0.0 || maxDelay < 1 ) {
     errorString_ << "DelayL::DelayL: delay must be >= 0.0, maxDelay must be > 0!";
@@ -42,13 +34,11 @@ DelayL :: DelayL(StkFloat delay, unsigned long maxDelay)
   }
 
   // Writing before reading allows delays from 0 to length-1. 
-  if ( maxDelay > inputs_.size()-1 ) {
-    inputs_.resize( maxDelay+1 );
-    this->clear();
-  }
+  if ( maxDelay + 1 > inputs_.size() )
+    inputs_.resize( maxDelay + 1, 1, 0.0 );
 
   inPoint_ = 0;
-  this->setDelay(delay);
+  this->setDelay( delay );
   doNextOut_ = true;
 }
 
@@ -56,11 +46,29 @@ DelayL :: ~DelayL()
 {
 }
 
-void DelayL :: setDelay(StkFloat delay)
+void DelayL :: setMaximumDelay( unsigned long delay )
+{
+  if ( delay < inputs_.size() ) return;
+
+  if ( delay < 0 ) {
+    errorString_ << "DelayL::setMaximumDelay: argument (" << delay << ") less than zero!\n";
+    handleError( StkError::WARNING );
+    return;
+  }
+  else if ( delay < delay_ ) {
+    errorString_ << "DelayL::setMaximumDelay: argument (" << delay << ") less than current delay setting (" << delay_ << ")!\n";
+    handleError( StkError::WARNING );
+    return;
+  }
+
+  inputs_.resize( delay + 1 );
+}
+
+void DelayL :: setDelay( StkFloat delay )
 {
   StkFloat outPointer;
 
-  if ( delay > inputs_.size() - 1 ) { // The value is too big.
+  if ( delay + 1 > inputs_.size() ) { // The value is too big.
     errorString_ << "DelayL::setDelay: argument (" << delay << ") too big ... setting to maximum!";
     handleError( StkError::WARNING );
 
@@ -89,42 +97,13 @@ void DelayL :: setDelay(StkFloat delay)
   omAlpha_ = (StkFloat) 1.0 - alpha_;
 }
 
-StkFloat DelayL :: getDelay(void) const
+StkFloat DelayL :: contentsAt( unsigned long tapDelay )
 {
-  return delay_;
+  long tap = inPoint_ - tapDelay - 1;
+  while ( tap < 0 ) // Check for wraparound.
+    tap += inputs_.size();
+
+  return inputs_[tap];
 }
 
-StkFloat DelayL :: nextOut(void)
-{
-  if ( doNextOut_ ) {
-    // First 1/2 of interpolation
-    nextOutput_ = inputs_[outPoint_] * omAlpha_;
-    // Second 1/2 of interpolation
-    if (outPoint_+1 < inputs_.size())
-      nextOutput_ += inputs_[outPoint_+1] * alpha_;
-    else
-      nextOutput_ += inputs_[0] * alpha_;
-    doNextOut_ = false;
-  }
-
-  return nextOutput_;
-}
-
-StkFloat DelayL :: computeSample( StkFloat input )
-{
-  inputs_[inPoint_++] = input;
-
-  // Increment input pointer modulo length.
-  if (inPoint_ == inputs_.size())
-    inPoint_ = 0;
-
-  outputs_[0] = nextOut();
-  doNextOut_ = true;
-
-  // Increment output pointer modulo length.
-  if (++outPoint_ == inputs_.size())
-    outPoint_ = 0;
-
-  return outputs_[0];
-}
-
+} // stk namespace

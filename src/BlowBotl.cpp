@@ -12,16 +12,18 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "BlowBotl.h"
 #include "SKINI.msg"
 
+namespace stk {
+
 #define __BOTTLE_RADIUS_ 0.999
 
-BlowBotl :: BlowBotl()
+BlowBotl :: BlowBotl( void )
 {
   dcBlock_.setBlockZero();
 
@@ -35,16 +37,16 @@ BlowBotl :: BlowBotl()
 	maxPressure_ = (StkFloat) 0.0;
 }
 
-BlowBotl :: ~BlowBotl()
+BlowBotl :: ~BlowBotl( void )
 {
 }
 
-void BlowBotl :: clear()
+void BlowBotl :: clear( void )
 {
   resonator_.clear();
 }
 
-void BlowBotl :: setFrequency(StkFloat frequency)
+void BlowBotl :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -56,20 +58,20 @@ void BlowBotl :: setFrequency(StkFloat frequency)
   resonator_.setResonance( freakency, __BOTTLE_RADIUS_, true );
 }
 
-void BlowBotl :: startBlowing(StkFloat amplitude, StkFloat rate)
+void BlowBotl :: startBlowing( StkFloat amplitude, StkFloat rate )
 {
   adsr_.setAttackRate(rate);
   maxPressure_ = amplitude;
   adsr_.keyOn();
 }
 
-void BlowBotl :: stopBlowing(StkFloat rate)
+void BlowBotl :: stopBlowing( StkFloat rate )
 {
   adsr_.setReleaseRate(rate);
   adsr_.keyOff();
 }
 
-void BlowBotl :: noteOn(StkFloat frequency, StkFloat amplitude)
+void BlowBotl :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency(frequency);
   startBlowing( 1.1 + (amplitude * 0.20), amplitude * 0.02);
@@ -81,7 +83,7 @@ void BlowBotl :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void BlowBotl :: noteOff(StkFloat amplitude)
+void BlowBotl :: noteOff( StkFloat amplitude )
 {
   this->stopBlowing(amplitude * 0.02);
 
@@ -91,29 +93,7 @@ void BlowBotl :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat BlowBotl :: computeSample()
-{
-  StkFloat breathPressure;
-  StkFloat randPressure;
-  StkFloat pressureDiff;
-
-  // Calculate the breath pressure (envelope + vibrato)
-  breathPressure = maxPressure_ * adsr_.tick();
-  breathPressure += vibratoGain_ * vibrato_.tick();
-
-  pressureDiff = breathPressure - resonator_.lastOut();
-
-  randPressure = noiseGain_ * noise_.tick();
-  randPressure *= breathPressure;
-  randPressure *= (1.0 + pressureDiff);
-
-  resonator_.tick( breathPressure + randPressure - ( jetTable_.tick( pressureDiff ) * pressureDiff ) );
-  lastOutput_ = 0.2 * outputGain_ * dcBlock_.tick( pressureDiff );
-
-  return lastOutput_;
-}
-
-void BlowBotl :: controlChange(int number, StkFloat value)
+void BlowBotl :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -145,3 +125,5 @@ void BlowBotl :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

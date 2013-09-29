@@ -19,9 +19,20 @@ NoteOff         1.000000  2  69.0  64.0
 
 MIDI messages are easily represented within the SKINI protocol.
 
-The class Messager can be used to acquire and parse MIDI messages from a MIDI device and SKINI messages from STDIN and socket connections.  Incoming messages are acquired asynchronously and saved to an internal message queue of Skini::Message types (MIDI messages are converted to the Skini:Message format).  The user then uses the Messager:popMessage() function to retrieve incoming control messages.  This function does not block, instead returning a message type of zero when no more messages are in the queue.  Many of the example programs included with the ToolKit distribution use a Messager instance to accept control input from the accompanying tcl/tk graphical user interfaces, from external MIDI devices, or from SKINI scorefiles.
+The class stk::Messager can be used to acquire and parse MIDI messages
+from a MIDI device and SKINI messages from STDIN and socket
+connections.  Incoming messages are acquired asynchronously and saved
+to an internal message queue of stk::Skini::Message types (MIDI
+messages are converted to the stk::Skini:Message format).  The user
+then uses the stk::Messager:popMessage() function to retrieve incoming
+control messages.  This function does not block, instead returning a
+message type of zero when no more messages are in the queue.  Many of
+the example programs included with the ToolKit distribution use a
+stk::Messager instance to accept control input from the accompanying tcl/tk
+graphical user interfaces, from external MIDI devices, or from SKINI
+scorefiles.
 
-In the following example, we'll modify the <TT>bethree.cpp</TT> program from the previous tutorial chapter and incorporate a Messager class to allow control via SKINI messages read from a SKINI file.
+In the following example, we'll modify the <TT>bethree.cpp</TT> program from the previous tutorial chapter and incorporate a stk::Messager class to allow control via SKINI messages read from a SKINI file.
 
 \include controlbee.cpp
 
@@ -37,7 +48,7 @@ controlbee scores/bookert.ski
 
 Only a few basic SKINI message type case statements are included in this example.  It is easy to extend the program to support a much more elaborate set of instrument control parameters.
 
-This example could also be easily extended to accept "realtime" control input messages via pipe, socket or MIDI connections.  The Messager class provides Messager::startStdInput(), Messager::startSocketInput(), and Messager::startMidiInput() functions for this purpose.
+This example could also be easily extended to accept "realtime" control input messages via pipe, socket or MIDI connections.  The stk::Messager class provides stk::Messager::startStdInput(), stk::Messager::startSocketInput(), and stk::Messager::startMidiInput() functions for this purpose.
 
 [<A HREF="tutorial.html">Main tutorial page</A>] &nbsp; [<A HREF="multichannel.html">Next tutorial</A>]
 */

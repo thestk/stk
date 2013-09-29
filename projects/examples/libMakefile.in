@@ -10,17 +10,15 @@ endif
 vpath %.h $(INCLUDE)
 
 CC       = @CXX@
-DEFS     = @byte_order@
-DEFS    += @debug@
-CFLAGS   = @cflags@
-CFLAGS  += @warn@ -I$(INCLUDE) -I../../src/include
+DEFS     = @CPPFLAGS@
+DEFS    += @byte_order@
+CFLAGS   = @CXXFLAGS@
+CFLAGS  += -I$(INCLUDE) -Iinclude
 LIBRARY = @LIBS@
-LIBRARY += @frameworks@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
   PROGRAMS += audioprobe midiprobe duplex play record inetIn inetOut rtsine crtsine bethree controlbee threebees playsmf grains
-	DEFS    += @audio_apis@
 endif
 
 RAWWAVES = @rawwaves@

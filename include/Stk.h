@@ -1,3 +1,20 @@
+#ifndef STK_STK_H
+#define STK_STK_H
+
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <stdlib.h>
+
+/*! \namespace stk
+    \brief The STK namespace.
+
+    Most Stk classes are defined within the STK namespace.  Exceptions
+    to this include the classes RtAudio, RtMidi, and RtError.
+*/
+namespace stk {
+
 /***************************************************/
 /*! \class Stk
     \brief STK base class
@@ -22,7 +39,7 @@
     STK WWW site: http://ccrma.stanford.edu/software/stk/
 
     The Synthesis ToolKit in C++ (STK)
-    Copyright (c) 1995-2007 Perry R. Cook and Gary P. Scavone
+    Copyright (c) 1995-2009 Perry R. Cook and Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -50,13 +67,7 @@
 */
 /***************************************************/
 
-#ifndef STK_STK_H
-#define STK_STK_H
-
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <vector>
+//#define _STK_DEBUG_
 
 // Most data in STK is passed and calculated with the
 // following user-definable floating-point type.  You
@@ -129,15 +140,15 @@ public:
   static const StkFormat STK_FLOAT32; /*!< Normalized between plus/minus 1.0. */
   static const StkFormat STK_FLOAT64; /*!< Normalized between plus/minus 1.0. */
 
-  //! Static method which returns the current STK sample rate.
+  //! Static method that returns the current STK sample rate.
   static StkFloat sampleRate( void ) { return srate_; }
 
   //! Static method that sets the STK sample rate.
   /*!
     The sample rate set using this method is queried by all STK
-    classes which depend on its value.  It is initialized to the
+    classes that depend on its value.  It is initialized to the
     default SRATE set in Stk.h.  Many STK classes use the sample rate
-    during instantiation.  Therefore, if you wish to use a rate which
+    during instantiation.  Therefore, if you wish to use a rate that
     is different from the default rate, it is imperative that it be
     set \e BEFORE STK objects are instantiated.  A few classes that
     make use of the global STK sample rate are automatically notified
@@ -160,19 +171,19 @@ public:
   */
   void ignoreSampleRateChange( bool ignore = true ) { ignoreSampleRateChange_ = ignore; };
 
-  //! Static method which returns the current rawwave path.
+  //! Static method that returns the current rawwave path.
   static std::string rawwavePath(void) { return rawwavepath_; }
 
-  //! Static method which sets the STK rawwave path.
+  //! Static method that sets the STK rawwave path.
   static void setRawwavePath( std::string path );
 
-  //! Static method which byte-swaps a 16-bit data type.
+  //! Static method that byte-swaps a 16-bit data type.
   static void swap16( unsigned char *ptr );
 
-  //! Static method which byte-swaps a 32-bit data type.
+  //! Static method that byte-swaps a 32-bit data type.
   static void swap32( unsigned char *ptr );
 
-  //! Static method which byte-swaps a 64-bit data type.
+  //! Static method that byte-swaps a 64-bit data type.
   static void swap64( unsigned char *ptr );
 
   //! Static cross-platform method to sleep for a number of milliseconds.
@@ -217,7 +228,7 @@ protected:
   //! Remove class pointer from list for sample rate change notification.
   void removeSampleRateAlert( Stk *ptr );
 
-  //! Internal function for error reporting which assumes message in \c errorString_ variable.
+  //! Internal function for error reporting that assumes message in \c errorString_ variable.
   void handleError( StkError::Type type );
 };
 
@@ -226,16 +237,24 @@ protected:
 /*! \class StkFrames
     \brief An STK class to handle vectorized audio data.
 
-    This class can hold single- or multi-channel audio data in either
-    interleaved or non-interleaved formats.  The data type is always
-    StkFloat.  In an effort to maintain efficiency, no out-of-bounds
-    checks are performed in this class.
+    This class can hold single- or multi-channel audio data.  The data
+    type is always StkFloat and the channel format is always
+    interleaved.  In an effort to maintain efficiency, no
+    out-of-bounds checks are performed in this class unless
+    _STK_DEBUG_ is defined.
+
+    Internally, the data is stored in a one-dimensional C array.  An
+    indexing operator is available to set and retrieve data values.
+    Alternately, one can use pointers to access the data, using the
+    index operator to get an address for a particular location in the
+    data:
+
+      StkFloat* ptr = &myStkFrames[0];
 
     Possible future improvements in this class could include functions
-    to inter- or de-interleave the data and to convert to and return
-    other data types.
+    to convert to and return other data types.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
@@ -244,17 +263,23 @@ class StkFrames
 public:
 
   //! The default constructor initializes the frame data structure to size zero.
-  StkFrames( unsigned int nFrames = 0, unsigned int nChannels = 0, bool interleaved = true );
+  StkFrames( unsigned int nFrames = 0, unsigned int nChannels = 0 );
 
   //! Overloaded constructor that initializes the frame data to the specified size with \c value.
-  StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels, bool interleaved = true );
+  StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels );
 
   //! The destructor.
   ~StkFrames();
 
-  //! Subscript operator which returns a reference to element \c n of self.
+  // A copy constructor.
+  StkFrames( const StkFrames& f );
+
+  // Assignment operator that returns a reference to self.
+  StkFrames& operator= ( const StkFrames& f );
+
+  //! Subscript operator that returns a reference to element \c n of self.
   /*!
-    The result can be used as an lvalue . This reference is valid
+    The result can be used as an lvalue. This reference is valid
     until the resize function is called or the array is destroyed. The
     index \c n must be between 0 and size less one.  No range checking
     is performed unless _STK_DEBUG_ is defined.
@@ -267,6 +292,22 @@ public:
     checking is performed unless _STK_DEBUG_ is defined.
   */
   StkFloat operator[] ( size_t n ) const;
+
+  //! Assignment by sum operator into self.
+  /*!
+    The dimensions of the argument are expected to be the same as
+    self.  No range checking is performed unless _STK_DEBUG_ is
+    defined.
+  */
+  void operator+= ( StkFrames& f );
+
+  //! Assignment by product operator into self.
+  /*!
+    The dimensions of the argument are expected to be the same as
+    self.  No range checking is performed unless _STK_DEBUG_ is
+    defined.
+  */
+  void operator*= ( StkFrames& f );
 
   //! Channel / frame subscript operator that returns a reference.
   /*!
@@ -341,17 +382,6 @@ public:
    */
   StkFloat dataRate( void ) const { return dataRate_; };
 
-  //! Returns \c true if the data is in interleaved format, \c false if the data is non-interleaved.
-  bool interleaved( void ) const { return interleaved_; };
-
-  //! Set the flag to indicate whether the internal data is in interleaved (\c true) or non-interleaved (\c false) format.
-  /*!
-    Note that this function does not modify the internal data order
-    with respect to the argument value.  It simply changes the
-    indicator flag value.
-   */
-  void setInterleaved( bool isInterleaved ) { interleaved_ = isInterleaved; };
-
 private:
 
   StkFloat *data_;
@@ -360,10 +390,98 @@ private:
   unsigned int nChannels_;
   size_t size_;
   size_t bufferSize_;
-  bool interleaved_;
 
 };
 
+inline bool StkFrames :: empty() const
+{
+  if ( size_ > 0 ) return false;
+  else return true;
+}
+
+inline StkFloat& StkFrames :: operator[] ( size_t n )
+{
+#if defined(_STK_DEBUG_)
+  if ( n >= size_ ) {
+    std::ostringstream error;
+    error << "StkFrames::operator[]: invalid index (" << n << ") value!";
+    Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+  }
+#endif
+
+  return data_[n];
+}
+
+inline StkFloat StkFrames :: operator[] ( size_t n ) const
+{
+#if defined(_STK_DEBUG_)
+  if ( n >= size_ ) {
+    std::ostringstream error;
+    error << "StkFrames::operator[]: invalid index (" << n << ") value!";
+    Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+  }
+#endif
+
+  return data_[n];
+}
+
+inline StkFloat& StkFrames :: operator() ( size_t frame, unsigned int channel )
+{
+#if defined(_STK_DEBUG_)
+  if ( frame >= nFrames_ || channel >= nChannels_ ) {
+    std::ostringstream error;
+    error << "StkFrames::operator(): invalid frame (" << frame << ") or channel (" << channel << ") value!";
+    Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+  }
+#endif
+
+  return data_[ frame * nChannels_ + channel ];
+}
+
+inline StkFloat StkFrames :: operator() ( size_t frame, unsigned int channel ) const
+{
+#if defined(_STK_DEBUG_)
+  if ( frame >= nFrames_ || channel >= nChannels_ ) {
+    std::ostringstream error;
+    error << "StkFrames::operator(): invalid frame (" << frame << ") or channel (" << channel << ") value!";
+    Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+  }
+#endif
+
+  return data_[ frame * nChannels_ + channel ];
+}
+
+inline void StkFrames :: operator+= ( StkFrames& f )
+{
+#if defined(_STK_DEBUG_)
+  if ( f.frames() != nFrames_ || f.channels() != nChannels_ ) {
+    std::ostringstream error;
+    error << "StkFrames::operator+=: frames argument must be of equal dimensions!";
+    Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+  }
+#endif
+
+  StkFloat *fptr = &f[0];
+  StkFloat *dptr = data_;
+  for ( unsigned int i=0; i<size_; i++ )
+    *dptr++ += *fptr++;
+}
+
+inline void StkFrames :: operator*= ( StkFrames& f )
+{
+#if defined(_STK_DEBUG_)
+  if ( f.frames() != nFrames_ || f.channels() != nChannels_ ) {
+    std::ostringstream error;
+    error << "StkFrames::operator*=: frames argument must be of equal dimensions!";
+    Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+  }
+#endif
+
+  StkFloat *fptr = &f[0];
+  StkFloat *dptr = data_;
+  for ( unsigned int i=0; i<size_; i++ )
+    *dptr++ *= *fptr++;
+}
 
 // Here are a few other useful typedefs.
 typedef unsigned short UINT16;
@@ -412,6 +530,6 @@ const StkFloat ONE_OVER_128 = 0.0078125;
   #define __STK_REALTIME__
 #endif
 
-//#define _STK_DEBUG_
+} // stk namespace
 
 #endif

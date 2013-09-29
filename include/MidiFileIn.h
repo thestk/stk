@@ -1,3 +1,14 @@
+#ifndef STK_MIDIFILEIN_H
+#define STK_MIDIFILEIN_H
+
+#include "Stk.h"
+#include <string>
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+namespace stk {
+
 /**********************************************************************/
 /*! \class MidiFileIn
     \brief A standard MIDI file reading/parsing class.
@@ -11,18 +22,9 @@
     Tempo changes are internally tracked by the class and reflected in
     the values returned by the function getTickSeconds().
 
-    by Gary P. Scavone, 2003.
+    by Gary P. Scavone, 2003 - 2009.
 */
 /**********************************************************************/
-
-#ifndef STK_MIDIFILEIN_H
-#define STK_MIDIFILEIN_H
-
-#include "Stk.h"
-#include <string>
-#include <vector>
-#include <fstream>
-#include <sstream>
 
 class MidiFileIn : public Stk
 {
@@ -127,5 +129,7 @@ class MidiFileIn : public Stk
   std::vector<unsigned long> trackCounters_;
   std::vector<unsigned int> trackTempoIndex_;
 };
+
+} // stk namespace
 
 #endif

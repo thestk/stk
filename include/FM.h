@@ -1,3 +1,14 @@
+#ifndef STK_FM_H
+#define STK_FM_H
+
+#include "Instrmnt.h"
+#include "ADSR.h"
+#include "FileLoop.h"
+#include "SineWave.h"
+#include "TwoZero.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class FM
     \brief STK abstract FM synthesis base class.
@@ -19,18 +30,9 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_FM_H
-#define STK_FM_H
-
-#include "Instrmnt.h"
-#include "ADSR.h"
-#include "WaveLoop.h"
-#include "SineWave.h"
-#include "TwoZero.h"
 
 class FM : public Instrmnt
 {
@@ -42,53 +44,54 @@ class FM : public Instrmnt
   FM( unsigned int operators = 4 );
 
   //! Class destructor.
-  virtual ~FM();
+  virtual ~FM( void );
 
   //! Reset and clear all wave and envelope states.
-  void clear();
+  void clear( void );
 
   //! Load the rawwave filenames in waves.
-  void loadWaves(const char **filenames);
+  void loadWaves( const char **filenames );
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(StkFloat frequency);
+  virtual void setFrequency( StkFloat frequency );
 
   //! Set the frequency ratio for the specified wave.
-  void setRatio(unsigned int waveIndex, StkFloat ratio);
+  void setRatio( unsigned int waveIndex, StkFloat ratio );
 
   //! Set the gain for the specified wave.
-  void setGain(unsigned int waveIndex, StkFloat gain);
+  void setGain( unsigned int waveIndex, StkFloat gain );
 
   //! Set the modulation speed in Hz.
-  void setModulationSpeed(StkFloat mSpeed);
+  void setModulationSpeed( StkFloat mSpeed ) { vibrato_.setFrequency( mSpeed ); };
 
   //! Set the modulation depth.
-  void setModulationDepth(StkFloat mDepth);
+  void setModulationDepth( StkFloat mDepth ) { modDepth_ = mDepth; };
 
   //! Set the value of control1.
-  void setControl1(StkFloat cVal);
+  void setControl1( StkFloat cVal ) { control1_ = cVal * 2.0; };
 
   //! Set the value of control1.
-  void setControl2(StkFloat cVal);
+  void setControl2( StkFloat cVal ) { control2_ = cVal * 2.0; };
 
   //! Start envelopes toward "on" targets.
-  void keyOn();
+  void keyOn( void );
 
   //! Start envelopes toward "off" targets.
-  void keyOff();
+  void keyOff( void );
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  virtual void controlChange(int number, StkFloat value);
+  virtual void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  virtual StkFloat tick( unsigned int ) = 0;
 
  protected:
 
-  virtual StkFloat computeSample( void ) = 0;
-
   std::vector<ADSR *> adsr_; 
-  std::vector<WaveLoop *> waves_;
+  std::vector<FileLoop *> waves_;
   SineWave vibrato_;
   TwoZero  twozero_;
   unsigned int nOperators_;
@@ -103,5 +106,7 @@ class FM : public Instrmnt
   StkFloat fmAttTimes_[32];
 
 };
+
+} // stk namespace
 
 #endif

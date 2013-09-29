@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
@@ -34,13 +34,15 @@
 #include "SKINI.msg"
 #include "Phonemes.h"
 
-FMVoices :: FMVoices()
+namespace stk {
+
+FMVoices :: FMVoices( void )
   : FM()
 {
   // Concatenate the STK rawwave path to the rawwave files
   for ( unsigned int i=0; i<3; i++ )
-    waves_[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  waves_[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), true );
+    waves_[i] = new FileLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  waves_[3] = new FileLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), true );
 
   this->setRatio(0, 2.00);
   this->setRatio(1, 4.00);
@@ -67,11 +69,11 @@ FMVoices :: FMVoices()
   this->setFrequency( 110.0 );    
 }  
 
-FMVoices :: ~FMVoices()
+FMVoices :: ~FMVoices( void )
 {
 }
 
-void FMVoices :: setFrequency(StkFloat frequency)
+void FMVoices :: setFrequency( StkFloat frequency )
 {
   StkFloat temp, temp2 = 0.0;
   int tempi = 0;
@@ -109,7 +111,7 @@ void FMVoices :: setFrequency(StkFloat frequency)
   gains_[2] = 1.0;
 }
 
-void FMVoices :: noteOn(StkFloat frequency, StkFloat amplitude)
+void FMVoices :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   tilt_[0] = amplitude;
@@ -123,32 +125,7 @@ void FMVoices :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-StkFloat FMVoices :: computeSample()
-{
-  register StkFloat temp, temp2;
-
-  temp = gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
-  temp2 = vibrato_.tick() * modDepth_ * 0.1;
-
-  waves_[0]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[0]);
-  waves_[1]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[1]);
-  waves_[2]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[2]);
-  waves_[3]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[3]);
-
-  waves_[0]->addPhaseOffset(temp * mods_[0]);
-  waves_[1]->addPhaseOffset(temp * mods_[1]);
-  waves_[2]->addPhaseOffset(temp * mods_[2]);
-  waves_[3]->addPhaseOffset( twozero_.lastOut() );
-  twozero_.tick( temp );
-  temp =  gains_[0] * tilt_[0] * adsr_[0]->tick() * waves_[0]->tick();
-  temp += gains_[1] * tilt_[1] * adsr_[1]->tick() * waves_[1]->tick();
-  temp += gains_[2] * tilt_[2] * adsr_[2]->tick() * waves_[2]->tick();
-
-  lastOutput_ = temp * 0.33;
-  return lastOutput_;
-}
-
-void FMVoices :: controlChange(int number, StkFloat value)
+void FMVoices :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -188,3 +165,5 @@ void FMVoices :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

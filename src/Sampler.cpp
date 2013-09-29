@@ -3,15 +3,17 @@
     \brief STK sampling synthesis abstract base class.
 
     This instrument provides an ADSR envelope, a one-pole filter, and
-    structures for an arbitrary number of attack and loop waves.
+    structures for an arbitrary number of attack and looped files.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Sampler.h"
 
-Sampler :: Sampler()
+namespace stk {
+
+Sampler :: Sampler( void )
 {
   // We don't make the waves here yet, because
   // we don't know what they will be.
@@ -20,14 +22,14 @@ Sampler :: Sampler()
   loopGain_ = 0.25;
 }  
 
-Sampler :: ~Sampler()
+Sampler :: ~Sampler( void )
 {
   unsigned int i;
   for ( i=0; i<attacks_.size(); i++ ) delete attacks_[i];
   for ( i=0; i<loops_.size(); i++ ) delete loops_[i];
 }
 
-void Sampler :: keyOn()
+void Sampler :: keyOn( void )
 {
   // Reset all attack waves.
   for ( unsigned int i=0; i<attacks_.size(); i++ )
@@ -38,12 +40,12 @@ void Sampler :: keyOn()
 
 }
 
-void Sampler :: keyOff()
+void Sampler :: keyOff( void )
 {
   adsr_.keyOff();
 }
 
-void Sampler :: noteOff(StkFloat amplitude)
+void Sampler :: noteOff( StkFloat amplitude )
 {
   this->keyOff();
 
@@ -52,3 +54,5 @@ void Sampler :: noteOff(StkFloat amplitude)
   handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

@@ -22,19 +22,21 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "PercFlut.h"
 
-PercFlut :: PercFlut()
+namespace stk {
+
+PercFlut :: PercFlut( void )
   : FM()
 {
   // Concatenate the STK rawwave path to the rawwave files
   for ( unsigned int i=0; i<3; i++ )
-    waves_[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  waves_[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), true );
+    waves_[i] = new FileLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  waves_[3] = new FileLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), true );
 
   this->setRatio(0, 1.50 * 1.000);
   this->setRatio(1, 3.00 * 0.995);
@@ -54,16 +56,16 @@ PercFlut :: PercFlut()
   modDepth_ = 0.005;
 }  
 
-PercFlut :: ~PercFlut()
+PercFlut :: ~PercFlut( void )
 {
 }
 
-void PercFlut :: setFrequency(StkFloat frequency)
+void PercFlut :: setFrequency( StkFloat frequency )
 {    
   baseFrequency_ = frequency;
 }
 
-void PercFlut :: noteOn(StkFloat frequency, StkFloat amplitude)
+void PercFlut :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   gains_[0] = amplitude * fmGains_[99] * 0.5;
   gains_[1] = amplitude * fmGains_[71] * 0.5;
@@ -78,29 +80,4 @@ void PercFlut :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-StkFloat PercFlut :: computeSample()
-{
-  register StkFloat temp;
-
-  temp = vibrato_.tick() * modDepth_ * 0.2;    
-  waves_[0]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[0]);
-  waves_[1]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[1]);
-  waves_[2]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[2]);
-  waves_[3]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[3]);
-    
-  waves_[3]->addPhaseOffset( twozero_.lastOut() );
-  temp = gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
-
-  twozero_.tick(temp);
-  waves_[2]->addPhaseOffset( temp );
-  temp = (1.0 - (control2_ * 0.5)) * gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
-
-  temp += control2_ * 0.5 * gains_[1] * adsr_[1]->tick() * waves_[1]->tick();
-  temp = temp * control1_;
-
-  waves_[0]->addPhaseOffset(temp);
-  temp = gains_[0] * adsr_[0]->tick() * waves_[0]->tick();
-    
-  lastOutput_ = temp * 0.5;
-  return lastOutput_;
-}
+} // stk namespace

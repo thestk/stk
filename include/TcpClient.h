@@ -1,3 +1,10 @@
+#ifndef STK_TCPCLIENT_H
+#define STK_TCPCLIENT_H
+
+#include "Socket.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class TcpClient
     \brief STK TCP socket client class.
@@ -19,14 +26,9 @@
     less than or equal to zero indicate a closed
     or lost connection or the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_TCPCLIENT_H
-#define STK_TCPCLIENT_H
-
-#include "Socket.h"
 
 class TcpClient : public Socket
 {
@@ -58,4 +60,6 @@ class TcpClient : public Socket
 
 };
 
-#endif // defined(STK_TCPCLIENT_H)
+} // stk namespace
+
+#endif

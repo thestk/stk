@@ -12,6 +12,8 @@
 bool done = false;
 static void finish(int ignore){ done = true; }
 
+using namespace stk;
+
 void usage(void) {
   // Error function in case of incorrect command-line
   // argument specifications.

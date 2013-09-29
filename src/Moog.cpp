@@ -14,19 +14,21 @@
        - Vibrato Gain = 1
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Moog.h"
 #include "SKINI.msg"
 
-Moog :: Moog()
+namespace stk {
+
+Moog :: Moog( void )
 {
   // Concatenate the STK rawwave path to the rawwave file
   attacks_.push_back( new FileWvIn( (Stk::rawwavePath() + "mandpluk.raw").c_str(), true ) );
-  loops_.push_back ( new WaveLoop( (Stk::rawwavePath() + "impuls20.raw").c_str(), true ) );
-  loops_.push_back ( new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true ) ); // vibrato
+  loops_.push_back ( new FileLoop( (Stk::rawwavePath() + "impuls20.raw").c_str(), true ) );
+  loops_.push_back ( new FileLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true ) ); // vibrato
   loops_[1]->setFrequency( 6.122 );
 
   filters_[0].setTargets( 0.0, 0.7 );
@@ -38,11 +40,11 @@ Moog :: Moog()
   modDepth_ = 0.0;
 }  
 
-Moog :: ~Moog()
+Moog :: ~Moog( void )
 {
 }
 
-void Moog :: setFrequency(StkFloat frequency)
+void Moog :: setFrequency( StkFloat frequency )
 {
   baseFrequency_ = frequency;
   if ( frequency <= 0.0 ) {
@@ -56,7 +58,7 @@ void Moog :: setFrequency(StkFloat frequency)
   loops_[0]->setFrequency( baseFrequency_ );
 }
 
-void Moog :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Moog :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   StkFloat temp;
     
@@ -82,35 +84,7 @@ void Moog :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Moog :: setModulationSpeed(StkFloat mSpeed)
-{
-  loops_[1]->setFrequency( mSpeed );
-}
-
-void Moog :: setModulationDepth(StkFloat mDepth)
-{
-  modDepth_ = mDepth * 0.5;
-}
-
-StkFloat Moog :: computeSample()
-{
-  StkFloat temp;
-
-  if ( modDepth_ != 0.0 ) {
-    temp = loops_[1]->tick() * modDepth_;    
-    loops_[0]->setFrequency( baseFrequency_ * (1.0 + temp) );
-  }
-
-  temp = attackGain_ * attacks_[0]->tick();
-  temp += loopGain_ * loops_[0]->tick();
-  temp = filter_.tick( temp );
-  temp *= adsr_.tick();
-  temp = filters_[0].tick( temp );
-  lastOutput_ = filters_[1].tick( temp );
-  return lastOutput_ * 3.0;
-}
-
-void Moog :: controlChange(int number, StkFloat value)
+void Moog :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -144,3 +118,5 @@ void Moog :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

@@ -8,10 +8,10 @@
     supported.
 
     InetWvIn supports multi-channel data.  It is important to
-    distinguish the tick() methods, which return samples produced by
-    averaging across sample frames, from the tickFrame() methods,
-    which return references or pointers to multi-channel sample
-    frames.
+    distinguish the tick() method that computes a single frame (and
+    returns only the specified sample of a multi-channel frame) from
+    the overloaded one that takes an StkFrames object for
+    multi-channel and/or multi-frame data.
 
     This class implements a socket server.  When using the TCP
     protocol, the server "listens" for a single remote connection
@@ -20,11 +20,13 @@
     data type for the incoming stream is signed 16-bit integers,
     though any of the defined StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "InetWvIn.h"
+
+namespace stk {
 
 extern "C" THREAD_RETURN THREAD_TYPE inputThread( void * ptr )
 {
@@ -90,7 +92,7 @@ void InetWvIn :: listen( int port, unsigned int nChannels,
   }
 
   data_.resize( bufferFrames_, nChannels );
-  lastOutputs_.resize( 1, nChannels, 0.0 );
+  lastFrame_.resize( 1, nChannels, 0.0 );
 
   bufferCounter_ = 0;
   writePoint_ = 0;
@@ -254,22 +256,65 @@ bool InetWvIn :: isConnected( void )
     return connected_;
 }
 
-void InetWvIn :: computeFrame( void )
+StkFloat InetWvIn :: tick( unsigned int channel )
 {
-  // If no connection and we've output all samples in the queue, return.
-  if ( !connected_ && bytesFilled_ == 0 && bufferCounter_ == 0 ) return;
+  // If no connection and we've output all samples in the queue, return 0.0.
+  if ( !connected_ && bytesFilled_ == 0 && bufferCounter_ == 0 ) {
+#if defined(_STK_DEBUG_)
+    errorString_ << "InetWvIn::tick(): a valid socket connection does not exist!";
+    handleError( StkError::DEBUG_WARNING );
+#endif
+    return 0.0;
+  }
+
+#if defined(_STK_DEBUG_)
+  if ( channel >= data_.channels() ) {
+    errorString_ << "InetWvIn::tick(): channel argument is incompatible with data stream!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
 
   if ( bufferCounter_ == 0 )
     bufferCounter_ = readData();
 
-  unsigned int nChannels = lastOutputs_.channels();
-  long temp = (bufferFrames_ - bufferCounter_) * nChannels;
+  unsigned int nChannels = lastFrame_.channels();
+  long index = ( bufferFrames_ - bufferCounter_ ) * nChannels;
   for ( unsigned int i=0; i<nChannels; i++ )
-    lastOutputs_[i] = data_[temp++];
+    lastFrame_[i] = data_[index++];
 
   bufferCounter_--;
   if ( bufferCounter_ < 0 )
     bufferCounter_ = 0;
 
-  return;
+  return lastFrame_[channel];
 }
+
+StkFrames& InetWvIn :: tick( StkFrames& frames )
+{
+#if defined(_STK_DEBUG_)
+  if ( data_.channels() != frames.channels() ) {
+    errorString_ << "InetWvIn::tick(): StkFrames argument is incompatible with streamed channels!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  // If no connection and we've output all samples in the queue, return.
+  if ( !connected_ && bytesFilled_ == 0 && bufferCounter_ == 0 ) {
+#if defined(_STK_DEBUG_)
+    errorString_ << "InetWvIn::tick(): a valid socket connection does not exist!";
+    handleError( StkError::DEBUG_WARNING );
+#endif
+    return frames;
+  }
+
+  unsigned int j, counter = 0;
+  for ( unsigned int i=0; i<frames.frames(); i++ ) {
+    this->tick();
+    for ( j=0; j<lastFrame_.channels(); j++ )
+      frames[counter++] = lastFrame_[j];
+  }
+
+  return frames;
+}
+
+} // stk namespace

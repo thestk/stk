@@ -14,15 +14,17 @@
     use possibly subject to patents held by
     Stanford University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "PluckTwo.h"
 
-PluckTwo :: PluckTwo(StkFloat lowestFrequency)
+namespace stk {
+
+PluckTwo :: PluckTwo( StkFloat lowestFrequency )
 {
-  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  length_ = (unsigned long) ( Stk::sampleRate() / lowestFrequency + 1 );
   lastLength_ = length_ * 0.5;
   delayLine_.setMaximumDelay( length_ );
   delayLine_.setDelay( lastLength_ );
@@ -37,14 +39,13 @@ PluckTwo :: PluckTwo(StkFloat lowestFrequency)
   pluckPosition_ = 0.4;
   detuning_ = 0.995;
   lastFrequency_ = lowestFrequency * 2.0;
-
 }
 
-PluckTwo :: ~PluckTwo()
+PluckTwo :: ~PluckTwo( void )
 {
 }
 
-void PluckTwo :: clear()
+void PluckTwo :: clear( void )
 {
   delayLine_.clear();
   delayLine2_.clear();
@@ -53,7 +54,7 @@ void PluckTwo :: clear()
   filter2_.clear();
 }
 
-void PluckTwo :: setFrequency(StkFloat frequency)
+void PluckTwo :: setFrequency( StkFloat frequency )
 {
   lastFrequency_ = frequency;
   if ( lastFrequency_ <= 0.0 ) {
@@ -78,7 +79,7 @@ void PluckTwo :: setFrequency(StkFloat frequency)
   if ( loopGain_ > 1.0 ) loopGain_ = 0.99999;
 }
 
-void PluckTwo :: setDetune(StkFloat detune)
+void PluckTwo :: setDetune( StkFloat detune )
 {
   detuning_ = detune;
   if ( detuning_ <= 0.0 ) {
@@ -90,13 +91,13 @@ void PluckTwo :: setDetune(StkFloat detune)
   delayLine2_.setDelay( (lastLength_ * detuning_) - 0.5);
 }
 
-void PluckTwo :: setFreqAndDetune(StkFloat frequency, StkFloat detune)
+void PluckTwo :: setFreqAndDetune( StkFloat frequency, StkFloat detune )
 {
   detuning_ = detune;
   this->setFrequency( frequency );
 }
 
-void PluckTwo :: setPluckPosition(StkFloat position)
+void PluckTwo :: setPluckPosition( StkFloat position )
 {
   pluckPosition_ = position;
   if ( position < 0.0 ) {
@@ -111,14 +112,14 @@ void PluckTwo :: setPluckPosition(StkFloat position)
   }
 }
 
-void PluckTwo :: setBaseLoopGain(StkFloat aGain)
+void PluckTwo :: setBaseLoopGain( StkFloat aGain )
 {
   baseLoopGain_ = aGain;
   loopGain_ = baseLoopGain_ + (lastFrequency_ * 0.000005);
   if ( loopGain_ > 0.99999 ) loopGain_ = 0.99999;
 }
 
-void PluckTwo :: noteOff(StkFloat amplitude)
+void PluckTwo :: noteOff( StkFloat amplitude )
 {
   loopGain_ =  (1.0 - amplitude) * 0.5;
 
@@ -128,3 +129,4 @@ void PluckTwo :: noteOff(StkFloat amplitude)
 #endif
 }
 
+} // stk namespace

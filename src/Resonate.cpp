@@ -13,14 +13,16 @@
        - Zero Radii = 1
        - Envelope Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Resonate.h"
 #include "SKINI.msg"
 
-Resonate :: Resonate()
+namespace stk {
+
+Resonate :: Resonate( void )
 {
   poleFrequency_ = 4000.0;
   poleRadius_ = 0.95;
@@ -30,21 +32,11 @@ Resonate :: Resonate()
   zeroRadius_ = 0.0;
 }  
 
-Resonate :: ~Resonate()
+Resonate :: ~Resonate( void )
 {
 }
 
-void Resonate :: keyOn()
-{
-  adsr_.keyOn();
-}
-
-void Resonate :: keyOff()
-{
-  adsr_.keyOff();
-}
-
-void Resonate :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Resonate :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   adsr_.setTarget( amplitude );
   this->keyOn();
@@ -55,7 +47,7 @@ void Resonate :: noteOn(StkFloat frequency, StkFloat amplitude)
   handleError( StkError::DEBUG_WARNING );
 #endif
 }
-void Resonate :: noteOff(StkFloat amplitude)
+void Resonate :: noteOff( StkFloat amplitude )
 {
   this->keyOff();
 
@@ -88,7 +80,7 @@ void Resonate :: setResonance( StkFloat frequency, StkFloat radius )
   filter_.setResonance( poleFrequency_, poleRadius_, true );
 }
 
-void Resonate :: setNotch(StkFloat frequency, StkFloat radius)
+void Resonate :: setNotch( StkFloat frequency, StkFloat radius )
 {
   zeroFrequency_ = frequency;
   if ( frequency < 0.0 ) {
@@ -107,19 +99,7 @@ void Resonate :: setNotch(StkFloat frequency, StkFloat radius)
   filter_.setNotch( zeroFrequency_, zeroRadius_ );
 }
 
-void Resonate :: setEqualGainZeroes()
-{
-  filter_.setEqualGainZeroes();
-}
-
-StkFloat Resonate :: computeSample()
-{
-  lastOutput_ = filter_.tick( noise_.tick() );
-  lastOutput_ *= adsr_.tick();
-  return lastOutput_;
-}
-
-void Resonate :: controlChange(int number, StkFloat value)
+void Resonate :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -153,3 +133,5 @@ void Resonate :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

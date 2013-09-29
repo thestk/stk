@@ -1,3 +1,10 @@
+#ifndef STK_UDPSOCKET_H
+#define STK_UDPSOCKET_H
+
+#include "Socket.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class UdpSocket
     \brief STK UDP socket server/client class.
@@ -17,14 +24,9 @@
     read/write methods.  Values less than or equal to zero indicate
     the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_UDPSOCKET_H
-#define STK_UDPSOCKET_H
-
-#include "Socket.h"
 
 class UdpSocket : public Socket
 {
@@ -69,4 +71,6 @@ class UdpSocket : public Socket
 
 };
 
-#endif // defined(STK_UDPSOCKET_H)
+} // stk namespace
+
+#endif

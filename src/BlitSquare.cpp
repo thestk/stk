@@ -25,14 +25,14 @@
     Blit waveforms.  This class is not guaranteed to be well behaved
     in the presence of significant aliasing.
 
-    Based on initial code of Robin Davies, 2005.
-    Modified algorithm code by Gary Scavone, 2005 - 2006.
+    Based on initial code of Robin Davies, 2005
+    Modified algorithm code by Gary Scavone, 2005 - 2009.
 */
 /***************************************************/
 
 #include "BlitSquare.h"
-#include <cmath>
-#include <limits>
+
+namespace stk {
 
 BlitSquare:: BlitSquare( StkFloat frequency )
 {
@@ -48,7 +48,7 @@ BlitSquare :: ~BlitSquare()
 void BlitSquare :: reset()
 {
   phase_ = 0.0;
-  lastOutput_ = 0;
+  lastFrame_[0] = 0.0;
   dcbState_ = 0.0;
   lastBlitOutput_ = 0;
 }
@@ -92,40 +92,4 @@ void BlitSquare :: updateHarmonics( void )
 #endif
 }
 
-StkFloat BlitSquare :: computeSample( void )
-{
-  StkFloat temp = lastBlitOutput_;
-
-  // A fully  optimized version of this would replace the two sin calls
-  // with a pair of fast sin oscillators, for which stable fast 
-  // two-multiply algorithms are well known. In the spirit of STK,
-  // which favors clarity over performance, the optimization has 
-  // not been made here.
-
-  // Avoid a divide by zero, or use of a denomralized divisor
-  // at the sinc peak, which has a limiting value of 1.0.
-  StkFloat denominator = sin( phase_ );
-  if ( fabs( denominator )  < std::numeric_limits<StkFloat>::epsilon() ) {
-    // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-    if ( phase_ < 0.1f || phase_ > TWO_PI - 0.1f )
-      lastBlitOutput_ = a_;
-    else
-      lastBlitOutput_ = -a_;
-  }
-  else {
-    lastBlitOutput_ =  sin( m_ * phase_ );
-    lastBlitOutput_ /= p_ * denominator;
-  }
-
-  lastBlitOutput_ += temp;
-
-  // Now apply DC blocker.
-  lastOutput_ = lastBlitOutput_ - dcbState_ + 0.999 * lastOutput_;
-  dcbState_ = lastBlitOutput_;
-
-  phase_ += rate_;
-  if ( phase_ >= TWO_PI ) phase_ -= TWO_PI;
-
-	return lastOutput_;
-}
-
+} // stk namespace

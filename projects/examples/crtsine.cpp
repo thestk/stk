@@ -2,6 +2,7 @@
 
 #include "SineWave.h"
 #include "RtAudio.h"
+using namespace stk;
 
 // This tick() function handles sample computation only.  It will be
 // called automatically when the system needs a new buffer of audio

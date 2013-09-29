@@ -83,11 +83,6 @@ pack .buttons -pady 5 -padx 5
 button .exit -text "Exit Program" -bg grey66 -command myExit
 pack .exit -side bottom -pady 20
 
-#bind all <KeyPress> {
-bind . <KeyPress> {
-    noteOn $pitch $press 
-}
-
 # Bind an X windows "close" event with the Exit routine
 bind . <Destroy> +myExit
 

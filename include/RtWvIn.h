@@ -1,3 +1,12 @@
+#ifndef STK_RTWVIN_H
+#define STK_RTWVIN_H
+
+#include "WvIn.h"
+#include "RtAudio.h"
+#include "Mutex.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class RtWvIn
     \brief STK realtime audio (blocking) input class.
@@ -10,36 +19,28 @@
 
     RtWvIn supports multi-channel data in both interleaved and
     non-interleaved formats.  It is important to distinguish the
-    tick() methods, which return samples produced by averaging across
-    sample frames, from the tickFrame() methods, which return
-    references or pointers to multi-channel sample frames.
+    tick() method that computes a single frame (and returns only the
+    specified sample of a multi-channel frame) from the overloaded one
+    that takes an StkFrames object for multi-channel and/or
+    multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_RTWVIN_H
-#define STK_RTWVIN_H
-
-#include "WvIn.h"
-#include "RtAudio.h"
 
 class RtWvIn : public WvIn
 {
 public:
   //! Default constructor.
   /*!
-    The \e device argument is passed to RtAudio during
-    instantiation.  The default value (zero) will select the default
-    device on your system or the first device found meeting the
-    specified parameters.  On systems with multiple
-    soundcards/devices, values greater than zero can be specified in
-    accordance with the order that the devices are enumerated by the
-    underlying audio API.  The default buffer size of RT_BUFFER_SIZE
-    is defined in Stk.h.  An StkError will be thrown if an error
-    occurs duing instantiation.
+    The default \e device argument value (zero) will select the
+    default input device on your system.  The first device enumerated
+    by the underlying audio API is specified with a value of one.  The
+    default buffer size of RT_BUFFER_SIZE is defined in Stk.h.  An
+    StkError will be thrown if an error occurs duing instantiation.
   */
-  RtWvIn( unsigned int nChannels = 1, StkFloat sampleRate = Stk::sampleRate(), int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 20 );
+  RtWvIn( unsigned int nChannels = 1, StkFloat sampleRate = Stk::sampleRate(),
+          int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 20 );
 
   //! Class destructor.
   ~RtWvIn();
@@ -58,20 +59,67 @@ public:
   */
   void stop( void );
 
-  // This function is not intended for general use but had to be made
+  //! Return the specified channel value of the last computed frame.
+  /*!
+    For multi-channel files, use the lastFrame() function to get
+    all values from the last computed frame.  If the device is
+    stopped, the returned value is 0.0.  The \c channel argument must
+    be less than the number of channels in the audio stream (the first
+    channel is specified by 0).  However, range checking is only
+    performed if _STK_DEBUG_ is defined during compilation, in which
+    case an out-of-range value will trigger an StkError exception.
+  */
+  StkFloat lastOut( unsigned int channel = 0 );
+
+  //! Compute a sample frame and return the specified \c channel value.
+  /*!
+    For multi-channel files, use the lastFrame() function to get
+    all values from the computed frame.  If the device is "stopped",
+    it is "started".  The \c channel argument must be less than the
+    number of channels in the audio stream (the first channel is
+    specified by 0).  However, range checking is only performed if
+    _STK_DEBUG_ is defined during compilation, in which case an
+    out-of-range value will trigger an StkError exception.
+  */
+  StkFloat tick( unsigned int channel = 0 );
+
+  //! Fill the StkFrames argument with computed frames and return the same reference.
+  /*!
+    If the device is "stopped", it is "started".  The number of
+    channels in the StkFrames argument must equal the number of
+    channels specified during instantiation.  However, this is only
+    checked if _STK_DEBUG_ is defined during compilation, in which
+    case an incompatibility will trigger an StkError exception.
+  */
+  StkFrames& tick( StkFrames& frames );
+
+  // This function is not intended for general use but must be
   // public for access from the audio callback function.
   void fillBuffer( void *buffer, unsigned int nFrames );
 
 protected:
 
-  void computeFrame( void );
-
 	RtAudio adc_;
+  Mutex mutex_;
   bool stopped_;
   unsigned int readIndex_;
   unsigned int writeIndex_;
   unsigned int framesFilled_;
 
 };
+
+inline StkFloat RtWvIn :: lastOut( unsigned int channel )
+{
+#if defined(_STK_DEBUG_)
+  if ( channel >= data_.channels() ) {
+    errorString_ << "RtWvIn::lastOut(): channel argument and audio stream are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  return lastFrame_[channel];
+}
+
+} // stk namespace
 
 #endif

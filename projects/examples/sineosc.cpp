@@ -1,14 +1,16 @@
 // sineosc.cpp STK tutorial program
 
-#include "WaveLoop.h"
+#include "FileLoop.h"
 #include "FileWvOut.h"
+using namespace stk;
 
 int main()
 {
   // Set the global sample rate before creating class instances.
   Stk::setSampleRate( 44100.0 );
 
-  WaveLoop input;
+  int nFrames = 100000;
+  FileLoop input;
   FileWvOut output;
 
   try {
@@ -24,10 +26,19 @@ int main()
 
   input.setFrequency( 440.0 );
 
-  // Run the oscillator for 40000 samples, writing to the output file
-  int i;
-  for ( i=0; i<40000; i++ ) {
+  // Option 1: Use StkFrames
+  /*
+  StkFrames frames( nFrames, 1 );
+  try {
+    output.tick( input.tick( frames ) );
+  }
+  catch ( StkError & ) {
+    exit( 1 );
+  }
+  */
 
+  // Option 2: Single-sample computations
+  for ( int i=0; i<nFrames; i++ ) {
     try {
       output.tick( input.tick() );
     }

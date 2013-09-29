@@ -8,14 +8,16 @@
     sample rates.  You can specify the maximum polyphony (maximum
     number of simultaneous voices) in VoicDrum.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "VoicDrum.h"
 #include <cmath>
 
-VoicDrum :: VoicDrum() : Instrmnt()
+namespace stk {
+
+VoicDrum :: VoicDrum( void ) : Instrmnt()
 {
   // This counts the number of sounding voices.
   nSounding_ = 0;
@@ -23,7 +25,7 @@ VoicDrum :: VoicDrum() : Instrmnt()
   soundNumber_ = std::vector<int> (VOICE_POLYPHONY, -1);
 }
 
-VoicDrum :: ~VoicDrum()
+VoicDrum :: ~VoicDrum( void )
 {
 }
 
@@ -114,33 +116,11 @@ void VoicDrum :: noteOn( StkFloat instrument, StkFloat amplitude )
 #endif
 }
 
-void VoicDrum :: noteOff(StkFloat amplitude)
+void VoicDrum :: noteOff( StkFloat amplitude )
 {
   // Set all sounding wave filter gains low.
   int i = 0;
   while ( i < nSounding_ ) filters_[i++].setGain( amplitude * 0.01 );
 }
 
-StkFloat VoicDrum :: computeSample()
-{
-  lastOutput_ = 0.0;
-  if ( nSounding_ == 0 ) return lastOutput_;
-
-  for ( int i=0; i<VOICE_POLYPHONY; i++ ) {
-    if ( soundOrder_[i] >= 0 ) {
-      if ( waves_[i].isFinished() ) {
-        // Re-order the list.
-        for ( int j=0; j<VOICE_POLYPHONY; j++ ) {
-          if ( soundOrder_[j] > soundOrder_[i] )
-            soundOrder_[j] -= 1;
-        }
-        soundOrder_[i] = -1;
-        nSounding_--;
-      }
-      else
-        lastOutput_ += filters_[i].tick( waves_[i].tick() );
-    }
-  }
-
-  return lastOutput_;
-}
+} // stk namespace

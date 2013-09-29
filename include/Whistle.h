@@ -1,3 +1,16 @@
+#ifndef STK_WHISTLE_H
+#define STK_WHISTLE_H
+
+#include "Instrmnt.h"
+#include "Sphere.h"
+#include "Vector3D.h"
+#include "Noise.h"
+#include "SineWave.h"
+#include "OnePole.h"
+#include "Envelope.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class Whistle
     \brief STK police/referee whistle instrument class.
@@ -12,20 +25,9 @@
        - Blowing Frequency Modulation = 2
        - Volume = 128
 
-    by Perry R. Cook  1996 - 2004.
+    by Perry R. Cook  1996 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_WHISTLE_H
-#define STK_WHISTLE_H
-
-#include "Instrmnt.h"
-#include "Sphere.h"
-#include "Vector3D.h"
-#include "Noise.h"
-#include "SineWave.h"
-#include "OnePole.h"
-#include "Envelope.h"
 
 class Whistle : public Instrmnt
 {
@@ -34,35 +36,36 @@ public:
   /*!
     An StkError will be thrown if the rawwave path is incorrectly set.
   */
-  Whistle();
+  Whistle( void );
 
   //! Class destructor.
-  ~Whistle();
+  ~Whistle( void );
 
   //! Reset and clear all internal state.
-  void clear();
+  void clear( void );
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(StkFloat frequency);
+  void setFrequency( StkFloat frequency );
 
   //! Apply breath velocity to instrument with given amplitude and rate of increase.
-  void startBlowing(StkFloat amplitude, StkFloat rate);
+  void startBlowing( StkFloat amplitude, StkFloat rate );
 
   //! Decrease breath velocity with given rate of decrease.
-  void stopBlowing(StkFloat rate);
+  void stopBlowing( StkFloat rate );
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
 protected:
-
-  StkFloat computeSample( void );
 
 	Vector3D *tempVectorP_;
   Vector3D tempVector_;
@@ -84,4 +87,5 @@ protected:
 	int subSample_, subSampCount_;
 };
 
+} // stk namespace
 #endif

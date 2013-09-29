@@ -6,54 +6,44 @@
     modulations to give a nice, natural human
     modulation function.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Modulate.h"
 
-Modulate :: Modulate()
+namespace stk {
+
+Modulate :: Modulate( void )
 {
   vibrato_.setFrequency( 6.0 );
   vibratoGain_ = 0.04;
 
-  noise_.setRate( 330 );
-  randomGain_ = 0.05;
+  noiseRate_ = (unsigned int) ( 330.0 * Stk::sampleRate() / 22050.0 );
+  noiseCounter_ = noiseRate_;
 
+  randomGain_ = 0.05;
   filter_.setPole( 0.999 );
   filter_.setGain( randomGain_ );
+
+  Stk::addSampleRateAlert( this );
 }
 
-Modulate :: ~Modulate()
+Modulate :: ~Modulate( void )
 {
+  Stk::removeSampleRateAlert( this );
 }
 
-void Modulate :: reset()
+void Modulate :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
 {
-  lastOutput_ = (StkFloat)  0.0;
+  if ( !ignoreSampleRateChange_ )
+    noiseRate_ = (unsigned int ) ( newRate * noiseRate_ / oldRate );
 }
 
-void Modulate :: setVibratoRate(StkFloat rate)
-{
-  vibrato_.setFrequency( rate );
-}
-
-void Modulate :: setVibratoGain(StkFloat gain)
-{
-  vibratoGain_ = gain;
-}
-
-void Modulate :: setRandomGain(StkFloat gain)
+void Modulate :: setRandomGain( StkFloat gain )
 {
   randomGain_ = gain;
   filter_.setGain( randomGain_ );
 }
 
-StkFloat Modulate :: computeSample()
-{
-  // Compute periodic and random modulations.
-  lastOutput_ = vibratoGain_ * vibrato_.tick();
-  lastOutput_ += filter_.tick( noise_.tick() );
-  return lastOutput_;
-}
-
+} // stk namespace

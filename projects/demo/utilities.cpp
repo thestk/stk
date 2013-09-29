@@ -36,6 +36,8 @@
 #include "Resonate.h"
 #include "Whistle.h"
 
+using namespace stk;
+
 #define NUM_INSTS 28
 
 // The order of the following list is important.  The location of a particular

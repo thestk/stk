@@ -1,69 +1,79 @@
+#ifndef STK_EFFECT_H
+#define STK_EFFECT_H
+
+#include "Stk.h"
+#include <cmath>
+
+namespace stk {
+
 /***************************************************/
 /*! \class Effect
     \brief STK abstract effects parent class.
 
-    This class provides common functionality for
-    STK effects subclasses.
+    This class provides common functionality for STK effects
+    subclasses.  It is general enough to support both monophonic and
+    polyphonic input/output classes.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#include "Stk.h"
-
-#ifndef STK_EFFECT_H
-#define STK_EFFECT_H
 
 class Effect : public Stk
 {
  public:
   //! Class constructor.
-  Effect();
+  Effect( void ) { lastFrame_.resize( 1, 1, 0.0 ); };
 
-  //! Class destructor.
-  virtual ~Effect();
+  //! Return the number of output channels for the class.
+  unsigned int channelsOut( void ) const { return lastFrame_.channels(); };
+
+  //! Return an StkFrames reference to the last output sample frame.
+  const StkFrames& lastFrame( void ) const { return lastFrame_; };
 
   //! Reset and clear all internal state.
   virtual void clear() = 0;
 
-  //! Set the mixture of input and "effected" levels in the output (0.0 = input only, 1.0 = reverb only). 
-  void setEffectMix(StkFloat mix);
-
-  //! Return the last output value.
-  StkFloat lastOut() const;
-
-  //! Return the last left output value.
-  StkFloat lastOutLeft() const;
-
-  //! Return the last right output value.
-  StkFloat lastOutRight() const;
-
-  //! Take one sample input and compute one sample of output.
-  StkFloat tick( StkFloat input );
-
-  //! Take a channel of the StkFrames object as inputs to the effect and replace with corresponding outputs.
-  /*!
-    The \c channel argument should be zero or greater (the first
-    channel is specified by 0).  An StkError will be thrown if the \c
-    channel argument is equal to or greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+  //! Set the mixture of input and "effected" levels in the output (0.0 = input only, 1.0 = effect only). 
+  void setEffectMix( StkFloat mix );
 
  protected:
 
-  // This abstract function must be implemented in all subclasses.
-  // It is used to get around a C++ problem with overloaded virtual
-  // functions.
-  virtual StkFloat computeSample( StkFloat input ) = 0;
-
   // Returns true if argument value is prime.
-  bool isPrime( int number );
+  bool isPrime( unsigned int number );
 
-  StkFloat lastOutput_[2];
+  StkFrames lastFrame_;
   StkFloat effectMix_;
 
 };
+
+inline void Effect :: setEffectMix( StkFloat mix )
+{
+  if ( mix < 0.0 ) {
+    errorString_ << "Effect::setEffectMix: mix parameter is less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
+    effectMix_ = 0.0;
+  }
+  else if ( mix > 1.0 ) {
+    errorString_ << "Effect::setEffectMix: mix parameter is greater than 1.0 ... setting to one!";
+    handleError( StkError::WARNING );
+    effectMix_ = 1.0;
+  }
+  else
+    effectMix_ = mix;
+}
+
+inline bool Effect :: isPrime( unsigned int number )
+{
+  if ( number == 2 ) return true;
+  if ( number & 1 ) {
+	  for ( int i=3; i<(int)sqrt((double)number)+1; i+=2 )
+		  if ( (number % i) == 0 ) return false;
+	  return true; // prime
+	}
+  else return false; // even
+}
+
+} // stk namespace
 
 #endif
 

@@ -1,3 +1,12 @@
+#ifndef STK_BLITSAW_H
+#define STK_BLITSAW_H
+
+#include "Generator.h"
+#include <cmath>
+#include <limits>
+
+namespace stk {
+
 /***************************************************/
 /*! \class BlitSaw
     \brief STK band-limited sawtooth wave class.
@@ -18,11 +27,6 @@
     Modified algorithm code by Gary Scavone, 2005.
 */
 /***************************************************/
-
-#ifndef STK_BLITSAW_H
-#define STK_BLITSAW_H
-
-#include "Generator.h"
 
 class BlitSaw: public Generator
 {
@@ -54,10 +58,25 @@ class BlitSaw: public Generator
   */
   void setHarmonics( unsigned int nHarmonics = 0 );
 
+  //! Return the last computed output value.
+  StkFloat lastOut( void ) const { return lastFrame_[0]; };
+
+  //! Compute and return one output sample.
+  StkFloat tick( void );
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument must be less than the number of
+    channels in the StkFrames argument (the first channel is specified
+    by 0).  However, range checking is only performed if _STK_DEBUG_
+    is defined during compilation, in which case an out-of-range value
+    will trigger an StkError exception.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+
  protected:
 
   void updateHarmonics( void );
-  StkFloat computeSample( void );
 
   unsigned int nHarmonics_;
   unsigned int m_;
@@ -69,5 +88,61 @@ class BlitSaw: public Generator
   StkFloat state_;
 
 };
+
+inline StkFloat BlitSaw :: tick( void )
+{
+  // The code below implements the BLIT algorithm of Stilson and
+  // Smith, followed by a summation and filtering operation to produce
+  // a sawtooth waveform.  After experimenting with various approaches
+  // to calculate the average value of the BLIT over one period, I
+  // found that an estimate of C2_ = 1.0 / period (in samples) worked
+  // most consistently.  A "leaky integrator" is then applied to the
+  // difference of the BLIT output and C2_. (GPS - 1 October 2005)
+
+  // A fully  optimized version of this code would replace the two sin 
+  // calls with a pair of fast sin oscillators, for which stable fast 
+  // two-multiply algorithms are well known. In the spirit of STK,
+  // which favors clarity over performance, the optimization has 
+  // not been made here.
+
+  // Avoid a divide by zero, or use of a denormalized divisor 
+  // at the sinc peak, which has a limiting value of m_ / p_.
+  StkFloat tmp, denominator = sin( phase_ );
+  if ( fabs(denominator) <= std::numeric_limits<StkFloat>::epsilon() )
+    tmp = a_;
+  else {
+    tmp =  sin( m_ * phase_ );
+    tmp /= p_ * denominator;
+  }
+
+  tmp += state_ - C2_;
+  state_ = tmp * 0.995;
+
+  phase_ += rate_;
+  if ( phase_ >= PI ) phase_ -= PI;
+    
+  lastFrame_[0] = tmp;
+	return lastFrame_[0];
+}
+
+inline StkFrames& BlitSaw :: tick( StkFrames& frames, unsigned int channel )
+{
+#if defined(_STK_DEBUG_)
+  if ( channel >= frames.channels() ) {
+    errorString_ << "BlitSaw::tick(): channel and StkFrames arguments are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+
+  StkFloat *samples = &frames[channel];
+  unsigned int hop = frames.channels();
+  for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
+    *samples = BlitSaw::tick();
+
+  return frames;
+}
+
+} // stk namespace
 
 #endif

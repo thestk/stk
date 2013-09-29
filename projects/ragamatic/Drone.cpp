@@ -13,15 +13,17 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Drone.h"
 
+namespace stk {
+
 Drone :: Drone( StkFloat lowestFrequency )
 {
-  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  length_ = (unsigned long) ( Stk::sampleRate() / lowestFrequency + 1 );
   loopGain_ = 0.999;
   delayLine_.setMaximumDelay( length_ );
   delayLine_.setDelay( 0.5 * length_ );
@@ -29,11 +31,11 @@ Drone :: Drone( StkFloat lowestFrequency )
   this->clear();
 }
 
-Drone :: ~Drone()
+Drone :: ~Drone( void )
 {
 }
 
-void Drone :: clear()
+void Drone :: clear( void )
 {
   delayLine_.clear();
   loopFilter_.clear();
@@ -95,11 +97,4 @@ void Drone :: noteOff( StkFloat amplitude )
 #endif
 }
 
-StkFloat Drone :: computeSample()
-{
-  // Here's the whole inner loop of the instrument!!
-  lastOutput_ = delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ )
-                                 + (0.005 * envelope_.tick() * noise_.tick())); 
-  return lastOutput_;
-}
-
+} // stk namespace

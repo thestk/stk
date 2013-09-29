@@ -1,3 +1,16 @@
+#ifndef STK_VOICFORM_H
+#define STK_VOICFORM_H
+
+#include "Instrmnt.h"
+#include "Envelope.h"
+#include "Noise.h"
+#include "SingWave.h"
+#include "FormSwep.h"
+#include "OnePole.h"
+#include "OneZero.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class VoicForm
     \brief Four formant synthesis instrument.
@@ -21,20 +34,9 @@
        - Vibrato Gain = 1
        - Loudness (Spectral Tilt) = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_VOICFORM_H
-#define STK_VOICFORM_H
-
-#include "Instrmnt.h"
-#include "Envelope.h"
-#include "Noise.h"
-#include "SingWave.h"
-#include "FormSwep.h"
-#include "OnePole.h"
-#include "OneZero.h"
 
 class VoicForm : public Instrmnt
 {
@@ -43,50 +45,51 @@ class VoicForm : public Instrmnt
   /*!
     An StkError will be thrown if the rawwave path is incorrectly set.
   */
-  VoicForm();
+  VoicForm( void );
 
   //! Class destructor.
-  ~VoicForm();
+  ~VoicForm( void );
 
   //! Reset and clear all internal state.
-  void clear();
+  void clear( void );
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(StkFloat frequency);
+  void setFrequency( StkFloat frequency );
 
   //! Set instrument parameters for the given phoneme.  Returns false if phoneme not found.
-  bool setPhoneme(const char* phoneme);
+  bool setPhoneme( const char* phoneme );
 
   //! Set the voiced component gain.
-  void setVoiced(StkFloat vGain);
+  void setVoiced( StkFloat vGain ) { voiced_->setGainTarget(vGain); };
 
   //! Set the unvoiced component gain.
-  void setUnVoiced(StkFloat nGain);
+  void setUnVoiced( StkFloat nGain ) { noiseEnv_.setTarget(nGain); };
 
   //! Set the sweep rate for a particular formant filter (0-3).
-  void setFilterSweepRate(unsigned int whichOne, StkFloat rate);
+  void setFilterSweepRate( unsigned int whichOne, StkFloat rate );
 
   //! Set voiced component pitch sweep rate.
-  void setPitchSweepRate(StkFloat rate);
+  void setPitchSweepRate( StkFloat rate ) { voiced_->setSweepRate(rate); };
 
   //! Start the voice.
-  void speak();
+  void speak( void ) { voiced_->noteOn(); };
 
   //! Stop the voice.
-  void quiet();
+  void quiet( void );
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude ) { this->quiet(); };
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
 protected:
-
-  StkFloat computeSample( void );
 
   SingWave *voiced_;
   Noise    noise_;
@@ -96,5 +99,26 @@ protected:
   OneZero  onezero_;
 
 };
+
+inline StkFloat VoicForm :: tick( unsigned int )
+{
+  StkFloat temp;
+  temp = onepole_.tick( onezero_.tick( voiced_->tick() ) );
+  temp += noiseEnv_.tick() * noise_.tick();
+  lastFrame_[0] = filters_[0].tick(temp);
+  lastFrame_[0] += filters_[1].tick(temp);
+  lastFrame_[0] += filters_[2].tick(temp);
+  lastFrame_[0] += filters_[3].tick(temp);
+  /*
+    temp  += noiseEnv_.tick() * noise_.tick();
+    lastFrame_[0]  = filters_[0].tick(temp);
+    lastFrame_[0]  = filters_[1].tick(lastFrame_[0]);
+    lastFrame_[0]  = filters_[2].tick(lastFrame_[0]);
+    lastFrame_[0]  = filters_[3].tick(lastFrame_[0]);
+  */
+  return lastFrame_[0];
+}
+
+} // stk namespace
 
 #endif

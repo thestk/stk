@@ -48,26 +48,30 @@
         - Little Rocks = 21
         - Tuned Bamboo Chimes = 22
 
-    by Perry R. Cook, 1996 - 2004.
+    by Perry R. Cook, 1996 - 2009.
 */
 /***************************************************/
 
-#include "Stk.h"
+#include "Shakers.h"
+#include "SKINI.msg"
+#include <string.h>
 #include <cmath>
 
-int my_random(int max) //  Return Random Int Between 0 and max
+namespace stk {
+
+int my_random( int max ) //  Return Random Int Between 0 and max
 {
   int temp = (int) ((float)max * rand() / (RAND_MAX + 1.0) );
   return temp;
 }
 
-StkFloat float_random(StkFloat max) // Return random float between 0.0 and max
+StkFloat float_random( StkFloat max ) // Return random float between 0.0 and max
 {	
   StkFloat temp = (StkFloat) (max * rand() / (RAND_MAX + 1.0) );
   return temp;
 }
 
-StkFloat noise_tick() //  Return random StkFloat float between -1.0 and 1.0
+StkFloat noise_tick( void ) //  Return random StkFloat float between -1.0 and 1.0
 {
   StkFloat temp = (StkFloat) (2.0 * rand() / (RAND_MAX + 1.0) );
   temp -= 1.0;
@@ -274,10 +278,7 @@ const StkFloat LITLROCKS_RES = 0.843;
 
 // Finally ... the class code!
 
-#include "Shakers.h"
-#include "SKINI.msg"
-
-Shakers :: Shakers()
+Shakers :: Shakers( void )
 {
   int i;
 
@@ -316,7 +317,7 @@ Shakers :: Shakers()
   this->setupNum(instType_);
 }
 
-Shakers :: ~Shakers()
+Shakers :: ~Shakers( void )
 {
 }
 
@@ -331,7 +332,7 @@ char instrs[NUM_INSTR][10] = {
   "BigRocks", "LitlRoks", "TBamboo"
 };
 
-int Shakers :: setupName(char* instr)
+int Shakers :: setupName( char* instr )
 {
   int which = 0;
 
@@ -348,22 +349,22 @@ int Shakers :: setupName(char* instr)
   return this->setupNum(which);
 }
 
-void Shakers :: setFinalZs(StkFloat z0, StkFloat z1, StkFloat z2)
+void Shakers :: setFinalZs( StkFloat z0, StkFloat z1, StkFloat z2 )
 {
   finalZCoeffs_[0] = z0;
   finalZCoeffs_[1] = z1;
   finalZCoeffs_[2] = z2;
 }
 
-void Shakers :: setDecays(StkFloat sndDecay_, StkFloat sysDecay_)
+void Shakers :: setDecays( StkFloat sndDecay, StkFloat sysDecay )
 {
-  soundDecay_ = sndDecay_;
-  systemDecay_ = sysDecay_;
+  soundDecay_ = sndDecay;
+  systemDecay_ = sysDecay;
 }
 
-int Shakers :: setFreqAndReson(int which, StkFloat freq, StkFloat reson)
+int Shakers :: setFreqAndReson( int which, StkFloat freq, StkFloat reson )
 {
-  if (which < MAX_FREQS)	{
+  if ( which < MAX_FREQS )	{
     resons_[which] = reson;
     center_freqs_[which] = freq;
     t_center_freqs_[which] = freq;
@@ -374,7 +375,7 @@ int Shakers :: setFreqAndReson(int which, StkFloat freq, StkFloat reson)
   else return 0;
 }
 
-int Shakers :: setupNum(int inst)
+int Shakers :: setupNum( int inst )
 {
   int i, rv = 0;
   StkFloat temp;
@@ -793,7 +794,7 @@ int Shakers :: setupNum(int inst)
   return rv;
 }
 
-void Shakers :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Shakers :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   // Yep ... pretty kludgey, but it works!
   int noteNum = (int) ((12*log(frequency/220.0)/log(2.0)) + 57.01) % 32;
@@ -808,7 +809,7 @@ void Shakers :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Shakers :: noteOff(StkFloat amplitude)
+void Shakers :: noteOff( StkFloat amplitude )
 {
   shakeEnergy_ = 0.0;
   if (instType_==10 || instType_==3) ratchetPos_ = 0;
@@ -816,7 +817,7 @@ void Shakers :: noteOff(StkFloat amplitude)
 
 const StkFloat MIN_ENERGY = 0.3;
 
-StkFloat Shakers :: computeSample()
+StkFloat Shakers :: tick( unsigned int )
 {
   StkFloat data;
   StkFloat temp_rand;
@@ -824,15 +825,15 @@ StkFloat Shakers :: computeSample()
 
   if (instType_ == 4) {
   	if (shakeEnergy_ > MIN_ENERGY)	{
-      lastOutput_ = wuter_tick();
-      lastOutput_ *= 0.0001;
+      lastFrame_[0] = wuter_tick();
+      lastFrame_[0] *= 0.0001;
     }
     else {
-      lastOutput_ = 0.0;
+      lastFrame_[0] = 0.0;
     }
   }
   else if (instType_ == 22) {
-    lastOutput_ = tbamb_tick();
+    lastFrame_[0] = tbamb_tick();
   }
   else if (instType_ == 10 || instType_ == 3) {
     if (ratchetPos_ > 0) {
@@ -842,10 +843,10 @@ StkFloat Shakers :: computeSample()
         ratchetPos_ -= 1;
 	    }
       totalEnergy_ = ratchet_;
-      lastOutput_ = ratchet_tick();
-      lastOutput_ *= 0.0001;
+      lastFrame_[0] = ratchet_tick();
+      lastFrame_[0] *= 0.0001;
     }
-    else lastOutput_ = 0.0;
+    else lastFrame_[0] = 0.0;
   }
   else  { // generic_tick()
     if (shakeEnergy_ > MIN_ENERGY) {
@@ -879,15 +880,15 @@ StkFloat Shakers :: computeSample()
       data += finalZCoeffs_[2] * finalZ_[2];    // Extra zero(s) for shape
       if (data > 10000.0)	data = 10000.0;
       if (data < -10000.0) data = -10000.0;
-      lastOutput_ = data * 0.0001;
+      lastFrame_[0] = data * 0.0001;
     }
-    else lastOutput_ = 0.0;
+    else lastFrame_[0] = 0.0;
   }
 
-  return lastOutput_;
+  return lastFrame_[0];
 }
 
-void Shakers :: controlChange(int number, StkFloat value)
+void Shakers :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -997,7 +998,7 @@ void Shakers :: controlChange(int number, StkFloat value)
 
 // KLUDGE-O-MATIC-O-RAMA
 
-StkFloat Shakers :: wuter_tick() {
+StkFloat Shakers :: wuter_tick( void ) {
   StkFloat data;
   int j;
   shakeEnergy_ *= systemDecay_;               // Exponential system decay
@@ -1068,7 +1069,7 @@ StkFloat Shakers :: wuter_tick() {
   return data;
 }
 
-StkFloat Shakers :: ratchet_tick() {
+StkFloat Shakers :: ratchet_tick( void ) {
   StkFloat data;
   if (my_random(1024) < nObjects_) {
     sndLevel_ += 512 * ratchet_ * totalEnergy_;
@@ -1094,7 +1095,7 @@ StkFloat Shakers :: ratchet_tick() {
   return data;
 }
 
-StkFloat Shakers :: tbamb_tick() {
+StkFloat Shakers :: tbamb_tick( void ) {
   StkFloat data, temp;
   static int which = 0;
   int i;
@@ -1129,3 +1130,5 @@ StkFloat Shakers :: tbamb_tick() {
   else data = 0.0;
   return data;
 }
+
+} // stk namespace

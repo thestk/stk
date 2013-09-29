@@ -1,31 +1,33 @@
 /***************************************************/
-/*! \class WaveLoop
-    \brief STK waveform oscillator class.
+/*! \class FileLoop
+    \brief STK file looping / oscillator class.
 
-    This class inherits from FileWvIn and provides audio file looping
-    functionality.  Any audio file that can be loaded by FileRead can
-    be looped using this class.
+    This class provides audio file looping functionality.  Any audio
+    file that can be loaded by FileRead can be looped using this
+    class.
 
-    WaveLoop supports multi-channel data.  It is important to
-    distinguish the tick() methods, which return samples produced by
-    averaging across sample frames, from the tickFrame() methods,
-    which return references or pointers to multi-channel sample
-    frames.
+    FileLoop supports multi-channel data.  It is important to
+    distinguish the tick() method that computes a single frame (and
+    returns only the specified sample of a multi-channel frame) from
+    the overloaded one that takes an StkFrames object for
+    multi-channel and/or multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
-#include "WaveLoop.h"
+#include "FileLoop.h"
 #include <cmath>
 
-WaveLoop :: WaveLoop( unsigned long chunkThreshold, unsigned long chunkSize )
+namespace stk {
+
+FileLoop :: FileLoop( unsigned long chunkThreshold, unsigned long chunkSize )
   : FileWvIn( chunkThreshold, chunkSize ), phaseOffset_(0.0)
 {
   Stk::addSampleRateAlert( this );
 }
 
-WaveLoop :: WaveLoop( std::string fileName, bool raw, bool doNormalize,
+FileLoop :: FileLoop( std::string fileName, bool raw, bool doNormalize,
                       unsigned long chunkThreshold, unsigned long chunkSize )
   : FileWvIn( chunkThreshold, chunkSize ), phaseOffset_(0.0)
 {
@@ -33,18 +35,12 @@ WaveLoop :: WaveLoop( std::string fileName, bool raw, bool doNormalize,
   Stk::addSampleRateAlert( this );
 }
 
-WaveLoop :: ~WaveLoop()
+FileLoop :: ~FileLoop( void )
 {
   Stk::removeSampleRateAlert( this );
 }
 
-void WaveLoop :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
-{
-  if ( !ignoreSampleRateChange_ )
-    this->setRate( oldRate * rate_ / newRate );
-}
-
-void WaveLoop :: openFile( std::string fileName, bool raw, bool doNormalize )
+void FileLoop :: openFile( std::string fileName, bool raw, bool doNormalize )
 {
   // Call close() in case another file is already open.
   this->closeFile();
@@ -56,7 +52,7 @@ void WaveLoop :: openFile( std::string fileName, bool raw, bool doNormalize )
   if ( file_.fileSize() > chunkThreshold_ ) {
     chunking_ = true;
     chunkPointer_ = 0;
-    data_.resize( chunkSize_, file_.channels() );
+    data_.resize( chunkSize_ + 1, file_.channels() );
     if ( doNormalize ) normalizing_ = true;
     else normalizing_ = false;
   }
@@ -79,7 +75,7 @@ void WaveLoop :: openFile( std::string fileName, bool raw, bool doNormalize )
   }
 
   // Resize our lastOutputs container.
-  lastOutputs_.resize( 1, file_.channels() );
+  lastFrame_.resize( 1, file_.channels() );
 
   // Set default rate based on file sampling rate.
   this->setRate( data_.dataRate() / Stk::sampleRate() );
@@ -89,7 +85,7 @@ void WaveLoop :: openFile( std::string fileName, bool raw, bool doNormalize )
   this->reset();
 }
 
-void WaveLoop :: setRate( StkFloat rate )
+void FileLoop :: setRate( StkFloat rate )
 {
   rate_ = rate;
 
@@ -97,13 +93,7 @@ void WaveLoop :: setRate( StkFloat rate )
   else interpolate_ = false;
 }
 
-void WaveLoop :: setFrequency( StkFloat frequency )
-{
-  // This is a looping frequency.
-  this->setRate( file_.fileSize() * frequency / Stk::sampleRate() );
-}
-
-void WaveLoop :: addTime( StkFloat time )
+void FileLoop :: addTime( StkFloat time )
 {
   // Add an absolute time in samples.
   time_ += time;
@@ -115,7 +105,7 @@ void WaveLoop :: addTime( StkFloat time )
     time_ -= fileSize;
 }
 
-void WaveLoop :: addPhase( StkFloat angle )
+void FileLoop :: addPhase( StkFloat angle )
 {
   // Add a time in cycles (one cycle = fileSize).
   StkFloat fileSize = file_.fileSize();
@@ -127,35 +117,40 @@ void WaveLoop :: addPhase( StkFloat angle )
     time_ -= fileSize;
 }
 
-void WaveLoop :: addPhaseOffset( StkFloat angle )
+void FileLoop :: addPhaseOffset( StkFloat angle )
 {
   // Add a phase offset in cycles, where 1.0 = fileSize.
   phaseOffset_ = file_.fileSize() * angle;
 }
 
-void WaveLoop :: computeFrame( void )
+StkFloat FileLoop :: tick( unsigned int channel )
 {
+#if defined(_STK_DEBUG_)
+  if ( channel >= data_.channels() ) {
+    errorString_ << "FileLoop::tick(): channel argument and soundfile data are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
   // Check limits of time address ... if necessary, recalculate modulo
   // fileSize.
   StkFloat fileSize = file_.fileSize();
+
   while ( time_ < 0.0 )
     time_ += fileSize;
   while ( time_ >= fileSize )
     time_ -= fileSize;
 
-  StkFloat tyme;
+  StkFloat tyme = time_;
   if ( phaseOffset_ ) {
-    tyme = time_ + phaseOffset_;
+    tyme += phaseOffset_;
     while ( tyme < 0.0 )
       tyme += fileSize;
     while ( tyme >= fileSize )
       tyme -= fileSize;
   }
-  else {
-    tyme = time_;
-  }
 
-  if (chunking_) {
+  if ( chunking_ ) {
 
     // Check the time address vs. our current buffer limits.
     if ( ( time_ < (StkFloat) chunkPointer_ ) ||
@@ -184,14 +179,46 @@ void WaveLoop :: computeFrame( void )
   }
 
   if ( interpolate_ ) {
-    for ( unsigned int i=0; i<lastOutputs_.size(); i++ )
-    lastOutputs_[i] = data_.interpolate( tyme, i );
+    for ( unsigned int i=0; i<lastFrame_.size(); i++ )
+      lastFrame_[i] = data_.interpolate( tyme, i );
   }
   else {
-    for ( unsigned int i=0; i<lastOutputs_.size(); i++ )
-      lastOutputs_[i] = data_( (size_t) tyme, i );
+    for ( unsigned int i=0; i<lastFrame_.size(); i++ )
+      lastFrame_[i] = data_( (size_t) tyme, i );
   }
 
   // Increment time, which can be negative.
   time_ += rate_;
+
+  return lastFrame_[channel];
 }
+
+StkFrames& FileLoop :: tick( StkFrames& frames )
+{
+  if ( !file_.isOpen() ) {
+#if defined(_STK_DEBUG_)
+    errorString_ << "FileLoop::tick(): no file data is loaded!";
+    handleError( StkError::WARNING );
+#endif
+    return frames;
+  }
+
+  unsigned int nChannels = lastFrame_.channels();
+#if defined(_STK_DEBUG_)
+  if ( nChannels != frames.channels() ) {
+    errorString_ << "FileLoop::tick(): StkFrames argument is incompatible with file data!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  unsigned int j, counter = 0;
+  for ( unsigned int i=0; i<frames.frames(); i++ ) {
+    this->tick();
+    for ( j=0; j<nChannels; j++ )
+      frames[counter++] = lastFrame_[j];
+  }
+
+  return frames;
+}
+
+} // stk namespace

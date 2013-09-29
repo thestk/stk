@@ -1,3 +1,10 @@
+#ifndef STK_FILEREAD_H
+#define STK_FILEREAD_H
+
+#include "Stk.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class FileRead
     \brief STK audio file input class.
@@ -25,20 +32,15 @@
     filling a matrix row.  The sample rate for
     MAT-files is assumed to be 44100 Hz.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_FILEREAD_H
-#define STK_FILEREAD_H
-
-#include "Stk.h"
 
 class FileRead : public Stk
 {
 public:
   //! Default constructor.
-  FileRead();
+  FileRead( void );
 
   //! Overloaded constructor that opens a file during instantiation.
   /*!
@@ -51,7 +53,7 @@ public:
             StkFormat format = STK_SINT16, StkFloat rate = 22050.0 );
 
   //! Class destructor.
-  ~FileRead();
+  ~FileRead( void );
 
   //! Open the specified file and determine its formatting.
   /*!
@@ -125,5 +127,7 @@ protected:
   StkFormat dataType_;
   StkFloat fileRate_;
 };
+
+} // stk namespace
 
 #endif

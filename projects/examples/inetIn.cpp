@@ -31,6 +31,8 @@
 #include "InetWvIn.h"
 #include "RtWvOut.h"
 
+using namespace stk;
+
 void usage(void) {
   // Error function in case of incorrect command-line
   // argument specifications.
@@ -73,7 +75,7 @@ int main(int argc, char *argv[])
 
   // Here's the runtime loop.
   while ( input.isConnected() )
-    output->tickFrame( input.tickFrame( frame ) );
+    output->tick( input.tick( frame ) );
 
  cleanup:
   delete output;

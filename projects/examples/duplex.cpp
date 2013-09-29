@@ -10,6 +10,8 @@
 
 #include "RtAudio.h"
 #include <iostream>
+#include <stdlib.h>
+#include <string.h>
 
 /*
 typedef signed long  MY_TYPE;
@@ -86,10 +88,16 @@ int main(int argc, char *argv[])
   // Set the same number of channels for both input and output.
   unsigned int bufferFrames = 512;
   RtAudio::StreamParameters iParams, oParams;
-  iParams.deviceId = iDevice;
+  if ( iDevice == 0 )
+    iParams.deviceId = adac.getDefaultInputDevice();
+  else
+    iParams.deviceId = iDevice - 1;
   iParams.nChannels = channels;
   iParams.firstChannel = iOffset;
-  oParams.deviceId = oDevice;
+  if ( oDevice == 0 )
+    oParams.deviceId = adac.getDefaultOutputDevice();
+  else
+    oParams.deviceId = oDevice - 1;
   oParams.nChannels = channels;
   oParams.firstChannel = oOffset;
 

@@ -1,3 +1,10 @@
+#ifndef STK_PHONEMES_H
+#define STK_PHONEMES_H
+
+#include "Stk.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class Phonemes
     \brief STK phonemes table.
@@ -6,14 +13,9 @@
     set of 32 static phoneme formant parameters
     and provide access to those values.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_PHONEMES_H
-#define STK_PHONEMES_H
-
-#include "Stk.h"
 
 class Phonemes : public Stk
 {
@@ -46,5 +48,7 @@ private:
   static const StkFloat phonemeGains[][2];
   static const StkFloat phonemeParameters[][4][3];
 };
+
+} // stk namespace
 
 #endif

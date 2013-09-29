@@ -1,3 +1,13 @@
+#ifndef STK_SKINI_H
+#define STK_SKINI_H
+
+#include "Stk.h"
+#include <vector>
+#include <string>
+#include <fstream>
+
+namespace stk {
+
 /***************************************************/
 /*! \class Skini
     \brief STK SKINI parsing class
@@ -21,17 +31,9 @@
 
     \sa \ref skini
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_SKINI_H
-#define STK_SKINI_H
-
-#include "Stk.h"
-#include <vector>
-#include <string>
-#include <fstream>
 
 class Skini : public Stk
 {
@@ -111,6 +113,8 @@ static const double Midi2Pitch[129] = {
 5274.04,5587.65,5919.91,6271.93,6644.88,7040.00,7458.62,7902.13,
 8372.02,8869.84,9397.27,9956.06,10548.08,11175.30,11839.82,12543.85,
 13289.75};
+
+} // stk namespace
 
 #endif
 

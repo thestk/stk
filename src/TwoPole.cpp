@@ -2,25 +2,28 @@
 /*! \class TwoPole
     \brief STK two-pole filter class.
 
-    This protected Filter subclass implements
-    a two-pole digital filter.  A method is
-    provided for creating a resonance in the
-    frequency response while maintaining a nearly
-    constant filter gain.
+    This class implements a two-pole digital filter.  A method is
+    provided for creating a resonance in the frequency response while
+    maintaining a nearly constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "TwoPole.h"
-#include <math.h>
+#include <cmath>
 
-TwoPole :: TwoPole() : Filter()
+namespace stk {
+
+TwoPole :: TwoPole( void )
 {
-  std::vector<StkFloat> b(1, 1.0);
-  std::vector<StkFloat> a(3, 0.0);
-  a[0] = 1.0;
-  Filter::setCoefficients( b, a );
+  b_.resize( 1 );
+  a_.resize( 3 );
+  inputs_.resize( 1, 1, 0.0 );
+  outputs_.resize( 3, 1, 0.0 );
+  b_[0] = 1.0;
+  a_[0] = 1.0;
+
   Stk::addSampleRateAlert( this );
 }
 
@@ -37,27 +40,7 @@ void TwoPole :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
   }
 }
 
-void TwoPole :: clear(void)
-{
-  Filter::clear();
-}
-
-void TwoPole :: setB0(StkFloat b0)
-{
-  b_[0] = b0;
-}
-
-void TwoPole :: setA1(StkFloat a1)
-{
-  a_[1] = a1;
-}
-
-void TwoPole :: setA2(StkFloat a2)
-{
-  a_[2] = a2;
-}
-
-void TwoPole :: setResonance(StkFloat frequency, StkFloat radius, bool normalize)
+void TwoPole :: setResonance( StkFloat frequency, StkFloat radius, bool normalize )
 {
   a_[2] = radius * radius;
   a_[1] = (StkFloat) -2.0 * radius * cos(TWO_PI * frequency / Stk::sampleRate());
@@ -70,32 +53,13 @@ void TwoPole :: setResonance(StkFloat frequency, StkFloat radius, bool normalize
   }
 }
 
-void TwoPole :: setGain(StkFloat gain)
+void TwoPole :: setCoefficients( StkFloat b0, StkFloat a1, StkFloat a2, bool clearState )
 {
-  Filter::setGain(gain);
+  b_[0] = b0;
+  a_[1] = a1;
+  a_[2] = a2;
+
+  if ( clearState ) this->clear();
 }
 
-StkFloat TwoPole :: getGain(void) const
-{
-  return Filter::getGain();
-}
-
-StkFloat TwoPole :: lastOut(void) const
-{
-  return Filter::lastOut();
-}
-
-StkFloat TwoPole :: tick( StkFloat input )
-{
-  inputs_[0] = gain_ * input;
-  outputs_[0] = b_[0] * inputs_[0] - a_[2] * outputs_[2] - a_[1] * outputs_[1];
-  outputs_[2] = outputs_[1];
-  outputs_[1] = outputs_[0];
-
-  return outputs_[0];
-}
-
-StkFrames& TwoPole :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Filter::tick( frames, channel );
-}
+} // stk namespace

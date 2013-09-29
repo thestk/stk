@@ -103,19 +103,7 @@ SOURCE=..\..\src\RtAudio.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\RtWvOut.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\Stk.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvOut.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -127,19 +115,11 @@ SOURCE=..\..\include\RtAudio.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\RtWvOut.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\Stk.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\WvIn.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\WvOut.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

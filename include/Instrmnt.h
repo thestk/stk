@@ -1,70 +1,129 @@
-/***************************************************/
-/*! \class Instrmnt
-    \brief STK instrument abstract base class.
-
-    This class provides a common interface for
-    all STK instruments.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
-*/
-/***************************************************/
-
 #ifndef STK_INSTRMNT_H
 #define STK_INSTRMNT_H
 
 #include "Stk.h"
 
+namespace stk {
+
+/***************************************************/
+/*! \class Instrmnt
+  \brief STK instrument abstract base class.
+
+  This class provides a common interface for
+  all STK instruments.
+
+  by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+*/
+/***************************************************/
+
 class Instrmnt : public Stk
 {
  public:
-  //! Default constructor.
-  Instrmnt();
-
-  //! Class destructor.
-  virtual ~Instrmnt();
+  //! Class constructor.
+  Instrmnt( void ) { lastFrame_.resize( 1, 1, 0.0 ); };
 
   //! Start a note with the given frequency and amplitude.
-  virtual void noteOn(StkFloat frequency, StkFloat amplitude) = 0;
+  virtual void noteOn( StkFloat frequency, StkFloat amplitude ) = 0;
 
   //! Stop a note with the given amplitude (speed of decay).
-  virtual void noteOff(StkFloat amplitude) = 0;
+  virtual void noteOff( StkFloat amplitude ) = 0;
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(StkFloat frequency);
-
-  //! Return the last output value.
-  StkFloat lastOut() const;
-
-  //! Return the last left output value.
-  StkFloat lastOutLeft() const;
-
-  //! Return the last right output value.
-  StkFloat lastOutRight() const;
-
-  //! Compute one sample and output.
-  StkFloat tick( void );
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be zero or greater (the first
-    channel is specified by 0).  An StkError will be thrown if the \c
-    channel argument is equal to or greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+  virtual void setFrequency( StkFloat frequency );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   virtual void controlChange(int number, StkFloat value);
 
+  //! Return the number of output channels for the class.
+  unsigned int channelsOut( void ) const { return lastFrame_.channels(); };
+
+  //! Return an StkFrames reference to the last output sample frame.
+  const StkFrames& lastFrame( void ) const { return lastFrame_; };
+
+  //! Return the specified channel value of the last computed frame.
+  /*!
+    The \c channel argument must be less than the number of output
+    channels, which can be determined with the channelsOut() function
+    (the first channel is specified by 0).  However, range checking is
+    only performed if _STK_DEBUG_ is defined during compilation, in
+    which case an out-of-range value will trigger an StkError
+    exception. \sa lastFrame()
+  */
+  StkFloat lastOut( unsigned int channel = 0 );
+
+  //! Compute one sample frame and return the specified \c channel value.
+  /*!
+    For monophonic instruments, the \c channel argument is ignored.
+  */
+  virtual StkFloat tick( unsigned int channel = 0 ) = 0;
+
+  //! Fill the StkFrames object with computed sample frames, starting at the specified channel.
+  /*!
+    The \c channel argument plus the number of output channels must
+    be less than the number of channels in the StkFrames argument (the
+    first channel is specified by 0).  However, range checking is only
+    performed if _STK_DEBUG_ is defined during compilation, in which
+    case an out-of-range value will trigger an StkError exception.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+
  protected:
 
-  // This abstract function must be implemented in all subclasses.
-  // It is used to get around a C++ problem with overloaded virtual
-  // functions.
-  virtual StkFloat computeSample( void ) = 0;
-
-  StkFloat lastOutput_;
+  StkFrames lastFrame_;
 
 };
+
+inline void Instrmnt :: setFrequency(StkFloat frequency)
+{
+  errorString_ << "Instrmnt::setFrequency: virtual setFrequency function call!";
+  handleError( StkError::WARNING );
+}
+
+inline StkFloat Instrmnt :: lastOut( unsigned int channel )
+{
+#if defined(_STK_DEBUG_)
+  if ( channel >= lastFrame_.channels() ) {
+    errorString_ << "Instrmnt::lastOut(): channel argument is invalid!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  return lastFrame_[channel];
+}
+
+inline StkFrames& Instrmnt :: tick( StkFrames& frames, unsigned int channel )
+{
+  unsigned int nChannels = lastFrame_.channels();
+#if defined(_STK_DEBUG_)
+  if ( channel > frames.channels() - nChannels ) {
+    errorString_ << "Instrmnt::tick(): channel and StkFrames arguments are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  StkFloat *samples = &frames[channel];
+  unsigned int j, hop = frames.channels() - nChannels;
+  if ( nChannels == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
+      *samples++ = tick();
+  }
+  else {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
+      *samples++ = tick();
+      for ( j=1; j<nChannels; j++ )
+        *samples++ = lastFrame_[j];
+    }
+  }
+
+  return frames;
+}
+
+inline void Instrmnt :: controlChange( int number, StkFloat value )
+{
+  errorString_ << "Instrmnt::controlChange: virtual function call!";
+  handleError( StkError::WARNING );
+}
+
+} // stk namespace
 
 #endif

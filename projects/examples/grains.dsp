@@ -91,10 +91,6 @@ SOURCE=..\..\src\FileRead.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Generator.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\grains.cpp
 # End Source File
 # Begin Source File

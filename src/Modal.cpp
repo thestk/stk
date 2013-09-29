@@ -1,19 +1,21 @@
 /***************************************************/
 /*! \class Modal
-    \brief STK resonance model instrument.
+    \brief STK resonance model abstract base class.
 
     This class contains an excitation wavetable,
     an envelope, an oscillator, and N resonances
     (non-sweeping BiQuad filters), where N is set
     during instantiation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Modal.h"
 
-Modal :: Modal(unsigned int modes)
+namespace stk {
+
+Modal :: Modal( unsigned int modes )
   : nModes_(modes)
 {
   if ( nModes_ == 0 ) {
@@ -45,29 +47,29 @@ Modal :: Modal(unsigned int modes)
   strikePosition_ = 0.561;
 }  
 
-Modal :: ~Modal()
+Modal :: ~Modal( void )
 {
-  for (unsigned int i=0; i<nModes_; i++ ) {
+  for ( unsigned int i=0; i<nModes_; i++ ) {
     delete filters_[i];
   }
-  free(filters_);
+  free( filters_ );
 }
 
-void Modal :: clear()
+void Modal :: clear( void )
 {    
   onepole_.clear();
-  for (unsigned int i=0; i<nModes_; i++ )
+  for ( unsigned int i=0; i<nModes_; i++ )
     filters_[i]->clear();
 }
 
-void Modal :: setFrequency(StkFloat frequency)
+void Modal :: setFrequency( StkFloat frequency )
 {
   baseFrequency_ = frequency;
-  for (unsigned int i=0; i<nModes_; i++ )
+  for ( unsigned int i=0; i<nModes_; i++ )
     this->setRatioAndRadius( i, ratios_[i], radii_[i] );
 }
 
-void Modal :: setRatioAndRadius(unsigned int modeIndex, StkFloat ratio, StkFloat radius)
+void Modal :: setRatioAndRadius( unsigned int modeIndex, StkFloat ratio, StkFloat radius )
 {
   if ( modeIndex >= nModes_ ) {
     errorString_ << "Modal::setRatioAndRadius: modeIndex parameter is greater than number of modes!";
@@ -99,17 +101,7 @@ void Modal :: setRatioAndRadius(unsigned int modeIndex, StkFloat ratio, StkFloat
   filters_[modeIndex]->setResonance(temp, radius);
 }
 
-void Modal :: setMasterGain(StkFloat aGain)
-{
-  masterGain_ = aGain;
-}
-
-void Modal :: setDirectGain(StkFloat aGain)
-{
-  directGain_ = aGain;
-}
-
-void Modal :: setModeGain(unsigned int modeIndex, StkFloat gain)
+void Modal :: setModeGain( unsigned int modeIndex, StkFloat gain )
 {
   if ( modeIndex >= nModes_ ) {
     errorString_ << "Modal::setModeGain: modeIndex parameter is greater than number of modes!";
@@ -117,10 +109,10 @@ void Modal :: setModeGain(unsigned int modeIndex, StkFloat gain)
     return;
   }
 
-  filters_[modeIndex]->setGain(gain);
+  filters_[modeIndex]->setGain( gain );
 }
 
-void Modal :: strike(StkFloat amplitude)
+void Modal :: strike( StkFloat amplitude )
 {
   StkFloat gain = amplitude;
   if ( amplitude < 0.0 ) {
@@ -141,7 +133,7 @@ void Modal :: strike(StkFloat amplitude)
   wave_->reset();
 
   StkFloat temp;
-  for (unsigned int i=0; i<nModes_; i++) {
+  for ( unsigned int i=0; i<nModes_; i++ ) {
     if (ratios_[i] < 0)
       temp = -ratios_[i];
     else
@@ -150,7 +142,7 @@ void Modal :: strike(StkFloat amplitude)
   }
 }
 
-void Modal :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Modal :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->strike(amplitude);
   this->setFrequency(frequency);
@@ -161,7 +153,7 @@ void Modal :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Modal :: noteOff(StkFloat amplitude)
+void Modal :: noteOff( StkFloat amplitude )
 {
   // This calls damp, but inverts the meaning of amplitude (high
   // amplitude means fast damping).
@@ -173,35 +165,16 @@ void Modal :: noteOff(StkFloat amplitude)
 #endif
 }
 
-void Modal :: damp(StkFloat amplitude)
+void Modal :: damp( StkFloat amplitude )
 {
   StkFloat temp;
-  for (unsigned int i=0; i<nModes_; i++) {
-    if (ratios_[i] < 0)
+  for ( unsigned int i=0; i<nModes_; i++ ) {
+    if ( ratios_[i] < 0 )
       temp = -ratios_[i];
     else
       temp = ratios_[i] * baseFrequency_;
-    filters_[i]->setResonance(temp, radii_[i]*amplitude);
+    filters_[i]->setResonance( temp, radii_[i]*amplitude );
   }
 }
 
-StkFloat Modal :: computeSample()
-{
-  StkFloat temp = masterGain_ * onepole_.tick( wave_->tick() * envelope_.tick() );
-
-  StkFloat temp2 = 0.0;
-  for (unsigned int i=0; i<nModes_; i++)
-    temp2 += filters_[i]->tick(temp);
-
-  temp2  -= temp2 * directGain_;
-  temp2 += directGain_ * temp;
-
-  if (vibratoGain_ != 0.0)	{
-    // Calculate AM and apply to master out
-    temp = 1.0 + (vibrato_.tick() * vibratoGain_);
-    temp2 = temp * temp2;
-  }
-    
-  lastOutput_ = temp2;
-  return lastOutput_;
-}
+} // stk namespace

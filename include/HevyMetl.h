@@ -1,3 +1,10 @@
+#ifndef STK_HEVYMETL_H
+#define STK_HEVYMETL_H
+
+#include "FM.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class HevyMetl
     \brief STK heavy metal FM synthesis instrument.
@@ -24,14 +31,9 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_HEVYMETL_H
-#define STK_HEVYMETL_H
-
-#include "FM.h"
 
 class HevyMetl : public FM
 {
@@ -40,17 +42,48 @@ class HevyMetl : public FM
   /*!
     An StkError will be thrown if the rawwave path is incorrectly set.
   */
-  HevyMetl();
+  HevyMetl( void );
 
   //! Class destructor.
-  ~HevyMetl();
+  ~HevyMetl( void );
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
 
-  StkFloat computeSample( void );
 };
+
+inline StkFloat HevyMetl :: tick( unsigned int )
+{
+  register StkFloat temp;
+
+  temp = vibrato_.tick() * modDepth_ * 0.2;    
+  waves_[0]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[0]);
+  waves_[1]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[1]);
+  waves_[2]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[2]);
+  waves_[3]->setFrequency(baseFrequency_ * (1.0 + temp) * ratios_[3]);
+    
+  temp = gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
+  waves_[1]->addPhaseOffset( temp );
+    
+  waves_[3]->addPhaseOffset( twozero_.lastOut() );
+  temp = (1.0 - (control2_ * 0.5)) * gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
+  twozero_.tick(temp);
+    
+  temp += control2_ * 0.5 * gains_[1] * adsr_[1]->tick() * waves_[1]->tick();
+  temp = temp * control1_;
+    
+  waves_[0]->addPhaseOffset( temp );
+  temp = gains_[0] * adsr_[0]->tick() * waves_[0]->tick();
+    
+  lastFrame_[0] = temp * 0.5;
+  return lastFrame_[0];
+}
+
+} // stk namespace
 
 #endif

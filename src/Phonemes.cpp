@@ -6,12 +6,14 @@
     set of 32 static phoneme formant parameters
     and provide access to those values.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Phonemes.h"
 #include <iostream>
+
+namespace stk {
 
 const char Phonemes :: phonemeNames[32][4] = 
   {"eee", "ihh", "ehh", "aaa",
@@ -292,3 +294,5 @@ StkFloat Phonemes :: formantGain( unsigned int index, unsigned int partial )
   }
   return phonemeParameters[index][partial][2];
 }
+
+} // stk namespace

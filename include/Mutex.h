@@ -1,16 +1,3 @@
-/***************************************************/
-/*! \class Mutex
-    \brief STK mutex class.
-
-    This class provides a uniform interface for
-    cross-platform mutex use.  On Linux and IRIX
-    systems, the pthread library is used. Under
-    Windows, critical sections are used.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
-*/
-/***************************************************/
-
 #ifndef STK_MUTEX_H
 #define STK_MUTEX_H
 
@@ -30,6 +17,21 @@
   typedef HANDLE CONDITION;
 
 #endif
+
+namespace stk {
+
+/***************************************************/
+/*! \class Mutex
+    \brief STK mutex class.
+
+    This class provides a uniform interface for
+    cross-platform mutex use.  On Linux and IRIX
+    systems, the pthread library is used. Under
+    Windows, critical sections are used.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+*/
+/***************************************************/
 
 class Mutex : public Stk
 {
@@ -66,5 +68,7 @@ class Mutex : public Stk
   CONDITION condition_;
 
 };
+
+} // stk namespace
 
 #endif

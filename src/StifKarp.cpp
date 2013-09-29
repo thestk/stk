@@ -17,7 +17,7 @@
        - String Sustain = 11
        - String Stretch = 1
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
@@ -25,9 +25,11 @@
 #include "SKINI.msg"
 #include <cmath>
 
-StifKarp :: StifKarp(StkFloat lowestFrequency)
+namespace stk {
+
+StifKarp :: StifKarp( StkFloat lowestFrequency )
 {
-  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  length_ = (unsigned long) ( Stk::sampleRate() / lowestFrequency + 1 );
   delayLine_.setMaximumDelay( length_ );
   delayLine_.setDelay( 0.5 * length_ );
   combDelay_.setMaximumDelay( length_ );
@@ -44,18 +46,18 @@ StifKarp :: StifKarp(StkFloat lowestFrequency)
   this->clear();
 }
 
-StifKarp :: ~StifKarp()
+StifKarp :: ~StifKarp( void )
 {
 }
 
-void StifKarp :: clear()
+void StifKarp :: clear( void )
 {
   delayLine_.clear();
   combDelay_.clear();
   filter_.clear();
 }
 
-void StifKarp :: setFrequency(StkFloat frequency)
+void StifKarp :: setFrequency( StkFloat frequency )
 {
   lastFrequency_ = frequency; 
   if ( frequency <= 0.0 ) {
@@ -80,7 +82,7 @@ void StifKarp :: setFrequency(StkFloat frequency)
   combDelay_.setDelay( 0.5 * pickupPosition_ * lastLength_ ); 
 }
 
-void StifKarp :: setStretch(StkFloat stretch)
+void StifKarp :: setStretch( StkFloat stretch )
 {
   stretching_ = stretch;
   StkFloat coefficient;
@@ -102,7 +104,7 @@ void StifKarp :: setStretch(StkFloat stretch)
   }
 }
 
-void StifKarp :: setPickupPosition(StkFloat position) {
+void StifKarp :: setPickupPosition( StkFloat position ) {
   pickupPosition_ = position;
   if ( position < 0.0 ) {
     errorString_ << "StifKarp::setPickupPosition: parameter is less than zero ... setting to 0.0!";
@@ -119,14 +121,14 @@ void StifKarp :: setPickupPosition(StkFloat position) {
   combDelay_.setDelay( 0.5 * pickupPosition_ * lastLength_ );
 }
 
-void StifKarp :: setBaseLoopGain(StkFloat aGain)
+void StifKarp :: setBaseLoopGain( StkFloat aGain )
 {
   baseLoopGain_ = aGain;
   loopGain_ = baseLoopGain_ + (lastFrequency_ * 0.000005);
   if ( loopGain_ > 0.99999 ) loopGain_ = (StkFloat) 0.99999;
 }
 
-void StifKarp :: pluck(StkFloat amplitude)
+void StifKarp :: pluck( StkFloat amplitude )
 {
   StkFloat gain = amplitude;
   if ( gain > 1.0 ) {
@@ -148,7 +150,7 @@ void StifKarp :: pluck(StkFloat amplitude)
   }
 }
 
-void StifKarp :: noteOn(StkFloat frequency, StkFloat amplitude)
+void StifKarp :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->pluck( amplitude );
@@ -159,7 +161,7 @@ void StifKarp :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void StifKarp :: noteOff(StkFloat amplitude)
+void StifKarp :: noteOff( StkFloat amplitude )
 {
   StkFloat gain = amplitude;
   if ( gain > 1.0 ) {
@@ -180,23 +182,7 @@ void StifKarp :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat StifKarp :: computeSample()
-{
-  StkFloat temp = delayLine_.lastOut() * loopGain_;
-
-  // Calculate allpass stretching.
-  for (int i=0; i<4; i++)
-    temp = biquad_[i].tick(temp);
-
-  // Moving average filter.
-  temp = filter_.tick(temp);
-
-  lastOutput_ = delayLine_.tick(temp);
-  lastOutput_ = lastOutput_ - combDelay_.tick( lastOutput_ );
-  return lastOutput_;
-}
-
-void StifKarp :: controlChange(int number, StkFloat value)
+void StifKarp :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -227,3 +213,4 @@ void StifKarp :: controlChange(int number, StkFloat value)
 #endif
 }
 
+} // stk namespace

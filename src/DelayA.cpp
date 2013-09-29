@@ -2,11 +2,10 @@
 /*! \class DelayA
     \brief STK allpass interpolating delay line class.
 
-    This Delay subclass implements a fractional-length digital
-    delay-line using a first-order allpass filter.  A fixed maximum
-    length of 4095 and a delay of 0.5 is set using the default
-    constructor.  Alternatively, the delay and maximum length can be
-    set during instantiation with an overloaded constructor.
+    This class implements a fractional-length digital delay-line using
+    a first-order allpass filter.  If the delay and maximum length are
+    not specified during instantiation, a fixed maximum length of 4095
+    and a delay of zero is set.
 
     An allpass filter has unity magnitude gain but variable phase
     delay properties, making it useful in achieving fractional delays
@@ -15,23 +14,18 @@
     minimum delay possible in this implementation is limited to a
     value of 0.5.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "DelayA.h"
 
-DelayA :: DelayA() : Delay()
-{
-  this->setDelay( 0.5 );
-  apInput_ = 0.0;
-  doNextOut_ = true;
-}
+namespace stk {
 
-DelayA :: DelayA(StkFloat delay, unsigned long maxDelay)
+DelayA :: DelayA( StkFloat delay, unsigned long maxDelay )
 {
-  if ( delay < 0.0 || maxDelay < 1 ) {
-    errorString_ << "DelayA::DelayA: delay must be >= 0.0, maxDelay must be > 0!";
+  if ( delay < 0.5 || maxDelay < 1 ) {
+    errorString_ << "DelayA::DelayA: delay must be >= 0.5, maxDelay must be > 0!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -41,13 +35,11 @@ DelayA :: DelayA(StkFloat delay, unsigned long maxDelay)
   }
 
   // Writing before reading allows delays from 0 to length-1. 
-  if ( maxDelay > inputs_.size()-1 ) {
-    inputs_.resize( maxDelay+1 );
-    this->clear();
-  }
+  if ( maxDelay + 1 > inputs_.size() )
+    inputs_.resize( maxDelay + 1, 1, 0.0 );
 
   inPoint_ = 0;
-  this->setDelay(delay);
+  this->setDelay( delay );
   apInput_ = 0.0;
   doNextOut_ = true;
 }
@@ -58,16 +50,36 @@ DelayA :: ~DelayA()
 
 void DelayA :: clear()
 {
-  Delay::clear();
+  for ( unsigned int i=0; i<inputs_.size(); i++ )
+    inputs_[i] = 0.0;
+  lastFrame_[0] = 0.0;
   apInput_ = 0.0;
 }
 
-void DelayA :: setDelay(StkFloat delay)  
+void DelayA :: setMaximumDelay( unsigned long delay )
+{
+  if ( delay < inputs_.size() ) return;
+
+  if ( delay < 0 ) {
+    errorString_ << "DelayA::setMaximumDelay: argument (" << delay << ") less than zero!\n";
+    handleError( StkError::WARNING );
+    return;
+  }
+  else if ( delay < delay_ ) {
+    errorString_ << "DelayA::setMaximumDelay: argument (" << delay << ") less than current delay setting (" << delay_ << ")!\n";
+    handleError( StkError::WARNING );
+    return;
+  }
+
+  inputs_.resize( delay + 1 );
+}
+
+void DelayA :: setDelay( StkFloat delay )
 {
   StkFloat outPointer;
   unsigned long length = inputs_.size();
 
-  if ( delay > inputs_.size() - 1 ) { // The value is too big.
+  if ( delay + 1 > length ) { // The value is too big.
     errorString_ << "DelayA::setDelay: argument (" << delay << ") too big ... setting to maximum!";
     handleError( StkError::WARNING );
 
@@ -75,7 +87,7 @@ void DelayA :: setDelay(StkFloat delay)
     outPointer = inPoint_ + 1.0;
     delay_ = length - 1;
   }
-  else if (delay < 0.5) {
+  else if ( delay < 0.5 ) {
     errorString_ << "DelayA::setDelay: argument (" << delay << ") less than 0.5 not possible!";
     handleError( StkError::WARNING );
 
@@ -87,14 +99,14 @@ void DelayA :: setDelay(StkFloat delay)
     delay_ = delay;
   }
 
-  if (outPointer < 0)
+  while ( outPointer < 0 )
     outPointer += length;  // modulo maximum length
 
   outPoint_ = (long) outPointer;         // integer part
   if ( outPoint_ == length ) outPoint_ = 0;
   alpha_ = 1.0 + outPoint_ - outPointer; // fractional part
 
-  if (alpha_ < 0.5) {
+  if ( alpha_ < 0.5 ) {
     // The optimal range for alpha is about 0.5 - 1.5 in order to
     // achieve the flattest phase delay response.
     outPoint_ += 1;
@@ -106,38 +118,13 @@ void DelayA :: setDelay(StkFloat delay)
     ((StkFloat) 1.0 + alpha_);         // coefficient for all pass
 }
 
-StkFloat DelayA :: getDelay(void) const
+StkFloat DelayA :: contentsAt( unsigned long tapDelay )
 {
-  return delay_;
+  long tap = inPoint_ - tapDelay - 1;
+  while ( tap < 0 ) // Check for wraparound.
+    tap += inputs_.size();
+
+  return inputs_[tap];
 }
 
-StkFloat DelayA :: nextOut(void)
-{
-  if ( doNextOut_ ) {
-    // Do allpass interpolation delay.
-    nextOutput_ = -coeff_ * outputs_[0];
-    nextOutput_ += apInput_ + (coeff_ * inputs_[outPoint_]);
-    doNextOut_ = false;
-  }
-
-  return nextOutput_;
-}
-
-StkFloat DelayA :: computeSample( StkFloat input )
-{
-  inputs_[inPoint_++] = input;
-
-  // Increment input pointer modulo length.
-  if (inPoint_ == inputs_.size())
-    inPoint_ = 0;
-
-  outputs_[0] = nextOut();
-  doNextOut_ = true;
-
-  // Save the allpass input and increment modulo length.
-  apInput_ = inputs_[outPoint_++];
-  if (outPoint_ == inputs_.size())
-    outPoint_ = 0;
-
-  return outputs_[0];
-}
+} // stk namespace

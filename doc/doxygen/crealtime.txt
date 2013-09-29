@@ -11,8 +11,8 @@ invoked automatically by the audio system controller (RtAudio) when
 new data is needed and it is necessary to compute a full audio buffer
 of samples at that time (see \ref callback for further information).
 
-The previous section described the use of the RtWvOut class for
-realtime audio output. The RtWvOut::tick() function writes data to a
+The previous section described the use of the stk::RtWvOut class for
+realtime audio output. The stk::RtWvOut::tick() function writes data to a
 large ring-buffer, from which data is periodically written to the
 computer's audio hardware via an underlying callback routine.
 

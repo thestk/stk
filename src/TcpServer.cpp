@@ -19,11 +19,13 @@
     less than or equal to zero indicate a closed
     or lost connection or the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "TcpServer.h"
+
+namespace stk {
 
 TcpServer :: TcpServer( int port )
 {
@@ -93,3 +95,5 @@ int TcpServer :: readBuffer(void *buffer, long bufferSize, int flags )
   if ( !isValid( soket_ ) ) return -1;
   return recv( soket_, (char *)buffer, bufferSize, flags );
 }
+
+} // stk namespace

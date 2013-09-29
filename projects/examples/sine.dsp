@@ -87,23 +87,11 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\src\FileRead.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\FileWrite.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\FileWvIn.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\FileWvOut.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\Generator.cpp
 # End Source File
 # Begin Source File
 
@@ -117,18 +105,6 @@ SOURCE=..\..\src\SineWave.cpp
 
 SOURCE=..\..\src\Stk.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WaveLoop.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvOut.cpp
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -137,17 +113,17 @@ SOURCE=..\..\src\WvOut.cpp
 
 SOURCE=..\..\include\Stk.h
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\include\WaveLoop.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\WvIn.h
+# Begin Source File
+
+SOURCE=..\..\include\FileWrite.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\WvOut.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWvOut.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
