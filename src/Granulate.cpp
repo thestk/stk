@@ -260,7 +260,7 @@ StkFloat Granulate :: tick( unsigned int channel )
     // Accumulate the grain outputs.
     if ( grains_[i].state > 0 ) {
       for ( j=0; j<nChannels; j++ ) {
-        sample = data_[ nChannels * grains_[i].pointer + j ];        
+        sample = data_[ nChannels * grains_[i].pointer + j ];
 
         if ( grains_[i].state == GRAIN_FADEIN || grains_[i].state == GRAIN_FADEOUT ) {
           sample *= grains_[i].eScaler;

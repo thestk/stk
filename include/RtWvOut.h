@@ -73,7 +73,7 @@ class RtWvOut : public WvOut
     checked if _STK_DEBUG_ is defined during compilation, in which
     case an incompatibility will trigger an StkError exception.
   */
-  void tick( StkFrames& frames );
+  void tick( const StkFrames& frames );
 
   // This function is not intended for general use but must be
   // public for access from the audio callback function.
