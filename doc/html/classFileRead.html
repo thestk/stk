@@ -31,14 +31,14 @@ by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileRead.html#a0">FileRead</a> ()</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Default constructor. <br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileRead.html#a1">FileRead</a> (std::string fileName, bool typeRaw=false)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileRead.html#a1">FileRead</a> (std::string fileName, bool typeRaw=false, unsigned int nChannels=1, StkFormat format=<a class="el" href="classStk.html#s1">STK_SINT16</a>, StkFloat rate=22050.0)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Overloaded constructor that opens a file during instantiation.  <a href="#a1"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="a2"></a><!-- doxytag: member="FileRead::~FileRead" ref="a2" args="()" -->
 &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileRead.html#a2">~FileRead</a> ()</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class destructor. <br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileRead.html#a3">open</a> (std::string fileName, bool typeRaw=false)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileRead.html#a3">open</a> (std::string fileName, bool typeRaw=false, unsigned int nChannels=1, StkFormat format=<a class="el" href="classStk.html#s1">STK_SINT16</a>, StkFloat rate=22050.0)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Open the specified file and determine its formatting.  <a href="#a3"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="a4"></a><!-- doxytag: member="FileRead::close" ref="a4" args="(void)" -->
@@ -65,7 +65,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Read sample frames from the file into an <a class="el" href="classStkFrames.html">StkFrames</a> object.  <a href="#a9"></a><br></td></tr>
 </table>
 <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="a1"></a><!-- doxytag: member="FileRead::FileRead" ref="a1" args="(std::string fileName, bool typeRaw=false)" --><p>
+<a class="anchor" name="a1"></a><!-- doxytag: member="FileRead::FileRead" ref="a1" args="(std::string fileName, bool typeRaw=false, unsigned int nChannels=1, StkFormat format=STK_SINT16, StkFloat rate=22050.0)" --><p>
 <table class="mdTable" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -80,7 +80,25 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td class="md" nowrap align="right"></td>
           <td class="md"></td>
           <td class="md" nowrap>bool&nbsp;</td>
-          <td class="mdname" nowrap> <em>typeRaw</em> = <code>false</code></td>
+          <td class="mdname" nowrap> <em>typeRaw</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="md" nowrap align="right"></td>
+          <td class="md"></td>
+          <td class="md" nowrap>unsigned int&nbsp;</td>
+          <td class="mdname" nowrap> <em>nChannels</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="md" nowrap align="right"></td>
+          <td class="md"></td>
+          <td class="md" nowrap>StkFormat&nbsp;</td>
+          <td class="mdname" nowrap> <em>format</em> = <code><a class="el" href="classStk.html#s1">STK_SINT16</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="md" nowrap align="right"></td>
+          <td class="md"></td>
+          <td class="md" nowrap>StkFloat&nbsp;</td>
+          <td class="mdname" nowrap> <em>rate</em> = <code>22050.0</code></td>
         </tr>
         <tr>
           <td class="md"></td>
@@ -101,11 +119,11 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>
 Overloaded constructor that opens a file during instantiation. 
 <p>
-An <a class="el" href="classStkError.html">StkError</a> will be thrown if the file is not found or its format is unknown or unsupported.    </td>
+An <a class="el" href="classStkError.html">StkError</a> will be thrown if the file is not found or its format is unknown or unsupported. The optional arguments allow a headerless file type to be supported. If <code>typeRaw</code> is false (the default), the subsequent parameters are ignored.    </td>
   </tr>
 </table>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="a3"></a><!-- doxytag: member="FileRead::open" ref="a3" args="(std::string fileName, bool typeRaw=false)" --><p>
+<a class="anchor" name="a3"></a><!-- doxytag: member="FileRead::open" ref="a3" args="(std::string fileName, bool typeRaw=false, unsigned int nChannels=1, StkFormat format=STK_SINT16, StkFloat rate=22050.0)" --><p>
 <table class="mdTable" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -120,7 +138,25 @@ An <a class="el" href="classStkError.html">StkError</a> will be thrown if the fi
           <td class="md" nowrap align="right"></td>
           <td class="md"></td>
           <td class="md" nowrap>bool&nbsp;</td>
-          <td class="mdname" nowrap> <em>typeRaw</em> = <code>false</code></td>
+          <td class="mdname" nowrap> <em>typeRaw</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="md" nowrap align="right"></td>
+          <td class="md"></td>
+          <td class="md" nowrap>unsigned int&nbsp;</td>
+          <td class="mdname" nowrap> <em>nChannels</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="md" nowrap align="right"></td>
+          <td class="md"></td>
+          <td class="md" nowrap>StkFormat&nbsp;</td>
+          <td class="mdname" nowrap> <em>format</em> = <code><a class="el" href="classStk.html#s1">STK_SINT16</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="md" nowrap align="right"></td>
+          <td class="md"></td>
+          <td class="md" nowrap>StkFloat&nbsp;</td>
+          <td class="mdname" nowrap> <em>rate</em> = <code>22050.0</code></td>
         </tr>
         <tr>
           <td class="md"></td>
@@ -141,7 +177,7 @@ An <a class="el" href="classStkError.html">StkError</a> will be thrown if the fi
 <p>
 Open the specified file and determine its formatting. 
 <p>
-An <a class="el" href="classStkError.html">StkError</a> will be thrown if the file is not found or its format is unknown or unsupported. An optional parameter is provided to specify whether the input file is of type STK RAW (default = false).    </td>
+An <a class="el" href="classStkError.html">StkError</a> will be thrown if the file is not found or its format is unknown or unsupported. The optional arguments allow a headerless file type to be supported. If <code>typeRaw</code> is false (the default), the subsequent parameters are ignored.    </td>
   </tr>
 </table>
 <a class="anchor" name="a8"></a><!-- doxytag: member="FileRead::fileRate" ref="a8" args="(void) const " --><p>

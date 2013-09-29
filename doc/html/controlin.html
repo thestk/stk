@@ -33,10 +33,8 @@ In the following example, we'll modify the <code>bethree.cpp</code> program from
 <span class="preprocessor">#include "SKINI.msg"</span>
 <span class="preprocessor">#include &lt;math.h&gt;</span>
 <span class="preprocessor">#include &lt;algorithm&gt;</span>
-<span class="preprocessor">#if !defined(__OS_WINDOWS__) // Windoze bogosity for VC++ 6.0</span>
-<span class="preprocessor"></span>  <span class="keyword">using</span> std::min;
-<span class="preprocessor">#endif</span>
-<span class="preprocessor"></span>
+<span class="keyword">using</span> std::min;
+
 <span class="keywordtype">void</span> usage(<span class="keywordtype">void</span>) {
   <span class="comment">// Error function in case of incorrect command-line</span>
   <span class="comment">// argument specifications.</span>

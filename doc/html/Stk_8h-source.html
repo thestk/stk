@@ -12,246 +12,246 @@
 <div class="nav">
 <a class="el" href="dir_000000.html">include</a></div>
 <h1>Stk.h</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/***************************************************/</span>
-<a name="l00037"></a>00037 <span class="comment">/***************************************************/</span>
-<a name="l00038"></a>00038 
-<a name="l00039"></a>00039 <span class="preprocessor">#ifndef STK_STK_H</span>
-<a name="l00040"></a>00040 <span class="preprocessor"></span><span class="preprocessor">#define STK_STK_H</span>
-<a name="l00041"></a>00041 <span class="preprocessor"></span>
-<a name="l00042"></a>00042 <span class="preprocessor">#include &lt;string&gt;</span>
-<a name="l00043"></a>00043 <span class="preprocessor">#include &lt;iostream&gt;</span>
-<a name="l00044"></a>00044 <span class="preprocessor">#include &lt;sstream&gt;</span>
-<a name="l00045"></a>00045 <span class="preprocessor">#include &lt;vector&gt;</span>
-<a name="l00046"></a>00046 
-<a name="l00047"></a>00047 <span class="comment">// Most data in STK is passed and calculated with the</span>
-<a name="l00048"></a>00048 <span class="comment">// following user-definable floating-point type.  You</span>
-<a name="l00049"></a>00049 <span class="comment">// can change this to "float" if you prefer or perhaps</span>
-<a name="l00050"></a>00050 <span class="comment">// a "long double" in the future.</span>
-<a name="l00051"></a>00051 <span class="keyword">typedef</span> <span class="keywordtype">double</span> StkFloat;
+<a name="l00051"></a>00051 <span class="comment">/***************************************************/</span>
 <a name="l00052"></a>00052 
-<a name="l00054"></a>00054 
-<a name="l00059"></a><a class="code" href="classStkError.html">00059</a> <span class="keyword">class </span><a class="code" href="classStkError.html">StkError</a>
-<a name="l00060"></a>00060 {
-<a name="l00061"></a>00061 <span class="keyword">public</span>:
-<a name="l00062"></a>00062   <span class="keyword">enum</span> Type {
-<a name="l00063"></a>00063     STATUS,
-<a name="l00064"></a>00064     WARNING,
-<a name="l00065"></a>00065     DEBUG_WARNING,
-<a name="l00066"></a>00066     MEMORY_ALLOCATION,
-<a name="l00067"></a>00067     MEMORY_ACCESS,
-<a name="l00068"></a>00068     FUNCTION_ARGUMENT,
-<a name="l00069"></a>00069     FILE_NOT_FOUND,
-<a name="l00070"></a>00070     FILE_UNKNOWN_FORMAT,
-<a name="l00071"></a>00071     FILE_ERROR,
-<a name="l00072"></a>00072     PROCESS_THREAD,
-<a name="l00073"></a>00073     PROCESS_SOCKET,
-<a name="l00074"></a>00074     PROCESS_SOCKET_IPADDR,
-<a name="l00075"></a>00075     AUDIO_SYSTEM,
-<a name="l00076"></a>00076     MIDI_SYSTEM,
-<a name="l00077"></a>00077     UNSPECIFIED
-<a name="l00078"></a>00078   };
-<a name="l00079"></a>00079 
-<a name="l00080"></a>00080 <span class="keyword">protected</span>:
-<a name="l00081"></a>00081   std::string message_;
-<a name="l00082"></a>00082   Type type_;
-<a name="l00083"></a>00083 
-<a name="l00084"></a>00084 <span class="keyword">public</span>:
-<a name="l00086"></a><a class="code" href="classStkError.html#a0">00086</a>   <a class="code" href="classStkError.html#a0">StkError</a>(<span class="keyword">const</span> std::string&amp; message, Type type = StkError::UNSPECIFIED)
-<a name="l00087"></a>00087     : message_(message), type_(type) {}
-<a name="l00088"></a>00088 
-<a name="l00090"></a><a class="code" href="classStkError.html#a1">00090</a>   <span class="keyword">virtual</span> <a class="code" href="classStkError.html#a1">~StkError</a>(<span class="keywordtype">void</span>) {};
-<a name="l00091"></a>00091 
-<a name="l00093"></a><a class="code" href="classStkError.html#a2">00093</a>   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStkError.html#a2">printMessage</a>(<span class="keywordtype">void</span>) { std::cerr &lt;&lt; <span class="charliteral">'\n'</span> &lt;&lt; message_ &lt;&lt; <span class="stringliteral">"\n\n"</span>; }
-<a name="l00094"></a>00094 
-<a name="l00096"></a><a class="code" href="classStkError.html#a3">00096</a>   <span class="keyword">virtual</span> <span class="keyword">const</span> Type&amp; <a class="code" href="classStkError.html#a3">getType</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> type_; }
+<a name="l00053"></a>00053 <span class="preprocessor">#ifndef STK_STK_H</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span><span class="preprocessor">#define STK_STK_H</span>
+<a name="l00055"></a>00055 <span class="preprocessor"></span>
+<a name="l00056"></a>00056 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00057"></a>00057 <span class="preprocessor">#include &lt;iostream&gt;</span>
+<a name="l00058"></a>00058 <span class="preprocessor">#include &lt;sstream&gt;</span>
+<a name="l00059"></a>00059 <span class="preprocessor">#include &lt;vector&gt;</span>
+<a name="l00060"></a>00060 
+<a name="l00061"></a>00061 <span class="comment">// Most data in STK is passed and calculated with the</span>
+<a name="l00062"></a>00062 <span class="comment">// following user-definable floating-point type.  You</span>
+<a name="l00063"></a>00063 <span class="comment">// can change this to "float" if you prefer or perhaps</span>
+<a name="l00064"></a>00064 <span class="comment">// a "long double" in the future.</span>
+<a name="l00065"></a>00065 <span class="keyword">typedef</span> <span class="keywordtype">double</span> StkFloat;
+<a name="l00066"></a>00066 
+<a name="l00068"></a>00068 
+<a name="l00073"></a><a class="code" href="classStkError.html">00073</a> <span class="keyword">class </span><a class="code" href="classStkError.html">StkError</a>
+<a name="l00074"></a>00074 {
+<a name="l00075"></a>00075 <span class="keyword">public</span>:
+<a name="l00076"></a>00076   <span class="keyword">enum</span> Type {
+<a name="l00077"></a>00077     STATUS,
+<a name="l00078"></a>00078     WARNING,
+<a name="l00079"></a>00079     DEBUG_WARNING,
+<a name="l00080"></a>00080     MEMORY_ALLOCATION,
+<a name="l00081"></a>00081     MEMORY_ACCESS,
+<a name="l00082"></a>00082     FUNCTION_ARGUMENT,
+<a name="l00083"></a>00083     FILE_NOT_FOUND,
+<a name="l00084"></a>00084     FILE_UNKNOWN_FORMAT,
+<a name="l00085"></a>00085     FILE_ERROR,
+<a name="l00086"></a>00086     PROCESS_THREAD,
+<a name="l00087"></a>00087     PROCESS_SOCKET,
+<a name="l00088"></a>00088     PROCESS_SOCKET_IPADDR,
+<a name="l00089"></a>00089     AUDIO_SYSTEM,
+<a name="l00090"></a>00090     MIDI_SYSTEM,
+<a name="l00091"></a>00091     UNSPECIFIED
+<a name="l00092"></a>00092   };
+<a name="l00093"></a>00093 
+<a name="l00094"></a>00094 <span class="keyword">protected</span>:
+<a name="l00095"></a>00095   std::string message_;
+<a name="l00096"></a>00096   Type type_;
 <a name="l00097"></a>00097 
-<a name="l00099"></a><a class="code" href="classStkError.html#a4">00099</a>   <span class="keyword">virtual</span> <span class="keyword">const</span> std::string&amp; <a class="code" href="classStkError.html#a4">getMessage</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> message_; }
-<a name="l00100"></a>00100 
-<a name="l00102"></a><a class="code" href="classStkError.html#a5">00102</a>   <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code" href="classStkError.html#a5">getMessageCString</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> message_.c_str(); }
-<a name="l00103"></a>00103 };
-<a name="l00104"></a>00104 
+<a name="l00098"></a>00098 <span class="keyword">public</span>:
+<a name="l00100"></a><a class="code" href="classStkError.html#a0">00100</a>   <a class="code" href="classStkError.html#a0">StkError</a>(<span class="keyword">const</span> std::string&amp; message, Type type = StkError::UNSPECIFIED)
+<a name="l00101"></a>00101     : message_(message), type_(type) {}
+<a name="l00102"></a>00102 
+<a name="l00104"></a><a class="code" href="classStkError.html#a1">00104</a>   <span class="keyword">virtual</span> <a class="code" href="classStkError.html#a1">~StkError</a>(<span class="keywordtype">void</span>) {};
 <a name="l00105"></a>00105 
-<a name="l00106"></a><a class="code" href="classStk.html">00106</a> <span class="keyword">class </span><a class="code" href="classStk.html">Stk</a>
-<a name="l00107"></a>00107 {
-<a name="l00108"></a>00108 <span class="keyword">public</span>:
-<a name="l00109"></a>00109 
-<a name="l00110"></a>00110   <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> StkFormat;
-<a name="l00111"></a><a class="code" href="classStk.html#s0">00111</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s0">STK_SINT8</a>;   
-<a name="l00112"></a><a class="code" href="classStk.html#s1">00112</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s1">STK_SINT16</a>;  
-<a name="l00113"></a><a class="code" href="classStk.html#s2">00113</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s2">STK_SINT24</a>;  
-<a name="l00114"></a><a class="code" href="classStk.html#s3">00114</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s3">STK_SINT32</a>;  
-<a name="l00115"></a><a class="code" href="classStk.html#s4">00115</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s4">STK_FLOAT32</a>; 
-<a name="l00116"></a><a class="code" href="classStk.html#s5">00116</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s5">STK_FLOAT64</a>; 
+<a name="l00107"></a><a class="code" href="classStkError.html#a2">00107</a>   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStkError.html#a2">printMessage</a>(<span class="keywordtype">void</span>) { std::cerr &lt;&lt; <span class="charliteral">'\n'</span> &lt;&lt; message_ &lt;&lt; <span class="stringliteral">"\n\n"</span>; }
+<a name="l00108"></a>00108 
+<a name="l00110"></a><a class="code" href="classStkError.html#a3">00110</a>   <span class="keyword">virtual</span> <span class="keyword">const</span> Type&amp; <a class="code" href="classStkError.html#a3">getType</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> type_; }
+<a name="l00111"></a>00111 
+<a name="l00113"></a><a class="code" href="classStkError.html#a4">00113</a>   <span class="keyword">virtual</span> <span class="keyword">const</span> std::string&amp; <a class="code" href="classStkError.html#a4">getMessage</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> message_; }
+<a name="l00114"></a>00114 
+<a name="l00116"></a><a class="code" href="classStkError.html#a5">00116</a>   <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code" href="classStkError.html#a5">getMessageCString</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> message_.c_str(); }
+<a name="l00117"></a>00117 };
 <a name="l00118"></a>00118 
-<a name="l00119"></a><a class="code" href="classStk.html#e0">00119</a>   <span class="keyword">static</span> StkFloat <a class="code" href="classStk.html#e0">sampleRate</a>( <span class="keywordtype">void</span> ) { <span class="keywordflow">return</span> srate_; }
-<a name="l00120"></a>00120 
-<a name="l00122"></a>00122 
-<a name="l00139"></a>00139   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e1">setSampleRate</a>( StkFloat rate );
-<a name="l00140"></a>00140 
-<a name="l00142"></a>00142 
-<a name="l00147"></a><a class="code" href="classStk.html#a0">00147</a>   <span class="keywordtype">void</span> <a class="code" href="classStk.html#a0">ignoreSampleRateChange</a>( <span class="keywordtype">bool</span> ignore = <span class="keyword">true</span> ) { ignoreSampleRateChange_ = ignore; };
-<a name="l00148"></a>00148 
-<a name="l00150"></a><a class="code" href="classStk.html#e2">00150</a>   <span class="keyword">static</span> std::string <a class="code" href="classStk.html#e2">rawwavePath</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> rawwavepath_; }
-<a name="l00151"></a>00151 
-<a name="l00153"></a>00153   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e3">setRawwavePath</a>( std::string path );
+<a name="l00119"></a>00119 
+<a name="l00120"></a><a class="code" href="classStk.html">00120</a> <span class="keyword">class </span><a class="code" href="classStk.html">Stk</a>
+<a name="l00121"></a>00121 {
+<a name="l00122"></a>00122 <span class="keyword">public</span>:
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124   <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> StkFormat;
+<a name="l00125"></a><a class="code" href="classStk.html#s0">00125</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s0">STK_SINT8</a>;   
+<a name="l00126"></a><a class="code" href="classStk.html#s1">00126</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s1">STK_SINT16</a>;  
+<a name="l00127"></a><a class="code" href="classStk.html#s2">00127</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s2">STK_SINT24</a>;  
+<a name="l00128"></a><a class="code" href="classStk.html#s3">00128</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s3">STK_SINT32</a>;  
+<a name="l00129"></a><a class="code" href="classStk.html#s4">00129</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s4">STK_FLOAT32</a>; 
+<a name="l00130"></a><a class="code" href="classStk.html#s5">00130</a>   <span class="keyword">static</span> <span class="keyword">const</span> StkFormat <a class="code" href="classStk.html#s5">STK_FLOAT64</a>; 
+<a name="l00132"></a>00132 
+<a name="l00133"></a><a class="code" href="classStk.html#e0">00133</a>   <span class="keyword">static</span> StkFloat <a class="code" href="classStk.html#e0">sampleRate</a>( <span class="keywordtype">void</span> ) { <span class="keywordflow">return</span> srate_; }
+<a name="l00134"></a>00134 
+<a name="l00136"></a>00136 
+<a name="l00153"></a>00153   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e1">setSampleRate</a>( StkFloat rate );
 <a name="l00154"></a>00154 
-<a name="l00156"></a>00156   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e4">swap16</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *ptr );
-<a name="l00157"></a>00157 
-<a name="l00159"></a>00159   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e5">swap32</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *ptr );
-<a name="l00160"></a>00160 
-<a name="l00162"></a>00162   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e6">swap64</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *ptr );
-<a name="l00163"></a>00163 
-<a name="l00165"></a>00165   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e7">sleep</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> milliseconds );
-<a name="l00166"></a>00166 
-<a name="l00168"></a>00168   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e8">handleError</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> *message, StkError::Type type );
-<a name="l00169"></a>00169 
-<a name="l00171"></a>00171   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e8">handleError</a>( std::string message, StkError::Type type );
-<a name="l00172"></a>00172 
-<a name="l00174"></a><a class="code" href="classStk.html#e10">00174</a>   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e10">showWarnings</a>( <span class="keywordtype">bool</span> status ) { showWarnings_ = status; }
-<a name="l00175"></a>00175 
-<a name="l00177"></a><a class="code" href="classStk.html#e11">00177</a>   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e11">printErrors</a>( <span class="keywordtype">bool</span> status ) { printErrors_ = status; }
-<a name="l00178"></a>00178 
-<a name="l00179"></a>00179 <span class="keyword">private</span>:
-<a name="l00180"></a>00180   <span class="keyword">static</span> StkFloat srate_;
-<a name="l00181"></a>00181   <span class="keyword">static</span> std::string rawwavepath_;
-<a name="l00182"></a>00182   <span class="keyword">static</span> <span class="keywordtype">bool</span> showWarnings_;
-<a name="l00183"></a>00183   <span class="keyword">static</span> <span class="keywordtype">bool</span> printErrors_;
-<a name="l00184"></a>00184   <span class="keyword">static</span> std::vector&lt;Stk *&gt; alertList_;
-<a name="l00185"></a>00185 
-<a name="l00186"></a>00186 <span class="keyword">protected</span>:
-<a name="l00187"></a>00187 
-<a name="l00188"></a>00188   std::ostringstream errorString_;
-<a name="l00189"></a>00189   <span class="keywordtype">bool</span> ignoreSampleRateChange_;
-<a name="l00190"></a>00190 
-<a name="l00192"></a>00192   <a class="code" href="classStk.html#b0">Stk</a>( <span class="keywordtype">void</span> );
-<a name="l00193"></a>00193 
-<a name="l00195"></a>00195   <span class="keyword">virtual</span> <a class="code" href="classStk.html#b1">~Stk</a>( <span class="keywordtype">void</span> );
-<a name="l00196"></a>00196 
-<a name="l00198"></a>00198   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#b2">sampleRateChanged</a>( StkFloat newRate, StkFloat oldRate );
+<a name="l00156"></a>00156 
+<a name="l00161"></a><a class="code" href="classStk.html#a0">00161</a>   <span class="keywordtype">void</span> <a class="code" href="classStk.html#a0">ignoreSampleRateChange</a>( <span class="keywordtype">bool</span> ignore = <span class="keyword">true</span> ) { ignoreSampleRateChange_ = ignore; };
+<a name="l00162"></a>00162 
+<a name="l00164"></a><a class="code" href="classStk.html#e2">00164</a>   <span class="keyword">static</span> std::string <a class="code" href="classStk.html#e2">rawwavePath</a>(<span class="keywordtype">void</span>) { <span class="keywordflow">return</span> rawwavepath_; }
+<a name="l00165"></a>00165 
+<a name="l00167"></a>00167   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e3">setRawwavePath</a>( std::string path );
+<a name="l00168"></a>00168 
+<a name="l00170"></a>00170   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e4">swap16</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *ptr );
+<a name="l00171"></a>00171 
+<a name="l00173"></a>00173   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e5">swap32</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *ptr );
+<a name="l00174"></a>00174 
+<a name="l00176"></a>00176   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e6">swap64</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *ptr );
+<a name="l00177"></a>00177 
+<a name="l00179"></a>00179   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e7">sleep</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> milliseconds );
+<a name="l00180"></a>00180 
+<a name="l00182"></a>00182   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e8">handleError</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> *message, StkError::Type type );
+<a name="l00183"></a>00183 
+<a name="l00185"></a>00185   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e8">handleError</a>( std::string message, StkError::Type type );
+<a name="l00186"></a>00186 
+<a name="l00188"></a><a class="code" href="classStk.html#e10">00188</a>   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e10">showWarnings</a>( <span class="keywordtype">bool</span> status ) { showWarnings_ = status; }
+<a name="l00189"></a>00189 
+<a name="l00191"></a><a class="code" href="classStk.html#e11">00191</a>   <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#e11">printErrors</a>( <span class="keywordtype">bool</span> status ) { printErrors_ = status; }
+<a name="l00192"></a>00192 
+<a name="l00193"></a>00193 <span class="keyword">private</span>:
+<a name="l00194"></a>00194   <span class="keyword">static</span> StkFloat srate_;
+<a name="l00195"></a>00195   <span class="keyword">static</span> std::string rawwavepath_;
+<a name="l00196"></a>00196   <span class="keyword">static</span> <span class="keywordtype">bool</span> showWarnings_;
+<a name="l00197"></a>00197   <span class="keyword">static</span> <span class="keywordtype">bool</span> printErrors_;
+<a name="l00198"></a>00198   <span class="keyword">static</span> std::vector&lt;Stk *&gt; alertList_;
 <a name="l00199"></a>00199 
-<a name="l00201"></a>00201   <span class="keywordtype">void</span> <a class="code" href="classStk.html#b3">addSampleRateAlert</a>( <a class="code" href="classStk.html">Stk</a> *ptr );
-<a name="l00202"></a>00202 
-<a name="l00204"></a>00204   <span class="keywordtype">void</span> <a class="code" href="classStk.html#b4">removeSampleRateAlert</a>( <a class="code" href="classStk.html">Stk</a> *ptr );
-<a name="l00205"></a>00205 
-<a name="l00207"></a>00207   <span class="keywordtype">void</span> <a class="code" href="classStk.html#e8">handleError</a>( StkError::Type type );
-<a name="l00208"></a>00208 };
-<a name="l00209"></a>00209 
+<a name="l00200"></a>00200 <span class="keyword">protected</span>:
+<a name="l00201"></a>00201 
+<a name="l00202"></a>00202   std::ostringstream errorString_;
+<a name="l00203"></a>00203   <span class="keywordtype">bool</span> ignoreSampleRateChange_;
+<a name="l00204"></a>00204 
+<a name="l00206"></a>00206   <a class="code" href="classStk.html#b0">Stk</a>( <span class="keywordtype">void</span> );
+<a name="l00207"></a>00207 
+<a name="l00209"></a>00209   <span class="keyword">virtual</span> <a class="code" href="classStk.html#b1">~Stk</a>( <span class="keywordtype">void</span> );
 <a name="l00210"></a>00210 
-<a name="l00211"></a>00211 <span class="comment">/***************************************************/</span>
-<a name="l00226"></a>00226 <span class="comment">/***************************************************/</span>
-<a name="l00227"></a>00227 
-<a name="l00228"></a><a class="code" href="classStkFrames.html">00228</a> <span class="keyword">class </span><a class="code" href="classStkFrames.html">StkFrames</a>
-<a name="l00229"></a>00229 {
-<a name="l00230"></a>00230 <span class="keyword">public</span>:
-<a name="l00231"></a>00231 
-<a name="l00233"></a>00233   <a class="code" href="classStkFrames.html#a0">StkFrames</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nFrames = 0, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = 0, <span class="keywordtype">bool</span> <a class="code" href="classStkFrames.html#a16">interleaved</a> = <span class="keyword">true</span> );
-<a name="l00234"></a>00234 
-<a name="l00236"></a>00236   <a class="code" href="classStkFrames.html#a0">StkFrames</a>( <span class="keyword">const</span> StkFloat&amp; value, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nFrames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels, <span class="keywordtype">bool</span> <a class="code" href="classStkFrames.html#a16">interleaved</a> = <span class="keyword">true</span> );
-<a name="l00237"></a>00237 
-<a name="l00239"></a>00239   <a class="code" href="classStkFrames.html#a2">~StkFrames</a>();
-<a name="l00240"></a>00240 
-<a name="l00242"></a>00242 
-<a name="l00248"></a>00248   StkFloat&amp; <a class="code" href="classStkFrames.html#a3">operator[] </a>( size_t n );
-<a name="l00249"></a>00249 
+<a name="l00212"></a>00212   <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classStk.html#b2">sampleRateChanged</a>( StkFloat newRate, StkFloat oldRate );
+<a name="l00213"></a>00213 
+<a name="l00215"></a>00215   <span class="keywordtype">void</span> <a class="code" href="classStk.html#b3">addSampleRateAlert</a>( <a class="code" href="classStk.html">Stk</a> *ptr );
+<a name="l00216"></a>00216 
+<a name="l00218"></a>00218   <span class="keywordtype">void</span> <a class="code" href="classStk.html#b4">removeSampleRateAlert</a>( <a class="code" href="classStk.html">Stk</a> *ptr );
+<a name="l00219"></a>00219 
+<a name="l00221"></a>00221   <span class="keywordtype">void</span> <a class="code" href="classStk.html#e8">handleError</a>( StkError::Type type );
+<a name="l00222"></a>00222 };
+<a name="l00223"></a>00223 
+<a name="l00224"></a>00224 
+<a name="l00225"></a>00225 <span class="comment">/***************************************************/</span>
+<a name="l00240"></a>00240 <span class="comment">/***************************************************/</span>
+<a name="l00241"></a>00241 
+<a name="l00242"></a><a class="code" href="classStkFrames.html">00242</a> <span class="keyword">class </span><a class="code" href="classStkFrames.html">StkFrames</a>
+<a name="l00243"></a>00243 {
+<a name="l00244"></a>00244 <span class="keyword">public</span>:
+<a name="l00245"></a>00245 
+<a name="l00247"></a>00247   <a class="code" href="classStkFrames.html#a0">StkFrames</a>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nFrames = 0, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = 0, <span class="keywordtype">bool</span> <a class="code" href="classStkFrames.html#a16">interleaved</a> = <span class="keyword">true</span> );
+<a name="l00248"></a>00248 
+<a name="l00250"></a>00250   <a class="code" href="classStkFrames.html#a0">StkFrames</a>( <span class="keyword">const</span> StkFloat&amp; value, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nFrames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels, <span class="keywordtype">bool</span> <a class="code" href="classStkFrames.html#a16">interleaved</a> = <span class="keyword">true</span> );
 <a name="l00251"></a>00251 
-<a name="l00255"></a>00255   StkFloat <a class="code" href="classStkFrames.html#a3">operator[] </a>( size_t n ) <span class="keyword">const</span>;
+<a name="l00253"></a>00253   <a class="code" href="classStkFrames.html#a2">~StkFrames</a>();
+<a name="l00254"></a>00254 
 <a name="l00256"></a>00256 
-<a name="l00258"></a>00258 
-<a name="l00265"></a>00265   StkFloat&amp; <a class="code" href="classStkFrames.html#a5">operator() </a>( size_t frame, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel );
-<a name="l00266"></a>00266 
-<a name="l00268"></a>00268 
-<a name="l00273"></a>00273   StkFloat <a class="code" href="classStkFrames.html#a5">operator() </a>( size_t frame, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel ) <span class="keyword">const</span>;
-<a name="l00274"></a>00274 
-<a name="l00276"></a>00276 
-<a name="l00282"></a>00282   StkFloat <a class="code" href="classStkFrames.html#a7">interpolate</a>( StkFloat frame, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 0 ) <span class="keyword">const</span>;
-<a name="l00283"></a>00283 
-<a name="l00285"></a><a class="code" href="classStkFrames.html#a8">00285</a>   size_t <a class="code" href="classStkFrames.html#a8">size</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> size_; }; 
-<a name="l00286"></a>00286 
-<a name="l00288"></a>00288   <span class="keywordtype">bool</span> <a class="code" href="classStkFrames.html#a9">empty</a>() <span class="keyword">const</span>;
-<a name="l00289"></a>00289 
-<a name="l00291"></a>00291 
-<a name="l00298"></a>00298   <span class="keywordtype">void</span> <a class="code" href="classStkFrames.html#a10">resize</a>( size_t nFrames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = 1 );
-<a name="l00299"></a>00299 
-<a name="l00301"></a>00301 
-<a name="l00308"></a>00308   <span class="keywordtype">void</span> <a class="code" href="classStkFrames.html#a10">resize</a>( size_t nFrames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels, StkFloat value );
-<a name="l00309"></a>00309 
-<a name="l00311"></a><a class="code" href="classStkFrames.html#a12">00311</a>   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classStkFrames.html#a12">channels</a>( <span class="keywordtype">void</span> )<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nChannels_; };
-<a name="l00312"></a>00312 
-<a name="l00314"></a><a class="code" href="classStkFrames.html#a13">00314</a>   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classStkFrames.html#a13">frames</a>( <span class="keywordtype">void</span> )<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nFrames_; };
+<a name="l00262"></a>00262   StkFloat&amp; <a class="code" href="classStkFrames.html#a3">operator[] </a>( size_t n );
+<a name="l00263"></a>00263 
+<a name="l00265"></a>00265 
+<a name="l00269"></a>00269   StkFloat <a class="code" href="classStkFrames.html#a3">operator[] </a>( size_t n ) <span class="keyword">const</span>;
+<a name="l00270"></a>00270 
+<a name="l00272"></a>00272 
+<a name="l00279"></a>00279   StkFloat&amp; <a class="code" href="classStkFrames.html#a5">operator() </a>( size_t frame, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel );
+<a name="l00280"></a>00280 
+<a name="l00282"></a>00282 
+<a name="l00287"></a>00287   StkFloat <a class="code" href="classStkFrames.html#a5">operator() </a>( size_t frame, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel ) <span class="keyword">const</span>;
+<a name="l00288"></a>00288 
+<a name="l00290"></a>00290 
+<a name="l00296"></a>00296   StkFloat <a class="code" href="classStkFrames.html#a7">interpolate</a>( StkFloat frame, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> channel = 0 ) <span class="keyword">const</span>;
+<a name="l00297"></a>00297 
+<a name="l00299"></a><a class="code" href="classStkFrames.html#a8">00299</a>   size_t <a class="code" href="classStkFrames.html#a8">size</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> size_; }; 
+<a name="l00300"></a>00300 
+<a name="l00302"></a>00302   <span class="keywordtype">bool</span> <a class="code" href="classStkFrames.html#a9">empty</a>() <span class="keyword">const</span>;
+<a name="l00303"></a>00303 
+<a name="l00305"></a>00305 
+<a name="l00312"></a>00312   <span class="keywordtype">void</span> <a class="code" href="classStkFrames.html#a10">resize</a>( size_t nFrames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = 1 );
+<a name="l00313"></a>00313 
 <a name="l00315"></a>00315 
-<a name="l00317"></a>00317 
-<a name="l00321"></a><a class="code" href="classStkFrames.html#a14">00321</a>   <span class="keywordtype">void</span> <a class="code" href="classStkFrames.html#a14">setDataRate</a>( StkFloat rate ) { dataRate_ = rate; };
-<a name="l00322"></a>00322 
-<a name="l00324"></a>00324 
-<a name="l00328"></a><a class="code" href="classStkFrames.html#a15">00328</a>   StkFloat <a class="code" href="classStkFrames.html#a15">dataRate</a>( <span class="keywordtype">void</span> )<span class="keyword"> const </span>{ <span class="keywordflow">return</span> dataRate_; };
+<a name="l00322"></a>00322   <span class="keywordtype">void</span> <a class="code" href="classStkFrames.html#a10">resize</a>( size_t nFrames, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels, StkFloat value );
+<a name="l00323"></a>00323 
+<a name="l00325"></a><a class="code" href="classStkFrames.html#a12">00325</a>   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classStkFrames.html#a12">channels</a>( <span class="keywordtype">void</span> )<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nChannels_; };
+<a name="l00326"></a>00326 
+<a name="l00328"></a><a class="code" href="classStkFrames.html#a13">00328</a>   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="classStkFrames.html#a13">frames</a>( <span class="keywordtype">void</span> )<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nFrames_; };
 <a name="l00329"></a>00329 
-<a name="l00331"></a><a class="code" href="classStkFrames.html#a16">00331</a>   <span class="keywordtype">bool</span> <a class="code" href="classStkFrames.html#a16">interleaved</a>( <span class="keywordtype">void</span> )<span class="keyword"> const </span>{ <span class="keywordflow">return</span> interleaved_; };
-<a name="l00332"></a>00332 
-<a name="l00334"></a>00334 
-<a name="l00339"></a><a class="code" href="classStkFrames.html#a17">00339</a>   <span class="keywordtype">void</span> <a class="code" href="classStkFrames.html#a17">setInterleaved</a>( <span class="keywordtype">bool</span> isInterleaved ) { interleaved_ = isInterleaved; };
-<a name="l00340"></a>00340 
-<a name="l00341"></a>00341 <span class="keyword">private</span>:
-<a name="l00342"></a>00342 
-<a name="l00343"></a>00343   StkFloat *data_;
-<a name="l00344"></a>00344   StkFloat dataRate_;
-<a name="l00345"></a>00345   size_t nFrames_;
-<a name="l00346"></a>00346   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels_;
-<a name="l00347"></a>00347   size_t size_;
-<a name="l00348"></a>00348   size_t bufferSize_;
-<a name="l00349"></a>00349   <span class="keywordtype">bool</span> interleaved_;
-<a name="l00350"></a>00350 
-<a name="l00351"></a>00351 };
-<a name="l00352"></a>00352 
-<a name="l00353"></a>00353 
-<a name="l00354"></a>00354 <span class="comment">// Here are a few other useful typedefs.</span>
-<a name="l00355"></a>00355 <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> UINT16;
-<a name="l00356"></a>00356 <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> UINT32;
-<a name="l00357"></a>00357 <span class="keyword">typedef</span> <span class="keywordtype">signed</span> <span class="keywordtype">short</span> SINT16;
-<a name="l00358"></a>00358 <span class="keyword">typedef</span> <span class="keywordtype">signed</span> <span class="keywordtype">int</span> SINT32;
-<a name="l00359"></a>00359 <span class="keyword">typedef</span> <span class="keywordtype">float</span> FLOAT32;
-<a name="l00360"></a>00360 <span class="keyword">typedef</span> <span class="keywordtype">double</span> FLOAT64;
-<a name="l00361"></a>00361 
-<a name="l00362"></a>00362 <span class="comment">// The default sampling rate.</span>
-<a name="l00363"></a>00363 <span class="keyword">const</span> StkFloat SRATE = 44100.0;
+<a name="l00331"></a>00331 
+<a name="l00335"></a><a class="code" href="classStkFrames.html#a14">00335</a>   <span class="keywordtype">void</span> <a class="code" href="classStkFrames.html#a14">setDataRate</a>( StkFloat rate ) { dataRate_ = rate; };
+<a name="l00336"></a>00336 
+<a name="l00338"></a>00338 
+<a name="l00342"></a><a class="code" href="classStkFrames.html#a15">00342</a>   StkFloat <a class="code" href="classStkFrames.html#a15">dataRate</a>( <span class="keywordtype">void</span> )<span class="keyword"> const </span>{ <span class="keywordflow">return</span> dataRate_; };
+<a name="l00343"></a>00343 
+<a name="l00345"></a><a class="code" href="classStkFrames.html#a16">00345</a>   <span class="keywordtype">bool</span> <a class="code" href="classStkFrames.html#a16">interleaved</a>( <span class="keywordtype">void</span> )<span class="keyword"> const </span>{ <span class="keywordflow">return</span> interleaved_; };
+<a name="l00346"></a>00346 
+<a name="l00348"></a>00348 
+<a name="l00353"></a><a class="code" href="classStkFrames.html#a17">00353</a>   <span class="keywordtype">void</span> <a class="code" href="classStkFrames.html#a17">setInterleaved</a>( <span class="keywordtype">bool</span> isInterleaved ) { interleaved_ = isInterleaved; };
+<a name="l00354"></a>00354 
+<a name="l00355"></a>00355 <span class="keyword">private</span>:
+<a name="l00356"></a>00356 
+<a name="l00357"></a>00357   StkFloat *data_;
+<a name="l00358"></a>00358   StkFloat dataRate_;
+<a name="l00359"></a>00359   size_t nFrames_;
+<a name="l00360"></a>00360   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels_;
+<a name="l00361"></a>00361   size_t size_;
+<a name="l00362"></a>00362   size_t bufferSize_;
+<a name="l00363"></a>00363   <span class="keywordtype">bool</span> interleaved_;
 <a name="l00364"></a>00364 
-<a name="l00365"></a>00365 <span class="comment">// The default real-time audio input and output buffer size.  If</span>
-<a name="l00366"></a>00366 <span class="comment">// clicks are occuring in the input and/or output sound stream, a</span>
-<a name="l00367"></a>00367 <span class="comment">// larger buffer size may help.  Larger buffer sizes, however, produce</span>
-<a name="l00368"></a>00368 <span class="comment">// more latency.</span>
-<a name="l00369"></a>00369 <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> RT_BUFFER_SIZE = 512;
-<a name="l00370"></a>00370 
-<a name="l00371"></a>00371 <span class="comment">// The default rawwave path value is set with the preprocessor</span>
-<a name="l00372"></a>00372 <span class="comment">// definition RAWWAVE_PATH.  This can be specified as an argument to</span>
-<a name="l00373"></a>00373 <span class="comment">// the configure script, in an integrated development environment, or</span>
-<a name="l00374"></a>00374 <span class="comment">// below.  The global STK rawwave path variable can be dynamically set</span>
-<a name="l00375"></a>00375 <span class="comment">// with the Stk::setRawwavePath() function.  This value is</span>
-<a name="l00376"></a>00376 <span class="comment">// concatenated to the beginning of all references to rawwave files in</span>
-<a name="l00377"></a>00377 <span class="comment">// the various STK core classes (ex. Clarinet.cpp).  If you wish to</span>
-<a name="l00378"></a>00378 <span class="comment">// move the rawwaves directory to a different location in your file</span>
-<a name="l00379"></a>00379 <span class="comment">// system, you will need to set this path definition appropriately.</span>
-<a name="l00380"></a>00380 <span class="preprocessor">#if !defined(RAWWAVE_PATH)</span>
-<a name="l00381"></a>00381 <span class="preprocessor"></span><span class="preprocessor">  #define RAWWAVE_PATH "../../rawwaves/"</span>
-<a name="l00382"></a>00382 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
-<a name="l00383"></a>00383 <span class="preprocessor"></span>
-<a name="l00384"></a>00384 <span class="keyword">const</span> StkFloat PI           = 3.14159265358979;
-<a name="l00385"></a>00385 <span class="keyword">const</span> StkFloat TWO_PI       = 2 * PI;
-<a name="l00386"></a>00386 <span class="keyword">const</span> StkFloat ONE_OVER_128 = 0.0078125;
-<a name="l00387"></a>00387 
-<a name="l00388"></a>00388 <span class="preprocessor">#if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__) || defined(__WINDOWS_MM__)</span>
-<a name="l00389"></a>00389 <span class="preprocessor"></span><span class="preprocessor">  #define __OS_WINDOWS__</span>
-<a name="l00390"></a>00390 <span class="preprocessor"></span><span class="preprocessor">  #define __STK_REALTIME__</span>
-<a name="l00391"></a>00391 <span class="preprocessor"></span><span class="preprocessor">#elif defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) || defined(__UNIX_JACK__)</span>
-<a name="l00392"></a>00392 <span class="preprocessor"></span><span class="preprocessor">  #define __OS_LINUX__</span>
-<a name="l00393"></a>00393 <span class="preprocessor"></span><span class="preprocessor">  #define __STK_REALTIME__</span>
-<a name="l00394"></a>00394 <span class="preprocessor"></span><span class="preprocessor">#elif defined(__IRIX_AL__)</span>
-<a name="l00395"></a>00395 <span class="preprocessor"></span><span class="preprocessor">  #define __OS_IRIX__</span>
-<a name="l00396"></a>00396 <span class="preprocessor"></span><span class="preprocessor">#elif defined(__MACOSX_CORE__) || defined(__UNIX_JACK__)</span>
-<a name="l00397"></a>00397 <span class="preprocessor"></span><span class="preprocessor">  #define __OS_MACOSX__</span>
-<a name="l00398"></a>00398 <span class="preprocessor"></span><span class="preprocessor">  #define __STK_REALTIME__</span>
-<a name="l00399"></a>00399 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
-<a name="l00400"></a>00400 <span class="preprocessor"></span>
-<a name="l00401"></a>00401 <span class="comment">//#define _STK_DEBUG_</span>
-<a name="l00402"></a>00402 
-<a name="l00403"></a>00403 <span class="preprocessor">#endif</span>
+<a name="l00365"></a>00365 };
+<a name="l00366"></a>00366 
+<a name="l00367"></a>00367 
+<a name="l00368"></a>00368 <span class="comment">// Here are a few other useful typedefs.</span>
+<a name="l00369"></a>00369 <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> UINT16;
+<a name="l00370"></a>00370 <span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> UINT32;
+<a name="l00371"></a>00371 <span class="keyword">typedef</span> <span class="keywordtype">signed</span> <span class="keywordtype">short</span> SINT16;
+<a name="l00372"></a>00372 <span class="keyword">typedef</span> <span class="keywordtype">signed</span> <span class="keywordtype">int</span> SINT32;
+<a name="l00373"></a>00373 <span class="keyword">typedef</span> <span class="keywordtype">float</span> FLOAT32;
+<a name="l00374"></a>00374 <span class="keyword">typedef</span> <span class="keywordtype">double</span> FLOAT64;
+<a name="l00375"></a>00375 
+<a name="l00376"></a>00376 <span class="comment">// The default sampling rate.</span>
+<a name="l00377"></a>00377 <span class="keyword">const</span> StkFloat SRATE = 44100.0;
+<a name="l00378"></a>00378 
+<a name="l00379"></a>00379 <span class="comment">// The default real-time audio input and output buffer size.  If</span>
+<a name="l00380"></a>00380 <span class="comment">// clicks are occuring in the input and/or output sound stream, a</span>
+<a name="l00381"></a>00381 <span class="comment">// larger buffer size may help.  Larger buffer sizes, however, produce</span>
+<a name="l00382"></a>00382 <span class="comment">// more latency.</span>
+<a name="l00383"></a>00383 <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> RT_BUFFER_SIZE = 512;
+<a name="l00384"></a>00384 
+<a name="l00385"></a>00385 <span class="comment">// The default rawwave path value is set with the preprocessor</span>
+<a name="l00386"></a>00386 <span class="comment">// definition RAWWAVE_PATH.  This can be specified as an argument to</span>
+<a name="l00387"></a>00387 <span class="comment">// the configure script, in an integrated development environment, or</span>
+<a name="l00388"></a>00388 <span class="comment">// below.  The global STK rawwave path variable can be dynamically set</span>
+<a name="l00389"></a>00389 <span class="comment">// with the Stk::setRawwavePath() function.  This value is</span>
+<a name="l00390"></a>00390 <span class="comment">// concatenated to the beginning of all references to rawwave files in</span>
+<a name="l00391"></a>00391 <span class="comment">// the various STK core classes (ex. Clarinet.cpp).  If you wish to</span>
+<a name="l00392"></a>00392 <span class="comment">// move the rawwaves directory to a different location in your file</span>
+<a name="l00393"></a>00393 <span class="comment">// system, you will need to set this path definition appropriately.</span>
+<a name="l00394"></a>00394 <span class="preprocessor">#if !defined(RAWWAVE_PATH)</span>
+<a name="l00395"></a>00395 <span class="preprocessor"></span><span class="preprocessor">  #define RAWWAVE_PATH "../../rawwaves/"</span>
+<a name="l00396"></a>00396 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00397"></a>00397 <span class="preprocessor"></span>
+<a name="l00398"></a>00398 <span class="keyword">const</span> StkFloat PI           = 3.14159265358979;
+<a name="l00399"></a>00399 <span class="keyword">const</span> StkFloat TWO_PI       = 2 * PI;
+<a name="l00400"></a>00400 <span class="keyword">const</span> StkFloat ONE_OVER_128 = 0.0078125;
+<a name="l00401"></a>00401 
+<a name="l00402"></a>00402 <span class="preprocessor">#if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__) || defined(__WINDOWS_MM__)</span>
+<a name="l00403"></a>00403 <span class="preprocessor"></span><span class="preprocessor">  #define __OS_WINDOWS__</span>
+<a name="l00404"></a>00404 <span class="preprocessor"></span><span class="preprocessor">  #define __STK_REALTIME__</span>
+<a name="l00405"></a>00405 <span class="preprocessor"></span><span class="preprocessor">#elif defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) || defined(__UNIX_JACK__)</span>
+<a name="l00406"></a>00406 <span class="preprocessor"></span><span class="preprocessor">  #define __OS_LINUX__</span>
+<a name="l00407"></a>00407 <span class="preprocessor"></span><span class="preprocessor">  #define __STK_REALTIME__</span>
+<a name="l00408"></a>00408 <span class="preprocessor"></span><span class="preprocessor">#elif defined(__IRIX_AL__)</span>
+<a name="l00409"></a>00409 <span class="preprocessor"></span><span class="preprocessor">  #define __OS_IRIX__</span>
+<a name="l00410"></a>00410 <span class="preprocessor"></span><span class="preprocessor">#elif defined(__MACOSX_CORE__) || defined(__UNIX_JACK__)</span>
+<a name="l00411"></a>00411 <span class="preprocessor"></span><span class="preprocessor">  #define __OS_MACOSX__</span>
+<a name="l00412"></a>00412 <span class="preprocessor"></span><span class="preprocessor">  #define __STK_REALTIME__</span>
+<a name="l00413"></a>00413 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00414"></a>00414 <span class="preprocessor"></span>
+<a name="l00415"></a>00415 <span class="comment">//#define _STK_DEBUG_</span>
+<a name="l00416"></a>00416 
+<a name="l00417"></a>00417 <span class="preprocessor">#endif</span>
 </pre></div><HR>
 
 <table>

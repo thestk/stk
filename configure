@@ -311,7 +311,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX CPP EGREP byte_order rawwaves include realtime sound_api debug cflags object_path warn build build_cpu build_vendor build_os host host_cpu host_vendor host_os frameworks audio_apis LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS GXX CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX CPP EGREP byte_order rawwaves include realtime sound_api debug cflags object_path warn build build_cpu build_vendor build_os host host_cpu host_vendor host_os frameworks audio_apis objects LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -867,6 +867,8 @@ Optional Packages:
   --with-oss = choose OSS API support (linux only)
   --with-jack = choose JACK server support (unix only)
   --with-core = choose CoreAudio API support (mac only)
+  --with-asio = choose ASIO API support (windoze only)
+  --with-ds = choose DirectSound API support (windoze only)
 
 Some influential environment variables:
   CC          C compiler command
@@ -1330,6 +1332,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
                                                             ac_config_files="$ac_config_files src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile"
+
+
+# Fill GXX with something before test.
+GXX="no"
 
 
 # Checks for programs.
@@ -4217,89 +4223,11 @@ echo "$as_me: error: math library is needed!" >&2;}
 fi
 
 
+# Checks for functions
 if test $realtime = yes; then
 
-echo "$as_me:$LINENO: checking for pthread_create in -lpthread" >&5
-echo $ECHO_N "checking for pthread_create in -lpthread... $ECHO_C" >&6
-if test "${ac_cv_lib_pthread_pthread_create+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpthread  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
 
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char pthread_create ();
-int
-main ()
-{
-pthread_create ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"
-			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_pthread_pthread_create=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_pthread_pthread_create=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_pthread_pthread_create" >&5
-echo "${ECHO_T}$ac_cv_lib_pthread_pthread_create" >&6
-if test $ac_cv_lib_pthread_pthread_create = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBPTHREAD 1
-_ACEOF
-
-  LIBS="-lpthread $LIBS"
-
-else
-  { { echo "$as_me:$LINENO: error: realtime support requires the pthread library!" >&5
-echo "$as_me: error: realtime support requires the pthread library!" >&2;}
-   { (exit 1); exit 1; }; }
-fi
-
-
-
-
-for ac_func in gettimeofday select socket
+for ac_func in select socket
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $ac_func" >&5
@@ -4399,6 +4327,100 @@ _ACEOF
 
 fi
 done
+
+  echo "$as_me:$LINENO: checking for gettimeofday" >&5
+echo $ECHO_N "checking for gettimeofday... $ECHO_C" >&6
+if test "${ac_cv_func_gettimeofday+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+/* Define gettimeofday to an innocuous variant, in case <limits.h> declares gettimeofday.
+   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
+#define gettimeofday innocuous_gettimeofday
+
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char gettimeofday (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+
+#undef gettimeofday
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char gettimeofday ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_gettimeofday) || defined (__stub___gettimeofday)
+choke me
+#else
+char (*f) () = gettimeofday;
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+int
+main ()
+{
+return f != gettimeofday;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_func_gettimeofday=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_func_gettimeofday=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_func_gettimeofday" >&5
+echo "${ECHO_T}$ac_cv_func_gettimeofday" >&6
+if test $ac_cv_func_gettimeofday = yes; then
+  cflags=$cflags" -DHAVE_GETTIMEOFDAY"
+fi
 
 fi
 
@@ -4721,6 +4743,85 @@ fi;
 echo "${ECHO_T}using ALSA" >&6
       audio_apis="-D__LINUX_ALSA__ $audio_apis"
     fi
+
+
+echo "$as_me:$LINENO: checking for pthread_create in -lpthread" >&5
+echo $ECHO_N "checking for pthread_create in -lpthread... $ECHO_C" >&6
+if test "${ac_cv_lib_pthread_pthread_create+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpthread  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char pthread_create ();
+int
+main ()
+{
+pthread_create ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_pthread_pthread_create=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_pthread_pthread_create=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_pthread_pthread_create" >&5
+echo "${ECHO_T}$ac_cv_lib_pthread_pthread_create" >&6
+if test $ac_cv_lib_pthread_pthread_create = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPTHREAD 1
+_ACEOF
+
+  LIBS="-lpthread $LIBS"
+
+else
+  { { echo "$as_me:$LINENO: error: realtime support requires the pthread library!" >&5
+echo "$as_me: error: realtime support requires the pthread library!" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
     ;;
 
     *-apple*)
@@ -5135,6 +5236,130 @@ fi
       frameworks="-framework CoreAudio -framework CoreFoundation -framework CoreMidi"
 
     fi
+
+
+echo "$as_me:$LINENO: checking for pthread_create in -lpthread" >&5
+echo $ECHO_N "checking for pthread_create in -lpthread... $ECHO_C" >&6
+if test "${ac_cv_lib_pthread_pthread_create+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpthread  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char pthread_create ();
+int
+main ()
+{
+pthread_create ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_pthread_pthread_create=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_pthread_pthread_create=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_pthread_pthread_create" >&5
+echo "${ECHO_T}$ac_cv_lib_pthread_pthread_create" >&6
+if test $ac_cv_lib_pthread_pthread_create = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPTHREAD 1
+_ACEOF
+
+  LIBS="-lpthread $LIBS"
+
+else
+  { { echo "$as_me:$LINENO: error: realtime support requires the pthread library!" >&5
+echo "$as_me: error: realtime support requires the pthread library!" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+    ;;
+
+    *-mingw32*)
+    sound_api=_NO_API_
+
+
+# Check whether --with-asio or --without-asio was given.
+if test "${with_asio+set}" = set; then
+  withval="$with_asio"
+  sound_api=-D__WINDOWS_ASIO__
+ echo "$as_me:$LINENO: result: using ASIO" >&5
+echo "${ECHO_T}using ASIO" >&6
+fi;
+    if test $sound_api = -D__WINDOWS_ASIO__; then
+      audio_apis="-D__WINDOWS_ASIO__"
+      objects="asio.o asiodrivers.o asiolist.o iasiothiscallresolver.o"
+
+    fi
+
+    # Look for DirectSound flag
+
+# Check whether --with-ds or --without-ds was given.
+if test "${with_ds+set}" = set; then
+  withval="$with_ds"
+  sound_api=-D__WINDOWS_DS__
+ echo "$as_me:$LINENO: result: using DirectSound" >&5
+echo "${ECHO_T}using DirectSound" >&6
+fi;
+    if test $sound_api = -D__WINDOWS_DS__; then
+      audio_apis="-D__WINDOWS_DS__ $audio_apis"
+      LIBS="-ldsound $LIBS"
+    fi
+
+    # If no audio api flags specified, use DirectSound
+    if test $sound_api = _NO_API_; then
+      sound_api=-D__WINDOWS_DS__
+
+      echo "$as_me:$LINENO: result: using DirectSound" >&5
+echo "${ECHO_T}using DirectSound" >&6
+      audio_apis="-D__WINDOWS_DS__"
+      LIBS="-ldsound $LIBS"
+    fi
+
+    audio_apis="-D__WINDOWS_MM__ $audio_apis"
+    LIBS="-lole32 -lwinmm -lWsock32 $LIBS"
     ;;
 
     *)
@@ -5939,6 +6164,7 @@ s,@ECHO_C@,$ECHO_C,;t t
 s,@ECHO_N@,$ECHO_N,;t t
 s,@ECHO_T@,$ECHO_T,;t t
 s,@LIBS@,$LIBS,;t t
+s,@GXX@,$GXX,;t t
 s,@CC@,$CC,;t t
 s,@CFLAGS@,$CFLAGS,;t t
 s,@LDFLAGS@,$LDFLAGS,;t t
@@ -5970,6 +6196,7 @@ s,@host_vendor@,$host_vendor,;t t
 s,@host_os@,$host_os,;t t
 s,@frameworks@,$frameworks,;t t
 s,@audio_apis@,$audio_apis,;t t
+s,@objects@,$objects,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

@@ -65,7 +65,7 @@ The ToolKit has some basic C++ error handling functionality built in. Classes th
     output.<a class="code" href="classFileWvOut.html#a3">openFile</a>( <span class="stringliteral">"hellosine.wav"</span>, 1, <a class="code" href="classFileWrite.html#s1">FileWrite::FILE_WAV</a>, <a class="code" href="classStk.html#s1">Stk::STK_SINT16</a> );
   }
   <span class="keywordflow">catch</span> ( <a class="code" href="classStkError.html">StkError</a> &amp; ) {
-    exit(0);
+    exit( 1 );
   }
 
   input.<a class="code" href="classWaveLoop.html#a5">setFrequency</a>( 440.0 );
@@ -78,9 +78,8 @@ The ToolKit has some basic C++ error handling functionality built in. Classes th
       output.<a class="code" href="classWvOut.html#a6">tick</a>( input.<a class="code" href="classWvIn.html#a5">tick</a>() );
     }
     <span class="keywordflow">catch</span> ( <a class="code" href="classStkError.html">StkError</a> &amp; ) {
-      exit(0);
+      exit( 1 );
     }
-
   }
 
   <span class="keywordflow">return</span> 0;

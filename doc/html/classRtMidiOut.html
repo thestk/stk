@@ -41,7 +41,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Close an open MIDI connection (if one exists). <br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiOut.html#a4">openVirtualPort</a> (const std::string portName=std::string(&quot;RtMidi Output&quot;))</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a virtual output port to allow software connections (OS X and ALSA only).  <a href="#a4"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a virtual output port, with optional name, to allow software connections (OS X and ALSA only).  <a href="#a4"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="a5"></a><!-- doxytag: member="RtMidiOut::getPortCount" ref="a5" args="()" -->
 unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiOut.html#a5">getPortCount</a> ()</td></tr>
 
@@ -141,7 +141,7 @@ Implements <a class="el" href="classRtMidi.html#a0">RtMidi</a>.    </td>
     <td>
 
 <p>
-Create a virtual output port to allow software connections (OS X and ALSA only). 
+Create a virtual output port, with optional name, to allow software connections (OS X and ALSA only). 
 <p>
 This function creates a virtual MIDI output port to which other software applications can connect. This type of functionality is currently only supported by the Macintosh OS-X and Linux ALSA APIs (the function does nothing with the other APIs). An exception is thrown if an error occurs while attempting to create the virtual port.
 <p>

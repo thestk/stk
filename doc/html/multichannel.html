@@ -36,7 +36,7 @@ The following example demonstrates the use of the <a class="el" href="classFileW
     output.<a class="code" href="classFileWvOut.html#a3">openFile</a>( <span class="stringliteral">"foursine.aif"</span>, 4, <a class="code" href="classFileWrite.html#s3">FileWrite::FILE_AIF</a>, <a class="code" href="classStk.html#s1">Stk::STK_SINT16</a> );
   }
   <span class="keywordflow">catch</span> (<a class="code" href="classStkError.html">StkError</a> &amp;) {
-    exit(0);
+    exit( 1 );
   }
 
   <span class="comment">// Write two seconds of four sines to the output file</span>

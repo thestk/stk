@@ -42,7 +42,7 @@ typedef void(*&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Open a MIDI input connection.  <a href="#a2"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a3">openVirtualPort</a> (const std::string portName=std::string(&quot;RtMidi Input&quot;))</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a virtual input port to allow software connections (OS X and ALSA only).  <a href="#a3"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a virtual input port, with optional name, to allow software connections (OS X and ALSA only).  <a href="#a3"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a4">setCallback</a> (<a class="el" href="classRtMidiIn.html#w0">RtMidiCallback</a> callback, void *userData=0)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set a callback function to be invoked for incoming MIDI messages.  <a href="#a4"></a><br></td></tr>
@@ -158,7 +158,7 @@ Implements <a class="el" href="classRtMidi.html#a0">RtMidi</a>.    </td>
     <td>
 
 <p>
-Create a virtual input port to allow software connections (OS X and ALSA only). 
+Create a virtual input port, with optional name, to allow software connections (OS X and ALSA only). 
 <p>
 This function creates a virtual MIDI input port to which other software applications can connect. This type of functionality is currently only supported by the Macintosh OS-X and Linux ALSA APIs (the function does nothing for the other APIs).
 <p>

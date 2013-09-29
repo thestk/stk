@@ -14,10 +14,46 @@
 <h2><a class="anchor" name="license">
 Does STK have a license?</a></h2>
 Yes, we finally made something official for release 4.3.0. It is listed in the <a class="el" href="classStk.html">Stk</a> class and a few other places in the distribution, but I'll repeat it here for clarity:<p>
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<p>
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<p>
-Any person wishing to distribute modifications to the Software is asked to send the modifications to the original developer so that they can be incorporated into the canonical version. This is, however, not a binding provision of this license.<p>
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.<h2><a class="anchor" name="filerate">
+<div class="fragment"><pre class="fragment">The Synthesis ToolKit in C++ (STK) is a set of open source audio
+signal processing and algorithmic synthesis classes written in the
+C++ programming language. STK was designed to facilitate rapid
+development of music synthesis and audio processing software, with
+an emphasis on cross-platform functionality, realtime control,
+ease of use, and educational example code.  STK currently runs
+with realtime support (audio and MIDI) on Linux, Macintosh OS X,
+and Windows computer platforms. Generic, non-realtime support has
+been tested under NeXTStep, Sun, and other platforms and should
+work with any standard C++ compiler.
+
+STK WWW site: http://ccrma.stanford.edu/software/stk/
+
+The Synthesis ToolKit in C++ (STK)
+Copyright (c) 1995-2007 Perry R. Cook and Gary P. Scavone
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+Any person wishing to distribute modifications to the Software is
+asked to send the modifications to the original developer so that they
+can be incorporated into the canonical version.  This is, however, not
+a binding provision of this license.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+</pre></div><h2><a class="anchor" name="filerate">
 Why is my file sample rate wrong?</a></h2>
 When the <a class="el" href="classFileWvIn.html">FileWvIn</a> class loads a soundfile, it automatically sets its internal read increment based on the soundfile rate and the current STK sample rate. For example, if the current STK sample rate is 44100 Hz and the soundfile rate is 22050 Hz, the read increment, or rate, will be set to 0.5 and the file will be interpolated so that is sounds correct at 44100 Hz. For most cases, this works fine. However, consider the following example:<p>
 <div class="fragment"><pre class="fragment"><a class="code" href="classFileWvIn.html">FileWvIn</a> input( <span class="stringliteral">"infile"</span> );                 <span class="comment">// read an input soundfile</span>

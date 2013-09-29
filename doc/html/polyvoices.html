@@ -21,10 +21,8 @@ In the following example, we modify the <code>controlbee.cpp</code> program to m
 <span class="preprocessor">#include "SKINI.msg"</span>
 
 <span class="preprocessor">#include &lt;algorithm&gt;</span>
-<span class="preprocessor">#if !defined(__OS_WINDOWS__) // Windoze bogosity for VC++ 6.0</span>
-<span class="preprocessor"></span>  <span class="keyword">using</span> std::min;
-<span class="preprocessor">#endif</span>
-<span class="preprocessor"></span>
+<span class="keyword">using</span> std::min;
+
 <span class="comment">// The TickData structure holds all the class instances and data that</span>
 <span class="comment">// are shared by the various processing functions.</span>
 <span class="keyword">struct </span>TickData {
