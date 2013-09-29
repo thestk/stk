@@ -69,8 +69,8 @@ void processMessage( TickData* data )
   register StkFloat value2 = data->message.floatValues[1];
 
   // If only one instrument, allow messages from all channels to control it.
-  int channel = 1;
-  if ( data->nVoices > 1 ) channel = data->message.channel;
+  //int group = 1;
+  //  if ( data->nVoices > 1 ) group = data->message.channel;
 
   switch( data->message.type ) {
 
@@ -81,13 +81,13 @@ void processMessage( TickData* data )
 
   case __SK_NoteOn_:
     if ( value2 == 0.0 ) // velocity is zero ... really a NoteOff
-      data->voicer->noteOff( value1, 64.0, channel );
+      data->voicer->noteOff( value1, 64.0 );
     else // a NoteOn
-      data->voicer->noteOn( value1, value2, channel );
+      data->voicer->noteOn( value1, value2 );
     break;
 
   case __SK_NoteOff_:
-    data->voicer->noteOff( value1, value2, channel );
+    data->voicer->noteOff( value1, value2 );
     break;
 
   case __SK_ControlChange_:
@@ -96,34 +96,34 @@ void processMessage( TickData* data )
     else if (value1 == 7.0)
       data->volume = value2 * ONE_OVER_128;
     else if (value1 == 49.0)
-      data->voicer->setFrequency( value2, channel );
+      data->voicer->setFrequency( value2 );
     else if (value1 == 50.0)
-      data->voicer->controlChange( 128, value2, channel );
+      data->voicer->controlChange( 128, value2 );
     else if (value1 == 51.0)
       data->frequency = data->message.intValues[1];
     else if (value1 == 52.0) {
       data->frequency += ( data->message.intValues[1] << 7 );
       // Convert to a fractional MIDI note value
       StkFloat note = 12.0 * log( data->frequency / 220.0 ) / log( 2.0 ) + 57.0;
-      data->voicer->setFrequency( note, channel );
+      data->voicer->setFrequency( note );
     }
     else
-      data->voicer->controlChange( (int) value1, value2, channel );
+      data->voicer->controlChange( (int) value1, value2 );
     break;
 
   case __SK_AfterTouch_:
-    data->voicer->controlChange( 128, value1, channel );
+    data->voicer->controlChange( 128, value1 );
     break;
 
   case __SK_PitchChange_:
-    data->voicer->setFrequency( value1, channel );
+    data->voicer->setFrequency( value1 );
     break;
 
   case __SK_PitchBend_:
     short temp;
     temp = data->message.intValues[1] << 7;
     temp += data->message.intValues[0];
-    data->voicer->pitchBend( (StkFloat) temp, channel );
+    data->voicer->pitchBend( (StkFloat) temp );
     break;
 
   case __SK_Volume_:
@@ -143,7 +143,7 @@ void processMessage( TickData* data )
       data->currentVoice = voiceByNumber( (int)value1, &data->instrument[i] );
       if ( data->currentVoice < 0 )
         data->currentVoice = voiceByNumber( 0, &data->instrument[i] );
-      data->voicer->addInstrument( data->instrument[i], channel );
+      data->voicer->addInstrument( data->instrument[i] );
       data->settling = false;
     }
 
@@ -224,14 +224,14 @@ int main( int argc, char *argv[] )
 
   // Check the command-line arguments for errors and to determine
   // the number of WvOut objects to be instantiated (in utilities.cpp).
-  data.nWvOuts = checkArgs(argc, argv);
-  data.wvout = (WvOut **) calloc(data.nWvOuts, sizeof(WvOut *));
+  data.nWvOuts = checkArgs( argc, argv );
+  data.wvout = (WvOut **) calloc( data.nWvOuts, sizeof(WvOut *) );
 
   // Instantiate the instrument(s) type from the command-line argument
   // (in utilities.cpp).
-  data.nVoices = countVoices(argc, argv);
-  data.instrument = (Instrmnt **) calloc(data.nVoices, sizeof(Instrmnt *));
-  data.currentVoice = voiceByName(argv[1], &data.instrument[0]);
+  data.nVoices = countVoices( argc, argv );
+  data.instrument = (Instrmnt **) calloc( data.nVoices, sizeof(Instrmnt *) );
+  data.currentVoice = voiceByName( argv[1], &data.instrument[0] );
   if ( data.currentVoice < 0 ) {
     free( data.wvout );
     free( data.instrument );
@@ -239,16 +239,16 @@ int main( int argc, char *argv[] )
   }
   // If there was no error allocating the first voice, we should be fine for more.
   for ( i=1; i<data.nVoices; i++ )
-    voiceByName(argv[1], &data.instrument[i]);
+    voiceByName( argv[1], &data.instrument[i] );
 
-  data.voicer = (Voicer *) new Voicer( data.nVoices );
+  data.voicer = (Voicer *) new Voicer( 0.0 );
   for ( i=0; i<data.nVoices; i++ )
-    data.voicer->addInstrument( data.instrument[i], i+1 );
+    data.voicer->addInstrument( data.instrument[i] );
 
   // Parse the command-line flags, instantiate WvOut objects, and
   // instantiate the input message controller (in utilities.cpp).
   try {
-    data.realtime = parseArgs(argc, argv, data.wvout, data.messager);
+    data.realtime = parseArgs( argc, argv, data.wvout, data.messager );
   }
   catch (StkError &) {
     goto cleanup;

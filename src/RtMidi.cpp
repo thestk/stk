@@ -35,7 +35,7 @@
 */
 /**********************************************************************/
 
-// RtMidi: Version 1.0.9
+// RtMidi: Version 1.0.10
 
 #include "RtMidi.h"
 #include <sstream>
@@ -743,7 +743,7 @@ void RtMidiOut :: sendMessage( std::vector<unsigned char> *message )
 
   unsigned int packetBytes, bytesLeft = nBytes;
   unsigned int messageIndex = 0;
-  MIDITimeStamp timeStamp = 0;
+  MIDITimeStamp timeStamp = AudioGetCurrentHostTime();
   CoreMidiData *data = static_cast<CoreMidiData *> (apiData_);
 
   while ( bytesLeft > 0 ) {

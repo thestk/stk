@@ -44,6 +44,9 @@ class WvOut : public Stk
   */
   virtual void tick( const StkFloat sample ) = 0;
 
+  //! Output the StkFrames data.
+  virtual void tick( const StkFrames& frames ) = 0;
+
  protected:
 
   // Check for sample clipping and clamp.

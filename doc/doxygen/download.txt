@@ -1,13 +1,22 @@
 /*! \page download Download, Release Notes, and Bug Fixes
 
-\section down Download Version 4.4.0 (30 April 2009):
+\section down Download Version 4.4.1 (3 June 2009):
 
 <UL>
-<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.4.0.tar.gz">Source distribution</A></LI>
+<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.4.1.tar.gz">Source distribution</A></LI>
 </UL>
 
 
 \section notes Release Notes:
+
+\subsection v4dot4dot1 Version 4.4.1
+
+<ul>
+<li>Added multi-channel/frame tick() virtual function to WvIn and WvOut abstract base classes (required update to RtWvOut class).</li>
+<li>Updated configure script to select g++ compiler by default.</li>
+<li>In demo.cpp: removed voicer grouping for messages, fixing polyphony when messages are on the same MIDI/SKINI channel.</li>
+<li>Updates to RtAudio and RtMidi.</li>
+</ul>
 
 \subsection v4dot4dot0 Version 4.4.0
 
