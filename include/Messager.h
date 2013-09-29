@@ -2,146 +2,165 @@
 /*! \class Messager
     \brief STK input control message parser.
 
-    This class reads and parses control messages
-    from a variety of sources, such as a MIDI
-    port, scorefile, socket connection, or pipe.
-    MIDI messages are retrieved using the RtMidi
-    class.  All other input sources (scorefile,
-    socket, or pipe) are assumed to provide SKINI
-    formatted messages.
+    This class reads and parses control messages from a variety of
+    sources, such as a scorefile, MIDI port, socket connection, or
+    stdin.  MIDI messages are retrieved using the RtMidi class.  All
+    other input sources (scorefile, socket, or stdin) are assumed to
+    provide SKINI formatted messages.  This class can be compiled with
+    generic, non-realtime support, in which case only scorefile
+    reading is possible.
 
-    For each call to nextMessage(), the active
-    input sources are queried to see if a new
-    control message is available.
+    The various \e realtime message acquisition mechanisms (from MIDI,
+    socket, or stdin) take place asynchronously, filling the message
+    queue.  A call to popMessage() will pop the next available control
+    message from the queue and return it via the referenced Message
+    structure.  When a \e non-realtime scorefile is set, it is not
+    possible to start reading realtime input messages (from MIDI,
+    socket, or stdin).  Likewise, it is not possible to read from a
+    scorefile when a realtime input mechanism is running.
 
-    This class is primarily for use in STK main()
-    event loops.
+    When MIDI input is started, input is also automatically read from
+    stdin.  This allows for program termination via the terminal
+    window.  An __SK_Exit_ message is pushed onto the stack whenever
+    an "exit" or "Exit" message is received from stdin or when all
+    socket connections close and no stdin thread is running.
 
-    One of the original goals in creating this
-    class was to simplify the message acquisition
-    process by removing all threads.  If the
-    windoze select() function behaved just like
-    the unix one, that would have been possible.
-    Since it does not (it can't be used to poll
-    STDIN), I am using a thread to acquire
-    messages from STDIN, which sends these
-    messages via a socket connection to the
-    message socket server.  Perhaps in the future,
-    it will be possible to simplify things.
+    This class is primarily for use in STK example programs but it is
+    generic enough to work in many other contexts.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__MESSAGER_H)
-#define __MESSSAGER_H
+#ifndef STK_MESSAGER_H
+#define STK_MESSAGER_H
 
 #include "Stk.h"
-#include "SKINI.h"
+#include "Skini.h"
+#include <queue>
 
-#define MESSAGE_LENGTH  128
-#define MAX_MESSAGES 25
-#define STK_MIDI        0x0001
-#define STK_PIPE        0x0002
-#define STK_SOCKET      0x0004
+const int DEFAULT_QUEUE_LIMIT = 200;
 
 #if defined(__STK_REALTIME__)
 
+#include "Mutex.h"
 #include "Thread.h"
 #include "Socket.h"
 #include "RtMidi.h"
 
 extern "C" THREAD_RETURN THREAD_TYPE stdinHandler(void * ptr);
 
-#if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
-  #include <sys/types.h>
-  #include <sys/time.h>
-#endif
+extern "C" THREAD_RETURN THREAD_TYPE socketHandler(void * ptr);
 
 #endif // __STK_REALTIME__
 
 class Messager : public Stk
 {
  public:
-  //! Constructor performs initialization based on an input mask and an optional socket port.
-  /*!
-    The default constructor is set to read input from a SKINI
-    scorefile.  The flags STK_MIDI, STK_PIPE, and STK_SOCKET can be
-    OR'ed together in any combination for multiple "realtime" input
-    source parsing.  An optional socket port number can be specified
-    for use when the STK_SOCKET flag is set.  For realtime input
-    types, an StkError can be thrown during instantiation.
-  */
-  Messager(int inputMask = 0, int port = 2001);
+
+  // This structure is used to share data among the various realtime
+  // messager threads.  It must be public.
+  struct MessagerData {
+    Skini skini;
+    std::queue<Skini::Message> queue;
+    unsigned int queueLimit;
+    int sources;
+
+#if defined(__STK_REALTIME__)
+    Mutex mutex;
+    RtMidiIn *midi;
+    Socket *socket;
+    std::vector<int> fd;
+    fd_set mask;
+#endif
+
+    // Default constructor.
+    MessagerData()
+      :queueLimit(0), sources(0) {}
+  };
+
+  //! Default constructor.
+  Messager();
 
   //! Class destructor.
   ~Messager();
 
-  //! Check for a new input message and return the message type.
+  //! Pop the next message from the queue and write it to the referenced message structure.
   /*!
-     Return type values greater than zero represent valid messages.
-     If an input scorefile has been completely read or all realtime
-     input sources have closed, a negative value is returned.  If the
-     return type is zero, no valid messages are present.
+    Invalid messages (or an empty queue) are indicated by type
+    values of zero, in which case all other message structure values
+    are undefined.  The user MUST verify the returned message type is
+    valid before reading other message values.
   */
-  long nextMessage(void);
+  void popMessage( Skini::Message& message );
 
-  //! Set the delta time (in samples) returned between valid realtime messages.  This setting has no affect for scorefile messages.
-  void setRtDelta(long nSamples);
+  //! Push the referenced message onto the message stack.
+  void pushMessage( Skini::Message& message );
 
-  //! Return the current message "delta time" in samples.
-  long getDelta(void) const;
+  //! Specify a SKINI formatted scorefile from which messages should be read.
+  /*!
+    A return value of \c true indicates the call was successful.  A
+    return value of \c false can occur if the file is not found,
+    cannot be opened, another file is currently still open, or if a
+    realtime input mechanism is running.  Scorefile input is
+    considered to be a non-realtime control mechanism that cannot run
+    concurrently with realtime input.
+  */
+  bool setScoreFile( const char* filename );
 
-  //! Return the current message type.
-  long getType() const;
+#if defined(__STK_REALTIME__)
+  //! Initiate the "realtime" retreival from stdin of control messages into the queue.
+  /*!
+    This function initiates a thread for asynchronous retrieval of
+    SKINI formatted messages from stdin.  A return value of \c true
+    indicates the call was successful.  A return value of \c false can
+    occur if a scorefile is being read, a stdin thread is already
+    running, or a thread error occurs during startup.  Stdin input is
+    considered to be a realtime control mechanism that cannot run
+    concurrently with non-realtime scorefile input.
+  */
+  bool startStdInput();
 
-  //! Return the byte two value for the current message.
-  MY_FLOAT getByteTwo() const;
+  //! Start a socket server, accept connections, and read "realtime" control messages into the message queue.
+  /*!
+    This function creates a socket server on the optional port
+    (default = 2001) and starts a thread for asynchronous retrieval of
+    SKINI formatted messages from socket connections.  A return value
+    of \c true indicates the call was successful.  A return value of
+    \c false can occur if a scorefile is being read, a socket thread
+    is already running, or an error occurs during the socket server
+    or thread initialization stages.  Socket input is considered to be
+    a realtime control mechanism that cannot run concurrently with
+    non-realtime scorefile input.
+  */
+  bool startSocketInput( int port=2001 );
 
-  //! Return the byte three value for the current message.
-  MY_FLOAT getByteThree() const;
+  //! Start MIDI input, with optional device and port identifiers.
+  /*!
+    This function creates an RtMidiIn instance for MIDI input.  The
+    RtMidiIn class invokes a local callback function to read incoming
+    messages into the queue.  If \c port = -1, RtMidiIn will open a
+    virtual port to which other software applications can connect (OS
+    X and Linux only).  A return value of \c true indicates the call
+    was successful.  A return value of \c false can occur if a
+    scorefile is being read, MIDI input is already running, or an
+    error occurs during RtMidiIn construction.  Midi input is
+    considered to be a realtime control mechanism that cannot run
+    concurrently with non-realtime scorefile input.
+  */
+  bool startMidiInput( int port=0 );
 
-  //! Return the channel number for the current message.
-  long getChannel() const;
+#endif
 
  protected:
 
-  SKINI *skini;
-  long type;
-  long channel;
-  MY_FLOAT byte2;
-  MY_FLOAT byte3;
-  int sources;
-  long delta;
-  long rtDelta;
-  char message[MAX_MESSAGES][MESSAGE_LENGTH];
-  unsigned int messageIndex;
-  int nMessages;
+  MessagerData data_;
 
 #if defined(__STK_REALTIME__)
-
-  // Check MIDI source for new messages.
-  bool midiMessage(void);
-
-  // Check socket sources for new messages.
-  bool socketMessage(void);
-
-  // Receive and parse socket data.
-  bool readSocket(int fd);
-
-  RtMidi *midi;
-  Thread *thread;
-  Socket *soket;
-
-  unsigned int nSockets;  
-  fd_set mask;
-  int maxfd;
-  int pipefd;
-  int fd[16];
-  char error[256];
-
-#endif // __STK_REALTIME__
+  Thread stdinThread_;
+  Thread socketThread_;
+#endif
 
 };
 
-#endif // defined(__MESSAGER_H)
+#endif

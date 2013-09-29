@@ -8,7 +8,7 @@
     along the real axis of the z-plane while
     maintaining a constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -16,24 +16,24 @@
 
 OneZero :: OneZero() : Filter()
 {
-  MY_FLOAT B[2] = {0.5, 0.5};
-  MY_FLOAT A = 1.0;
-  Filter::setCoefficients( 2, B, 1, &A );
+  std::vector<StkFloat> b(2, 0.5);
+  std::vector<StkFloat> a(1, 1.0);
+  Filter::setCoefficients( b, a );
 }
 
-OneZero :: OneZero(MY_FLOAT theZero) : Filter()
+OneZero :: OneZero(StkFloat theZero) : Filter()
 {
-  MY_FLOAT B[2];
-  MY_FLOAT A = 1.0;
+  std::vector<StkFloat> b(2);
+  std::vector<StkFloat> a(1, 1.0);
 
   // Normalize coefficients for unity gain.
   if (theZero > 0.0)
-    B[0] = 1.0 / ((MY_FLOAT) 1.0 + theZero);
+    b[0] = 1.0 / ((StkFloat) 1.0 + theZero);
   else
-    B[0] = 1.0 / ((MY_FLOAT) 1.0 - theZero);
+    b[0] = 1.0 / ((StkFloat) 1.0 - theZero);
 
-  B[1] = -theZero * B[0];
-  Filter::setCoefficients( 2, B, 1,  &A );
+  b[1] = -theZero * b[0];
+  Filter::setCoefficients( b, a );
 }
 
 OneZero :: ~OneZero(void)
@@ -45,55 +45,57 @@ void OneZero :: clear(void)
   Filter::clear();
 }
 
-void OneZero :: setB0(MY_FLOAT b0)
+void OneZero :: setB0(StkFloat b0)
 {
-  b[0] = b0;
+  b_[0] = b0;
 }
 
-void OneZero :: setB1(MY_FLOAT b1)
+void OneZero :: setB1(StkFloat b1)
 {
-  b[1] = b1;
+  b_[1] = b1;
 }
 
-void OneZero :: setZero(MY_FLOAT theZero)
+void OneZero :: setZero(StkFloat theZero)
 {
   // Normalize coefficients for unity gain.
   if (theZero > 0.0)
-    b[0] = 1.0 / ((MY_FLOAT) 1.0 + theZero);
+    b_[0] = 1.0 / ((StkFloat) 1.0 + theZero);
   else
-    b[0] = 1.0 / ((MY_FLOAT) 1.0 - theZero);
+    b_[0] = 1.0 / ((StkFloat) 1.0 - theZero);
 
-  b[1] = -theZero * b[0];
+  b_[1] = -theZero * b_[0];
 }
 
-void OneZero :: setGain(MY_FLOAT theGain)
+void OneZero :: setGain(StkFloat gain)
 {
-  Filter::setGain(theGain);
+  Filter::setGain(gain);
 }
 
-MY_FLOAT OneZero :: getGain(void) const
+StkFloat OneZero :: getGain(void) const
 {
   return Filter::getGain();
 }
 
-MY_FLOAT OneZero :: lastOut(void) const
+StkFloat OneZero :: lastOut(void) const
 {
   return Filter::lastOut();
 }
 
-MY_FLOAT OneZero :: tick(MY_FLOAT sample)
+StkFloat OneZero :: tick(StkFloat sample)
 {
-  inputs[0] = gain * sample;
-  outputs[0] = b[1] * inputs[1] + b[0] * inputs[0];
-  inputs[1] = inputs[0];
+  inputs_[0] = gain_ * sample;
+  outputs_[0] = b_[1] * inputs_[1] + b_[0] * inputs_[0];
+  inputs_[1] = inputs_[0];
 
-  return outputs[0];
+  return outputs_[0];
 }
 
-MY_FLOAT *OneZero :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *OneZero :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick(vector[i]);
+  return Filter::tick( vector, vectorSize );
+}
 
-  return vector;
+StkFrames& OneZero :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Filter::tick( frames, channel );
 }

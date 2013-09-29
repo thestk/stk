@@ -10,97 +10,91 @@
     An StkError will be thrown if the table file
     is not found.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Table.h"
-#include <stdio.h>
+#include <fstream> 
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <iostream>
 
-Table :: Table(char *fileName)
+Table :: Table( std::string fileName)
 {
-  char message[256];
-
   // Use the system call "stat" to determine the file length
   struct stat filestat;
-  if ( stat(fileName, &filestat) == -1 ) {
-    sprintf(message, "Table: Couldn't stat or find file (%s).", fileName);
-    handleError( message, StkError::FILE_NOT_FOUND );
+  if ( stat( fileName.c_str(), &filestat ) == -1 ) {
+    errorString_ << "Table: Couldn't stat or find file (" << fileName << ").";
+    handleError( StkError::FILE_NOT_FOUND );
   }
-  length = (long) filestat.st_size / 8;  // length in 8-byte samples
+  length_ = (long) filestat.st_size / 8;  // length in 8-byte samples
 
   // Open the file and read samples into data[]
   FILE *fd;
-  fd = fopen(fileName,"rb");
+  fd = fopen(fileName.c_str(),"rb");
   if (!fd) {
-    sprintf(message, "Table: Couldn't open or find file (%s).", fileName);
-    handleError( message, StkError::FILE_NOT_FOUND );
+    errorString_ << "Table::Table: unable to open or find file (" << fileName << ")";
+    handleError( StkError::FILE_NOT_FOUND );
   }
 
-  data = (MY_FLOAT *) new MY_FLOAT[length];
+  data_.resize( length_, 0.0 );
 
-  // Read samples into data[]
+  // Read samples into data
   long i = 0;
   double temp;
-  while ( fread(&temp, 8, 1, fd) ) {
+  while ( fread( &temp, 8, 1, fd ) ) {
 #ifdef __LITTLE_ENDIAN__
-    swap64((unsigned char *)&temp);
+    swap64( (unsigned char *)&temp );
 #endif
-    data[i++] = (MY_FLOAT) temp;
+    data_[i++] = (StkFloat) temp;
   }
   fclose(fd);
 
-  lastOutput = 0.0;
+  lastOutput_ = 0.0;
 }
 
 Table :: ~Table()
 {
-  delete [ ] data;
 }
 
 long Table :: getLength() const
 {
-  return length;
+  return length_;
 }
 
-MY_FLOAT Table :: lastOut() const
+StkFloat Table :: tick(StkFloat index)
 {
-  return lastOutput;
-}
-
-MY_FLOAT Table :: tick(MY_FLOAT index)
-{
-  MY_FLOAT alpha;
+  StkFloat alpha;
   long temp;
 
-  if (index > length-1) {
-    std::cerr << "Table: Index (" << index << ") exceeds table length ... sticking at end!" << std::endl;
-    index = length-1;
+  if ( index > length_-1 ) {
+    errorString_ << "Table: Index (" << index << ") exceeds table length ... sticking at end!\n";
+    handleError( StkError::WARNING );
+    index = length_-1;
   }
   else if (index < 0.0) {
-    std::cerr << "Table: Index (" << index << ") is less than zero ... setting to zero!" << std::endl;
+    errorString_ << "Table: Index (" << index << ") is less than zero ... setting to zero!\n";
+    handleError( StkError::WARNING );
     index = 0.0;
   }
 
   // Index in range 0 to length-1
-  temp = (long) index;                   // Integer part of index
-  alpha = index - (MY_FLOAT) temp;      // Fractional part of index
+  temp = (long) index;                  // Integer part of index
+  alpha = index - (StkFloat) temp;      // Fractional part of index
   if (alpha > 0.0) {                    // Do linear interpolation
-    lastOutput = data[temp];
-    lastOutput += (alpha*(data[temp+1] - lastOutput));
+    lastOutput_ = data_[temp];
+    lastOutput_ += (alpha*(data_[temp+1] - lastOutput_));
   }
-  else lastOutput = data[temp];
+  else lastOutput_ = data_[temp];
 
-  return lastOutput;
+  return lastOutput_;
 }
 
-MY_FLOAT *Table :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *Table :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick(vector[i]);
+  return Function::tick( vector, vectorSize );
+}
 
-  return vector;
+StkFrames& Table :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Function::tick( frames, channel );
 }

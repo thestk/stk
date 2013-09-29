@@ -24,14 +24,14 @@
 */
 /***************************************************/
 
-#if !defined(__MESH2D_H)
-#define __MESH2D_H
+#ifndef STK_MESH2D_H
+#define STK_MESH2D_H
 
 #include "Instrmnt.h"
 #include "OnePole.h"
 
-#define NXMAX ((short)(12))
-#define NYMAX ((short)(12))
+const short NXMAX = 12;
+const short NYMAX = 12;
 
 class Mesh2D : public Instrmnt
 {
@@ -52,54 +52,64 @@ class Mesh2D : public Instrmnt
   void setNY(short lenY);
 
   //! Set the x, y input position on a 0.0 - 1.0 scale.
-  void setInputPosition(MY_FLOAT xFactor, MY_FLOAT yFactor);
+  void setInputPosition(StkFloat xFactor, StkFloat yFactor);
 
   //! Set the loss filters gains (0.0 - 1.0).
-  void setDecay(MY_FLOAT decayFactor);
+  void setDecay(StkFloat decayFactor);
 
   //! Impulse the mesh with the given amplitude (frequency ignored).
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay) ... currently ignored.
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Calculate and return the signal energy stored in the mesh.
-  MY_FLOAT energy();
+  StkFloat energy();
 
   //! Compute one output sample, without adding energy to the mesh.
-  MY_FLOAT tick();
+  StkFloat tick();
 
   //! Input a sample to the mesh and compute one output sample.
-  MY_FLOAT tick(MY_FLOAT input);
+  StkFloat tick(StkFloat input);
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
  protected:
 
-  MY_FLOAT tick0();
-  MY_FLOAT tick1();
+  StkFloat tick0();
+  StkFloat tick1();
   void clearMesh();
 
-  short NX, NY;
-  short xInput, yInput;
-  OnePole *filterX[NXMAX];
-  OnePole *filterY[NYMAX];
-  MY_FLOAT v[NXMAX-1][NYMAX-1]; // junction velocities
-  MY_FLOAT vxp[NXMAX][NYMAX]; // positive-x velocity wave
-  MY_FLOAT vxm[NXMAX][NYMAX]; // negative-x velocity wave
-  MY_FLOAT vyp[NXMAX][NYMAX]; // positive-y velocity wave
-  MY_FLOAT vym[NXMAX][NYMAX]; // negative-y velocity wave
+  short NX_, NY_;
+  short xInput_, yInput_;
+  OnePole  filterX_[NXMAX];
+  OnePole  filterY_[NYMAX];
+  StkFloat v_[NXMAX-1][NYMAX-1]; // junction velocities
+  StkFloat vxp_[NXMAX][NYMAX];   // positive-x velocity wave
+  StkFloat vxm_[NXMAX][NYMAX];   // negative-x velocity wave
+  StkFloat vyp_[NXMAX][NYMAX];   // positive-y velocity wave
+  StkFloat vym_[NXMAX][NYMAX];   // negative-y velocity wave
 
   // Alternate buffers
-  MY_FLOAT vxp1[NXMAX][NYMAX]; // positive-x velocity wave
-  MY_FLOAT vxm1[NXMAX][NYMAX]; // negative-x velocity wave
-  MY_FLOAT vyp1[NXMAX][NYMAX]; // positive-y velocity wave
-  MY_FLOAT vym1[NXMAX][NYMAX]; // negative-y velocity wave
+  StkFloat vxp1_[NXMAX][NYMAX];  // positive-x velocity wave
+  StkFloat vxm1_[NXMAX][NYMAX];  // negative-x velocity wave
+  StkFloat vyp1_[NXMAX][NYMAX];  // positive-y velocity wave
+  StkFloat vym1_[NXMAX][NYMAX];  // negative-y velocity wave
 
-  int counter; // time in samples
-
-
+  int counter_; // time in samples
 };
 
 #endif

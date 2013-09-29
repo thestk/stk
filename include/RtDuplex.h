@@ -1,28 +1,35 @@
 /***************************************************/
 /*! \class RtDuplex
-    \brief STK realtime audio input/output class.
+    \brief STK realtime audio (blocking) input/output class.
 
     This class provides a simplified interface to
     RtAudio for realtime audio input/output.  It
-    is also possible to achieve duplex operation
-    using separate RtWvIn and RtWvOut classes, but
-    this class ensures better input/output
-    syncronization.
+    may also be possible to achieve duplex
+    operation using separate RtWvIn and RtWvOut
+    classes, but this class ensures better
+    input/output synchronization.
+
+    Because this class makes use of RtAudio's
+    blocking input/output routines, its
+    performance is less robust on systems where
+    the audio API is callback-based (Macintosh
+    CoreAudio and Windows ASIO).
 
     RtDuplex supports multi-channel data in
     interleaved format.  It is important to
     distinguish the tick() methods, which output
-    single samples to all channels in a sample frame
-    and return samples produced by averaging across
-    sample frames, from the tickFrame() methods, which
-    take/return pointers to multi-channel sample frames.
+    single samples to all channels in a sample
+    frame and return samples produced by averaging
+    across sample frames, from the tickFrame()
+    methods, which take/return pointers to
+    multi-channel sample frames.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__RTDUPLEX_H)
-#define __RTDUPLEX_H
+#ifndef STK_RTDUPLEX_H
+#define STK_RTDUPLEX_H
 
 #include "Stk.h"
 #include "RtAudio.h"
@@ -42,7 +49,7 @@ public:
     is defined in Stk.h.  An StkError will be thrown if an error
     occurs duing instantiation.
   */
-  RtDuplex(int nChannels = 1, MY_FLOAT sampleRate = Stk::sampleRate(), int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 2);
+  RtDuplex(int nChannels = 1, StkFloat sampleRate = Stk::sampleRate(), int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 2);
 
   //! Class destructor.
   ~RtDuplex();
@@ -60,34 +67,53 @@ public:
   void stop(void);
 
   //! Return the average across the last output sample frame.
-  MY_FLOAT lastOut(void) const;
+  StkFloat lastOut(void) const;
 
   //! Output a single sample to all channels in a sample frame and return the average across one new input sample frame of data.
   /*!
     An StkError will be thrown if an error occurs during input/output.
   */
-  MY_FLOAT tick(const MY_FLOAT sample);
+  StkFloat tick(const StkFloat sample);
 
-  //! Output each sample in \vector to all channels per frame and return averaged input sample frames of new data in \e vector.
+  //! Output each sample in \e vector to all channels per frame and return averaged input sample frames of new data in \e vector.
   /*!
     An StkError will be thrown if an error occurs during input/output.
   */
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Output a channel of the StkFrames object to all channels and replace with averaged sample frames of input.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if an
+    error occurs during input/outpu or the \c channel argument is zero
+    or it is greater than the number of channels in the StkFrames
+    object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Return a pointer to the last output sample frame.
-  const MY_FLOAT *lastFrame(void) const;
+  const StkFloat *lastFrame(void) const;
 
   //! Output sample \e frames from \e frameVector and return new input frames in \e frameVector.
   /*!
     An StkError will be thrown if an error occurs during input/output.
   */
-  MY_FLOAT *tickFrame(MY_FLOAT *frameVector, unsigned int frames = 1);
+  StkFloat *tickFrame(StkFloat *frameVector, unsigned int frames = 1);
+
+  //! Output the StkFrames data and replace with new input frames.
+  /*!
+    An StkError will be thrown if an error occurs during
+    input/output or if there is an incompatability between the number
+    of channels in the RtDuplex object and that in the StkFrames
+    object.
+  */
+  StkFrames& tickFrame( StkFrames& frames );
 
 protected:
 
 	RtAudio *audio_;
-  MY_FLOAT *data_;
-  MY_FLOAT *lastOutput_;
+  StkFloat *data_;
+  StkFloat *lastOutput_;
   int bufferSize_;
   bool stopped_;
   long counter_;

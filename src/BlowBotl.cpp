@@ -12,7 +12,7 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -23,133 +23,138 @@
 
 BlowBotl :: BlowBotl()
 {
-  jetTable = new JetTabl();
-
-  dcBlock = new PoleZero();
-  dcBlock->setBlockZero();
+  dcBlock_.setBlockZero();
 
   // Concatenate the STK rawwave path to the rawwave file
-  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
-  vibrato->setFrequency( 5.925 );
-  vibratoGain = 0.0;
+  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  vibrato_->setFrequency( 5.925 );
+  vibratoGain_ = 0.0;
 
-  resonator = new BiQuad();
-  resonator->setResonance(500.0, __BOTTLE_RADIUS_, true);
+  resonator_.setResonance(500.0, __BOTTLE_RADIUS_, true);
+  adsr_.setAllTimes( 0.005, 0.01, 0.8, 0.010);
 
-  adsr = new ADSR();
-  adsr->setAllTimes( 0.005, 0.01, 0.8, 0.010);
-
-  noise = new Noise();
-  noiseGain = 20.0;
-
-	maxPressure = (MY_FLOAT) 0.0;
+  noiseGain_ = 20.0;
+	maxPressure_ = (StkFloat) 0.0;
 }
 
 BlowBotl :: ~BlowBotl()
 {
-  delete jetTable;
-  delete resonator;
-  delete dcBlock;
-  delete noise;
-  delete adsr;
-  delete vibrato;
+  delete vibrato_;
 }
 
 void BlowBotl :: clear()
 {
-  resonator->clear();
+  resonator_.clear();
 }
 
-void BlowBotl :: setFrequency(MY_FLOAT frequency)
+void BlowBotl :: setFrequency(StkFloat frequency)
 {
-  MY_FLOAT freakency = frequency;
+  StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "BlowBotl: setFrequency parameter is less than or equal to zero!" << std::endl;
+    errorString_ << "BlowBotl::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
     freakency = 220.0;
   }
 
-  resonator->setResonance( freakency, __BOTTLE_RADIUS_, true );
+  resonator_.setResonance( freakency, __BOTTLE_RADIUS_, true );
 }
 
-void BlowBotl :: startBlowing(MY_FLOAT amplitude, MY_FLOAT rate)
+void BlowBotl :: startBlowing(StkFloat amplitude, StkFloat rate)
 {
-  adsr->setAttackRate(rate);
-  maxPressure = amplitude;
-  adsr->keyOn();
+  adsr_.setAttackRate(rate);
+  maxPressure_ = amplitude;
+  adsr_.keyOn();
 }
 
-void BlowBotl :: stopBlowing(MY_FLOAT rate)
+void BlowBotl :: stopBlowing(StkFloat rate)
 {
-  adsr->setReleaseRate(rate);
-  adsr->keyOff();
+  adsr_.setReleaseRate(rate);
+  adsr_.keyOff();
 }
 
-void BlowBotl :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void BlowBotl :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  setFrequency(frequency);
+  this->setFrequency(frequency);
   startBlowing( 1.1 + (amplitude * 0.20), amplitude * 0.02);
-  outputGain = amplitude + 0.001;
+  outputGain_ = amplitude + 0.001;
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "BlowBotl: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "BlowBotl::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void BlowBotl :: noteOff(MY_FLOAT amplitude)
+void BlowBotl :: noteOff(StkFloat amplitude)
 {
   this->stopBlowing(amplitude * 0.02);
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "BlowBotl: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "BlowBotl::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT BlowBotl :: tick()
+StkFloat BlowBotl :: tick()
 {
-  MY_FLOAT breathPressure;
-  MY_FLOAT randPressure;
-  MY_FLOAT pressureDiff;
+  StkFloat breathPressure;
+  StkFloat randPressure;
+  StkFloat pressureDiff;
 
   // Calculate the breath pressure (envelope + vibrato)
-  breathPressure = maxPressure * adsr->tick();
-  breathPressure += vibratoGain * vibrato->tick();
+  breathPressure = maxPressure_ * adsr_.tick();
+  breathPressure += vibratoGain_ * vibrato_->tick();
 
-  pressureDiff = breathPressure - resonator->lastOut();
+  pressureDiff = breathPressure - resonator_.lastOut();
 
-  randPressure = noiseGain * noise->tick();
+  randPressure = noiseGain_ * noise_.tick();
   randPressure *= breathPressure;
   randPressure *= (1.0 + pressureDiff);
 
-  resonator->tick( breathPressure + randPressure - ( jetTable->tick( pressureDiff ) * pressureDiff ) );
-  lastOutput = 0.2 * outputGain * dcBlock->tick( pressureDiff );
+  resonator_.tick( breathPressure + randPressure - ( jetTable_.tick( pressureDiff ) * pressureDiff ) );
+  lastOutput_ = 0.2 * outputGain_ * dcBlock_.tick( pressureDiff );
 
-  return lastOutput;
+  return lastOutput_;
 }
 
-void BlowBotl :: controlChange(int number, MY_FLOAT value)
+StkFloat *BlowBotl :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& BlowBotl :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void BlowBotl :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "BlowBotl: Control value less than zero!" << std::endl;
+    errorString_ << "BlowBotl::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "BlowBotl: Control value greater than 128.0!" << std::endl;
+    errorString_ << "BlowBotl::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == __SK_NoiseLevel_) // 4
-    noiseGain = norm * 30.0;
+    noiseGain_ = norm * 30.0;
   else if (number == __SK_ModFrequency_) // 11
-    vibrato->setFrequency( norm * 12.0 );
+    vibrato_->setFrequency( norm * 12.0 );
   else if (number == __SK_ModWheel_) // 1
-    vibratoGain = norm * 0.4;
+    vibratoGain_ = norm * 0.4;
   else if (number == __SK_AfterTouch_Cont_) // 128
-    adsr->setTarget( norm );
-  else
-    std::cerr << "BlowBotl: Undefined Control Number (" << number << ")!!" << std::endl;
+    adsr_.setTarget( norm );
+  else {
+    errorString_ << "BlowBotl::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "BlowBotl: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "BlowBotl::controlChange: number = " << number << ", value = " << value << ".";
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }

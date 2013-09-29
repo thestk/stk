@@ -1,20 +1,23 @@
 /*! \page tutorial Tutorial
 
-The Synthesis ToolKit is a set of C++ classes.  In order to go beyond the simple example programs we provide, it is necessary to know some basics about programming in C or C++.  STK's "target audience" includes people who:
+The Synthesis ToolKit is a set of C++ classes.  In order to go beyond the simple example programs we provide, it is necessary to know some basics about programming in C and C++.  STK's "target audience" includes people who:
 <UL>
 <LI>want to create audio DSP and/or synthesis programs</LI>
-<LI>want to save some time by using our unit generators and input/output routines</LI>
+<LI>want to use our unit generators and input/output routines rather than code their own</LI>
 <LI>want to learn about synthesis and processing algorithms</LI>
-<LI>wish to teach real-time synthesis and processing, and wish to use some of our classes and examples</LI>
+<LI>wish to teach real-time synthesis and processing and wish to use some of our classes and examples</LI>
 </UL>
 
 Most ToolKit programmers will likely end up writing a class or two for their own particular needs, but this task is typically simplified by making use of pre-existing STK classes (filters, oscillators, etc.).
 
 The following tutorial chapters describe many of the fundamental ToolKit concepts and classes.  All tutorial programs are included in the <TT>projects/examples</TT> directory.
 
+-# \ref fundamentals
 -# \ref hello
 -# \ref compile
+-# \ref filtering
 -# \ref realtime
+-# \ref crealtime
 -# \ref instruments
 -# \ref controlin
 -# \ref multichannel

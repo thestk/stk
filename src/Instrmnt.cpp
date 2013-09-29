@@ -5,7 +5,7 @@
     This class provides a common interface for
     all STK instruments.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -19,28 +19,29 @@ Instrmnt :: ~Instrmnt()
 {
 }
 
-void Instrmnt :: setFrequency(MY_FLOAT frequency)
+void Instrmnt :: setFrequency(StkFloat frequency)
 {
-  std::cerr << "Instrmnt: virtual setFrequency function call!" << std::endl;
+  errorString_ << "Instrmnt::setFrequency: virtual setFrequency function call!";
+  handleError( StkError::WARNING );
 }
 
-MY_FLOAT Instrmnt :: lastOut() const
+StkFloat Instrmnt :: lastOut() const
 {
-  return lastOutput;
+  return lastOutput_;
 }
 
 // Support for stereo output:
-MY_FLOAT Instrmnt :: lastOutLeft(void) const
+StkFloat Instrmnt :: lastOutLeft(void) const
 {
-  return 0.5 * lastOutput;
+  return 0.5 * lastOutput_;
 }
                                                                                 
-MY_FLOAT Instrmnt :: lastOutRight(void) const
+StkFloat Instrmnt :: lastOutRight(void) const
 {
-  return 0.5 * lastOutput;
+  return 0.5 * lastOutput_;
 }
 
-MY_FLOAT *Instrmnt :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *Instrmnt :: tick(StkFloat *vector, unsigned int vectorSize)
 {
   for (unsigned int i=0; i<vectorSize; i++)
     vector[i] = tick();
@@ -48,6 +49,36 @@ MY_FLOAT *Instrmnt :: tick(MY_FLOAT *vector, unsigned int vectorSize)
   return vector;
 }
 
-void Instrmnt :: controlChange(int number, MY_FLOAT value)
+StkFrames& Instrmnt :: tick( StkFrames& frames, unsigned int channel )
 {
+  if ( channel == 0 || frames.channels() < channel ) {
+    errorString_ << "Instrmnt::tick(): channel argument (" << channel << ") is zero or > channels in StkFrames argument!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  if ( frames.channels() == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      frames[i] = tick();
+  }
+  else if ( frames.interleaved() ) {
+    unsigned int hop = frames.channels();
+    unsigned int index = channel - 1;
+    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+      frames[index] = tick();
+      index += hop;
+    }
+  }
+  else {
+    unsigned int iStart = (channel - 1) * frames.frames();
+    for ( unsigned int i=0; i<frames.frames(); i++ )
+      frames[iStart + i] = tick();
+  }
+
+  return frames;
+}
+
+void Instrmnt :: controlChange(int number, StkFloat value)
+{
+  errorString_ << "Instrmnt::controlChange: virtual function call!";
+  handleError( StkError::WARNING );
 }

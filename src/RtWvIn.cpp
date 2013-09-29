@@ -1,6 +1,6 @@
 /***************************************************/
 /*! \class RtWvIn
-    \brief STK realtime audio input class.
+    \brief STK realtime audio (blocking) input class.
 
     This class provides a simplified interface to
     RtAudio for realtime audio input.  It is a
@@ -15,17 +15,17 @@
     For single-channel data, these methods return
     equivalent values.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "RtWvIn.h"
 
-RtWvIn :: RtWvIn(int nChannels, MY_FLOAT sampleRate, int device, int bufferFrames, int nBuffers )
+RtWvIn :: RtWvIn(int nChannels, StkFloat sampleRate, int device, int bufferFrames, int nBuffers )
 {
-  channels = nChannels;
+  channels_ = nChannels;
   int size = bufferFrames;
-  RtAudioFormat format = ( sizeof(MY_FLOAT) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
+  RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
 
   audio_ = 0;
   try {
@@ -37,17 +37,17 @@ RtWvIn :: RtWvIn(int nChannels, MY_FLOAT sampleRate, int device, int bufferFrame
 
   // Now open a stream and get the buffer pointer.
   try {
-    audio_->openStream(0, 0, device, channels, format,
+    audio_->openStream(0, 0, device, channels_, format,
                       (int)sampleRate, &size, nBuffers);
-    data = (MY_FLOAT *) audio_->getStreamBuffer();
+    data_ = (StkFloat *) audio_->getStreamBuffer();
   }
   catch (RtError &error) {
     handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
   }
 
-  bufferSize = size;
-  lastOutput = (MY_FLOAT *) new MY_FLOAT[channels];
-  for (unsigned int i=0; i<channels; i++) lastOutput[i] = 0.0;
+  bufferSize_ = size;
+  lastOutputs_ = (StkFloat *) new StkFloat[channels_];
+  for (unsigned int i=0; i<channels_; i++) lastOutputs_[i] = 0.0;
   counter_ = 0;
   stopped_ = true;
 }
@@ -57,7 +57,7 @@ RtWvIn :: ~RtWvIn()
   if ( !stopped_ )
     audio_->stopStream();
   delete audio_;
-  data = 0; // RtAudio deletes the buffer itself.
+  data_ = 0; // RtAudio deletes the buffer itself.
 }
 
 void RtWvIn :: start()
@@ -76,34 +76,36 @@ void RtWvIn :: stop()
   }
 }
 
-MY_FLOAT RtWvIn :: lastOut(void) const
+StkFloat RtWvIn :: lastOut(void) const
 {
   return WvIn::lastOut();
 }
 
-MY_FLOAT RtWvIn :: tick(void)
+StkFloat RtWvIn :: tick(void)
 {
-  tickFrame();
+  this->tickFrame();
   return lastOut();
 }
 
-MY_FLOAT *RtWvIn :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *RtWvIn :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  for ( unsigned int i=0; i<vectorSize; i++ )
-    vector[i] = tick();
-
-  return vector;
+  return WvIn::tick( vector, vectorSize );
 }
 
-const MY_FLOAT *RtWvIn :: lastFrame() const
+StkFrames& RtWvIn :: tick( StkFrames& frames, unsigned int channel )
 {
-  return lastOutput;
+  return WvIn::tick( frames, channel );
 }
 
-const MY_FLOAT *RtWvIn :: tickFrame(void)
+const StkFloat *RtWvIn :: lastFrame() const
+{
+  return lastOutputs_;
+}
+
+const StkFloat *RtWvIn :: tickFrame(void)
 {
   if ( stopped_ )
-    start();
+    this->start();
 
   if (counter_ == 0) {
     try {
@@ -114,18 +116,23 @@ const MY_FLOAT *RtWvIn :: tickFrame(void)
     }
   }
 
-  long temp = counter_ * channels;
-  for (unsigned int i=0; i<channels; i++)
-    lastOutput[i] = data[temp++];
+  long temp = counter_ * channels_;
+  for (unsigned int i=0; i<channels_; i++)
+    lastOutputs_[i] = data_[temp++];
 
   counter_++;
-  if (counter_ >= (long) bufferSize)
+  if (counter_ >= (long) bufferSize_)
     counter_ = 0;
 
-  return lastOutput;
+  return lastOutputs_;
 }
 
-MY_FLOAT *RtWvIn :: tickFrame(MY_FLOAT *frameVector, unsigned int frames)
+StkFloat *RtWvIn :: tickFrame(StkFloat *frameVector, unsigned int frames)
 {
   return WvIn::tickFrame( frameVector, frames );
+}
+
+StkFrames& RtWvIn :: tickFrame( StkFrames& frames )
+{
+  return WvIn::tickFrame( frames );
 }

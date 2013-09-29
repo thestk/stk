@@ -8,27 +8,27 @@ int main()
   // Set the global sample rate before creating class instances.
   Stk::setSampleRate( 44100.0 );
 
-  WaveLoop *input = 0;
-  RtWvOut *output = 0;
+  WaveLoop *sine = 0;
+  RtWvOut *dac = 0;
 
   try {
     // Define and load the sine wave file
-    input = new WaveLoop( "rawwaves/sinewave.raw", TRUE );
+    sine = new WaveLoop( "rawwaves/sinewave.raw", true );
 
     // Define and open the default realtime output device for one-channel playback
-    output = new RtWvOut(1);
+    dac = new RtWvOut(1);
   }
   catch (StkError &) {
     goto cleanup;
   }
 
-  input->setFrequency(440.0);
+  sine->setFrequency(440.0);
 
   // Play the oscillator for 40000 samples
   int i;
   for ( i=0; i<40000; i++ ) {
     try {
-      output->tick(input->tick());
+      dac->tick( sine->tick() );
     }
     catch (StkError &) {
       goto cleanup;
@@ -36,8 +36,8 @@ int main()
   }
 
  cleanup:
-  delete input;
-  delete output;
+  delete sine;
+  delete dac;
 
   return 0;
 }

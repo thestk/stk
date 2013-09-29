@@ -14,12 +14,12 @@
     less than or equal to zero indicate a closed
     or lost connection or the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__SOCKET_H)
-#define __SOCKET_H
+#ifndef STK_SOCKET_H
+#define STK_SOCKET_H
 
 #include "Stk.h"
 
@@ -56,7 +56,7 @@ class Socket : public Stk
   void close( void );
 
   //! Return the server/client socket descriptor.
-  int socket( void ) const;
+  int id( void ) const;
 
   //! Return the server/client port number.
   int port( void ) const;
@@ -76,7 +76,7 @@ class Socket : public Stk
   //! Close the socket with the given descriptor.
   static void close( int socket );
 
-  //! Returns TRUE is the socket descriptor is valid.
+  //! Returns true if the socket descriptor is valid.
   static bool isValid( int socket );
 
   //! Write a buffer over the socket connection.  Returns the number of bytes written or -1 if an error occurs.
@@ -93,11 +93,10 @@ class Socket : public Stk
 
  protected:
 
-  char msg[256];
-  int soket;
-  int poort;
-  bool server;
+  int soket_;
+  int port_;
+  bool server_;
 
 };
 
-#endif // defined(__SOCKET_H)
+#endif // defined(STK_SOCKET_H)

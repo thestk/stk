@@ -18,183 +18,192 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Flute.h"
 #include "SKINI.msg"
 
-Flute :: Flute(MY_FLOAT lowestFrequency)
+Flute :: Flute(StkFloat lowestFrequency)
 {
-  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
-  boreDelay = new DelayL( 100.0, length );
-  length >>= 1;
-  jetDelay = new DelayL( 49.0, length );
-  jetTable = new JetTabl();
-  filter = new OnePole();
-  dcBlock = new PoleZero();
-  dcBlock->setBlockZero();
-  noise = new Noise();
-  adsr = new ADSR();
+  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  boreDelay_.setMaximumDelay( length_ );
+  boreDelay_.setDelay( 100.0 );
+
+  length_ >>= 1;
+  jetDelay_.setMaximumDelay( length_ );
+  jetDelay_.setDelay( 49.0 );
 
   // Concatenate the STK rawwave path to the rawwave file
-  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
-  vibrato->setFrequency( 5.925 );
+  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  vibrato_->setFrequency( 5.925 );
 
   this->clear();
 
-  filter->setPole( 0.7 - ((MY_FLOAT) 0.1 * 22050.0 / Stk::sampleRate() ) );
-  filter->setGain( -1.0 );
-  adsr->setAllTimes( 0.005, 0.01, 0.8, 0.010);
-  endReflection = (MY_FLOAT) 0.5;
-  jetReflection = (MY_FLOAT) 0.5;
-  noiseGain =  0.15;             // Breath pressure random component.
-  vibratoGain = (MY_FLOAT) 0.05; // Breath periodic vibrato component.
-  jetRatio = (MY_FLOAT) 0.32;
+  filter_.setPole( 0.7 - ((StkFloat) 0.1 * 22050.0 / Stk::sampleRate() ) );
+  filter_.setGain( -1.0 );
+  adsr_.setAllTimes( 0.005, 0.01, 0.8, 0.010);
+  endReflection_ = 0.5;
+  jetReflection_ = 0.5;
+  noiseGain_     = 0.15;    // Breath pressure random component.
+  vibratoGain_   = 0.05;    // Breath periodic vibrato component.
+  jetRatio_      = 0.32;
 
-	maxPressure = (MY_FLOAT) 0.0;
-  lastFrequency = 220.0;
+	maxPressure_ = 0.0;
+  lastFrequency_ = 220.0;
 }
 
 Flute :: ~Flute()
 {
-  delete jetDelay;
-  delete boreDelay;
-  delete jetTable;
-  delete filter;
-  delete dcBlock;
-  delete noise;
-  delete adsr;
-  delete vibrato;
+  delete vibrato_;
 }
 
 void Flute :: clear()
 {
-  jetDelay->clear();
-  boreDelay->clear();
-  filter->clear();
-  dcBlock->clear();
+  jetDelay_.clear();
+  boreDelay_.clear();
+  filter_.clear();
+  dcBlock_.clear();
 }
 
-void Flute :: setFrequency(MY_FLOAT frequency)
+void Flute :: setFrequency(StkFloat frequency)
 {
-  lastFrequency = frequency;
+  lastFrequency_ = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "Flute: setFrequency parameter is less than or equal to zero!" << std::endl;
-    lastFrequency = 220.0;
+    errorString_ << "Flute::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
+    lastFrequency_ = 220.0;
   }
 
   // We're overblowing here.
-  lastFrequency *= 0.66666;
-  // Delay = length - approximate filter delay.
-  MY_FLOAT delay = Stk::sampleRate() / lastFrequency - (MY_FLOAT) 2.0;
-  if (delay <= 0.0) delay = 0.3;
-  else if (delay > length) delay = length;
+  lastFrequency_ *= 0.66666;
 
-  boreDelay->setDelay(delay);
-  jetDelay->setDelay(delay * jetRatio);
+  // delay = length - approximate filter delay.
+  StkFloat delay = Stk::sampleRate() / lastFrequency_ - (StkFloat) 2.0;
+  if ( delay <= 0.0 ) delay = 0.3;
+  else if ( delay > length_ ) delay = length_;
+
+  boreDelay_.setDelay(delay);
+  jetDelay_.setDelay(delay * jetRatio_);
 }
 
-void Flute :: startBlowing(MY_FLOAT amplitude, MY_FLOAT rate)
+void Flute :: startBlowing(StkFloat amplitude, StkFloat rate)
 {
-  adsr->setAttackRate(rate);
-  maxPressure = amplitude / (MY_FLOAT) 0.8;
-  adsr->keyOn();
+  adsr_.setAttackRate( rate );
+  maxPressure_ = amplitude / (StkFloat) 0.8;
+  adsr_.keyOn();
 }
 
-void Flute :: stopBlowing(MY_FLOAT rate)
+void Flute :: stopBlowing(StkFloat rate)
 {
-  adsr->setReleaseRate(rate);
-  adsr->keyOff();
+  adsr_.setReleaseRate( rate );
+  adsr_.keyOff();
 }
 
-void Flute :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Flute :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  setFrequency(frequency);
-  startBlowing( 1.1 + (amplitude * 0.20), amplitude * 0.02);
-  outputGain = amplitude + 0.001;
+  this->setFrequency( frequency );
+  this->startBlowing( 1.1 + (amplitude * 0.20), amplitude * 0.02 );
+  outputGain_ = amplitude + 0.001;
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Flute: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Flute::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Flute :: noteOff(MY_FLOAT amplitude)
+void Flute :: noteOff(StkFloat amplitude)
 {
-  this->stopBlowing(amplitude * 0.02);
+  this->stopBlowing( amplitude * 0.02 );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Flute: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "Flute::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Flute :: setJetReflection(MY_FLOAT coefficient)
+void Flute :: setJetReflection(StkFloat coefficient)
 {
-  jetReflection = coefficient;
+  jetReflection_ = coefficient;
 }
 
-void Flute :: setEndReflection(MY_FLOAT coefficient)
+void Flute :: setEndReflection(StkFloat coefficient)
 {         
-  endReflection = coefficient;
+  endReflection_ = coefficient;
 }               
 
-void Flute :: setJetDelay(MY_FLOAT aRatio)
+void Flute :: setJetDelay(StkFloat aRatio)
 {
   // Delay = length - approximate filter delay.
-  MY_FLOAT temp = Stk::sampleRate() / lastFrequency - (MY_FLOAT) 2.0;
-  jetRatio = aRatio;
-  jetDelay->setDelay(temp * aRatio); // Scaled by ratio.
+  StkFloat temp = Stk::sampleRate() / lastFrequency_ - (StkFloat) 2.0;
+  jetRatio_ = aRatio;
+  jetDelay_.setDelay(temp * aRatio); // Scaled by ratio.
 }
 
-MY_FLOAT Flute :: tick()
+StkFloat Flute :: tick()
 {
-  MY_FLOAT pressureDiff;
-  MY_FLOAT breathPressure;
+  StkFloat pressureDiff;
+  StkFloat breathPressure;
 
   // Calculate the breath pressure (envelope + noise + vibrato)
-  breathPressure = maxPressure * adsr->tick();
-  breathPressure += breathPressure * noiseGain * noise->tick();
-  breathPressure += breathPressure * vibratoGain * vibrato->tick();
+  breathPressure = maxPressure_ * adsr_.tick();
+  breathPressure += breathPressure * noiseGain_ * noise_.tick();
+  breathPressure += breathPressure * vibratoGain_ * vibrato_->tick();
 
-  MY_FLOAT temp = filter->tick( boreDelay->lastOut() );
-  temp = dcBlock->tick(temp); // Block DC on reflection.
+  StkFloat temp = filter_.tick( boreDelay_.lastOut() );
+  temp = dcBlock_.tick(temp); // Block DC on reflection.
 
-  pressureDiff = breathPressure - (jetReflection * temp);
-  pressureDiff = jetDelay->tick( pressureDiff );
-  pressureDiff = jetTable->tick( pressureDiff ) + (endReflection * temp);
-  lastOutput = (MY_FLOAT) 0.3 * boreDelay->tick( pressureDiff );
+  pressureDiff = breathPressure - (jetReflection_ * temp);
+  pressureDiff = jetDelay_.tick( pressureDiff );
+  pressureDiff = jetTable_.tick( pressureDiff ) + (endReflection_ * temp);
+  lastOutput_ = (StkFloat) 0.3 * boreDelay_.tick( pressureDiff );
 
-  lastOutput *= outputGain;
-  return lastOutput;
+  lastOutput_ *= outputGain_;
+  return lastOutput_;
 }
 
-void Flute :: controlChange(int number, MY_FLOAT value)
+StkFloat *Flute :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Flute :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void Flute :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "Flute: Control value less than zero!" << std::endl;
+    errorString_ << "Flute::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "Flute: Control value greater than 128.0!" << std::endl;
+    errorString_ << "Flute::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == __SK_JetDelay_) // 2
-    this->setJetDelay( (MY_FLOAT) (0.08 + (0.48 * norm)) );
+    this->setJetDelay( (StkFloat) (0.08 + (0.48 * norm)) );
   else if (number == __SK_NoiseLevel_) // 4
-    noiseGain = ( norm * 0.4);
+    noiseGain_ = ( norm * 0.4);
   else if (number == __SK_ModFrequency_) // 11
-    vibrato->setFrequency( norm * 12.0);
+    vibrato_->setFrequency( norm * 12.0);
   else if (number == __SK_ModWheel_) // 1
-    vibratoGain = ( norm * 0.4 );
+    vibratoGain_ = ( norm * 0.4 );
   else if (number == __SK_AfterTouch_Cont_) // 128
-    adsr->setTarget( norm );
-  else
-    std::cerr << "Flute: Undefined Control Number (" << number << ")!!" << std::endl;
+    adsr_.setTarget( norm );
+  else {
+    errorString_ << "Flute::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Flute: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "Flute::controlChange: number = " << number << ", value = " << value << ".";
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }

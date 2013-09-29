@@ -4,22 +4,25 @@
 
     This class implements a chorus effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__CHORUS_H)
-#define __CHORUS_H
+#ifndef STK_CHORUS_H
+#define STK_CHORUS_H
 
-#include "Stk.h" 
+#include "Effect.h" 
 #include "DelayL.h" 
 #include "WaveLoop.h" 
 
-class Chorus : public Stk
+class Chorus : public Effect
 {
  public:
-  //! Class constructor, taking the longest desired delay length.
-  Chorus(MY_FLOAT baseDelay);
+  //! Class constructor, taking the median desired delay length.
+  /*!
+    An StkError can be thrown if the rawwave path is incorrect.
+  */
+  Chorus( StkFloat baseDelay = 6000 );
 
   //! Class destructor.
   ~Chorus();
@@ -28,36 +31,31 @@ class Chorus : public Stk
   void clear();
 
   //! Set modulation depth.
-  void setModDepth(MY_FLOAT depth);
+  void setModDepth(StkFloat depth);
 
   //! Set modulation frequency.
-  void setModFrequency(MY_FLOAT frequency);
-
-  //! Set the mixture of input and processed levels in the output (0.0 = input only, 1.0 = processed only). 
-  void setEffectMix(MY_FLOAT mix);
-
-  //! Return the last output value.
-  MY_FLOAT lastOut() const;
-
-  //! Return the last left output value.
-  MY_FLOAT lastOutLeft() const;
-
-  //! Return the last right output value.
-  MY_FLOAT lastOutRight() const;
+  void setModFrequency(StkFloat frequency);
 
   //! Compute one output sample.
-  MY_FLOAT tick(MY_FLOAT input);
+  StkFloat tick(StkFloat input);
 
   //! Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+
+  //! Take a channel of the StkFrames object as inputs to the effect and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
  protected:  
-  DelayL *delayLine[2];
-  WaveLoop *mods[2];
-  MY_FLOAT baseLength;
-  MY_FLOAT modDepth;
-  MY_FLOAT lastOutput[2];
-  MY_FLOAT effectMix;
+  DelayL delayLine_[2];
+  WaveLoop *mods_[2];
+  StkFloat baseLength_;
+  StkFloat modDepth_;
 
 };
 

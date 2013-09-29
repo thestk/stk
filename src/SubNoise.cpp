@@ -6,7 +6,7 @@
     using the C rand() function.  The quality of the
     rand() function varies from one OS to another.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -14,8 +14,8 @@
 
 SubNoise :: SubNoise(int subRate) : Noise()
 {    
-  rate = subRate;
-  counter = rate;
+  rate_ = subRate;
+  counter_ = rate_;
 }
 SubNoise :: ~SubNoise()
 {
@@ -23,21 +23,31 @@ SubNoise :: ~SubNoise()
 
 int SubNoise :: subRate(void) const
 {
-  return rate;
+  return rate_;
 }
 
 void SubNoise :: setRate(int subRate)
 {
   if (subRate > 0)
-    rate = subRate;
+    rate_ = subRate;
 }
 
-MY_FLOAT SubNoise :: tick()
+StkFloat SubNoise :: tick()
 {
-  if ( ++counter > rate ) {
+  if ( ++counter_ > rate_ ) {
     Noise::tick();
-    counter = 1;
+    counter_ = 1;
   }
 
-  return lastOutput;
+  return lastOutput_;
+}
+
+StkFloat *SubNoise :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Generator::tick( vector, vectorSize );
+}
+
+StkFrames& SubNoise :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Generator::tick( frames, channel );
 }

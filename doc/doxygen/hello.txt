@@ -1,6 +1,6 @@
 /*! \page hello Hello Sine!
 
-We'll begin our introduction to the Synthesis ToolKit with a simple sine-wave oscillator program.  STK does not provide a specific oscillator for sine waves.  Instead, it provides a generic waveform oscillator class, WaveLoop, which can load a variety of common file types.  In this example, we load a sine "table" from an STK RAW file (defined as monophonic, 16-bit, big-endian data).  We use the class WvOut to write the result to a 16-bit, WAV formatted audio file.
+We'll continue our introduction to the Synthesis ToolKit with a simple sine-wave oscillator program.  STK does not provide a specific oscillator for sine waves.  Instead, it provides a generic waveform oscillator class, WaveLoop, which can load a variety of common file types.  In this example, we load a sine "table" from an STK RAW file (defined as monophonic, 16-bit, big-endian data).  We use the class WvOut to write the result to a 16-bit, WAV formatted audio file.
 
 \code
 
@@ -15,11 +15,11 @@ int main()
   Stk::setSampleRate( 44100.0 );
 
   // Define and load the sine wave file
-  WaveLoop *input = new WaveLoop( "rawwaves/sinewave.raw", TRUE );
+  WaveLoop* input = new WaveLoop( "rawwaves/sinewave.raw", true );
   input->setFrequency( 440.0 );
 
   // Define and open a 16-bit, one-channel WAV formatted output file
-  output = new WvOut( "hellosine.wav", 1, WvOut::WVOUT_WAV, Stk::STK_SINT16 );
+  WvOut* output = new WvOut( "hellosine.wav", 1, WvOut::WVOUT_WAV, Stk::STK_SINT16 );
 
   // Run the oscillator for 40000 samples, writing to the output file
   int i;
@@ -39,66 +39,17 @@ WaveLoop is a subclass of WvIn, which supports WAV, SND (AU), AIFF, MAT-file (Ma
 
 The WvIn and WvOut classes are complementary, both supporting WAV, SND (AU), AIFF, MAT-file (Matlab), and RAW file formats with 8-, 16-, and 32-bit integer and 32- and 64-bit floating-point data types.  However, WvOut does not perform data interpolation.
 
-Nearly all STK classes implement <TT>tick()</TT> functions which take and/or return sample values. Within the <TT>tick()</TT> function, the fundamental sample calculations are performed for a given class.  Most STK classes consume/generate a single sample per operation and their <TT>tick()</TT> method takes/returns each sample "by value".  In addition, every class implementing a <TT>tick()</TT> function also provides an overloaded <TT>tick()</TT> function taking pointer and size arguments which can be used for vectorized computations.
-
 The WvIn and WvOut classes support multi-channel sample frames.  To distinguish single-sample frame operations from multi-channel frame operations, these classes also implement <TT>tickFrame()</TT> functions.  When a <TT>tick()</TT> method is called for multi-channel data, frame averages are returned or the input sample is distributed across all channels of a sample frame.
 
-Nearly all STK classes inherit from the Stk base class.  Stk provides a static sample rate which is queried by subclasses as needed.  Because many classes use the current sample rate value during instantiation, it is important that the desired value be set at the beginning of a program.  The default STK sample rate is 22050 Hz.
-
-Another primary concept that is somewhat obscurred in this example concerns the data format in which sample values are passed and received.  Audio and control signals throughout STK use a floating-point data type, the exact precision of which can be controlled via the <TT>MY_FLOAT</TT> \#define statement in Stk.h.  Thus, the ToolKit can use any normalization scheme desired. The base instruments and algorithms are implemented with a general audio sample dynamic maximum of +/-1.0, and the WvIn and WvOut classes and subclasses scale appropriately for DAC or soundfile input and output.
+Nearly all STK classes inherit from the Stk base class.  Stk provides a static sample rate which is queried by subclasses as needed.  Because many classes use the current sample rate value during instantiation, it is important that the desired value be set at the beginning of a program.  The default STK sample rate is 44100 Hz.
 
 \section error Error Handling
 
 The ToolKit has some basic C++ error handling functionality built in.  Classes which access files and/or hardware are most prone to runtime errors.  To properly "catch" such errors, the above example should be rewritten as shown below.
 
-\code
-// sineosc.cpp
-
-#include "WaveLoop.h"
-#include "WvOut.h"
-
-int main()
-{
-  // Set the global sample rate before creating class instances.
-  Stk::setSampleRate( 44100.0 );
-
-  WaveLoop *input = 0;
-  WvOut *output = 0;
-
-  try {
-    // Define and load the sine wave file
-    input = new WaveLoop( "rawwaves/sinewave.raw", TRUE );
-
-    // Define and open a 16-bit, one-channel WAV formatted output file
-    output = new WvOut( "hellosine.wav", 1, WvOut::WVOUT_WAV, Stk::STK_SINT16 );
-  }
-  catch ( StkError & ) {
-    goto cleanup;
-  }
-
-  input->setFrequency( 440.0 );
-
-  // Run the oscillator for 40000 samples, writing to the output file
-  for ( int i=0; i<40000; i++ ) {
-
-    try {
-      output->tick( input->tick() );
-    }
-    catch ( StkError & ) {
-      goto cleanup;
-    }
-
-  }
-
- cleanup:
-  delete input;
-  delete output;
-
-  return 0;
-}
-\endcode
+\include sineosc.cpp
 
 In this particular case, we simply exit the program if an error occurs (an error message is automatically printed to stderr).  A more refined program might attempt to recover from or fix a particular problem and, if successful, continue processing.  See the \ref classes to determine which constructors and functions can throw an error.
 
-[<A HREF="compile.html">Next tutorial</A>] &nbsp; [<A HREF="tutorial.html">Main tutorial page</A>]
+[<A HREF="compile.html">Next tutorial</A>] &nbsp; [<A HREF="fundamentals.html">Main tutorial page</A>]
 */

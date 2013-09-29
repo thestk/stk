@@ -24,7 +24,7 @@
          - Glass Harmonica = 2
          - Tibetan Bowl = 3
 
-    by Georg Essl, 1999 - 2002.
+    by Georg Essl, 1999 - 2004.
     Modified for Stk 4.0 by Gary Scavone.
 */
 /***************************************************/
@@ -36,45 +36,35 @@
 
 BandedWG :: BandedWG()
 {
-  doPluck = true;
+  doPluck_ = true;
 
-  delay = new DelayL[MAX_BANDED_MODES];
-  bandpass = new BiQuad[MAX_BANDED_MODES];
+  bowTable_.setSlope( 3.0 );
+  adsr_.setAllTimes( 0.02, 0.005, 0.9, 0.01);
+
+  frequency_ = 220.0;
+  this->setPreset(0);
+
+  bowPosition_ = 0;
+  baseGain_ = (StkFloat) 0.999;
   
-  bowTabl = new BowTabl;
-  bowTabl->setSlope( 3.0 );
+  integrationConstant_ = 0.0;
+  trackVelocity_ = false;
 
-  adsr = new ADSR;
-  adsr->setAllTimes( 0.02, 0.005, 0.9, 0.01);
+  bowVelocity_ = 0.0;
+  bowTarget_ = 0.0;
 
-  freakency = 220.0;
-  setPreset(0);
-
-  bowPosition = 0;
-  baseGain = (MY_FLOAT) 0.999;
-  
-  integrationConstant = 0.0;
-  trackVelocity = false;
-
-  bowVelocity = 0.0;
-  bowTarget = 0.0;
-
-  strikeAmp = 0.0;
+  strikeAmp_ = 0.0;
 }
 
 BandedWG :: ~BandedWG()
 {
-  delete bowTabl;
-  delete adsr;
-  delete [] bandpass;
-  delete [] delay;
 }
 
 void BandedWG :: clear()
 {
-  for (int i=0; i<nModes; i++) {
-    delay[i].clear();
-    bandpass[i].clear();
+  for (int i=0; i<nModes_; i++) {
+    delay_[i].clear();
+    bandpass_[i].clear();
   }
 }
 
@@ -84,297 +74,315 @@ void BandedWG :: setPreset(int preset)
   switch (preset){
 
   case 1: // Tuned Bar
-    presetModes = 4;
-    modes[0] = (MY_FLOAT) 1.0;
-    modes[1] = (MY_FLOAT) 4.0198391420;
-    modes[2] = (MY_FLOAT) 10.7184986595;
-    modes[3] = (MY_FLOAT) 18.0697050938;
+    presetModes_ = 4;
+    modes_[0] = (StkFloat) 1.0;
+    modes_[1] = (StkFloat) 4.0198391420;
+    modes_[2] = (StkFloat) 10.7184986595;
+    modes_[3] = (StkFloat) 18.0697050938;
 
-    for (i=0; i<presetModes; i++) {
-      basegains[i] = (MY_FLOAT) pow(0.999,(double) i+1);
-      excitation[i] = 1.0;
+    for (i=0; i<presetModes_; i++) {
+      basegains_[i] = (StkFloat) pow(0.999,(double) i+1);
+      excitation_[i] = 1.0;
     }
 
     break;
 
   case 2: // Glass Harmonica
-    presetModes = 5;
-    modes[0] = (MY_FLOAT) 1.0;
-    modes[1] = (MY_FLOAT) 2.32;
-    modes[2] = (MY_FLOAT) 4.25;
-    modes[3] = (MY_FLOAT) 6.63;
-    modes[4] = (MY_FLOAT) 9.38;
-    // modes[5] = (MY_FLOAT) 12.22;
+    presetModes_ = 5;
+    modes_[0] = (StkFloat) 1.0;
+    modes_[1] = (StkFloat) 2.32;
+    modes_[2] = (StkFloat) 4.25;
+    modes_[3] = (StkFloat) 6.63;
+    modes_[4] = (StkFloat) 9.38;
+    // modes_[5] = (StkFloat) 12.22;
 
-    for (i=0; i<presetModes; i++) {
-      basegains[i] = (MY_FLOAT) pow(0.999,(double) i+1);
-      excitation[i] = 1.0;
+    for (i=0; i<presetModes_; i++) {
+      basegains_[i] = (StkFloat) pow(0.999,(double) i+1);
+      excitation_[i] = 1.0;
     }
     /*
-      baseGain = (MY_FLOAT) 0.99999;
-      for (i=0; i<presetModes; i++) 
-      gains[i]= (MY_FLOAT) pow(baseGain, delay[i].getDelay()+i);
+      baseGain_ = (StkFloat) 0.99999;
+      for (i=0; i<presetModes_; i++) 
+      gains_[i]= (StkFloat) pow(baseGain_, delay_[i].getDelay()+i);
     */
 
     break;
    
   case 3: // Tibetan Prayer Bowl (ICMC'02)
-    presetModes = 12;
-    modes[0]=0.996108344;
-    basegains[0]=0.999925960128219;
-    excitation[0]=11.900357/10.0;
-    modes[1]=1.0038916562;
-    basegains[1]=0.999925960128219;
-    excitation[1]=11.900357/10.;
-    modes[2]=2.979178;
-    basegains[2]=0.999982774366897;
-    excitation[2]=10.914886/10.;
-    modes[3]=2.99329767;
-    basegains[3]=0.999982774366897;
-    excitation[3]=10.914886/10.;
-    modes[4]=5.704452;
-    basegains[4]=1.0; //0.999999999999999999987356406352;
-    excitation[4]=42.995041/10.;
-    modes[5]=5.704452;
-    basegains[5]=1.0; //0.999999999999999999987356406352;
-    excitation[5]=42.995041/10.;
-    modes[6]=8.9982;
-    basegains[6]=1.0; //0.999999999999999999996995497558225;
-    excitation[6]=40.063034/10.;
-    modes[7]=9.01549726;
-    basegains[7]=1.0; //0.999999999999999999996995497558225;
-    excitation[7]=40.063034/10.;
-    modes[8]=12.83303;
-    basegains[8]=0.999965497558225;
-    excitation[8]=7.063034/10.;
-    modes[9]=12.807382;
-    basegains[9]=0.999965497558225;
-    excitation[9]=7.063034/10.;
-    modes[10]=17.2808219;
-    basegains[10]=0.9999999999999999999965497558225;
-    excitation[10]=57.063034/10.;
-    modes[11]=21.97602739726;
-    basegains[11]=0.999999999999999965497558225;
-    excitation[11]=57.063034/10.;
+    presetModes_ = 12;
+    modes_[0]=0.996108344;
+    basegains_[0]=0.999925960128219;
+    excitation_[0]=11.900357/10.0;
+    modes_[1]=1.0038916562;
+    basegains_[1]=0.999925960128219;
+    excitation_[1]=11.900357/10.;
+    modes_[2]=2.979178;
+    basegains_[2]=0.999982774366897;
+    excitation_[2]=10.914886/10.;
+    modes_[3]=2.99329767;
+    basegains_[3]=0.999982774366897;
+    excitation_[3]=10.914886/10.;
+    modes_[4]=5.704452;
+    basegains_[4]=1.0; //0.999999999999999999987356406352;
+    excitation_[4]=42.995041/10.;
+    modes_[5]=5.704452;
+    basegains_[5]=1.0; //0.999999999999999999987356406352;
+    excitation_[5]=42.995041/10.;
+    modes_[6]=8.9982;
+    basegains_[6]=1.0; //0.999999999999999999996995497558225;
+    excitation_[6]=40.063034/10.;
+    modes_[7]=9.01549726;
+    basegains_[7]=1.0; //0.999999999999999999996995497558225;
+    excitation_[7]=40.063034/10.;
+    modes_[8]=12.83303;
+    basegains_[8]=0.999965497558225;
+    excitation_[8]=7.063034/10.;
+    modes_[9]=12.807382;
+    basegains_[9]=0.999965497558225;
+    excitation_[9]=7.063034/10.;
+    modes_[10]=17.2808219;
+    basegains_[10]=0.9999999999999999999965497558225;
+    excitation_[10]=57.063034/10.;
+    modes_[11]=21.97602739726;
+    basegains_[11]=0.999999999999999965497558225;
+    excitation_[11]=57.063034/10.;
 
     break;	
 
   default: // Uniform Bar
-    presetModes = 4;
-    modes[0] = (MY_FLOAT) 1.0;
-    modes[1] = (MY_FLOAT) 2.756;
-    modes[2] = (MY_FLOAT) 5.404;
-    modes[3] = (MY_FLOAT) 8.933;
+    presetModes_ = 4;
+    modes_[0] = (StkFloat) 1.0;
+    modes_[1] = (StkFloat) 2.756;
+    modes_[2] = (StkFloat) 5.404;
+    modes_[3] = (StkFloat) 8.933;
 
-    for (i=0; i<presetModes; i++) {
-      basegains[i] = (MY_FLOAT) pow(0.9,(double) i+1);
-      excitation[i] = 1.0;
+    for (i=0; i<presetModes_; i++) {
+      basegains_[i] = (StkFloat) pow(0.9,(double) i+1);
+      excitation_[i] = 1.0;
     }
 
     break;
   }
 
-  nModes = presetModes;
-  setFrequency( freakency );
+  nModes_ = presetModes_;
+  setFrequency( frequency_ );
 }
 
-void BandedWG :: setFrequency(MY_FLOAT frequency)
+void BandedWG :: setFrequency(StkFloat frequency)
 {
-  freakency = frequency;
+  frequency_ = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "BandedWG: setFrequency parameter is less than or equal to zero!" << std::endl;
-    freakency = 220.0;
+    errorString_ << "BandedWG::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
+    frequency_ = 220.0;
   }
-  if (freakency > 1568.0) freakency = 1568.0;
+  if (frequency_ > 1568.0) frequency_ = 1568.0;
 
-  MY_FLOAT radius;
-  MY_FLOAT base = Stk::sampleRate() / freakency;
-  MY_FLOAT length;
-  for (int i=0; i<presetModes; i++) {
+  StkFloat radius;
+  StkFloat base = Stk::sampleRate() / frequency_;
+  StkFloat length;
+  for (int i=0; i<presetModes_; i++) {
     // Calculate the delay line lengths for each mode.
-    length = (int)(base / modes[i]);
+    length = (int)(base / modes_[i]);
     if ( length > 2.0) {
-      delay[i].setDelay( length );
-      gains[i]=basegains[i];
-      //	  gains[i]=(MY_FLOAT) pow(basegains[i], 1/((MY_FLOAT)delay[i].getDelay()));
-      //	  std::cerr << gains[i];
+      delay_[i].setDelay( length );
+      gains_[i]=basegains_[i];
+      //	  gains_[i]=(StkFloat) pow(basegains_[i], 1/((StkFloat)delay_[i].getDelay()));
+      //	  std::cerr << gains_[i];
     }
     else	{
-      nModes = i;
+      nModes_ = i;
       break;
     }
     //	std::cerr << std::endl;
 
     // Set the bandpass filter resonances
-    radius = 1.0 - PI * 32 / Stk::sampleRate(); //freakency * modes[i] / Stk::sampleRate()/32;
+    radius = 1.0 - PI * 32 / Stk::sampleRate(); //frequency_ * modes_[i] / Stk::sampleRate()/32;
     if ( radius < 0.0 ) radius = 0.0;
-    bandpass[i].setResonance(freakency * modes[i], radius, true);
+    bandpass_[i].setResonance(frequency_ * modes_[i], radius, true);
 
-    delay[i].clear();
-    bandpass[i].clear();
+    delay_[i].clear();
+    bandpass_[i].clear();
   }
 
-  //int olen = (int)(delay[0].getDelay());
-  //strikePosition = (int)(strikePosition*(length/modes[0])/olen);
+  //int olen = (int)(delay_[0].getDelay());
+  //strikePosition_ = (int)(strikePosition_*(length/modes_[0])/olen);
 }
 
-void BandedWG :: setStrikePosition(MY_FLOAT position)
+void BandedWG :: setStrikePosition(StkFloat position)
 {
-  strikePosition = (int)(delay[0].getDelay() * position / 2.0);
+  strikePosition_ = (int)(delay_[0].getDelay() * position / 2.0);
 }
 
-void BandedWG :: startBowing(MY_FLOAT amplitude, MY_FLOAT rate)
+void BandedWG :: startBowing(StkFloat amplitude, StkFloat rate)
 {
-  adsr->setRate(rate);
-  adsr->keyOn();
-  maxVelocity = 0.03 + (0.1 * amplitude); 
+  adsr_.setRate(rate);
+  adsr_.keyOn();
+  maxVelocity_ = 0.03 + (0.1 * amplitude); 
 }
 
-void BandedWG :: stopBowing(MY_FLOAT rate)
+void BandedWG :: stopBowing(StkFloat rate)
 {
-  adsr->setRate(rate);
-  adsr->keyOff();
+  adsr_.setRate(rate);
+  adsr_.keyOff();
 }
 
-void BandedWG :: pluck(MY_FLOAT amplitude)
+void BandedWG :: pluck(StkFloat amplitude)
 {
   int j;
-  MY_FLOAT min_len = delay[nModes-1].getDelay();
-  for (int i=0; i<nModes; i++)
-    for(j=0; j<(int)(delay[i].getDelay()/min_len); j++)
-      delay[i].tick( excitation[i]*amplitude / nModes /*/ (delay[i].getDelay()/min_len)*/);
+  StkFloat min_len = delay_[nModes_-1].getDelay();
+  for (int i=0; i<nModes_; i++)
+    for(j=0; j<(int)(delay_[i].getDelay()/min_len); j++)
+      delay_[i].tick( excitation_[i]*amplitude / nModes_ );
 
-  /*	strikeAmp += amplitude;*/
+  //	strikeAmp_ += amplitude;
 }
 
-void BandedWG :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void BandedWG :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
   this->setFrequency(frequency);
 
-  if ( doPluck )
+  if ( doPluck_ )
     this->pluck(amplitude);
   else
     this->startBowing(amplitude, amplitude * 0.001);
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "BandedWG: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "BandedWG::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void BandedWG :: noteOff(MY_FLOAT amplitude)
+void BandedWG :: noteOff(StkFloat amplitude)
 {
-  if ( !doPluck )
+  if ( !doPluck_ )
     this->stopBowing((1.0 - amplitude) * 0.005);
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "BandedWG: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "BandedWG::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT BandedWG :: tick()
+StkFloat BandedWG :: tick()
 {
   int k;
 
-  MY_FLOAT input = 0.0;
-  if ( doPluck ) {
+  StkFloat input = 0.0;
+  if ( doPluck_ ) {
     input = 0.0;
-    //  input = strikeAmp/nModes;
-    //  strikeAmp = 0.0;
+    //  input = strikeAmp_/nModes_;
+    //  strikeAmp_ = 0.0;
   }
   else {
-    if (integrationConstant == 0.0)
-      velocityInput = 0.0;
+    if (integrationConstant_ == 0.0)
+      velocityInput_ = 0.0;
     else
-      velocityInput = integrationConstant * velocityInput;
+      velocityInput_ = integrationConstant_ * velocityInput_;
 
-    for (k=0; k<nModes; k++)
-      velocityInput += baseGain * delay[k].lastOut();
+    for (k=0; k<nModes_; k++)
+      velocityInput_ += baseGain_ * delay_[k].lastOut();
       
-    if ( trackVelocity )  {
-      bowVelocity *= 0.9995;
-      bowVelocity += bowTarget;
-      bowTarget *= 0.995;
+    if ( trackVelocity_ )  {
+      bowVelocity_ *= 0.9995;
+      bowVelocity_ += bowTarget_;
+      bowTarget_ *= 0.995;
     }
     else
-      bowVelocity = adsr->tick() * maxVelocity;
+      bowVelocity_ = adsr_.tick() * maxVelocity_;
 
-    input = bowVelocity - velocityInput;
-    input = input * bowTabl->tick(input);
-    input = input/(MY_FLOAT)nModes;
+    input = bowVelocity_ - velocityInput_;
+    input = input * bowTable_.tick(input);
+    input = input/(StkFloat)nModes_;
   }
 
-  MY_FLOAT data = 0.0;  
-  for (k=0; k<nModes; k++) {
-    bandpass[k].tick(input + gains[k] * delay[k].lastOut());
-    delay[k].tick(bandpass[k].lastOut());
-    data += bandpass[k].lastOut();
+  StkFloat data = 0.0;  
+  for (k=0; k<nModes_; k++) {
+    bandpass_[k].tick(input + gains_[k] * delay_[k].lastOut());
+    delay_[k].tick(bandpass_[k].lastOut());
+    data += bandpass_[k].lastOut();
   }
   
-  //lastOutput = data * nModes;
-  lastOutput = data * 4;
-  return lastOutput;
+  //lastOutput = data * nModes_;
+  lastOutput_ = data * 4;
+  return lastOutput_;
 }
 
-void BandedWG :: controlChange(int number, MY_FLOAT value)
+StkFloat *BandedWG :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& BandedWG :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void BandedWG :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "BandedWG: Control value less than zero!" << std::endl;
+    errorString_ << "BandedWG::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "BandedWG: Control value greater than 128.0!" << std::endl;
+    errorString_ << "BandedWG::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == __SK_BowPressure_) { // 2
     if ( norm == 0.0 )
-      doPluck = true;
+      doPluck_ = true;
     else {
-      doPluck = false;
-      bowTabl->setSlope( 10.0 - (9.0 * norm));
+      doPluck_ = false;
+      bowTable_.setSlope( 10.0 - (9.0 * norm));
     }
   }
   else if (number == 4)	{ // 4
-    if ( !trackVelocity ) trackVelocity = true;
-    bowTarget += 0.005 * (norm - bowPosition);
-    bowPosition = norm;
-    //adsr->setTarget(bowPosition);
+    if ( !trackVelocity_ ) trackVelocity_ = true;
+    bowTarget_ += 0.005 * (norm - bowPosition_);
+    bowPosition_ = norm;
+    //adsr_.setTarget(bowPosition_);
   }
   else if (number == 8) // 8
     this->setStrikePosition( norm );
   else if (number == __SK_AfterTouch_Cont_) { // 128
-    //bowTarget += 0.02 * (norm - bowPosition);
-    //bowPosition = norm;
-    if ( trackVelocity ) trackVelocity = false;
-    maxVelocity = 0.13 * norm; 
-    adsr->setTarget(norm);
+    //bowTarget_ += 0.02 * (norm - bowPosition_);
+    //bowPosition_ = norm;
+    if ( trackVelocity_ ) trackVelocity_ = false;
+    maxVelocity_ = 0.13 * norm; 
+    adsr_.setTarget(norm);
   }      
   else if (number == __SK_ModWheel_) { // 1
-    //    baseGain = 0.9989999999 + (0.001 * norm );
-	  baseGain = 0.8999999999999999 + (0.1 * norm);
+    //    baseGain_ = 0.9989999999 + (0.001 * norm );
+	  baseGain_ = 0.8999999999999999 + (0.1 * norm);
     //	std::cerr << "Yuck!" << std::endl;
-    for (int i=0; i<nModes; i++)
-      gains[i]=(MY_FLOAT) basegains[i]*baseGain;
-    //      gains[i]=(MY_FLOAT) pow(baseGain, (int)((MY_FLOAT)delay[i].getDelay()+i));
+    for (int i=0; i<nModes_; i++)
+      gains_[i]=(StkFloat) basegains_[i]*baseGain_;
+    //      gains_[i]=(StkFloat) pow(baseGain_, (int)((StkFloat)delay_[i].getDelay()+i));
   }
   else if (number == __SK_ModFrequency_) // 11
-    integrationConstant = norm;
+    integrationConstant_ = norm;
   else if (number == __SK_Sustain_)	{ // 64
-    if (value < 65) doPluck = true;
-    else doPluck = false;
+    if (value < 65) doPluck_ = true;
+    else doPluck_ = false;
   }
   else if (number == __SK_Portamento_)	{ // 65
-    if (value < 65) trackVelocity = false;
-    else trackVelocity = true;
+    if (value < 65) trackVelocity_ = false;
+    else trackVelocity_ = true;
   }
   else if (number == __SK_ProphesyRibbon_) // 16
     this->setPreset((int) value);  
-  else
-    std::cerr << "BandedWG: Undefined Control Number (" << number << ")!!" << std::endl;
+  else {
+    errorString_ << "BandedWG::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "BandedWG: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "BandedWG::controlChange: number = " << number << ", value = " << value << ".";
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }
 

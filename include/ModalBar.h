@@ -9,8 +9,9 @@
     Control Change Numbers: 
        - Stick Hardness = 2
        - Stick Position = 4
-       - Vibrato Gain = 11
-       - Vibrato Frequency = 7
+       - Vibrato Gain = 1
+       - Vibrato Frequency = 11
+       - Direct Stick Mix = 8
        - Volume = 128
        - Modal Presets = 16
          - Marimba = 0
@@ -23,12 +24,12 @@
          - Two Fixed = 7
          - Clump = 8
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__MODALBAR_H)
-#define __MODALBAR_H
+#ifndef STK_MODALBAR_H
+#define STK_MODALBAR_H
 
 #include "Modal.h"
 
@@ -42,19 +43,19 @@ public:
   ~ModalBar();
 
   //! Set stick hardness (0.0 - 1.0).
-  void setStickHardness(MY_FLOAT hardness);
+  void setStickHardness(StkFloat hardness);
 
   //! Set stick position (0.0 - 1.0).
-  void setStrikePosition(MY_FLOAT position);
+  void setStrikePosition(StkFloat position);
 
   //! Select a bar preset (currently modulo 9).
   void setPreset(int preset);
 
   //! Set the modulation (vibrato) depth.
-  void setModulationDepth(MY_FLOAT mDepth);
+  void setModulationDepth(StkFloat mDepth);
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 };
 
 #endif

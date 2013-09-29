@@ -13,7 +13,7 @@
        - Zero Radii = 1
        - Envelope Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -22,129 +22,144 @@
 
 Resonate :: Resonate()
 {
-  adsr = new ADSR;
-  noise = new Noise;
-
-  filter = new BiQuad;
-  poleFrequency = 4000.0;
-  poleRadius = 0.95;
+  poleFrequency_ = 4000.0;
+  poleRadius_ = 0.95;
   // Set the filter parameters.
-  filter->setResonance( poleFrequency, poleRadius, TRUE );
-  zeroFrequency = 0.0;
-  zeroRadius = 0.0;
+  filter_.setResonance( poleFrequency_, poleRadius_, true );
+  zeroFrequency_ = 0.0;
+  zeroRadius_ = 0.0;
 }  
 
 Resonate :: ~Resonate()
 {
-  delete adsr;
-  delete filter;
-  delete noise;
 }
 
 void Resonate :: keyOn()
 {
-  adsr->keyOn();
+  adsr_.keyOn();
 }
 
 void Resonate :: keyOff()
 {
-  adsr->keyOff();
+  adsr_.keyOff();
 }
 
-void Resonate :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Resonate :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  adsr->setTarget( amplitude );
+  adsr_.setTarget( amplitude );
   this->keyOn();
-  this->setResonance(frequency, poleRadius);
+  this->setResonance( frequency, poleRadius_ );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Resonate: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Resonate::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
-void Resonate :: noteOff(MY_FLOAT amplitude)
+void Resonate :: noteOff(StkFloat amplitude)
 {
   this->keyOff();
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Resonate: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "Resonate::NoteOff: amplitude = " << amplitude << '.';
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Resonate :: setResonance(MY_FLOAT frequency, MY_FLOAT radius)
+void Resonate :: setResonance( StkFloat frequency, StkFloat radius )
 {
-  poleFrequency = frequency;
+  poleFrequency_ = frequency;
   if ( frequency < 0.0 ) {
-    std::cerr << "Resonate: setResonance frequency parameter is less than zero!" << std::endl;
-    poleFrequency = 0.0;
+    errorString_ << "Resonate::setResonance: frequency parameter is less than zero ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    poleFrequency_ = 0.0;
   }
 
-  poleRadius = radius;
+  poleRadius_ = radius;
   if ( radius < 0.0 ) {
-    std::cerr << "Resonate: setResonance radius parameter is less than 0.0!" << std::endl;
-    poleRadius = 0.0;
+    std::cerr << "Resonate::setResonance: radius parameter is less than 0.0 ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    poleRadius_ = 0.0;
   }
   else if ( radius >= 1.0 ) {
-    std::cerr << "Resonate: setResonance radius parameter is greater than or equal to 1.0, which is unstable!" << std::endl;
-    poleRadius = 0.9999;
+    errorString_ << "Resonate::setResonance: radius parameter is greater than or equal to 1.0, which is unstable ... correcting!";
+    handleError( StkError::WARNING );
+    poleRadius_ = 0.9999;
   }
-  filter->setResonance( poleFrequency, poleRadius, TRUE );
+  filter_.setResonance( poleFrequency_, poleRadius_, true );
 }
 
-void Resonate :: setNotch(MY_FLOAT frequency, MY_FLOAT radius)
+void Resonate :: setNotch(StkFloat frequency, StkFloat radius)
 {
-  zeroFrequency = frequency;
+  zeroFrequency_ = frequency;
   if ( frequency < 0.0 ) {
-    std::cerr << "Resonate: setNotch frequency parameter is less than zero!" << std::endl;
-    zeroFrequency = 0.0;
+    errorString_ << "Resonate::setNotch: frequency parameter is less than zero ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    zeroFrequency_ = 0.0;
   }
 
-  zeroRadius = radius;
+  zeroRadius_ = radius;
   if ( radius < 0.0 ) {
-    std::cerr << "Resonate: setNotch radius parameter is less than 0.0!" << std::endl;
-    zeroRadius = 0.0;
+    errorString_ << "Resonate::setNotch: radius parameter is less than 0.0 ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    zeroRadius_ = 0.0;
   }
   
-  filter->setNotch( zeroFrequency, zeroRadius );
+  filter_.setNotch( zeroFrequency_, zeroRadius_ );
 }
 
 void Resonate :: setEqualGainZeroes()
 {
-  filter->setEqualGainZeroes();
+  filter_.setEqualGainZeroes();
 }
 
-MY_FLOAT Resonate :: tick()
+StkFloat Resonate :: tick()
 {
-  lastOutput = filter->tick(noise->tick());
-  lastOutput *= adsr->tick();
-  return lastOutput;
+  lastOutput_ = filter_.tick( noise_.tick() );
+  lastOutput_ *= adsr_.tick();
+  return lastOutput_;
 }
 
-void Resonate :: controlChange(int number, MY_FLOAT value)
+StkFloat *Resonate :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Resonate :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void Resonate :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "Resonate: Control value less than zero!" << std::endl;
+    errorString_ << "Resonate::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "Resonate: Control value greater than 128.0!" << std::endl;
+    errorString_ << "Resonate::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == 2) // 2
-    setResonance( norm * Stk::sampleRate() * 0.5, poleRadius );
+    setResonance( norm * Stk::sampleRate() * 0.5, poleRadius_ );
   else if (number == 4) // 4
-    setResonance( poleFrequency, norm*0.9999 );
+    setResonance( poleFrequency_, norm*0.9999 );
   else if (number == 11) // 11
-    this->setNotch( norm * Stk::sampleRate() * 0.5, zeroRadius );
+    this->setNotch( norm * Stk::sampleRate() * 0.5, zeroRadius_ );
   else if (number == 1)
-    this->setNotch( zeroFrequency, norm );
+    this->setNotch( zeroFrequency_, norm );
   else if (number == __SK_AfterTouch_Cont_) // 128
-    adsr->setTarget( norm );
-  else
-    std::cerr << "Resonate: Undefined Control Number (" << number << ")!!" << std::endl;
+    adsr_.setTarget( norm );
+  else {
+    errorString_ << "Resonate::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Resonate: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "Resonate::controlChange: number = " << number << ", value = " << value << '.';
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }

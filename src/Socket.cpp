@@ -14,7 +14,7 @@
     less than or equal to zero indicate a closed
     or lost connection or the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -31,6 +31,7 @@
   #include <unistd.h>
   #include <fcntl.h>
   #include <netinet/in.h>
+  #include <netinet/tcp.h>
 
 #elif defined(__OS_WINDOWS__)
 
@@ -40,9 +41,9 @@
 
 Socket :: Socket( int port )
 {
-  soket = -1;
-  server = true;
-  poort = port;
+  soket_ = -1;
+  server_ = true;
+  port_ = port;
 
   // Create a socket server.
 #if defined(__OS_WINDOWS__)  // windoze-only stuff
@@ -51,16 +52,23 @@ Socket :: Socket( int port )
 
   WSAStartup(wVersionRequested, &wsaData);
   if (wsaData.wVersion != wVersionRequested) {
-    sprintf( msg, "Socket: Incompatible Windows socket library version!" );
-    handleError( msg, StkError::PROCESS_SOCKET );
+    errorString_ << "Socket: Incompatible Windows socket library version!";
+    handleError( StkError::PROCESS_SOCKET );
   }
 #endif
 
   // Create the server-side socket
-  soket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (soket < 0) {
-    sprintf(msg, "Socket: Couldn't create socket server!");
-    handleError( msg, StkError::PROCESS_SOCKET );
+  soket_ = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  if (soket_ < 0) {
+    errorString_ << "Socket: Couldn't create socket server!";
+    handleError( StkError::PROCESS_SOCKET );
+  }
+
+  int flag = 1;
+  int result = setsockopt( soket_, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(int) );
+  if (result < 0) {
+    errorString_ << "Socket: Error setting socket options!";
+    handleError( StkError::PROCESS_SOCKET );
   }
 
   struct sockaddr_in mysocket;
@@ -69,23 +77,23 @@ Socket :: Socket( int port )
   mysocket.sin_port=htons( port );
 
   // Bind socket to the appropriate port and interface (INADDR_ANY)
-  if (bind(soket, (struct sockaddr *)&mysocket, sizeof(mysocket)) < 0) {
-    sprintf(msg, "Socket: Couldn't bind socket!");
-    handleError( msg, StkError::PROCESS_SOCKET );
+  if ( bind(soket_, (struct sockaddr *)&mysocket, sizeof(mysocket)) < 0 ) {
+    errorString_ << "Socket: Couldn't bind socket!";
+    handleError( StkError::PROCESS_SOCKET );
   }
 
   // Listen for incoming connection(s)
-  if ( listen(soket, 1) < 0 ) {
-    sprintf(msg, "Socket: Couldn't start server listening!");
-    handleError( msg, StkError::PROCESS_SOCKET );
+  if ( listen(soket_, 1) < 0 ) {
+    errorString_ << "Socket: Couldn't start server listening!";
+    handleError( StkError::PROCESS_SOCKET );
   }
 }
 
 Socket :: Socket(int port, const char *hostname )
 {
-  soket = -1;
-  server = false;
-  poort = port;
+  soket_ = -1;
+  server_ = false;
+  port_ = port;
 
 #if defined(__OS_WINDOWS__)  // windoze-only stuff
   WSADATA wsaData;
@@ -93,8 +101,8 @@ Socket :: Socket(int port, const char *hostname )
 
   WSAStartup(wVersionRequested, &wsaData);
   if (wsaData.wVersion != wVersionRequested) {
-    sprintf( msg, "Socket: Incompatible Windows socket library version!" );
-    handleError( msg, StkError::PROCESS_SOCKET );
+    errorString_ << "Socket: Incompatible Windows socket library version!";
+    handleError( StkError::PROCESS_SOCKET );
   }
 #endif
 
@@ -106,11 +114,11 @@ Socket :: ~Socket()
 {
 #if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
-  ::close( soket );
+  ::close( soket_ );
 
 #elif defined(__OS_WINDOWS__)
 
-  ::closesocket( soket );
+  ::closesocket( soket_ );
   WSACleanup();
 
 #endif
@@ -119,22 +127,29 @@ Socket :: ~Socket()
 int Socket :: connect( int port, const char *hostname )
 {
   // This method is for client connections only!
-  if ( server == true ) return -1;
+  if ( server_ == true ) return -1;
 
   // Close an existing connection if it exists.
-  if ( isValid( soket ) ) this->close();
+  if ( isValid( soket_ ) ) this->close();
 
   // Create the client-side socket
-  soket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (soket < 0) {
-    sprintf(msg, "Socket: Couldn't create socket client!");
-    handleError( msg, StkError::PROCESS_SOCKET );
+  soket_ = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  if (soket_ < 0) {
+    errorString_ << "Socket: Couldn't create socket client!";
+    handleError( StkError::PROCESS_SOCKET );
+  }
+
+  int flag = 1;
+  int result = setsockopt( soket_, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(int) );
+  if (result < 0) {
+    errorString_ << "Socket: Error setting socket options!";
+    handleError( StkError::PROCESS_SOCKET );
   }
 
   struct hostent *hostp;
   if ( (hostp = gethostbyname(hostname)) == 0 ) {
-    sprintf(msg, "Socket: unknown host (%s)!", hostname);
-    handleError( msg, StkError::PROCESS_SOCKET_IPADDR );
+    errorString_ << "Socket: unknown host (" << hostname << ")!";
+    handleError( StkError::PROCESS_SOCKET_IPADDR );
   }
 
   // Fill in the address structure
@@ -144,29 +159,29 @@ int Socket :: connect( int port, const char *hostname )
   server_address.sin_port = htons(port);
 
   // Connect to the server
-  if ( ::connect(soket, (struct sockaddr *)&server_address,
+  if ( ::connect(soket_, (struct sockaddr *)&server_address,
                  sizeof(server_address) ) < 0) {
-    sprintf(msg, "Socket: Couldn't connect to socket server!");
-    handleError( msg, StkError::PROCESS_SOCKET );
+    errorString_ << "Socket: Couldn't connect to socket server!";
+    handleError( StkError::PROCESS_SOCKET );
   }
 
-  return soket;
+  return soket_;
 }
 
-int Socket :: socket( void ) const
+int Socket :: id( void ) const
 {
-  return soket;
+  return soket_;
 }
 
 int Socket :: port( void ) const
 {
-  return poort;
+  return port_;
 }
 
 int Socket :: accept( void )
 {
-  if ( server )
-    return ::accept( soket, NULL, NULL );
+  if ( server_ )
+    return ::accept( soket_, NULL, NULL );
   else
     return -1;
 }
@@ -196,9 +211,9 @@ void Socket :: setBlocking( int socket, bool enable )
 
 void Socket :: close( void )
 {
-  if ( !isValid( soket ) ) return;
-  this->close( soket );
-  soket = -1;
+  if ( !isValid( soket_ ) ) return;
+  this->close( soket_ );
+  soket_ = -1;
 }
 
 void Socket :: close( int socket )
@@ -218,8 +233,8 @@ void Socket :: close( int socket )
 
 int Socket :: writeBuffer(const void *buffer, long bufferSize, int flags )
 {
-  if ( !isValid( soket ) ) return -1;
-  return send( soket, (const char *)buffer, bufferSize, flags );
+  if ( !isValid( soket_ ) ) return -1;
+  return send( soket_, (const char *)buffer, bufferSize, flags );
 }
 
 int Socket :: writeBuffer(int socket, const void *buffer, long bufferSize, int flags )
@@ -230,8 +245,8 @@ int Socket :: writeBuffer(int socket, const void *buffer, long bufferSize, int f
 
 int Socket :: readBuffer(void *buffer, long bufferSize, int flags )
 {
-  if ( !isValid( soket ) ) return -1;
-  return recv( soket, (char *)buffer, bufferSize, flags );
+  if ( !isValid( soket_ ) ) return -1;
+  return recv( soket_, (char *)buffer, bufferSize, flags );
 }
 
 int Socket :: readBuffer(int socket, void *buffer, long bufferSize, int flags )

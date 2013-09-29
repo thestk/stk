@@ -18,15 +18,15 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__FLUTE_H)
-#define __FLUTE_H
+#ifndef STK_FLUTE_H
+#define STK_FLUTE_H
 
 #include "Instrmnt.h"
-#include "JetTabl.h"
+#include "JetTable.h"
 #include "DelayL.h"
 #include "OnePole.h"
 #include "PoleZero.h"
@@ -38,7 +38,10 @@ class Flute : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  Flute(MY_FLOAT lowestFrequency);
+  /*!
+    An StkError will be thrown if the rawwave path is incorrectly set.
+  */
+  Flute(StkFloat lowestFrequency);
 
   //! Class destructor.
   ~Flute();
@@ -47,53 +50,65 @@ class Flute : public Instrmnt
   void clear();
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(MY_FLOAT frequency);
+  void setFrequency(StkFloat frequency);
 
   //! Set the reflection coefficient for the jet delay (-1.0 - 1.0).
-  void setJetReflection(MY_FLOAT coefficient);
+  void setJetReflection(StkFloat coefficient);
 
   //! Set the reflection coefficient for the air column delay (-1.0 - 1.0).
-  void setEndReflection(MY_FLOAT coefficient);
+  void setEndReflection(StkFloat coefficient);
 
   //! Set the length of the jet delay in terms of a ratio of jet delay to air column delay lengths.
-  void setJetDelay(MY_FLOAT aRatio);
+  void setJetDelay(StkFloat aRatio);
 
   //! Apply breath velocity to instrument with given amplitude and rate of increase.
-  void startBlowing(MY_FLOAT amplitude, MY_FLOAT rate);
+  void startBlowing(StkFloat amplitude, StkFloat rate);
 
   //! Decrease breath velocity with given rate of decrease.
-  void stopBlowing(MY_FLOAT rate);
+  void stopBlowing(StkFloat rate);
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(MY_FLOAT frequency, MY_FLOAT amplitude);
+  void noteOn(StkFloat frequency, StkFloat amplitude);
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(MY_FLOAT amplitude);
+  void noteOff(StkFloat amplitude);
 
   //! Compute one output sample.
-  MY_FLOAT tick();
+  StkFloat tick();
+
+  //! Computer \e vectorSize outputs and return them in \e vector.
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, MY_FLOAT value);
+  void controlChange(int number, StkFloat value);
 
  protected:  
-  DelayL *jetDelay;
-  DelayL *boreDelay;
-  JetTabl *jetTable;
-  OnePole *filter;
-  PoleZero *dcBlock;
-  Noise *noise;
-  ADSR *adsr;
-  WaveLoop *vibrato;
-  long length;
-  MY_FLOAT lastFrequency;
-  MY_FLOAT maxPressure;
-  MY_FLOAT jetReflection;
-  MY_FLOAT endReflection;
-  MY_FLOAT noiseGain;
-  MY_FLOAT vibratoGain;
-  MY_FLOAT outputGain;
-  MY_FLOAT jetRatio;
+  DelayL   jetDelay_;
+  DelayL   boreDelay_;
+  JetTable jetTable_;
+  OnePole  filter_;
+  PoleZero dcBlock_;
+  Noise    noise_;
+  ADSR     adsr_;
+  WaveLoop *vibrato_;
+  unsigned long length_;
+  StkFloat lastFrequency_;
+  StkFloat maxPressure_;
+  StkFloat jetReflection_;
+  StkFloat endReflection_;
+  StkFloat noiseGain_;
+  StkFloat vibratoGain_;
+  StkFloat outputGain_;
+  StkFloat jetRatio_;
 
 };
 

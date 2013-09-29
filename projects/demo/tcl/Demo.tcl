@@ -755,7 +755,7 @@ proc printWhatz {tag value1 value2 } {
 
 proc changePress {value} {
     global outID patchnum
-    if { $patchnum<700 || $patchnum>900 } {
+    if { $patchnum<700 || ($patchnum>900 && $patchnum<2500) || $patchnum>=2600 } {
       puts $outID [format "AfterTouch       0.0  1  %3.2f" $value]
       flush $outID
     }

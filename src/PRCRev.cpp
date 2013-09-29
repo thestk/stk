@@ -10,14 +10,14 @@
     two series allpass units and two parallel comb
     filters.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "PRCRev.h"
 #include <math.h>
 
-PRCRev :: PRCRev(MY_FLOAT T60)
+PRCRev :: PRCRev(StkFloat T60)
 {
   // Delay lengths for 44100 Hz sample rate.
   int lengths[4]= {353, 1097, 1777, 2137};
@@ -35,59 +35,74 @@ PRCRev :: PRCRev(MY_FLOAT T60)
   }
 
   for (i=0; i<2; i++)	{
-    allpassDelays[i] = new Delay( lengths[i], lengths[i] );
-    combDelays[i] = new Delay( lengths[i+2], lengths[i+2] );
-    combCoefficient[i] = pow(10.0,(-3 * lengths[i+2] / (T60 * Stk::sampleRate())));
+	  allpassDelays_[i].setMaximumDelay( lengths[i] );
+	  allpassDelays_[i].setDelay( lengths[i] );
+
+    combDelays_[i].setMaximumDelay( lengths[i+2] );
+    combDelays_[i].setDelay( lengths[i+2] );
   }
 
-  allpassCoefficient = 0.7;
-  effectMix = 0.5;
+  this->setT60( T60 );
+  allpassCoefficient_ = 0.7;
+  effectMix_ = 0.5;
   this->clear();
 }
 
 PRCRev :: ~PRCRev()
 {
-  delete allpassDelays[0];
-  delete allpassDelays[1];
-  delete combDelays[0];
-  delete combDelays[1];
 }
 
 void PRCRev :: clear()
 {
-  allpassDelays[0]->clear();
-  allpassDelays[1]->clear();
-  combDelays[0]->clear();
-  combDelays[1]->clear();
-  lastOutput[0] = 0.0;
-  lastOutput[1] = 0.0;
+  allpassDelays_[0].clear();
+  allpassDelays_[1].clear();
+  combDelays_[0].clear();
+  combDelays_[1].clear();
+  lastOutput_[0] = 0.0;
+  lastOutput_[1] = 0.0;
 }
 
-MY_FLOAT PRCRev :: tick(MY_FLOAT input)
+void PRCRev :: setT60( StkFloat T60 )
 {
-  MY_FLOAT temp, temp0, temp1, temp2, temp3;
+  combCoefficient_[0] = pow(10.0, (-3.0 * combDelays_[0].getDelay() / (T60 * Stk::sampleRate())));
+  combCoefficient_[1] = pow(10.0, (-3.0 * combDelays_[1].getDelay() / (T60 * Stk::sampleRate())));
+}
 
-  temp = allpassDelays[0]->lastOut();
-  temp0 = allpassCoefficient * temp;
+StkFloat PRCRev :: tick(StkFloat input)
+{
+  StkFloat temp, temp0, temp1, temp2, temp3;
+
+  temp = allpassDelays_[0].lastOut();
+  temp0 = allpassCoefficient_ * temp;
   temp0 += input;
-  allpassDelays[0]->tick(temp0);
-  temp0 = -(allpassCoefficient * temp0) + temp;
+  allpassDelays_[0].tick(temp0);
+  temp0 = -(allpassCoefficient_ * temp0) + temp;
     
-  temp = allpassDelays[1]->lastOut();
-  temp1 = allpassCoefficient * temp;
+  temp = allpassDelays_[1].lastOut();
+  temp1 = allpassCoefficient_ * temp;
   temp1 += temp0;
-  allpassDelays[1]->tick(temp1);
-  temp1 = -(allpassCoefficient * temp1) + temp;
+  allpassDelays_[1].tick(temp1);
+  temp1 = -(allpassCoefficient_ * temp1) + temp;
     
-  temp2 = temp1 + (combCoefficient[0] * combDelays[0]->lastOut());
-  temp3 = temp1 + (combCoefficient[1] * combDelays[1]->lastOut());
+  temp2 = temp1 + (combCoefficient_[0] * combDelays_[0].lastOut());
+  temp3 = temp1 + (combCoefficient_[1] * combDelays_[1].lastOut());
 
-  lastOutput[0] = effectMix * (combDelays[0]->tick(temp2));
-  lastOutput[1] = effectMix * (combDelays[1]->tick(temp3));
-  temp = (MY_FLOAT) (1.0 - effectMix) * input;
-  lastOutput[0] += temp;
-  lastOutput[1] += temp;
+  lastOutput_[0] = effectMix_ * (combDelays_[0].tick(temp2));
+  lastOutput_[1] = effectMix_ * (combDelays_[1].tick(temp3));
+  temp = (1.0 - effectMix_) * input;
+  lastOutput_[0] += temp;
+  lastOutput_[1] += temp;
     
-  return (lastOutput[0] + lastOutput[1]) * (MY_FLOAT) 0.5;
+  return Effect::lastOut();
 
+}
+
+StkFloat *PRCRev :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Effect::tick( vector, vectorSize );
+}
+
+StkFrames& PRCRev :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Effect::tick( frames, channel );
 }

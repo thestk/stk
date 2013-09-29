@@ -14,12 +14,12 @@
     used in fixed delay-length applications, such
     as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__DELAY_H)
-#define __DELAY_H
+#ifndef STK_DELAY_H
+#define STK_DELAY_H
 
 #include "Filter.h"
 
@@ -31,7 +31,12 @@ public:
   Delay();
 
   //! Overloaded constructor which specifies the current and maximum delay-line lengths.
-  Delay(long theDelay, long maxDelay);
+  /*!
+    An StkError will be thrown if the delay parameter is less than
+    zero, the maximum delay parameter is less than one, or the delay
+    parameter is greater than the maxDelay value.
+   */
+  Delay(unsigned long delay, unsigned long maxDelay);
 
   //! Class destructor.
   virtual ~Delay();
@@ -39,17 +44,27 @@ public:
   //! Clears the internal state of the delay line.
   void clear();
 
+  //! Set the maximum delay-line length.
+  /*!
+    This method should generally only be used during initial setup
+    of the delay line.  If it is used between calls to the tick()
+    function, without a call to clear(), a signal discontinuity will
+    likely occur.  If the current maximum length is greater than the
+    new length, no change will be made.
+  */
+  void setMaximumDelay(unsigned long delay);
+
   //! Set the delay-line length.
   /*!
     The valid range for \e theDelay is from 0 to the maximum delay-line length.
   */
-  void setDelay(long theDelay);
+  void setDelay(unsigned long delay);
 
   //! Return the current delay-line length.
-  long getDelay(void) const;
+  unsigned long getDelay(void) const;
 
   //! Calculate and return the signal energy in the delay-line.
-  MY_FLOAT energy(void) const;
+  StkFloat energy(void) const;
 
   //! Return the value at \e tapDelay samples from the delay-line input.
   /*!
@@ -57,28 +72,36 @@ public:
     relative to the last input value (i.e., a tapDelay of zero returns
     the last input value).
   */
-  MY_FLOAT contentsAt(unsigned long tapDelay) const;
+  StkFloat contentsAt(unsigned long tapDelay);
 
   //! Return the last computed output value.
-  MY_FLOAT lastOut(void) const;
+  StkFloat lastOut(void) const;
 
   //! Return the value which will be output by the next call to tick().
   /*!
     This method is valid only for delay settings greater than zero!
    */
-  virtual MY_FLOAT nextOut(void) const;
+  virtual StkFloat nextOut(void);
 
-  //! Input one sample to the delay-line and return one output.
-  virtual MY_FLOAT tick(MY_FLOAT sample);
+  //! Input one sample to the delayline and return one output.
+  virtual StkFloat tick(StkFloat sample);
 
-  //! Input \e vectorSize samples to the delay-line and return an equal number of outputs in \e vector.
-  virtual MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  //! Input \e vectorSize samples to the delayline and return an equal number of outputs in \e vector.
+  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Take a channel of the StkFrames object as inputs to the delayline and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
 protected:
-  long inPoint;
-  long outPoint;
-  long length;
-  MY_FLOAT delay;
+  unsigned long inPoint_;
+  unsigned long outPoint_;
+  StkFloat delay_;
 };
 
 #endif

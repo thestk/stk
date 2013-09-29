@@ -1,15 +1,25 @@
 /******************************************/
 /*
   Example program for realtime input/output
-  by Gary P. Scavone, 2000
+  by Gary P. Scavone, 2000.
 
-  This program reads N channels of realtime
-  audio input for a specified amount of time
-  and immediately play them back in realtime
-  (duplex mode).  This program also demonstrates
-  the use of FIFO scheduling priority.  To be
-  run with such priority, the program must be
-  set suid (chmod +s) and owned by root.
+  NOTE: This program makes use of blocking audio
+  input/output routines.  On systems where the
+  underlying audio API is based on a callback scheme
+  (Macintosh OS-X, Windows ASIO, and Linux JACK), these
+  routines are not fully robust (over/underruns can
+  happen with some frequency).  See the STK tutorial
+  for example programs using callback schemes and/or
+  visit the RtAudio tutorial page
+  (http://music.mcgill.ca/~gary/rtaudio/) for more
+  information.
+
+  This program reads N channels of realtime audio input
+  for a specified amount of time and immediately play
+  them back in realtime (duplex mode).  This program
+  also demonstrates the use of FIFO scheduling
+  priority.  To be run with such priority, the program
+  must be set suid (chmod +s) and owned by root.
 */
 /******************************************/
 
@@ -37,7 +47,7 @@ main(int argc, char *argv[])
   if (argc != 3) usage();
 
   unsigned int channels = (unsigned int) atoi(argv[1]);
-  float time = atof(argv[2]);
+  double time = atof(argv[2]);
 
   // If you want to change the default sample rate (set in Stk.h), do
   // it before instantiating any objects!  If the sample rate is
@@ -72,8 +82,8 @@ main(int argc, char *argv[])
 
   // Here's the runtime loop
   unsigned long i, counter = 0;
-  MY_FLOAT *newFrame = new MY_FLOAT[channels];
-  const MY_FLOAT *lastFrame = inout->lastFrame();
+  StkFloat *newFrame = new StkFloat[channels];
+  const StkFloat *lastFrame = inout->lastFrame();
   unsigned long samples = (unsigned long) (time * Stk::sampleRate());
   while ( counter < samples ) {
     for ( i=0; i<channels; i++ )

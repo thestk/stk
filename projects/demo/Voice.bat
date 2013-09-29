@@ -1,1 +1,1 @@
-wish < tcl/Voice.tcl | ./demo FMVoices -or -ip
+wish < tcl/Voice.tcl | demo FMVoices -or -ip

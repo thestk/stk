@@ -36,10 +36,6 @@
 #include "Resonate.h"
 #include "Whistle.h"
 
-#if defined(__STK_REALTIME__)
-  #include "RtWvOut.h"
-#endif
-
 #define NUM_INSTS 28
 
 // The order of the following list is important.  The location of a particular
@@ -123,12 +119,13 @@ void usage(char *function) {
   printf("        -os <file name> for .snd audio output file,\n");
   printf("        -om <file name> for .mat audio output file,\n");
   printf("        -oa <file name> for .aif audio output file,\n");
+  printf("        -if <file name> to read control input from SKINI file,\n");
 #if defined(__STK_REALTIME__)
   printf("        -or for realtime audio output,\n");
   printf("        -ip for realtime control input by pipe,\n");
   printf("         (won't work under Win95/98),\n");
   printf("        -is <port> for realtime control input by socket,\n");
-  printf("        -im for realtime control input by MIDI,\n");
+  printf("        -im <port> for realtime control input by MIDI (virtual port = 0, default = 1),\n");
 #endif
   printf("        and Instrument = one of these:\n");
   for (i=0;i<NUM_INSTS;i+=8)  {
@@ -150,24 +147,25 @@ void usage(char *function) {
 int checkArgs(int numArgs, char *args[])
 {
   int w, i = 2, j = 0;
-  int numOutputs = 0;
+  int nWvOuts = 0;
   char flags[2][50] = {""};
+  bool realtime = false;
 
-  if (numArgs < 3 || numArgs > 17) usage(args[0]);
+  if (numArgs < 3 || numArgs > 22) usage(args[0]);
 
   while (i < numArgs) {
     if (args[i][0] == '-') {
       if (args[i][1] == 'o') {
-        if ( (args[i][2] == 'r') || (args[i][2] == 's') ||
-             (args[i][2] == 'w') || (args[i][2] == 'm')
-             || (args[i][2] == 'a') )
-          numOutputs++;
+        if ( args[i][2] == 'r' ) realtime = true;
+        if ( (args[i][2] == 's') || (args[i][2] == 'w') ||
+             (args[i][2] == 'm') || (args[i][2] == 'a') )
+          nWvOuts++;
         flags[0][j] = 'o';
         flags[1][j++] = args[i][2];
       }
       else if (args[i][1] == 'i') {
         if ( (args[i][2] != 's') && (args[i][2] != 'p') &&
-             (args[i][2] != 'm') ) usage(args[0]);
+             (args[i][2] != 'm') && (args[i][2] != 'f') ) usage(args[0]);
         flags[0][j] = 'i';
         flags[1][j++] = args[i][2];
       }
@@ -196,9 +194,9 @@ int checkArgs(int numArgs, char *args[])
   }
 
   // Make sure we have at least one output type
-  if (numOutputs < 1) usage(args[0]);
+  if ( nWvOuts < 1 && !realtime ) usage(args[0]);
 
-  return numOutputs;
+  return nWvOuts;
 }
 
 int countVoices(int nArgs, char *args[])
@@ -218,20 +216,24 @@ int countVoices(int nArgs, char *args[])
   return nInstruments;
 }
 
-void parseArgs(int numArgs, char *args[], WvOut **output, Messager **messager)
+bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager)
 {
   int i = 2, j = 0;
-  int inputMask = 0;
-  int port = -1;
+  bool realtime = false;
   char fileName[256];
 
   while (i < numArgs) {
     if ( (args[i][0] == '-') && (args[i][1] == 'i') ) {
       switch(args[i][2]) {
 
+      case 'f':
+        strcpy(fileName,args[++i]);
+        if ( !messager.setScoreFile( fileName ) ) usage(args[0]);
+        break;
+
       case 'p':
 #if defined(__STK_REALTIME__)
-        inputMask |= STK_PIPE;
+        if ( !messager.startStdInput() ) usage(args[0]);
         break;
 #else
         usage(args[0]);
@@ -239,10 +241,12 @@ void parseArgs(int numArgs, char *args[], WvOut **output, Messager **messager)
 
       case 's':
 #if defined(__STK_REALTIME__)
-        inputMask |= STK_SOCKET;
         // Check for an optional socket port argument.
-        if ((i+1 < numArgs) && args[i+1][0] != '-')
-          port = atoi(args[++i]);
+        if ((i+1 < numArgs) && args[i+1][0] != '-') {
+          int port = atoi(args[++i]);
+          if ( !messager.startSocketInput( port ) ) usage(args[0]);
+        }
+        else if ( !messager.startSocketInput() ) usage(args[0]);
         break;
 #else
         usage(args[0]);
@@ -250,7 +254,12 @@ void parseArgs(int numArgs, char *args[], WvOut **output, Messager **messager)
 
       case 'm':
 #if defined(__STK_REALTIME__)
-        inputMask |= STK_MIDI;
+        // Check for an optional MIDI port argument.
+        if ((i+1 < numArgs) && args[i+1][0] != '-') {
+          int port = atoi(args[++i]);
+          if ( !messager.startMidiInput( port-1 ) ) usage(args[0]);
+        }
+        else if ( !messager.startMidiInput() ) usage(args[0]);
         break;
 #else
         usage(args[0]);
@@ -266,8 +275,7 @@ void parseArgs(int numArgs, char *args[], WvOut **output, Messager **messager)
 
       case 'r':
 #if defined(__STK_REALTIME__)
-        output[j] = (WvOut *) new RtWvOut(2);
-        j++;
+        realtime = true;
         break;
 #else
         usage(args[0]);
@@ -321,10 +329,5 @@ void parseArgs(int numArgs, char *args[], WvOut **output, Messager **messager)
     i++;
   }
 
-  // Instantiate the messager.
-  if ( inputMask & STK_SOCKET && port >= 0 )
-    *messager = new Messager( inputMask, port );
-  else
-    *messager = new Messager( inputMask );
-
+  return realtime;
 }

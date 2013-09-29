@@ -6,11 +6,11 @@ SRC_PATH = ../../src
 OBJECT_PATH = @object_path@
 vpath %.o $(OBJECT_PATH)
 
-OBJECTS	=	Stk.o Reverb.o PRCRev.o JCRev.o \
-					NRev.o Delay.o Filter.o \
-					SKINI.o Envelope.o Echo.o \
-					PitShift.o DelayL.o Chorus.o \
-					WvIn.o WaveLoop.o Messager.o
+OBJECTS	=	Stk.o Generator.o Envelope.o \
+					Filter.o Delay.o DelayL.o \
+					Effect.o Echo.o PitShift.o Chorus.o \
+					PRCRev.o JCRev.o NRev.o \
+					WvIn.o WaveLoop.o Skini.o Messager.o
 
 INCLUDE = @include@
 ifeq ($(strip $(INCLUDE)), )
@@ -28,9 +28,8 @@ LIBRARY += @frameworks@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
-	OBJECTS += RtMidi.o RtAudio.o RtDuplex.o Thread.o Socket.o
+	OBJECTS += RtMidi.o RtAudio.o Thread.o Mutex.o Socket.o
 	DEFS    += @audio_apis@
-	DEFS    += @midiator@
 endif
 
 RAWWAVES = @rawwaves@
@@ -46,6 +45,9 @@ all : $(PROGRAMS)
 
 effects: effects.cpp $(OBJECTS)
 	$(CC) $(CFLAGS) $(DEFS) -o effects effects.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
+
+libeffects: effects.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o effects effects.cpp -L../../src $(LIBRARY) -lstk
 
 $(OBJECTS) : Stk.h
 

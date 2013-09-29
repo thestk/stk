@@ -1,35 +1,193 @@
 // demo.cpp
 //
-// An example STK program for voice playback and control.
+// An example STK program that allows voice playback and control of
+// most of the STK instruments.
 
 #include "SKINI.msg"
 #include "WvOut.h"
 #include "Instrmnt.h"
 #include "PRCRev.h"
 #include "Voicer.h"
+#include "Skini.h"
+
+#if defined(__STK_REALTIME__)
+  #include "RtAudio.h"
+  #include "Mutex.h"
+#endif
 
 // Miscellaneous command-line parsing and instrument allocation
 // functions are defined in utilites.cpp ... specific to this program.
 #include "utilities.h"
 
-#include <stdlib.h>
 #include <signal.h>
-#include <math.h>
 #include <iostream>
+#include <algorithm>
+#if !defined(__OS_WINDOWS__) // Windoze bogosity for VC++ 6.0
+  using std::min;
+#endif
 
 bool done;
 static void finish(int ignore){ done = true; }
 
-int main(int argc, char *argv[])
+// The TickData structure holds all the class instances and data that
+// are shared by the various processing functions.
+struct TickData {
+  WvOut **wvout;
+  Instrmnt **instrument;
+  Voicer *voicer;
+  Effect *reverb;
+  Messager messager;
+  Skini::Message message;
+  StkFloat volume;
+  StkFloat t60;
+  unsigned int nWvOuts;
+  int nVoices;
+  int currentVoice;
+  int channels;
+  int counter;
+  bool realtime;
+  bool settling;
+  bool haveMessage;
+
+  // Default constructor.
+  TickData()
+    : wvout(0), instrument(0), voicer(0), reverb(0), volume(1.0), t60(1.0),
+      nWvOuts(0), nVoices(1), currentVoice(0), channels(2), counter(0),
+      realtime( false ), settling( false ), haveMessage( false ) {}
+};
+
+#define DELTA_CONTROL_TICKS 64 // default sample frames between control input checks
+
+// The processMessage() function encapsulates the handling of control
+// messages.  It can be easily relocated within a program structure
+// depending on the desired scheduling scheme.
+void processMessage( TickData* data )
 {
-  Instrmnt **instrument = 0;
-  WvOut **output = 0;
-  Messager *messager = 0;
-  Reverb *reverb = 0;
-  Voicer *voicer = 0;
-  int i, nVoices = 1;
-  MY_FLOAT volume = 1.0;
-  MY_FLOAT t60 = 1.0;  // in seconds
+  register StkFloat value1 = data->message.floatValues[0];
+  register StkFloat value2 = data->message.floatValues[1];
+
+  switch( data->message.type ) {
+
+  case __SK_Exit_:
+    if ( data->settling == false ) goto settle;
+    done = true;
+    return;
+
+  case __SK_NoteOn_:
+    if ( value2 == 0.0 ) // velocity is zero ... really a NoteOff
+      data->voicer->noteOff( value1, 64.0 );
+    else // a NoteOn
+      data->voicer->noteOn( value1, value2 );
+    break;
+
+  case __SK_NoteOff_:
+    data->voicer->noteOff( value1, value2 );
+    break;
+
+  case __SK_ControlChange_:
+    if (value1 == 44.0)
+      data->reverb->setEffectMix(value2  * ONE_OVER_128);
+    else if (value1 == 7.0)
+      data->volume = value2 * ONE_OVER_128;
+    else if (value1 == 49.0)
+      data->voicer->setFrequency( value2 );
+    else
+      data->voicer->controlChange( (int) value1, value2 );
+    break;
+
+  case __SK_AfterTouch_:
+    data->voicer->controlChange( 128, value1 );
+    break;
+
+  case __SK_PitchChange_:
+    data->voicer->setFrequency( value1 );
+    break;
+
+  case __SK_PitchBend_:
+    data->voicer->pitchBend( value1 );
+    break;
+
+  case __SK_Volume_:
+    data->volume = value1 * ONE_OVER_128;
+    break;
+
+  case __SK_ProgramChange_:
+    if ( data->currentVoice == (int) value1 ) break;
+
+    // Two-stage program change process.
+    if ( data->settling == false ) goto settle;
+
+    // Stage 2: delete and reallocate new voice(s)
+    for ( int i=0; i<data->nVoices; i++ ) {
+      data->voicer->removeInstrument( data->instrument[i] );
+      delete data->instrument[i];
+      data->currentVoice = voiceByNumber( (int)value1, &data->instrument[i] );
+      if ( data->currentVoice < 0 )
+        data->currentVoice = voiceByNumber( 0, &data->instrument[i] );
+      data->voicer->addInstrument( data->instrument[i] );
+      data->settling = false;
+    }
+
+  } // end of switch
+
+  data->haveMessage = false;
+  return;
+
+ settle:
+  // Exit and program change messages are preceeded with a short settling period.
+  data->voicer->silence();
+  data->counter = (int) (0.3 * data->t60 * Stk::sampleRate());
+  data->settling = true;
+}
+
+
+// The tick() function handles sample computation and scheduling of
+// control updates.  If doing realtime audio output, it will be called
+// automatically when the system needs a new buffer of audio samples.
+int tick(char *buffer, int bufferSize, void *dataPointer)
+{
+  TickData *data = (TickData *) dataPointer;
+  register StkFloat sample, *samples = (StkFloat *) buffer;
+  int counter, nTicks = bufferSize;
+
+  while ( nTicks > 0 && !done ) {
+
+    if ( !data->haveMessage ) {
+      data->messager.popMessage( data->message );
+      if ( data->message.type > 0 ) {
+        data->counter = (long) (data->message.time * Stk::sampleRate());
+        data->haveMessage = true;
+      }
+      else
+        data->counter = DELTA_CONTROL_TICKS;
+    }
+
+    counter = min( nTicks, data->counter );
+    data->counter -= counter;
+    for ( int i=0; i<counter; i++ ) {
+      sample = data->volume * data->reverb->tick( data->voicer->tick() );
+      for ( unsigned int j=0; j<data->nWvOuts; j++ ) data->wvout[j]->tick(sample);
+      if ( data->realtime )
+        for ( int k=0; k<data->channels; k++ ) *samples++ = sample;
+      nTicks--;
+    }
+    if ( nTicks == 0 ) break;
+
+    // Process control messages.
+    if ( data->haveMessage ) processMessage( data );
+  }
+
+  return 0;
+}
+
+int main( int argc, char *argv[] )
+{
+  TickData data;
+  int i;
+
+#if defined(__STK_REALTIME__)
+  RtAudio *dac = 0;
+#endif
 
   // If you want to change the default sample rate (set in Stk.h), do
   // it before instantiating any objects!  If the sample rate is
@@ -38,151 +196,110 @@ int main(int argc, char *argv[])
 
   // Check the command-line arguments for errors and to determine
   // the number of WvOut objects to be instantiated (in utilities.cpp).
-  int nOutputs = checkArgs(argc, argv);
-  output = (WvOut **) calloc(nOutputs, sizeof(WvOut *));
+  data.nWvOuts = checkArgs(argc, argv);
+  data.wvout = (WvOut **) calloc(data.nWvOuts, sizeof(WvOut *));
 
   // Instantiate the instrument(s) type from the command-line argument
   // (in utilities.cpp).
-  nVoices = countVoices(argc, argv);
-  instrument = (Instrmnt **) calloc(nVoices, sizeof(Instrmnt *));
-  int voice = voiceByName(argv[1], &instrument[0]);
-  if ( voice < 0 ) {
-    free( output );
-    free( instrument );
+  data.nVoices = countVoices(argc, argv);
+  data.instrument = (Instrmnt **) calloc(data.nVoices, sizeof(Instrmnt *));
+  data.currentVoice = voiceByName(argv[1], &data.instrument[0]);
+  if ( data.currentVoice < 0 ) {
+    free( data.wvout );
+    free( data.instrument );
     usage(argv[0]);
   }
   // If there was no error allocating the first voice, we should be fine for more.
-  for ( i=1; i<nVoices; i++ )
-    voiceByName(argv[1], &instrument[i]);
+  for ( i=1; i<data.nVoices; i++ )
+    voiceByName(argv[1], &data.instrument[i]);
 
-  voicer = (Voicer *) new Voicer(nVoices);
-  for ( i=0; i<nVoices; i++ )
-    voicer->addInstrument( instrument[i] );
+  data.voicer = (Voicer *) new Voicer( data.nVoices );
+  for ( i=0; i<data.nVoices; i++ )
+    data.voicer->addInstrument( data.instrument[i] );
 
   // Parse the command-line flags, instantiate WvOut objects, and
   // instantiate the input message controller (in utilities.cpp).
   try {
-    parseArgs(argc, argv, output, &messager);
+    data.realtime = parseArgs(argc, argv, data.wvout, data.messager);
   }
   catch (StkError &) {
     goto cleanup;
   }
 
-  // Set the number of ticks between realtime messages (default =
-  // RT_BUFFER_SIZE).
-  messager->setRtDelta( 64 );
+  // If realtime output, allocate the dac here.
+#if defined(__STK_REALTIME__)
+  if ( data.realtime ) {
+    RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
+    int bufferSize = RT_BUFFER_SIZE;
+    try {
+      dac = new RtAudio(0, data.channels, 0, 0, format, (int)Stk::sampleRate(), &bufferSize, 4);
+    }
+    catch (RtError& error) {
+      error.printMessage();
+      goto cleanup;
+    }
+  }
+#endif
 
   // Set the reverb parameters.
-  reverb = new PRCRev( t60 );
-  reverb->setEffectMix(0.2);
+  data.reverb = new PRCRev( data.t60 );
+  data.reverb->setEffectMix(0.2);
 
   // Install an interrupt handler function.
 	(void) signal(SIGINT, finish);
 
-  // The runtime loop begins here:
-  done = FALSE;
-  int nTicks, type, j;
-  MY_FLOAT byte2, byte3, sample;
-  while (!done) {
-
-    // Look for new messages and return a delta time (in samples).
-    type = messager->nextMessage();
-    if (type < 0)
-      done = TRUE;
-
-    nTicks = messager->getDelta();
-    for ( i=0; i<nTicks; i++ ) {
-      sample = volume * reverb->tick( voicer->tick() );
-      for ( j=0; j<nOutputs; j++ ) output[j]->tick(sample);
+  // If realtime output, set our callback function and start the dac.
+#if defined(__STK_REALTIME__)
+  if ( data.realtime ) {
+    try {
+      dac->setStreamCallback(&tick, (void *)&data);
+      dac->startStream();
     }
-
-    if ( type > 0 ) {
-      // Process the new control message.
-      byte2 = messager->getByteTwo();
-      byte3 = messager->getByteThree();
-
-      switch(type) {
-
-      case __SK_NoteOn_:
-        if (byte3 == 0.0) // velocity is zero ... really a NoteOff
-          voicer->noteOff( byte2, 64.0 );
-        else // a NoteOn
-          voicer->noteOn( byte2, byte3 );
-        break;
-
-      case __SK_NoteOff_:
-        voicer->noteOff( byte2, byte3 );
-        break;
-
-      case __SK_ControlChange_:
-        if (byte2 == 44.0)
-          reverb->setEffectMix(byte3  * ONE_OVER_128);
-        else if (byte2 == 7.0)
-          volume = byte3 * ONE_OVER_128;
-        else if (byte2 == 49.0)
-          voicer->setFrequency( byte3 );
-        else
-          voicer->controlChange( (int) byte2, byte3 );
-        break;
-
-      case __SK_AfterTouch_:
-        voicer->controlChange( 128, byte2 );
-        break;
-
-      case __SK_PitchChange_:
-        voicer->setFrequency( byte2 );
-        break;
-
-      case __SK_PitchBend_:
-        voicer->pitchBend( byte2 );
-        break;
-
-      case __SK_Volume_:
-        volume = byte2 * ONE_OVER_128;
-        break;
-
-      case __SK_ProgramChange_:
-        if ( voice != (int) byte2 ) {
-          voicer->silence();
-          // Let the instrument(s) settle a bit.
-          for ( i=0; i<4096; i++ ) {
-            sample = reverb->tick( voicer->tick() );
-            for ( j=0; j<nOutputs; j++ ) output[j]->tick(sample);
-          }
-          for ( i=0; i<nVoices; i++ ) {
-            voicer->removeInstrument( instrument[i] );
-            delete instrument[i];
-            voice = voiceByNumber( (int)byte2, &instrument[i] );
-            if ( voice < 0 )
-              voice = voiceByNumber( 0, &instrument[i] );
-            voicer->addInstrument( instrument[i] );
-          }
-        }
-      }
+    catch (RtError &error) {
+      error.printMessage();
+      goto cleanup;
     }
   }
+#endif
 
-  // Let the reverb settle a bit.
-  nTicks = (long) (t60 * Stk::sampleRate());
-  for ( i=0; i<nTicks; i++) {
-    sample = reverb->tick( voicer->tick() );
-    for ( j=0; j<nOutputs; j++ ) output[j]->tick(sample);
+  // Setup finished.
+  while ( !done ) {
+#if defined(__STK_REALTIME__)
+    if ( data.realtime )
+      // Periodically check "done" status.
+      Stk::sleep( 200 );
+    else
+#endif
+      // Call the "tick" function to process data.
+      tick( NULL, 256, (void *)&data );
   }
+
+  // Shut down the callback and output stream.
+#if defined(__STK_REALTIME__)
+  try {
+    dac->cancelStreamCallback();
+    dac->closeStream();
+  }
+  catch (RtError& error) {
+    error.printMessage();
+  }
+#endif
 
  cleanup:
 
-  for ( i=0; i<nOutputs; i++ ) delete output[i];
-  free(output);
+  for ( i=0; i<(int)data.nWvOuts; i++ ) delete data.wvout[i];
+  free( data.wvout );
 
-  delete messager;
-  delete reverb;
-  delete voicer;
+#if defined(__STK_REALTIME__)
+  delete dac;
+#endif
+  delete data.reverb;
+  delete data.voicer;
 
-  for ( i=0; i<nVoices; i++ ) delete instrument[i];
-  free(instrument);
+  for ( i=0; i<data.nVoices; i++ ) delete data.instrument[i];
+  free( data.instrument );
 
-	std::cout << "\nStk demo finished ... goodbye.\n" << std::endl;
+	std::cout << "\nStk demo finished ... goodbye.\n\n";
   return 0;
 }
-
 

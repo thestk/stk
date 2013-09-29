@@ -14,7 +14,7 @@
        - Vibrato Gain = 1
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -24,124 +24,133 @@
 Moog :: Moog()
 {
   // Concatenate the STK rawwave path to the rawwave file
-  attacks[0] = new WvIn( (Stk::rawwavePath() + "mandpluk.raw").c_str(), TRUE );
-  loops[0] = new WaveLoop( (Stk::rawwavePath() + "impuls20.raw").c_str(), TRUE );
-  loops[1] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE ); // vibrato
-  loops[1]->setFrequency((MY_FLOAT) 6.122);
+  attacks_.push_back( new WvIn( (Stk::rawwavePath() + "mandpluk.raw").c_str(), true ) );
+  loops_.push_back ( new WaveLoop( (Stk::rawwavePath() + "impuls20.raw").c_str(), true ) );
+  loops_.push_back ( new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true ) ); // vibrato
+  loops_[1]->setFrequency( 6.122 );
 
-  filters[0] = new FormSwep();
-  filters[0]->setTargets( 0.0, 0.7 );
+  filters_[0].setTargets( 0.0, 0.7 );
+  filters_[1].setTargets( 0.0, 0.7 );
 
-  filters[1] = new FormSwep();
-  filters[1]->setTargets( 0.0, 0.7 );
-
-  adsr->setAllTimes((MY_FLOAT) 0.001,(MY_FLOAT) 1.5,(MY_FLOAT) 0.6,(MY_FLOAT) 0.250);
-  filterQ = (MY_FLOAT) 0.85;
-  filterRate = (MY_FLOAT) 0.0001;
-  modDepth = (MY_FLOAT) 0.0;
+  adsr_.setAllTimes( 0.001, 1.5, 0.6, 0.250 );
+  filterQ_ = 0.85;
+  filterRate_ = 0.0001;
+  modDepth_ = 0.0;
 }  
 
 Moog :: ~Moog()
 {
-  delete attacks[0];
-  delete loops[0];
-  delete loops[1];
-  delete filters[0];
-  delete filters[1];
 }
 
-void Moog :: setFrequency(MY_FLOAT frequency)
+void Moog :: setFrequency(StkFloat frequency)
 {
-  baseFrequency = frequency;
+  baseFrequency_ = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "Moog: setFrequency parameter is less than or equal to zero!" << std::endl;
-    baseFrequency = 220.0;
+    errorString_ << "Moog::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
+    baseFrequency_ = 220.0;
   }
 
-  MY_FLOAT rate = attacks[0]->getSize() * 0.01 * baseFrequency / sampleRate();
-  attacks[0]->setRate( rate );
-  loops[0]->setFrequency(baseFrequency);
+  StkFloat rate = attacks_[0]->getSize() * 0.01 * baseFrequency_ / Stk::sampleRate();
+  attacks_[0]->setRate( rate );
+  loops_[0]->setFrequency( baseFrequency_ );
 }
 
-void Moog :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Moog :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  MY_FLOAT temp;
+  StkFloat temp;
     
   this->setFrequency( frequency );
   this->keyOn();
-  attackGain = amplitude * (MY_FLOAT) 0.5;
-  loopGain = amplitude;
+  attackGain_ = amplitude * 0.5;
+  loopGain_ = amplitude;
 
-  temp = filterQ + (MY_FLOAT) 0.05;
-  filters[0]->setStates( 2000.0, temp );
-  filters[1]->setStates( 2000.0, temp );
+  temp = filterQ_ + 0.05;
+  filters_[0].setStates( 2000.0, temp );
+  filters_[1].setStates( 2000.0, temp );
 
-  temp = filterQ + (MY_FLOAT) 0.099;
-  filters[0]->setTargets( frequency, temp );
-  filters[1]->setTargets( frequency, temp );
+  temp = filterQ_ + 0.099;
+  filters_[0].setTargets( frequency, temp );
+  filters_[1].setTargets( frequency, temp );
 
-  filters[0]->setSweepRate( filterRate * 22050.0 / Stk::sampleRate() );
-  filters[1]->setSweepRate( filterRate * 22050.0 / Stk::sampleRate() );
+  filters_[0].setSweepRate( filterRate_ * 22050.0 / Stk::sampleRate() );
+  filters_[1].setSweepRate( filterRate_ * 22050.0 / Stk::sampleRate() );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Moog: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Moog::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Moog :: setModulationSpeed(MY_FLOAT mSpeed)
+void Moog :: setModulationSpeed(StkFloat mSpeed)
 {
-  loops[1]->setFrequency(mSpeed);
+  loops_[1]->setFrequency( mSpeed );
 }
 
-void Moog :: setModulationDepth(MY_FLOAT mDepth)
+void Moog :: setModulationDepth(StkFloat mDepth)
 {
-  modDepth = mDepth * (MY_FLOAT) 0.5;
+  modDepth_ = mDepth * 0.5;
 }
 
-MY_FLOAT Moog :: tick()
+StkFloat Moog :: tick()
 {
-  MY_FLOAT temp;
+  StkFloat temp;
 
-  if ( modDepth != 0.0 ) {
-    temp = loops[1]->tick() * modDepth;    
-    loops[0]->setFrequency( baseFrequency * (1.0 + temp) );
+  if ( modDepth_ != 0.0 ) {
+    temp = loops_[1]->tick() * modDepth_;    
+    loops_[0]->setFrequency( baseFrequency_ * (1.0 + temp) );
   }
-  
-  temp = Sampler::tick();
-  temp = filters[0]->tick( temp );
-  lastOutput = filters[1]->tick( temp );
-  return lastOutput * 3.0;
+
+  temp = attackGain_ * attacks_[0]->tick();
+  temp += loopGain_ * loops_[0]->tick();
+  temp = filter_.tick( temp );
+  temp *= adsr_.tick();
+  temp = filters_[0].tick( temp );
+  lastOutput_ = filters_[1].tick( temp );
+  return lastOutput_ * 3.0;
 }
 
-void Moog :: controlChange(int number, MY_FLOAT value)
+StkFloat *Moog :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Moog :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void Moog :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "Moog: Control value less than zero!" << std::endl;
+    errorString_ << "Moog::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "Moog: Control value greater than 128.0!" << std::endl;
+    errorString_ << "Moog::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == __SK_FilterQ_) // 2
-    filterQ = 0.80 + ( 0.1 * norm );
+    filterQ_ = 0.80 + ( 0.1 * norm );
   else if (number == __SK_FilterSweepRate_) // 4
-    filterRate = norm * 0.0002;
+    filterRate_ = norm * 0.0002;
   else if (number == __SK_ModFrequency_) // 11
     this->setModulationSpeed( norm * 12.0 );
   else if (number == __SK_ModWheel_)  // 1
     this->setModulationDepth( norm );
   else if (number == __SK_AfterTouch_Cont_) // 128
-    adsr->setTarget( norm );
-  else
-    std::cerr << "Moog: Undefined Control Number (" << number << ")!!" << std::endl;
+    adsr_.setTarget( norm );
+  else {
+    errorString_ << "Moog::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Moog: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "Moog::controlChange: number = " << number << ", value = " << value << '.';
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }
-
-
-

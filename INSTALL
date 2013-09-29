@@ -6,7 +6,7 @@ The Synthesis ToolKit in C++ can be used in a variety of ways, depending on your
 
 To configure and compile (on Unix systems):
 
-1. Unpack the STK distribution (tar -xzf stk-4.x.tar.gz).
+1. Unpack the STK distribution (tar -xzf stk-4.x.x.tar.gz).
 2. From within the directory containing this file, run configure:
 
    ./configure
@@ -18,11 +18,11 @@ Several options can be passed to configure, including:
 
   --disable-realtime = only compile generic non-realtime classes
   --enable-debug = enable various debug output
-  --with-alsa = choose native ALSA API support (linux only)
+  --with-alsa = choose native ALSA API support (default, linux only)
   --with-jack = choose native JACK server API support (linux only)
-  --enable-midiator = enable native MS-124W MIDI support (linux only)
+  --with-oss = choose native OSS API support (linux only)
 
-At the moment, it is not possible to specify more than one Linux audio API, though this will change in the next release.  Typing "./configure --help" will display all the available options.  In addition, it is possible to specify the RAWWAVES and INCLUDE paths to configure as (ex. to set to /home/gary/rawwaves and /home/gary/include):
+It is now possible to specify more than one Linux audio API.  Note however that the ALSA library is required in order to compile the RtMidi class, even if the "--with-oss" option is provided (only the OSS audio API will be used, not the OSS MIDI API).  Typing "./configure --help" will display all the available options.  In addition, it is possible to specify the RAWWAVES and INCLUDE paths to configure as (ex. to set to /home/gary/rawwaves and /home/gary/include):
 
   ./configure RAWWAVE_PATH="/home/gary/rawwaves/"
   ./configure INCLUDE_PATH="/home/gary/include/"
@@ -33,7 +33,7 @@ If you wish to use a different compiler than that selected by configure, specify
 
   ./configure CXX=CC
 
-In addition, a linux RPM is available from the STK WWW site (http://www-ccrma.stanford.edu/software/stk/).
+In addition, a linux RPM is available from the Planet CCRMA WWW site (http://ccrma.stanford.edu/planetccrma/software/).
 
 
 For Windows Users:

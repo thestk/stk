@@ -16,4 +16,4 @@ int checkArgs(int numArgs, char *args[]);
 
 int countVoices(int nArgs, char *args[]);
 
-void parseArgs(int numArgs, char *args[], WvOut **output, Messager **messager);
+bool parseArgs(int numArgs, char *args[], WvOut **output, Messager& messager);

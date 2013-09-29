@@ -1,10 +1,14 @@
 /***************************************************/
 /*! \class RtWvOut
-    \brief STK realtime audio output class.
+    \brief STK realtime audio (blocking) output class.
 
     This class provides a simplified interface to
     RtAudio for realtime audio output.  It is a
-    protected subclass of WvOut.
+    protected subclass of WvOut.  Because this
+    class makes use of RtAudio's blocking output
+    routines, its performance is less robust on
+    systems where the audio API is callback-based
+    (Macintosh CoreAudio and Windows ASIO).
 
     RtWvOut supports multi-channel data in
     interleaved format.  It is important to
@@ -14,16 +18,15 @@
     takes a pointer to multi-channel sample
     frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__RTWVOUT_H)
-#define __RTWVOUT_H
+#ifndef STK_RTWVOUT_H
+#define STK_RTWVOUT_H
 
 #include "WvOut.h"
 #include "RtAudio.h"
-#include "Thread.h"
 
 class RtWvOut : protected WvOut
 {
@@ -41,7 +44,7 @@ class RtWvOut : protected WvOut
     is defined in Stk.h.  An StkError will be thrown if an error
     occurs duing instantiation.
   */
-  RtWvOut(unsigned int nChannels = 1, MY_FLOAT sampleRate = Stk::sampleRate(), int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 4 );
+  RtWvOut(unsigned int nChannels = 1, StkFloat sampleRate = Stk::sampleRate(), int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 4 );
 
   //! Class destructor.
   ~RtWvOut();
@@ -62,32 +65,50 @@ class RtWvOut : protected WvOut
   unsigned long getFrames( void ) const;
 
   //! Return the number of seconds of data output.
-  MY_FLOAT getTime( void ) const;
+  StkFloat getTime( void ) const;
 
   //! Output a single sample to all channels in a sample frame.
   /*!
     An StkError will be thrown if an error occurs during output.
   */
-  void tick(const MY_FLOAT sample);
+  void tick( const StkFloat sample );
 
   //! Output each sample in \e vector to all channels in \e vectorSize sample frames.
   /*!
     An StkError will be thrown if an error occurs during output.
   */
-  void tick(const MY_FLOAT *vector, unsigned int vectorSize);
+  void tick( const StkFloat *vector, unsigned int vectorSize );
+
+  //! Output a channel of the StkFrames object to all channels of the RtWvOut object.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if an
+    error occurs during output or the \c channel argument is zero or
+    it is greater than the number of channels in the StkFrames object.
+  */
+  void tick( const StkFrames& frames, unsigned int channel = 1 );
 
   //! Output the \e frameVector of sample frames of the given length.
   /*!
     An StkError will be thrown if an error occurs during output.
   */
-  void tickFrame(const MY_FLOAT *frameVector, unsigned int frames = 1);
+  void tickFrame( const StkFloat *frameVector, unsigned int frames = 1 );
+
+  //! Output the StkFrames data to the RtWvOut object.
+  /*!
+    An StkError will be thrown if an error occurs during output or
+    if there is an incompatability between the number of channels in
+    the WvOut object and that in the StkFrames object.
+  */
+  void tickFrame( const StkFrames& frames );
 
  protected:
 
-	RtAudio *audio_;
+  RtAudio *audio_;
+  StkFloat *dataPtr_;
   bool stopped_;
   int bufferSize_;
 
 };
 
-#endif // defined(__RTWVOUT_H)
+#endif

@@ -43,7 +43,7 @@ main(int argc, char *argv[])
 
   // Initialize our object and data pointers.
   WvOut *output = 0;
-  MY_FLOAT *vector = 0;
+  StkFloat *vector = 0;
   WaveLoop **oscs = (WaveLoop **) malloc( channels * sizeof(WaveLoop *) );
   for (i=0; i<channels; i++) oscs[i] = 0;
 
@@ -54,7 +54,7 @@ main(int argc, char *argv[])
   // Define and load the rawwave file(s) ... the path is critical.
   try {
     for (i=0; i<channels; i++)
-      oscs[i] = new WaveLoop( "../../rawwaves/sinewave.raw", TRUE );
+      oscs[i] = new WaveLoop( "../../rawwaves/sinewave.raw", true );
   }
   catch (StkError &) {
     goto cleanup;
@@ -67,7 +67,7 @@ main(int argc, char *argv[])
   // Define and open the soundfile for output.  Other file
   // format options include: WVOUT_SND, WVOUT_AIF, WVOUT_MAT,
   // and WVOUT_RAW.  Other data type options include:
-  // STK_SINT8, STK_SINT32, MY_FLOAT32, and MY_FLOAT64.
+  // STK_SINT8, STK_SINT32, StkFloat32, and StkFloat64.
   try {
     output = new WvOut( argv[2], channels, WvOut::WVOUT_WAV, Stk::STK_SINT16 );
   }
@@ -77,7 +77,7 @@ main(int argc, char *argv[])
 
   // Here's the runtime loop
   samples = (int) ( time * Stk::sampleRate() );
-  vector = (MY_FLOAT *) new MY_FLOAT[channels];
+  vector = (StkFloat *) new StkFloat[channels];
   for ( i=0; i<samples; i++ ) {
     for (int j=0; j<channels; j++) {
       vector[j] = oscs[j]->tick();

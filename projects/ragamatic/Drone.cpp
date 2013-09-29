@@ -13,90 +13,101 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Drone.h"
 
-Drone :: Drone(MY_FLOAT lowestFrequency)
+Drone :: Drone(StkFloat lowestFrequency)
 {
-  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
-  loopGain = (MY_FLOAT) 0.999;
-  delayLine = new DelayA( (MY_FLOAT)(length / 2.0), length );
-  loopFilter = new OneZero;
-  noise = new Noise;
-  envelope = new ADSR();
-  envelope->setAllTimes(2.0, 0.5, 0.0, 0.5);
+  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  loopGain_ = 0.999;
+  delayLine_.setMaximumDelay( length_ );
+  delayLine_.setDelay( 0.5 * length_ );
+  envelope_.setAllTimes( 2.0, 0.5, 0.0, 0.5 );
   this->clear();
 }
 
 Drone :: ~Drone()
 {
-  delete delayLine;
-  delete loopFilter;
-  delete envelope;
-  delete noise;
 }
 
 void Drone :: clear()
 {
-  delayLine->clear();
-  loopFilter->clear();
+  delayLine_.clear();
+  loopFilter_.clear();
 }
 
-void Drone :: setFrequency(MY_FLOAT frequency)
+void Drone :: setFrequency(StkFloat frequency)
 {
-  MY_FLOAT freakency = frequency;
+  StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "Drone: setFrequency parameter is less than or equal to zero!" << std::endl;
+    errorString_ << "Drone::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
     freakency = 220.0;
   }
 
   // Delay = length - approximate filter delay.
-  MY_FLOAT delay = (Stk::sampleRate() / freakency) - (MY_FLOAT) 0.5;
-  if (delay <= 0.0) delay = 0.3;
-  else if (delay > length) delay = length;
-  delayLine->setDelay(delay);
-  loopGain = 0.997 + (freakency * 0.000002);
-  if ( loopGain >= 1.0 ) loopGain = (MY_FLOAT) 0.99999;
+  StkFloat delay = (Stk::sampleRate() / freakency) - 0.5;
+  if ( delay <= 0.0 )
+    delay = 0.3;
+  else if (delay > length_)
+    delay = length_;
+  delayLine_.setDelay( delay );
+  loopGain_ = 0.997 + (freakency * 0.000002);
+  if ( loopGain_ >= 1.0 ) loopGain_ = 0.99999;
 }
 
-void Drone :: pluck(MY_FLOAT amplitude)
+void Drone :: pluck(StkFloat amplitude)
 {
-  envelope->keyOn();
+  envelope_.keyOn();
 }
 
-void Drone :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Drone :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  this->setFrequency(frequency);
-  this->pluck(amplitude);
+  this->setFrequency( frequency );
+  this->pluck( amplitude );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Drone: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Drone::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Drone :: noteOff(MY_FLOAT amplitude)
+void Drone :: noteOff(StkFloat amplitude)
 {
-  loopGain = (MY_FLOAT) 1.0 - amplitude;
-  if ( loopGain < 0.0 ) {
-    std::cerr << "Drone: noteOff amplitude greater than 1.0!" << std::endl;
-    loopGain = 0.0;
+  loopGain_ = 1.0 - amplitude;
+  if ( loopGain_ < 0.0 ) {
+    errorString_ << "Drone::noteOff: amplitude is greater than 1.0 ... setting to 1.0!";
+    handleError( StkError::WARNING );
+    loopGain_ = 0.0;
   }
-  else if ( loopGain > 1.0 ) {
-    std::cerr << "Drone: noteOff amplitude less than or zero!" << std::endl;
-    loopGain = (MY_FLOAT) 0.99999;
+  else if ( loopGain_ > 1.0 ) {
+    errorString_ << "Drone::noteOff: amplitude is < 0.0  ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    loopGain_ = 0.99999;
   }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Drone: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "Drone::noteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT Drone :: tick()
+StkFloat Drone :: tick()
 {
   // Here's the whole inner loop of the instrument!!
-  lastOutput = delayLine->tick( loopFilter->tick( delayLine->lastOut() * loopGain ) + (0.005 * envelope->tick() * noise->tick())); 
-  return lastOutput;
+  lastOutput_ = delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ ) + (0.005 * envelope_.tick() * noise_.tick())); 
+  return lastOutput_;
+}
+
+StkFloat *Drone :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Drone :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
 }

@@ -18,36 +18,41 @@
     response, the minimum delay possible in this
     implementation is limited to a value of 0.5.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "DelayA.h"
-#include <iostream>
 
-DelayA :: DelayA()
+DelayA :: DelayA() : Delay()
 {
   this->setDelay( 0.5 );
-  apInput = 0.0;
-  doNextOut = true;
+  apInput_ = 0.0;
+  doNextOut_ = true;
 }
 
-DelayA :: DelayA(MY_FLOAT theDelay, long maxDelay)
+DelayA :: DelayA(StkFloat delay, unsigned long maxDelay)
 {
-  // Writing before reading allows delays from 0 to length-1. 
-  length = maxDelay+1;
+  if ( delay < 0.0 || maxDelay < 1 ) {
+    errorString_ << "DelayA::DelayA: delay must be >= 0.0, maxDelay must be > 0!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
 
-  if ( length > 4096 ) {
-    // We need to delete the previously allocated inputs.
-    delete [] inputs;
-    inputs = new MY_FLOAT[length];
+  if ( delay > (StkFloat) maxDelay ) {
+    errorString_ << "DelayA::DelayA: maxDelay must be > than delay argument!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  // Writing before reading allows delays from 0 to length-1. 
+  if ( maxDelay > inputs_.size()-1 ) {
+    inputs_.resize( maxDelay+1 );
     this->clear();
   }
 
-  inPoint = 0;
-  this->setDelay(theDelay);
-  apInput = 0.0;
-  doNextOut = true;
+  inPoint_ = 0;
+  this->setDelay(delay);
+  apInput_ = 0.0;
+  doNextOut_ = true;
 }
 
 DelayA :: ~DelayA()
@@ -57,74 +62,90 @@ DelayA :: ~DelayA()
 void DelayA :: clear()
 {
   Delay::clear();
-  apInput = 0.0;
+  apInput_ = 0.0;
 }
 
-void DelayA :: setDelay(MY_FLOAT theDelay)  
+void DelayA :: setDelay(StkFloat delay)  
 {
-  MY_FLOAT outPointer;
+  StkFloat outPointer;
+  unsigned long length = inputs_.size();
 
-  if (theDelay > length-1) {
-    std::cerr << "DelayA: setDelay(" << theDelay << ") too big!" << std::endl;
+  if ( delay > inputs_.size() - 1 ) { // The value is too big.
+    errorString_ << "DelayA::setDelay: argument (" << delay << ") too big ... setting to maximum!";
+    handleError( StkError::WARNING );
+
     // Force delay to maxLength
-    outPointer = inPoint + 1.0;
-    delay = length - 1;
+    outPointer = inPoint_ + 1.0;
+    delay_ = length - 1;
   }
-  else if (theDelay < 0.5) {
-    std::cerr << "DelayA: setDelay(" << theDelay << ") less than 0.5 not possible!" << std::endl;
-    outPointer = inPoint + 0.4999999999;
-    delay = 0.5;
+  else if (delay < 0.5) {
+    errorString_ << "DelayA::setDelay: argument (" << delay << ") less than 0.5 not possible!";
+    handleError( StkError::WARNING );
+
+    outPointer = inPoint_ + 0.4999999999;
+    delay_ = 0.5;
   }
   else {
-    outPointer = inPoint - theDelay + 1.0;     // outPoint chases inpoint
-    delay = theDelay;
+    outPointer = inPoint_ - delay + 1.0;     // outPoint chases inpoint
+    delay_ = delay;
   }
 
   if (outPointer < 0)
     outPointer += length;  // modulo maximum length
 
-  outPoint = (long) outPointer;        // integer part
-  alpha = 1.0 + outPoint - outPointer; // fractional part
+  outPoint_ = (long) outPointer;         // integer part
+  if ( outPoint_ == length ) outPoint_ = 0;
+  alpha_ = 1.0 + outPoint_ - outPointer; // fractional part
 
-  if (alpha < 0.5) {
+  if (alpha_ < 0.5) {
     // The optimal range for alpha is about 0.5 - 1.5 in order to
     // achieve the flattest phase delay response.
-    outPoint += 1;
-    if (outPoint >= length) outPoint -= length;
-    alpha += (MY_FLOAT) 1.0;
+    outPoint_ += 1;
+    if (outPoint_ >= length) outPoint_ -= length;
+    alpha_ += (StkFloat) 1.0;
   }
 
-  coeff = ((MY_FLOAT) 1.0 - alpha) / 
-    ((MY_FLOAT) 1.0 + alpha);         // coefficient for all pass
+  coeff_ = ((StkFloat) 1.0 - alpha_) / 
+    ((StkFloat) 1.0 + alpha_);         // coefficient for all pass
 }
 
-MY_FLOAT DelayA :: nextOut(void)
+StkFloat DelayA :: nextOut(void)
 {
-  if ( doNextOut ) {
+  if ( doNextOut_ ) {
     // Do allpass interpolation delay.
-    nextOutput = -coeff * outputs[0];
-    nextOutput += apInput + (coeff * inputs[outPoint]);
-    doNextOut = false;
+    nextOutput_ = -coeff_ * outputs_[0];
+    nextOutput_ += apInput_ + (coeff_ * inputs_[outPoint_]);
+    doNextOut_ = false;
   }
 
-  return nextOutput;
+  return nextOutput_;
 }
 
-MY_FLOAT DelayA :: tick(MY_FLOAT sample)
+StkFloat DelayA :: tick(StkFloat sample)
 {
-  inputs[inPoint++] = sample;
+  inputs_[inPoint_++] = sample;
 
   // Increment input pointer modulo length.
-  if (inPoint == length)
-    inPoint -= length;
+  if (inPoint_ == inputs_.size())
+    inPoint_ = 0;
 
-  outputs[0] = nextOut();
-  doNextOut = true;
+  outputs_[0] = nextOut();
+  doNextOut_ = true;
 
   // Save the allpass input and increment modulo length.
-  apInput = inputs[outPoint++];
-  if (outPoint == length)
-    outPoint -= length;
+  apInput_ = inputs_[outPoint_++];
+  if (outPoint_ == inputs_.size())
+    outPoint_ = 0;
 
-  return outputs[0];
+  return outputs_[0];
+}
+
+StkFloat *DelayA :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Filter::tick( vector, vectorSize );
+}
+
+StkFrames& DelayA :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Filter::tick( frames, channel );
 }

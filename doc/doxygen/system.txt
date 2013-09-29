@@ -2,23 +2,24 @@
 
 <B>General:</B>
 <UL>
-<LI>A MIDI interface to use MIDI input controls. (NOTE: This may be built into the soundcard on your computer.)</LI>
+<LI>A MIDI interface to use MIDI input/output controls. (NOTE: This may be built into the soundcard on your computer.)</LI>
 <LI><A HREF="http://dev.scriptics.com">Tcl/Tk</A> version 8.0 or higher to use the simple Tcl/Tk GUIs provided with the STK distribution (available free over the WWW for all supported realtime platforms).</LI>
 </UL>
 
 <B>Linux (specific):</B>
 <UL>
 <LI>A soundcard to use realtime audio input/output capabilities.  In order to use the <I><B>effects</B></I> project, the soundcard and drivers must support full duplex mode.</LI>
-<LI><A HREF="http://www.opensound.com">OSS</A> or <A HREF="http://www.alsa-project.org/">ALSA</A> device drivers for realtime sound output and MIDI input.</LI>
+<LI><A HREF="http://www.alsa-project.org/">ALSA</A> device drivers and library for realtime sound and MIDI input/output.  <A HREF="http://www.opensound.com">OSS</A> device drivers can be used for audio input/output, but MIDI support requires the ALSA library to compile.</LI>
 </UL>
 
 <B>Macintosh OS X (specific):</B>
 <UL>
-<LI>A C++ compiler does not ship by default with OS X.  It is necessary to download the Developer Kit from the Apple WWW site in order to compile STK.</LI>
-<LI><B>IMPORTANT:</B>The internal Macintosh audio hardware typically supports a sample rate of 44100 Hz only.  Therefore, it is necessary to either specify this rate as a command-line option to the STK example programs or to change the default sample rate inside the Stk.h file before compilation.  In addition, the RT_BUFFER_SIZE, specified in Stk.h, could be increased (to a higher power of two) for more robust performance.</LI>
-<LI>The tcl/tk interpreter does not ship by default with OS X, but must be downloaded from the internet.  The latest Tcl/Tk Aqua distribution (http://www.apple.com/downloads/macosx/unix_open_source/tcltk.html) has been successfully tested on a 10.2 system.  The default installation will place a link to the wish interpretor at /usr/bin/wish.
+<LI>A C++ compiler does install by default with OS X.  It is necessary to download the Developer Kit from the Apple WWW site in order to compile STK or load it from the installation CD-ROM.</LI>
+<LI><B>IMPORTANT:</B>The internal Macintosh audio hardware typically supports a sample rate of 44100 Hz only.  The default STK sample rate is now 44100 Hz, but there may be programs which change that value before execution.  Check the program code if you have sample rate conflicts.  Many of the example project programs allow the sample rate to be specified via the command line.</LI>
+<LI>If you experience frequent audio input/output "glitches", try increasing the RT_BUFFER_SIZE specified in Stk.h.</LI>
+<LI>The tcl/tk interpreter does not ship by default with OS X, but must be downloaded from the internet.  The latest Tcl/Tk Aqua distribution (http://www.apple.com/downloads/macosx/unix_open_source/tcltk.html) has been successfully tested on 10.2 and 10.3 systems.  The default installation will place a link to the wish interpretor at /usr/bin/wish.
 
-Initial tests have shown somewhat poor response between changes made in the tcl/tk script and the resulting audio updates.  It is possible to connect a tcl/tk interface to an STK program via a socket connection.  However, the tcl/tk interpreter does not appear to properly close the socket connection during disconnection.  It is therefore necessary to type "Exit" in the STK program terminal window to properly exit the STK program.</LI>
+It appears that socket support in Tcl/Tk uses the Nagle algorithm, which produces poor response between changes made in the tcl/tk script and the resulting audio updates.  Note that this is only a problem when using a socket connection from a Tcl/Tk script.</LI>
 
 </UL>
 

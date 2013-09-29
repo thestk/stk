@@ -1,10 +1,14 @@
 /***************************************************/
 /*! \class RtWvIn
-    \brief STK realtime audio input class.
+    \brief STK realtime audio (blocking) input class.
 
     This class provides a simplified interface to
     RtAudio for realtime audio input.  It is a
-    protected subclass of WvIn.
+    protected subclass of WvIn.  Because this
+    class makes use of RtAudio's blocking output
+    routines, its performance is less robust on
+    systems where the audio API is callback-based
+    (Macintosh CoreAudio and Windows ASIO).
 
     RtWvIn supports multi-channel data in
     interleaved format.  It is important to
@@ -15,14 +19,13 @@
     For single-channel data, these methods return
     equivalent values.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__RTWVIN_H)
-#define __RTWVIN_H
+#ifndef STK_RTWVIN_H
+#define STK_RTWVIN_H
 
-#include "Stk.h"
 #include "WvIn.h"
 #include "RtAudio.h"
 
@@ -41,7 +44,7 @@ public:
     is defined in Stk.h.  An StkError will be thrown if an error
     occurs duing instantiation.
   */
-  RtWvIn(int nChannels = 1, MY_FLOAT sampleRate = Stk::sampleRate(), int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 2);
+  RtWvIn(int nChannels = 1, StkFloat sampleRate = Stk::sampleRate(), int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 2);
 
   //! Class destructor.
   ~RtWvIn();
@@ -59,34 +62,51 @@ public:
   void stop(void);
 
   //! Return the average across the last output sample frame.
-  MY_FLOAT lastOut(void) const;
+  StkFloat lastOut(void) const;
 
   //! Read out the average across one sample frame of data.
   /*!
     An StkError will be thrown if an error occurs during input.
   */
-  MY_FLOAT tick(void);
+  StkFloat tick(void);
 
   //! Read out vectorSize averaged sample frames of data in \e vector.
   /*!
     An StkError will be thrown if an error occurs during input.
   */
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with averaged sample frames.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if an
+    error occurs during input or the \c channel argument is zero or it
+    is greater than the number of channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Return a pointer to the last output sample frame.
-  const MY_FLOAT *lastFrame(void) const;
+  const StkFloat *lastFrame(void) const;
 
   //! Return a pointer to the next sample frame of data.
   /*!
     An StkError will be thrown if an error occurs during input.
   */
-  const MY_FLOAT *tickFrame(void);
+  const StkFloat *tickFrame(void);
 
   //! Read out sample \e frames of data to \e frameVector.
   /*!
     An StkError will be thrown if an error occurs during input.
   */
-  MY_FLOAT *tickFrame(MY_FLOAT *frameVector, unsigned int frames);
+  StkFloat *tickFrame(StkFloat *frameVector, unsigned int frames);
+
+  //! Fill the StkFrames object with sample frames of data and return the same reference.
+  /*!
+    An StkError will be thrown if an error occurs during input or
+    there is an incompatability between the number of channels in the
+    RtWvIn object and that in the StkFrames object.
+  */
+  StkFrames& tickFrame( StkFrames& frames );
 
 protected:
 

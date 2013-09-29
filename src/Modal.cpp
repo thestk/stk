@@ -7,216 +7,216 @@
     (non-sweeping BiQuad filters), where N is set
     during instantiation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Modal.h"
-#include <stdlib.h>
 
-Modal :: Modal(int modes)
-  : nModes(modes)
+Modal :: Modal(unsigned int modes)
+  : nModes_(modes)
 {
-  if ( nModes <= 0 ) {
-    char msg[256];
-    sprintf(msg, "Modal: Invalid number of modes (%d) argument to constructor!", modes);
-    handleError(msg, StkError::FUNCTION_ARGUMENT);
+  if ( nModes_ == 0 ) {
+    errorString_ << "Modal: 'modes' argument to constructor is zero!";
+    handleError( StkError::FUNCTION_ARGUMENT );
   }
 
   // We don't make the excitation wave here yet, because we don't know
   // what it's going to be.
 
-  ratios = (MY_FLOAT *) new MY_FLOAT[nModes];
-  radii = (MY_FLOAT *) new MY_FLOAT[nModes];
-  filters = (BiQuad **) calloc( nModes, sizeof(BiQuad *) );
-  for (int i=0; i<nModes; i++ ) {
-    filters[i] = new BiQuad;
-    filters[i]->setEqualGainZeroes();
+  ratios_.resize( nModes_ );
+  radii_.resize( nModes_ );
+  filters_ = (BiQuad **) calloc( nModes_, sizeof(BiQuad *) );
+  for (unsigned int i=0; i<nModes_; i++ ) {
+    filters_[i] = new BiQuad;
+    filters_[i]->setEqualGainZeroes();
   }
 
-  envelope = new Envelope;
-  onepole = new OnePole;
-
   // Concatenate the STK rawwave path to the rawwave file
-  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
+  vibrato_ = new WaveLoop( Stk::rawwavePath() + "sinewave.raw", true );
 
   // Set some default values.
-  vibrato->setFrequency( 6.0 );
-  vibratoGain = 0.0;
-  directGain = 0.0;
-  masterGain = 1.0;
-  baseFrequency = 440.0;
+  vibrato_->setFrequency( 6.0 );
+  vibratoGain_ = 0.0;
+  directGain_ = 0.0;
+  masterGain_ = 1.0;
+  baseFrequency_ = 440.0;
 
   this->clear();
 
-  stickHardness =  0.5;
-  strikePosition = 0.561;
+  stickHardness_ =  0.5;
+  strikePosition_ = 0.561;
 }  
 
 Modal :: ~Modal()
 {
-  delete envelope; 
-  delete onepole;
-  delete vibrato;
+  delete vibrato_;
 
-  delete [] ratios;
-  delete [] radii;
-  for (int i=0; i<nModes; i++ ) {
-    delete filters[i];
+  for (unsigned int i=0; i<nModes_; i++ ) {
+    delete filters_[i];
   }
-  free(filters);
+  free(filters_);
 }
 
 void Modal :: clear()
 {    
-  onepole->clear();
-  for (int i=0; i<nModes; i++ )
-    filters[i]->clear();
+  onepole_.clear();
+  for (unsigned int i=0; i<nModes_; i++ )
+    filters_[i]->clear();
 }
 
-void Modal :: setFrequency(MY_FLOAT frequency)
+void Modal :: setFrequency(StkFloat frequency)
 {
-  baseFrequency = frequency;
-  for (int i=0; i<nModes; i++ )
-    this->setRatioAndRadius(i, ratios[i], radii[i]);
+  baseFrequency_ = frequency;
+  for (unsigned int i=0; i<nModes_; i++ )
+    this->setRatioAndRadius( i, ratios_[i], radii_[i] );
 }
 
-void Modal :: setRatioAndRadius(int modeIndex, MY_FLOAT ratio, MY_FLOAT radius)
+void Modal :: setRatioAndRadius(unsigned int modeIndex, StkFloat ratio, StkFloat radius)
 {
-  if ( modeIndex < 0 ) {
-    std::cerr << "Modal: setRatioAndRadius modeIndex parameter is less than zero!" << std::endl;
-    return;
-  }
-  else if ( modeIndex >= nModes ) {
-    std::cerr << "Modal: setRatioAndRadius modeIndex parameter is greater than the number of operators!" << std::endl;
+  if ( modeIndex >= nModes_ ) {
+    errorString_ << "Modal::setRatioAndRadius: modeIndex parameter is greater than number of modes!";
+    handleError( StkError::WARNING );
     return;
   }
 
-  MY_FLOAT nyquist = Stk::sampleRate() / 2.0;
-  MY_FLOAT temp;
+  StkFloat nyquist = Stk::sampleRate() / 2.0;
+  StkFloat temp;
 
-  if (ratio * baseFrequency < nyquist) {
-    ratios[modeIndex] = ratio;
+  if ( ratio * baseFrequency_ < nyquist ) {
+    ratios_[modeIndex] = ratio;
   }
   else {
     temp = ratio;
-    while (temp * baseFrequency > nyquist) temp *= (MY_FLOAT) 0.5;
-    ratios[modeIndex] = temp;
+    while (temp * baseFrequency_ > nyquist) temp *= 0.5;
+    ratios_[modeIndex] = temp;
 #if defined(_STK_DEBUG_)
-    std::cerr << "Modal : Aliasing would occur here ... correcting." << std::endl;
+    errorString_ << "Modal::setRatioAndRadius: aliasing would occur here ... correcting.";
+    handleError( StkError::DEBUG_WARNING );
 #endif
   }
-  radii[modeIndex] = radius;
+  radii_[modeIndex] = radius;
   if (ratio < 0) 
     temp = -ratio;
   else
-    temp = ratio*baseFrequency;
+    temp = ratio * baseFrequency_;
 
-  filters[modeIndex]->setResonance(temp, radius);
+  filters_[modeIndex]->setResonance(temp, radius);
 }
 
-void Modal :: setMasterGain(MY_FLOAT aGain)
+void Modal :: setMasterGain(StkFloat aGain)
 {
-  masterGain = aGain;
+  masterGain_ = aGain;
 }
 
-void Modal :: setDirectGain(MY_FLOAT aGain)
+void Modal :: setDirectGain(StkFloat aGain)
 {
-  directGain = aGain;
+  directGain_ = aGain;
 }
 
-void Modal :: setModeGain(int modeIndex, MY_FLOAT gain)
+void Modal :: setModeGain(unsigned int modeIndex, StkFloat gain)
 {
-  if ( modeIndex < 0 ) {
-    std::cerr << "Modal: setModeGain modeIndex parameter is less than zero!" << std::endl;
-    return;
-  }
-  else if ( modeIndex >= nModes ) {
-    std::cerr << "Modal: setModeGain modeIndex parameter is greater than the number of operators!" << std::endl;
+  if ( modeIndex >= nModes_ ) {
+    errorString_ << "Modal::setModeGain: modeIndex parameter is greater than number of modes!";
+    handleError( StkError::WARNING );
     return;
   }
 
-  filters[modeIndex]->setGain(gain);
+  filters_[modeIndex]->setGain(gain);
 }
 
-void Modal :: strike(MY_FLOAT amplitude)
+void Modal :: strike(StkFloat amplitude)
 {
-  MY_FLOAT gain = amplitude;
+  StkFloat gain = amplitude;
   if ( amplitude < 0.0 ) {
-    std::cerr << "Modal: strike amplitude is less than zero!" << std::endl;
+    errorString_ << "Modal::strike: amplitude is less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
     gain = 0.0;
   }
   else if ( amplitude > 1.0 ) {
-    std::cerr << "Modal: strike amplitude is greater than 1.0!" << std::endl;
+    errorString_ << "Modal::strike: amplitude is greater than one ... setting to 1.0!";
+    handleError( StkError::WARNING );
     gain = 1.0;
   }
 
-  envelope->setRate(1.0);
-  envelope->setTarget(gain);
-  onepole->setPole(1.0 - gain);
-  envelope->tick();
-  wave->reset();
+  envelope_.setRate( 1.0 );
+  envelope_.setTarget( gain );
+  onepole_.setPole( 1.0 - gain );
+  envelope_.tick();
+  wave_->reset();
 
-  MY_FLOAT temp;
-  for (int i=0; i<nModes; i++) {
-    if (ratios[i] < 0)
-      temp = -ratios[i];
+  StkFloat temp;
+  for (unsigned int i=0; i<nModes_; i++) {
+    if (ratios_[i] < 0)
+      temp = -ratios_[i];
     else
-      temp = ratios[i] * baseFrequency;
-    filters[i]->setResonance(temp, radii[i]);
+      temp = ratios_[i] * baseFrequency_;
+    filters_[i]->setResonance(temp, radii_[i]);
   }
 }
 
-void Modal :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Modal :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
   this->strike(amplitude);
   this->setFrequency(frequency);
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Modal: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Modal::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Modal :: noteOff(MY_FLOAT amplitude)
+void Modal :: noteOff(StkFloat amplitude)
 {
   // This calls damp, but inverts the meaning of amplitude (high
   // amplitude means fast damping).
-  this->damp(1.0 - (amplitude * 0.03));
+  this->damp( 1.0 - (amplitude * 0.03) );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Modal: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "Modal::NoteOff: amplitude = " << amplitude << '.';
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Modal :: damp(MY_FLOAT amplitude)
+void Modal :: damp(StkFloat amplitude)
 {
-  MY_FLOAT temp;
-  for (int i=0; i<nModes; i++) {
-    if (ratios[i] < 0)
-      temp = -ratios[i];
+  StkFloat temp;
+  for (unsigned int i=0; i<nModes_; i++) {
+    if (ratios_[i] < 0)
+      temp = -ratios_[i];
     else
-      temp = ratios[i] * baseFrequency;
-    filters[i]->setResonance(temp, radii[i]*amplitude);
+      temp = ratios_[i] * baseFrequency_;
+    filters_[i]->setResonance(temp, radii_[i]*amplitude);
   }
 }
 
-MY_FLOAT Modal :: tick()
+StkFloat Modal :: tick()
 {
-  MY_FLOAT temp = masterGain * onepole->tick(wave->tick() * envelope->tick());
+  StkFloat temp = masterGain_ * onepole_.tick( wave_->tick() * envelope_.tick() );
 
-  MY_FLOAT temp2 = 0.0;
-  for (int i=0; i<nModes; i++)
-    temp2 += filters[i]->tick(temp);
+  StkFloat temp2 = 0.0;
+  for (unsigned int i=0; i<nModes_; i++)
+    temp2 += filters_[i]->tick(temp);
 
-  temp2  -= temp2 * directGain;
-  temp2 += directGain * temp;
+  temp2  -= temp2 * directGain_;
+  temp2 += directGain_ * temp;
 
-  if (vibratoGain != 0.0)	{
+  if (vibratoGain_ != 0.0)	{
     // Calculate AM and apply to master out
-    temp = 1.0 + (vibrato->tick() * vibratoGain);
+    temp = 1.0 + (vibrato_->tick() * vibratoGain_);
     temp2 = temp * temp2;
   }
     
-  lastOutput = temp2;
-  return lastOutput;
+  lastOutput_ = temp2;
+  return lastOutput_;
+}
+
+StkFloat *Modal :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Modal :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
 }

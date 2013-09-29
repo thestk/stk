@@ -12,21 +12,21 @@
     filters in parallel with corresponding right
     and left outputs.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__NREV_H)
-#define __NREV_H
+#ifndef STK_NREV_H
+#define STK_NREV_H
 
-#include "Reverb.h" 
+#include "Effect.h" 
 #include "Delay.h" 
 
-class NRev : public Reverb
+class NRev : public Effect
 {
  public:
-  //! Class constructor taking a T60 decay time argument.
-  NRev(MY_FLOAT T60);
+  //! Class constructor taking a T60 decay time argument (one second default value).
+  NRev( StkFloat T60 = 1.0 );
 
   //! Class destructor.
   ~NRev();
@@ -34,15 +34,30 @@ class NRev : public Reverb
   //! Reset and clear all internal state.
   void clear();
 
+  //! Set the reverberation T60 decay time.
+  void setT60( StkFloat T60 );
+
   //! Compute one output sample.
-  MY_FLOAT tick(MY_FLOAT input);
+  StkFloat tick(StkFloat input);
+
+  //! Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
+  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+
+  //! Take a channel of the StkFrames object as inputs to the effect and replace with corresponding outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
  protected:  
-  Delay *allpassDelays[8];
-  Delay *combDelays[6];
-  MY_FLOAT allpassCoefficient;
-  MY_FLOAT combCoefficient[6];
-	MY_FLOAT lowpassState;
+  Delay allpassDelays_[8];
+  Delay combDelays_[6];
+  StkFloat allpassCoefficient_;
+  StkFloat combCoefficient_[6];
+	StkFloat lowpassState_;
 
 };
 

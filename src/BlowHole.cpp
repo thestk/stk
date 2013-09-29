@@ -29,7 +29,7 @@
        - Register State = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -37,221 +37,232 @@
 #include "SKINI.msg"
 #include <math.h>
 
-BlowHole :: BlowHole(MY_FLOAT lowestFrequency)
+BlowHole :: BlowHole(StkFloat lowestFrequency)
 {
-  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
+  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
   // delays[0] is the delay line between the reed and the register vent.
-  delays[0] = (DelayL *) new DelayL( 5.0 * Stk::sampleRate() / 22050.0, 100 );
+  delays_[0].setDelay( 5.0 * Stk::sampleRate() / 22050.0 );
   // delays[1] is the delay line between the register vent and the tonehole.
-  delays[1] = (DelayL *) new DelayL( length >> 1, length );
+  delays_[1].setMaximumDelay( length_ );
+  delays_[1].setDelay( length_ >> 1 );
   // delays[2] is the delay line between the tonehole and the end of the bore.
-  delays[2] = (DelayL *) new DelayL( 4.0 * Stk::sampleRate() / 22050.0, 100 );
-  reedTable = new ReedTabl();
-  reedTable->setOffset((MY_FLOAT) 0.7);
-  reedTable->setSlope((MY_FLOAT) -0.3);
-  filter = new OneZero;
-  envelope = new Envelope;
-  noise = new Noise;
+  delays_[2].setDelay( 4.0 * Stk::sampleRate() / 22050.0 );
+
+  reedTable_.setOffset( 0.7 );
+  reedTable_.setSlope( -0.3 );
 
   // Calculate the initial tonehole three-port scattering coefficient
-  double r_b = 0.0075;    // main bore radius
-  r_th = 0.003;          // tonehole radius
-  scatter = -pow(r_th,2) / ( pow(r_th,2) + 2*pow(r_b,2) );
+  StkFloat rb = 0.0075;    // main bore radius
+  StkFloat rth = 0.003;    // tonehole radius
+  scatter_ = -pow(rth,2) / ( pow(rth,2) + 2*pow(rb,2) );
 
-  // Calculate tonehole coefficients
-  MY_FLOAT te = 1.4 * r_th;    // effective length of the open hole
-  th_coeff = (te*2*Stk::sampleRate() - 347.23) / (te*2*Stk::sampleRate() + 347.23);
-  tonehole = new PoleZero;
-  // Start with tonehole open
-  tonehole->setA1(-th_coeff);
-  tonehole->setB0(th_coeff);
-  tonehole->setB1(-1.0);
+  // Calculate tonehole coefficients and set for initially open.
+  StkFloat te = 1.4 * rth;    // effective length of the open hole
+  thCoeff_ = (te*2*Stk::sampleRate() - 347.23) / (te*2*Stk::sampleRate() + 347.23);
+  tonehole_.setA1(-thCoeff_);
+  tonehole_.setB0(thCoeff_);
+  tonehole_.setB1(-1.0);
 
   // Calculate register hole filter coefficients
   double r_rh = 0.0015;    // register vent radius
-  te = 1.4 * r_rh;       // effective length of the open hole
+  te = 1.4 * r_rh;         // effective length of the open hole
   double xi = 0.0;         // series resistance term
-  double zeta = 347.23 + 2*PI*pow(r_b,2)*xi/1.1769;
-  double psi = 2*PI*pow(r_b,2)*te / (PI*pow(r_rh,2));
-  rh_coeff = (zeta - 2 * Stk::sampleRate() * psi) / (zeta + 2 * Stk::sampleRate() * psi);
-  rh_gain = -347.23 / (zeta + 2 * Stk::sampleRate() * psi);
-  vent = new PoleZero;
-  vent->setA1(rh_coeff);
-  vent->setB0(1.0);
-  vent->setB1(1.0);
+  double zeta = 347.23 + 2*PI*pow(rb,2)*xi/1.1769;
+  double psi = 2*PI*pow(rb,2)*te / (PI*pow(r_rh,2));
+  StkFloat rhCoeff = (zeta - 2 * Stk::sampleRate() * psi) / (zeta + 2 * Stk::sampleRate() * psi);
+  rhGain_ = -347.23 / (zeta + 2 * Stk::sampleRate() * psi);
+  vent_.setA1( rhCoeff );
+  vent_.setB0(1.0);
+  vent_.setB1(1.0);
   // Start with register vent closed
-  vent->setGain(0.0);
+  vent_.setGain(0.0);
 
   // Concatenate the STK rawwave path to the rawwave file
-  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
-  vibrato->setFrequency((MY_FLOAT) 5.735);
-  outputGain = (MY_FLOAT) 1.0;
-  noiseGain = (MY_FLOAT) 0.2;
-  vibratoGain = (MY_FLOAT) 0.01;
+  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  vibrato_->setFrequency((StkFloat) 5.735);
+  outputGain_ = 1.0;
+  noiseGain_ = 0.2;
+  vibratoGain_ = 0.01;
 }
 
 BlowHole :: ~BlowHole()
 {
-  delete delays[0];
-  delete delays[1];
-  delete delays[2];
-  delete reedTable;
-  delete filter;
-  delete tonehole;
-  delete vent;
-  delete envelope;
-  delete noise;
-  delete vibrato;
+  delete vibrato_;
 }
 
 void BlowHole :: clear()
 {
-  delays[0]->clear();
-  delays[1]->clear();
-  delays[2]->clear();
-  filter->tick((MY_FLOAT) 0.0);
-  tonehole->tick((MY_FLOAT) 0.0);
-  vent->tick((MY_FLOAT) 0.0);
+  delays_[0].clear();
+  delays_[1].clear();
+  delays_[2].clear();
+  filter_.tick( 0.0 );
+  tonehole_.tick( 0.0 );
+  vent_.tick( 0.0 );
 }
 
-void BlowHole :: setFrequency(MY_FLOAT frequency)
+void BlowHole :: setFrequency(StkFloat frequency)
 {
-  MY_FLOAT freakency = frequency;
+  StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
     std::cerr << "BlowHole: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
   // Delay = length - approximate filter delay.
-  MY_FLOAT delay = (Stk::sampleRate() / freakency) * 0.5 - 3.5;
-  delay -= delays[0]->getDelay() + delays[2]->getDelay();
+  StkFloat delay = (Stk::sampleRate() / freakency) * 0.5 - 3.5;
+  delay -= delays_[0].getDelay() + delays_[2].getDelay();
 
   if (delay <= 0.0) delay = 0.3;
-  else if (delay > length) delay = length;
-  delays[1]->setDelay(delay);
+  else if (delay > length_) delay = length_;
+  delays_[1].setDelay(delay);
 }
 
-void BlowHole :: setVent(MY_FLOAT newValue)
+void BlowHole :: setVent(StkFloat newValue)
 {
   // This method allows setting of the register vent "open-ness" at
   // any point between "Open" (newValue = 1) and "Closed"
   // (newValue = 0).
 
-  MY_FLOAT gain;
+  StkFloat gain;
 
-  if (newValue <= 0.0) gain = 0.0;
-  else if (newValue >= 1.0) gain = rh_gain;
-  else gain = newValue * rh_gain;
-  vent->setGain(gain);
+  if (newValue <= 0.0)
+    gain = 0.0;
+  else if (newValue >= 1.0)
+    gain = rhGain_;
+  else
+    gain = newValue * rhGain_;
+
+  vent_.setGain( gain );
 }
 
-void BlowHole :: setTonehole(MY_FLOAT newValue)
+void BlowHole :: setTonehole(StkFloat newValue)
 {
   // This method allows setting of the tonehole "open-ness" at
   // any point between "Open" (newValue = 1) and "Closed"
   // (newValue = 0).
-  MY_FLOAT new_coeff;
+  StkFloat new_coeff;
 
-  if (newValue <= 0.0) new_coeff = 0.9995;
-  else if (newValue >= 1.0) new_coeff = th_coeff;
-  else new_coeff = (newValue * (th_coeff - 0.9995)) + 0.9995;
-  tonehole->setA1(-new_coeff);
-  tonehole->setB0(new_coeff);
+  if ( newValue <= 0.0 )
+    new_coeff = 0.9995;
+  else if ( newValue >= 1.0 )
+    new_coeff = thCoeff_;
+  else
+    new_coeff = (newValue * (thCoeff_ - 0.9995)) + 0.9995;
+
+  tonehole_.setA1( -new_coeff );
+  tonehole_.setB0( new_coeff );
 }
 
-void BlowHole :: startBlowing(MY_FLOAT amplitude, MY_FLOAT rate)
+void BlowHole :: startBlowing(StkFloat amplitude, StkFloat rate)
 {
-  envelope->setRate(rate);
-  envelope->setTarget(amplitude); 
+  envelope_.setRate( rate );
+  envelope_.setTarget( amplitude );
 }
 
-void BlowHole :: stopBlowing(MY_FLOAT rate)
+void BlowHole :: stopBlowing(StkFloat rate)
 {
-  envelope->setRate(rate);
-  envelope->setTarget((MY_FLOAT) 0.0); 
+  envelope_.setRate( rate );
+  envelope_.setTarget( 0.0 ); 
 }
 
-void BlowHole :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void BlowHole :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  setFrequency(frequency);
-  startBlowing((MY_FLOAT) 0.55 + (amplitude * 0.30), amplitude * 0.005);
-  outputGain = amplitude + 0.001;
+  this->setFrequency( frequency );
+  this->startBlowing( 0.55 + (amplitude * 0.30), amplitude * 0.005 );
+  outputGain_ = amplitude + 0.001;
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "BlowHole: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "BlowHole::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void BlowHole :: noteOff(MY_FLOAT amplitude)
+void BlowHole :: noteOff(StkFloat amplitude)
 {
-  this->stopBlowing(amplitude * 0.01);
+  this->stopBlowing( amplitude * 0.01 );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "BlowHole: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "BlowHole::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT BlowHole :: tick()
+StkFloat BlowHole :: tick()
 {
-  MY_FLOAT pressureDiff;
-  MY_FLOAT breathPressure;
-  MY_FLOAT temp;
+  StkFloat pressureDiff;
+  StkFloat breathPressure;
+  StkFloat temp;
 
   // Calculate the breath pressure (envelope + noise + vibrato)
-  breathPressure = envelope->tick(); 
-  breathPressure += breathPressure * noiseGain * noise->tick();
-  breathPressure += breathPressure * vibratoGain * vibrato->tick();
+  breathPressure = envelope_.tick(); 
+  breathPressure += breathPressure * noiseGain_ * noise_.tick();
+  breathPressure += breathPressure * vibratoGain_ * vibrato_->tick();
 
   // Calculate the differential pressure = reflected - mouthpiece pressures
-  pressureDiff = delays[0]->lastOut() - breathPressure;
+  pressureDiff = delays_[0].lastOut() - breathPressure;
 
   // Do two-port junction scattering for register vent
-  MY_FLOAT pa = breathPressure + pressureDiff * reedTable->tick(pressureDiff);
-  MY_FLOAT pb = delays[1]->lastOut();
-  vent->tick(pa+pb);
+  StkFloat pa = breathPressure + pressureDiff * reedTable_.tick( pressureDiff );
+  StkFloat pb = delays_[1].lastOut();
+  vent_.tick( pa+pb );
 
-  lastOutput = delays[0]->tick(vent->lastOut()+pb);
-  lastOutput *= outputGain;
+  lastOutput_ = delays_[0].tick( vent_.lastOut()+pb );
+  lastOutput_ *= outputGain_;
 
   // Do three-port junction scattering (under tonehole)
-  pa += vent->lastOut();
-  pb = delays[2]->lastOut();
-  MY_FLOAT pth = tonehole->lastOut();
-  temp = scatter * (pa + pb - 2 * pth);
+  pa += vent_.lastOut();
+  pb = delays_[2].lastOut();
+  StkFloat pth = tonehole_.lastOut();
+  temp = scatter_ * (pa + pb - 2 * pth);
 
-  delays[2]->tick(filter->tick(pa + temp) * -0.95);
-  delays[1]->tick(pb + temp);
-  tonehole->tick(pa + pb - pth + temp);
+  delays_[2].tick( filter_.tick(pa + temp) * -0.95 );
+  delays_[1].tick( pb + temp );
+  tonehole_.tick( pa + pb - pth + temp );
 
-  return lastOutput;
+  return lastOutput_;
 }
 
-void BlowHole :: controlChange(int number, MY_FLOAT value)
+StkFloat *BlowHole :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& BlowHole :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void BlowHole :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "BlowHole: Control value less than zero!" << std::endl;
+    errorString_ << "BlowHole::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "BlowHole: Control value greater than 128.0!" << std::endl;
+    errorString_ << "BlowHole::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == __SK_ReedStiffness_) // 2
-    reedTable->setSlope( -0.44 + (0.26 * norm) );
+    reedTable_.setSlope( -0.44 + (0.26 * norm) );
   else if (number == __SK_NoiseLevel_) // 4
-    noiseGain = ( norm * 0.4);
+    noiseGain_ = ( norm * 0.4);
   else if (number == __SK_ModFrequency_) // 11
     this->setTonehole( norm );
   else if (number == __SK_ModWheel_) // 1
     this->setVent( norm );
   else if (number == __SK_AfterTouch_Cont_) // 128
-    envelope->setValue( norm );
-  else
-    std::cerr << "BlowHole: Undefined Control Number (" << number << ")!!" << std::endl;
+    envelope_.setValue( norm );
+  else {
+    errorString_ << "BlowHole::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "BlowHole: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "BlowHole::controlChange: number = " << number << ", value = " << value << ".";
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }

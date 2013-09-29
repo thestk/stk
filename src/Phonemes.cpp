@@ -6,7 +6,7 @@
     set of 32 static phoneme formant parameters
     and provide access to those values.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -24,7 +24,7 @@ const char Phonemes :: phonemeNames[32][4] =
    "vvv", "zzz", "thz", "zhh"
   };
 
-const MY_FLOAT Phonemes :: phonemeGains[32][2] =
+const StkFloat Phonemes :: phonemeGains[32][2] =
   {{1.0, 0.0},    // eee
    {1.0, 0.0},    // ihh
    {1.0, 0.0},    // ehh
@@ -66,7 +66,7 @@ const MY_FLOAT Phonemes :: phonemeGains[32][2] =
    {1.0, 1.0}     // zhh
   };
 
-const MY_FLOAT Phonemes :: phonemeParameters[32][4][3] =
+const StkFloat Phonemes :: phonemeParameters[32][4][3] =
   {{  { 273, 0.996,  10},       // eee (beet)
       {2086, 0.945, -16}, 
       {2754, 0.979, -12}, 
@@ -215,64 +215,79 @@ Phonemes :: ~Phonemes(void)
 const char *Phonemes :: name( unsigned int index )
 {
   if ( index > 31 ) {
-    std::cerr << "Phonemes: name index is greater than 31!" << std::endl;
+    std::ostringstream error;
+    error << "Phonemes::name: index is greater than 31!";
+    handleError( error.str(), StkError::WARNING );
     return 0;
   }
   return phonemeNames[index];
 }
 
-MY_FLOAT Phonemes :: voiceGain( unsigned int index )
+StkFloat Phonemes :: voiceGain( unsigned int index )
 {
   if ( index > 31 ) {
-    std::cerr << "Phonemes: voiceGain index is greater than 31!" << std::endl;
+    std::ostringstream error;
+    error << "Phonemes::voiceGain: index is greater than 31!";
+    handleError( error.str(), StkError::WARNING );
     return 0.0;
   }
   return phonemeGains[index][0];
 }
 
-MY_FLOAT Phonemes :: noiseGain( unsigned int index )
+StkFloat Phonemes :: noiseGain( unsigned int index )
 {
   if ( index > 31 ) {
-    std::cerr << "Phonemes: noiseGain index is greater than 31!" << std::endl;
+    std::ostringstream error;
+    error << "Phonemes::noiseGain: index is greater than 31!";
+    handleError( error.str(), StkError::WARNING );
     return 0.0;
   }
   return phonemeGains[index][1];
 }
 
-MY_FLOAT Phonemes :: formantFrequency( unsigned int index, unsigned int partial )
+StkFloat Phonemes :: formantFrequency( unsigned int index, unsigned int partial )
 {
+  std::ostringstream error;
   if ( index > 31 ) {
-    std::cerr << "Phonemes: formantFrequency index is greater than 31!" << std::endl;
+    error << "Phonemes::formantFrequency: index is greater than 31!";
+    handleError( error.str(), StkError::WARNING );
     return 0.0;
   }
   if ( partial > 3 ) {
-    std::cerr << "Phonemes: formantFrequency partial is greater than 3!" << std::endl;
+    error << "Phonemes::formantFrequency: partial is greater than 3!";
+    handleError( error.str(), StkError::WARNING );
     return 0.0;
   }
   return phonemeParameters[index][partial][0];
 }
 
-MY_FLOAT Phonemes :: formantRadius( unsigned int index, unsigned int partial )
+StkFloat Phonemes :: formantRadius( unsigned int index, unsigned int partial )
 {
+  std::ostringstream error;
   if ( index > 31 ) {
-    std::cerr << "Phonemes: formantRadius index is greater than 31!" << std::endl;
+    error << "Phonemes::formantRadius: index is greater than 31!";
+    handleError( error.str(), StkError::WARNING );
     return 0.0;
   }
   if ( partial > 3 ) {
-    std::cerr << "Phonemes: formantRadius partial is greater than 3!" << std::endl;
+    error << "Phonemes::formantRadius: partial is greater than 3!";
+    handleError( error.str(), StkError::WARNING );
     return 0.0;
   }
   return phonemeParameters[index][partial][1];
 }
 
-MY_FLOAT Phonemes :: formantGain( unsigned int index, unsigned int partial )
+StkFloat Phonemes :: formantGain( unsigned int index, unsigned int partial )
 {
+  std::ostringstream error;
   if ( index > 31 ) {
-    std::cerr << "Phonemes: formantGain index is greater than 31!" << std::endl;
+    error << "Phonemes::formantGain: index is greater than 31!";
+    handleError( error.str(), StkError::WARNING );
     return 0.0;
   }
   if ( partial > 3 ) {
-    std::cerr << "Phonemes: formantGain partial is greater than 3!" << std::endl;
+    error << "Phonemes::formantGain: partial is greater than 3!";
+    handleError( error.str(), StkError::WARNING );
     return 0.0;
   }
   return phonemeParameters[index][partial][2];

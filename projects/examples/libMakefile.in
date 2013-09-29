@@ -1,6 +1,6 @@
 ### STK examples Makefile - for various flavors of unix
 
-PROGRAMS = sine play record io tcpIn tcpOut sineosc rtsine bethree controlbee foursine threebees
+PROGRAMS = sine play record io tcpIn tcpOut sineosc rtsine crtsine bethree controlbee foursine threebees playsmf
 RM = /bin/rm
 
 INCLUDE = @include@
@@ -64,6 +64,9 @@ sineosc: sineosc.cpp
 rtsine: rtsine.cpp
 	$(CC) $(CFLAGS) $(DEFS) -o rtsine rtsine.cpp -L../../src $(LIBRARY) -lstk
 
+crtsine: crtsine.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o crtsine crtsine.cpp -L../../src $(LIBRARY) -lstk
+
 bethree: bethree.cpp
 	$(CC) $(CFLAGS) $(DEFS) -o bethree bethree.cpp -L../../src $(LIBRARY) -lstk
 
@@ -75,3 +78,7 @@ foursine: foursine.cpp
 
 threebees: threebees.cpp
 	$(CC) $(CFLAGS) $(DEFS) -o threebees threebees.cpp -L../../src $(LIBRARY) -lstk
+
+playsmf: playsmf.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o playsmf playsmf.cpp -L../../src $(LIBRARY) -lstk
+

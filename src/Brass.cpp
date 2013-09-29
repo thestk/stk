@@ -16,7 +16,7 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -24,153 +24,167 @@
 #include "SKINI.msg"
 #include <math.h>
 
-Brass :: Brass(MY_FLOAT lowestFrequency)
+Brass :: Brass(StkFloat lowestFrequency)
 {
-  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
-  delayLine = new DelayA( 0.5 * length, length );
+  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  delayLine_.setMaximumDelay( length_ );
+  delayLine_.setDelay( 0.5 * length_ );
 
-  lipFilter = new BiQuad();
-  lipFilter->setGain( 0.03 );
-  dcBlock = new PoleZero();
-  dcBlock->setBlockZero();
+  lipFilter_.setGain( 0.03 );
+  dcBlock_.setBlockZero();
 
-  adsr = new ADSR;
-  adsr->setAllTimes( 0.005, 0.001, 1.0, 0.010);
+  adsr_.setAllTimes( 0.005, 0.001, 1.0, 0.010);
 
   // Concatenate the STK rawwave path to the rawwave file
-  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
-  vibrato->setFrequency( 6.137 );
-  vibratoGain = 0.0;
+  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  vibrato_->setFrequency( 6.137 );
+  vibratoGain_ = 0.0;
 
   this->clear();
-	maxPressure = (MY_FLOAT) 0.0;
-  lipTarget = 0.0;
+	maxPressure_ = 0.0;
+  lipTarget_ = 0.0;
 
-  // Necessary to initialize variables.
-  setFrequency( 220.0 );
+  // This is necessary to initialize variables.
+  this->setFrequency( 220.0 );
 }
 
 Brass :: ~Brass()
 {
-  delete delayLine;
-  delete lipFilter;
-  delete dcBlock;
-  delete adsr;
-  delete vibrato;
+  delete vibrato_;
 }
 
 void Brass :: clear()
 {
-  delayLine->clear();
-  lipFilter->clear();
-  dcBlock->clear();
+  delayLine_.clear();
+  lipFilter_.clear();
+  dcBlock_.clear();
 }
 
-void Brass :: setFrequency(MY_FLOAT frequency)
+void Brass :: setFrequency(StkFloat frequency)
 {
-  MY_FLOAT freakency = frequency;
+  StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "Brass: setFrequency parameter is less than or equal to zero!" << std::endl;
+    errorString_ << "Brass::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
     freakency = 220.0;
   }
 
   // Fudge correction for filter delays.
-  slideTarget = (Stk::sampleRate() / freakency * 2.0) + 3.0;
-  delayLine->setDelay(slideTarget); // play a harmonic
+  slideTarget_ = (Stk::sampleRate() / freakency * 2.0) + 3.0;
+  delayLine_.setDelay( slideTarget_ ); // play a harmonic
 
-  lipTarget = freakency;
-  lipFilter->setResonance( freakency, 0.997 );
+  lipTarget_ = freakency;
+  lipFilter_.setResonance( freakency, 0.997 );
 }
 
-void Brass :: setLip(MY_FLOAT frequency)
+void Brass :: setLip(StkFloat frequency)
 {
-  MY_FLOAT freakency = frequency;
+  StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "Brass: setLip parameter is less than or equal to zero!" << std::endl;
+    errorString_ << "Brass::setLip: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
     freakency = 220.0;
   }
 
-  lipFilter->setResonance( freakency, 0.997 );
+  lipFilter_.setResonance( freakency, 0.997 );
 }
 
-void Brass :: startBlowing(MY_FLOAT amplitude, MY_FLOAT rate)
+void Brass :: startBlowing(StkFloat amplitude, StkFloat rate)
 {
-  adsr->setAttackRate(rate);
-  maxPressure = amplitude;
-  adsr->keyOn();
+  adsr_.setAttackRate( rate );
+  maxPressure_ = amplitude;
+  adsr_.keyOn();
 }
 
-void Brass :: stopBlowing(MY_FLOAT rate)
+void Brass :: stopBlowing(StkFloat rate)
 {
-  adsr->setReleaseRate(rate);
-  adsr->keyOff();
+  adsr_.setReleaseRate( rate );
+  adsr_.keyOff();
 }
 
-void Brass :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Brass :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  setFrequency(frequency);
-  this->startBlowing(amplitude, amplitude * 0.001);
+  this->setFrequency( frequency );
+  this->startBlowing( amplitude, amplitude * 0.001 );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Brass: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Brass::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Brass :: noteOff(MY_FLOAT amplitude)
+void Brass :: noteOff(StkFloat amplitude)
 {
-  this->stopBlowing(amplitude * 0.005);
+  this->stopBlowing( amplitude * 0.005 );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Brass: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "Brass::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT Brass :: tick()
+StkFloat Brass :: tick()
 {
-  MY_FLOAT breathPressure = maxPressure * adsr->tick();
-  breathPressure += vibratoGain * vibrato->tick();
+  StkFloat breathPressure = maxPressure_ * adsr_.tick();
+  breathPressure += vibratoGain_ * vibrato_->tick();
 
-  MY_FLOAT mouthPressure = 0.3 * breathPressure;
-  MY_FLOAT borePressure = 0.85 * delayLine->lastOut();
-  MY_FLOAT deltaPressure = mouthPressure - borePressure; // Differential pressure.
-  deltaPressure = lipFilter->tick( deltaPressure );      // Force - > position.
+  StkFloat mouthPressure = 0.3 * breathPressure;
+  StkFloat borePressure = 0.85 * delayLine_.lastOut();
+  StkFloat deltaPressure = mouthPressure - borePressure; // Differential pressure.
+  deltaPressure = lipFilter_.tick( deltaPressure );      // Force - > position.
   deltaPressure *= deltaPressure;                        // Basic position to area mapping.
-  if ( deltaPressure > 1.0 ) deltaPressure = 1.0;         // Non-linear saturation.
-  // The following input scattering assumes the mouthPressure = area.
-  lastOutput = deltaPressure * mouthPressure + ( 1.0 - deltaPressure) * borePressure;
-  lastOutput = delayLine->tick( dcBlock->tick( lastOutput ) );
+  if ( deltaPressure > 1.0 ) deltaPressure = 1.0;        // Non-linear saturation.
 
-  return lastOutput;
+  // The following input scattering assumes the mouthPressure = area.
+  lastOutput_ = deltaPressure * mouthPressure + ( 1.0 - deltaPressure) * borePressure;
+  lastOutput_ = delayLine_.tick( dcBlock_.tick( lastOutput_ ) );
+
+  return lastOutput_;
 }
 
-void Brass :: controlChange(int number, MY_FLOAT value)
+StkFloat *Brass :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Brass :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void Brass :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "Brass: Control value less than zero!" << std::endl;
+    errorString_ << "Brass::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "Brass: Control value greater than 128.0!" << std::endl;
+    errorString_ << "Brass::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == __SK_LipTension_)	{ // 2
-    MY_FLOAT temp = lipTarget * pow( 4.0, (2.0 * norm) - 1.0 );
+    StkFloat temp = lipTarget_ * pow( 4.0, (2.0 * norm) - 1.0 );
     this->setLip(temp);
   }
   else if (number == __SK_SlideLength_) // 4
-    delayLine->setDelay( slideTarget * (0.5 + norm) );
+    delayLine_.setDelay( slideTarget_ * (0.5 + norm) );
   else if (number == __SK_ModFrequency_) // 11
-    vibrato->setFrequency( norm * 12.0 );
+    vibrato_->setFrequency( norm * 12.0 );
   else if (number == __SK_ModWheel_ ) // 1
-    vibratoGain = norm * 0.4;
+    vibratoGain_ = norm * 0.4;
   else if (number == __SK_AfterTouch_Cont_) // 128
-    adsr->setTarget( norm );
-  else
-    std::cerr << "Brass: Undefined Control Number (" << number << ")!!" << std::endl;
+    adsr_.setTarget( norm );
+  else {
+    errorString_ << "Brass::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Brass: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "Brass::controlChange: number = " << number << ", value = " << value << ".";
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }

@@ -6,6 +6,17 @@
 
   by Gary P. Scavone, 2000
 
+  NOTE: This program makes use of blocking audio
+  input/output routines.  On systems where the
+  underlying audio API is based on a callback scheme
+  (Macintosh OS-X, Windows ASIO, and Linux JACK), these
+  routines are not fully robust (over/underruns can
+  happen with some frequency).  See the STK tutorial
+  for example programs using callback schemes and/or
+  visit the RtAudio tutorial page
+  (http://music.mcgill.ca/~gary/rtaudio/) for more
+  information.
+
   This program is currently written to play
   the input data in realtime.  However, it
   is simple to replace the instance of
@@ -15,7 +26,7 @@
   The streamed data format is assumed to be
   signed 16-bit integers.  However, both
   TcpWvIn and TcpWvOut can be initialized
-  to read/write any of the defined STK_FORMATs.
+  to read/write any of the defined StkFormats.
 
   The class TcpWvIn sets up a socket server
   and waits for a connection.  Therefore,

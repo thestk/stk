@@ -14,40 +14,45 @@
     used in fixed delay-length applications, such
     as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Delay.h"
-#include <iostream>
 
-Delay :: Delay()
+Delay :: Delay() : Filter()
 {
-  // Default max delay length set to 4095.
-  length = 4096;
-  delete [] inputs;
-  inputs = new MY_FLOAT[length];
+  // Default maximum delay length set to 4095.
+  inputs_.resize( 4096 );
   this->clear();
 
-  inPoint = 0;
-  outPoint = 0;
-  delay = 0;
+  inPoint_ = 0;
+  outPoint_ = 0;
+  delay_ = 0;
 }
 
-Delay :: Delay(long theDelay, long maxDelay)
+Delay :: Delay(unsigned long delay, unsigned long maxDelay)
 {
   // Writing before reading allows delays from 0 to length-1. 
   // If we want to allow a delay of maxDelay, we need a
   // delay-line of length = maxDelay+1.
-  length = maxDelay+1;
+  if ( maxDelay < 1 ) {
+    errorString_ << "Delay::Delay: maxDelay must be > 0!\n";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
 
-  // We need to delete the previously allocated inputs.
-  delete [] inputs;
-  inputs = new MY_FLOAT[length];
-  this->clear();
+  if ( delay > maxDelay ) {
+    errorString_ << "Delay::Delay: maxDelay must be > than delay argument!\n";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
 
-  inPoint = 0;
-  this->setDelay(theDelay);
+  if ( maxDelay > inputs_.size()-1 ) {
+    inputs_.resize( maxDelay+1 );
+    this->clear();
+  }
+
+  inPoint_ = 0;
+  this->setDelay( delay );
 }
 
 Delay :: ~Delay()
@@ -56,109 +61,135 @@ Delay :: ~Delay()
 
 void Delay :: clear(void)
 {
-  long i;
-  for (i=0;i<length;i++) inputs[i] = 0.0;
-  outputs[0] = 0.0;
+  for (unsigned int i=0; i<inputs_.size(); i++)
+    inputs_[i] = 0.0;
+  outputs_[0] = 0.0;
 }
 
-void Delay :: setDelay(long theDelay)
+void Delay :: setMaximumDelay(unsigned long delay)
 {
-  if (theDelay > length-1) { // The value is too big.
-    std::cerr << "Delay: setDelay(" << theDelay << ") too big!" << std::endl;
-    // Force delay to maxLength.
-    outPoint = inPoint + 1;
-    delay = length - 1;
+  if ( delay < inputs_.size() ) return;
+
+  if ( delay < 0 ) {
+    errorString_ << "Delay::setMaximumDelay: argument (" << delay << ") less than zero!\n";
+    handleError( StkError::WARNING );
+    return;
   }
-  else if (theDelay < 0 ) {
-    std::cerr << "Delay: setDelay(" << theDelay << ") less than zero!" << std::endl;
-    outPoint = inPoint;
-    delay = 0;
-  }
-  else {
-    outPoint = inPoint - (long) theDelay;  // read chases write
-    delay = theDelay;
+  else if (delay < delay_ ) {
+    errorString_ << "Delay::setMaximumDelay: argument (" << delay << ") less than current delay setting (" << delay_ << ")!\n";
+    handleError( StkError::WARNING );
+    return;
   }
 
-  while (outPoint < 0) outPoint += length;  // modulo maximum length
+  inputs_.resize( delay + 1 );
 }
 
-long Delay :: getDelay(void) const
+void Delay :: setDelay(unsigned long delay)
 {
-  return (long)delay;
+  if ( delay > inputs_.size() - 1 ) { // The value is too big.
+    errorString_ << "Delay::setDelay: argument (" << delay << ") too big ... setting to maximum!\n";
+    handleError( StkError::WARNING );
+
+    // Force delay to maximum length.
+    outPoint_ = inPoint_ + 1;
+    if ( outPoint_ == inputs_.size() ) outPoint_ = 0;
+    delay_ = inputs_.size() - 1;
+  }
+  else if ( delay < 0 ) {
+    errorString_ << "Delay::setDelay: argument (" << delay << ") less than zero ... setting to zero!\n";
+    handleError( StkError::WARNING );
+
+    outPoint_ = inPoint_;
+    delay_ = 0;
+  }
+  else { // read chases write
+    if ( inPoint_ >= delay ) outPoint_ = inPoint_ - delay;
+    else outPoint_ = inputs_.size() + inPoint_ - delay;
+    delay_ = delay;
+  }
 }
 
-MY_FLOAT Delay :: energy(void) const
+unsigned long Delay :: getDelay(void) const
 {
-  int i;
-  register MY_FLOAT e = 0;
-  if (inPoint >= outPoint) {
-    for (i=outPoint; i<inPoint; i++) {
-      register MY_FLOAT t = inputs[i];
+  return (unsigned long) delay_;
+}
+
+StkFloat Delay :: energy(void) const
+{
+  unsigned long i;
+  register StkFloat e = 0;
+  if (inPoint_ >= outPoint_) {
+    for (i=outPoint_; i<inPoint_; i++) {
+      register StkFloat t = inputs_[i];
       e += t*t;
     }
   } else {
-    for (i=outPoint; i<length; i++) {
-      register MY_FLOAT t = inputs[i];
+    for (i=outPoint_; i<inputs_.size(); i++) {
+      register StkFloat t = inputs_[i];
       e += t*t;
     }
-    for (i=0; i<inPoint; i++) {
-      register MY_FLOAT t = inputs[i];
+    for (i=0; i<inPoint_; i++) {
+      register StkFloat t = inputs_[i];
       e += t*t;
     }
   }
   return e;
 }
 
-MY_FLOAT Delay :: contentsAt(unsigned long tapDelay) const
+StkFloat Delay :: contentsAt(unsigned long tapDelay)
 {
-  long i = tapDelay;
+  unsigned long i = tapDelay;
   if (i < 1) {
-    std::cerr << "Delay: contentsAt(" << tapDelay << ") too small!" << std::endl;
-    i = 1;
+    errorString_ << "Delay::contentsAt: argument (" << tapDelay << ") too small!";
+    handleError( StkError::WARNING );
+    return 0.0;
   }
-  else if (i > delay) {
-    std::cerr << "Delay: contentsAt(" << tapDelay << ") too big!" << std::endl;
-    i = (long) delay;
+  else if (i > delay_) {
+    errorString_ << "Delay::contentsAt: argument (" << tapDelay << ") too big!";
+    handleError( StkError::WARNING );
+    return 0.0;
   }
 
-  long tap = inPoint - i;
+  long tap = inPoint_ - i;
   if (tap < 0) // Check for wraparound.
-    tap += length;
+    tap += inputs_.size();
 
-  return inputs[tap];
+  return inputs_[tap];
 }
 
-MY_FLOAT Delay :: lastOut(void) const
+StkFloat Delay :: lastOut(void) const
 {
   return Filter::lastOut();
 }
 
-MY_FLOAT Delay :: nextOut(void) const
+StkFloat Delay :: nextOut(void)
 {
-  return inputs[outPoint];
+  return inputs_[outPoint_];
 }
 
-MY_FLOAT Delay :: tick(MY_FLOAT sample)
+StkFloat Delay :: tick(StkFloat sample)
 {
-  inputs[inPoint++] = sample;
+  inputs_[inPoint_++] = sample;
 
   // Check for end condition
-  if (inPoint == length)
-    inPoint -= length;
+  if (inPoint_ == inputs_.size())
+    inPoint_ = 0;
 
   // Read out next value
-  outputs[0] = inputs[outPoint++];
+  outputs_[0] = inputs_[outPoint_++];
 
-  if (outPoint>=length)
-    outPoint -= length;
+  if (outPoint_ == inputs_.size())
+    outPoint_ = 0;
 
-  return outputs[0];
+  return outputs_[0];
 }
 
-MY_FLOAT *Delay :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *Delay :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick(vector[i]);
+  return Filter::tick( vector, vectorSize );
+}
 
-  return vector;
+StkFrames& Delay :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Filter::tick( frames, channel );
 }

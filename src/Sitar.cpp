@@ -13,105 +13,113 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Sitar.h"
 #include <math.h>
 
-Sitar :: Sitar(MY_FLOAT lowestFrequency)
+Sitar :: Sitar(StkFloat lowestFrequency)
 {
-  length = (long) (Stk::sampleRate() / lowestFrequency + 1);
-  loopGain = (MY_FLOAT) 0.999;
-  delayLine = new DelayA( (MY_FLOAT)(length / 2.0), length );
-  delay = length / 2.0;
-  targetDelay = delay;
+  unsigned long length = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  delayLine_.setMaximumDelay( length );
+  delay_ = 0.5 * length;
+  delayLine_.setDelay( delay_ );
+  targetDelay_ = delay_;
 
-  loopFilter = new OneZero;
-  loopFilter->setZero(0.01);
+  loopFilter_.setZero(0.01);
+  loopGain_ = 0.999;
 
-  envelope = new ADSR();
-  envelope->setAllTimes(0.001, 0.04, 0.0, 0.5);
-
-  noise = new Noise;
+  envelope_.setAllTimes(0.001, 0.04, 0.0, 0.5);
   this->clear();
 }
 
 Sitar :: ~Sitar()
 {
-  delete delayLine;
-  delete loopFilter;
-  delete noise;
-  delete envelope;
 }
 
 void Sitar :: clear()
 {
-  delayLine->clear();
-  loopFilter->clear();
+  delayLine_.clear();
+  loopFilter_.clear();
 }
 
-void Sitar :: setFrequency(MY_FLOAT frequency)
+void Sitar :: setFrequency(StkFloat frequency)
 {
-  MY_FLOAT freakency = frequency;
+  StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
-    std::cerr << "Sitar: setFrequency parameter is less than or equal to zero!" << std::endl;
+    errorString_ << "Sitar::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING );
     freakency = 220.0;
   }
 
-  targetDelay = (Stk::sampleRate() / freakency);
-  delay = targetDelay * (1.0 + (0.05 * noise->tick()));
-  delayLine->setDelay(delay);
-  loopGain = 0.995 + (freakency * 0.0000005);
-  if (loopGain > 0.9995) loopGain = 0.9995;
+  targetDelay_ = (Stk::sampleRate() / freakency);
+  delay_ = targetDelay_ * (1.0 + (0.05 * noise_.tick()));
+  delayLine_.setDelay( delay_ );
+  loopGain_ = 0.995 + (freakency * 0.0000005);
+  if ( loopGain_ > 0.9995 ) loopGain_ = 0.9995;
 }
 
-void Sitar :: pluck(MY_FLOAT amplitude)
+void Sitar :: pluck(StkFloat amplitude)
 {
-  envelope->keyOn();
+  envelope_.keyOn();
 }
 
-void Sitar :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Sitar :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  setFrequency(frequency);
-  pluck(amplitude);
-  amGain = 0.1 * amplitude;
+  this->setFrequency( frequency );
+  this->pluck( amplitude );
+  amGain_ = 0.1 * amplitude;
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Sitar: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Sitar::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Sitar :: noteOff(MY_FLOAT amplitude)
+void Sitar :: noteOff(StkFloat amplitude)
 {
-  loopGain = (MY_FLOAT) 1.0 - amplitude;
-  if ( loopGain < 0.0 ) {
-    std::cerr << "Plucked: noteOff amplitude greater than 1.0!" << std::endl;
-    loopGain = 0.0;
+  loopGain_ = (StkFloat) 1.0 - amplitude;
+  if ( loopGain_ < 0.0 ) {
+    errorString_ << "Sitar::noteOff: amplitude is greater than 1.0 ... setting to 1.0!";
+    handleError( StkError::WARNING );
+    loopGain_ = 0.0;
   }
-  else if ( loopGain > 1.0 ) {
-    std::cerr << "Plucked: noteOff amplitude less than or zero!" << std::endl;
-    loopGain = (MY_FLOAT) 0.99999;
+  else if ( loopGain_ > 1.0 ) {
+    errorString_ << "Sitar::noteOff: amplitude is < 0.0  ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    loopGain_ = 0.99999;
   }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Plucked: NoteOff amplitude = " << amplitude << std::endl;
+  errorString_ << "Sitar::NoteOff: amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-MY_FLOAT Sitar :: tick()
+StkFloat Sitar :: tick()
 {
-  if ( fabs(targetDelay - delay) > 0.001 ) {
-    if (targetDelay < delay)
-      delay *= 0.99999;
+  if ( fabs(targetDelay_ - delay_) > 0.001 ) {
+    if ( targetDelay_ < delay_ )
+      delay_ *= 0.99999;
     else
-      delay *= 1.00001;
-    delayLine->setDelay(delay);
+      delay_ *= 1.00001;
+    delayLine_.setDelay( delay_ );
   }
 
-  lastOutput = delayLine->tick( loopFilter->tick( delayLine->lastOut() * loopGain ) + 
-                                (amGain * envelope->tick() * noise->tick()));
+  lastOutput_ = delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ ) + 
+                                (amGain_ * envelope_.tick() * noise_.tick()));
   
-  return lastOutput;
+  return lastOutput_;
+}
+
+StkFloat *Sitar :: tick(StkFloat *vector, unsigned int vectorSize)
+{
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Sitar :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
 }

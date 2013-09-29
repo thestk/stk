@@ -25,21 +25,21 @@
     an ensemble.  Alternately, control changes can
     be sent to all voices on a given channel.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
-#if !defined(__VOICER_H)
-#define __VOICER_H
+#ifndef STK_VOICER_H
+#define STK_VOICER_H
 
-#include "Stk.h"
 #include "Instrmnt.h"
+#include <vector>
 
 class Voicer : public Stk
 {
 public:
-  //! Class constructor taking the maximum number of instruments to control and an optional note decay time (in seconds).
-  Voicer( int maxInstruments, MY_FLOAT decayTime=0.2 );
+  //! Class constructor taking an optional note decay time (in seconds).
+  Voicer( StkFloat decayTime=0.2 );
 
   //! Class destructor.
   ~Voicer();
@@ -68,81 +68,93 @@ public:
     found for a specified non-zero channel value, the function returns
     -1.  The amplitude value should be in the range 0.0 - 128.0.
   */
-  long noteOn( MY_FLOAT noteNumber, MY_FLOAT amplitude, int channel=0 );
+  long noteOn( StkFloat noteNumber, StkFloat amplitude, int channel=0 );
 
   //! Send a noteOff to all voices having the given noteNumber and optional channel (default channel = 0).
   /*!
     The amplitude value should be in the range 0.0 - 128.0.
   */
-  void noteOff( MY_FLOAT noteNumber, MY_FLOAT amplitude, int channel=0 );
+  void noteOff( StkFloat noteNumber, StkFloat amplitude, int channel=0 );
 
   //! Send a noteOff to the voice with the given note tag.
   /*!
     The amplitude value should be in the range 0.0 - 128.0.
   */
-  void noteOff( long tag, MY_FLOAT amplitude );
+  void noteOff( long tag, StkFloat amplitude );
 
   //! Send a frequency update message to all voices assigned to the optional channel argument (default channel = 0).
   /*!
     The \e noteNumber argument corresponds to a MIDI note number, though it is a floating-point value and can range beyond the normal 0-127 range.
    */
-  void setFrequency( MY_FLOAT noteNumber, int channel=0 );
+  void setFrequency( StkFloat noteNumber, int channel=0 );
 
   //! Send a frequency update message to the voice with the given note tag.
   /*!
     The \e noteNumber argument corresponds to a MIDI note number, though it is a floating-point value and can range beyond the normal 0-127 range.
    */
-  void setFrequency( long tag, MY_FLOAT noteNumber );
+  void setFrequency( long tag, StkFloat noteNumber );
 
   //! Send a pitchBend message to all voices assigned to the optional channel argument (default channel = 0).
-  void pitchBend( MY_FLOAT value, int channel=0 );
+  void pitchBend( StkFloat value, int channel=0 );
 
   //! Send a pitchBend message to the voice with the given note tag.
-  void pitchBend( long tag, MY_FLOAT value );
+  void pitchBend( long tag, StkFloat value );
 
   //! Send a controlChange to all instruments assigned to the optional channel argument (default channel = 0).
-  void controlChange( int number, MY_FLOAT value, int channel=0 );
+  void controlChange( int number, StkFloat value, int channel=0 );
 
   //! Send a controlChange to the voice with the given note tag.
-  void controlChange( long tag, int number, MY_FLOAT value );
+  void controlChange( long tag, int number, StkFloat value );
 
   //! Send a noteOff message to all existing voices.
   void silence( void );
 
   //! Mix the output for all sounding voices.
-  MY_FLOAT tick();
+  StkFloat tick();
 
   //! Compute \e vectorSize output mixes and return them in \e vector.
-  MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
+  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument should be one or greater (the first
+    channel is specified by 1).  An StkError will be thrown if the \c
+    channel argument is zero or it is greater than the number of
+    channels in the StkFrames object.
+  */
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
 
   //! Return the last output value.
-  MY_FLOAT lastOut() const;
+  StkFloat lastOut() const;
 
   //! Return the last left output value.
-  MY_FLOAT lastOutLeft() const;
+  StkFloat lastOutLeft() const;
 
   //! Return the last right output value.
-  MY_FLOAT lastOutRight() const;
+  StkFloat lastOutRight() const;
 
 protected:
 
-  typedef struct {
+  struct Voice {
     Instrmnt *instrument;
     long tag;
-    MY_FLOAT noteNumber;
-    MY_FLOAT frequency;
+    StkFloat noteNumber;
+    StkFloat frequency;
     int sounding;
     int channel;
-  } Voice;
 
-  int  nVoices;
-  int maxVoices;
-  Voice *voices;
-  long tags;
-  int muteTime;
-  MY_FLOAT lastOutput;
-  MY_FLOAT lastOutputLeft;
-  MY_FLOAT lastOutputRight;
+    // Default constructor.
+    Voice()
+      :instrument(0), tag(0), noteNumber(-1.0), frequency(0.0),
+         sounding(0), channel(0) {}
+  };
+
+  std::vector<Voice> voices_;
+  long tags_;
+  int muteTime_;
+  StkFloat lastOutput_;
+  StkFloat lastOutputLeft_;
+  StkFloat lastOutputRight_;
 };
 
 #endif

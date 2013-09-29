@@ -23,139 +23,155 @@
        - String Detuning = 1
        - Microphone Position = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
 #include "Mandolin.h"
 #include "SKINI.msg"
 
-Mandolin :: Mandolin(MY_FLOAT lowestFrequency)
+Mandolin :: Mandolin(StkFloat lowestFrequency)
   : PluckTwo(lowestFrequency)
 {
   // Concatenate the STK rawwave path to the rawwave files
-  soundfile[0] = new WvIn( (Stk::rawwavePath() + "mand1.raw").c_str(), TRUE );
-  soundfile[1] = new WvIn( (Stk::rawwavePath() + "mand2.raw").c_str(), TRUE );
-  soundfile[2] = new WvIn( (Stk::rawwavePath() + "mand3.raw").c_str(), TRUE );
-  soundfile[3] = new WvIn( (Stk::rawwavePath() + "mand4.raw").c_str(), TRUE );
-  soundfile[4] = new WvIn( (Stk::rawwavePath() + "mand5.raw").c_str(), TRUE );
-  soundfile[5] = new WvIn( (Stk::rawwavePath() + "mand6.raw").c_str(), TRUE );
-  soundfile[6] = new WvIn( (Stk::rawwavePath() + "mand7.raw").c_str(), TRUE );
-  soundfile[7] = new WvIn( (Stk::rawwavePath() + "mand8.raw").c_str(), TRUE );
-  soundfile[8] = new WvIn( (Stk::rawwavePath() + "mand9.raw").c_str(), TRUE );
-  soundfile[9] = new WvIn( (Stk::rawwavePath() + "mand10.raw").c_str(), TRUE );
-  soundfile[10] = new WvIn( (Stk::rawwavePath() + "mand11.raw").c_str(), TRUE );
-  soundfile[11] = new WvIn( (Stk::rawwavePath() + "mand12.raw").c_str(), TRUE );
+  soundfile_[0] = new WvIn( (Stk::rawwavePath() + "mand1.raw").c_str(), true );
+  soundfile_[1] = new WvIn( (Stk::rawwavePath() + "mand2.raw").c_str(), true );
+  soundfile_[2] = new WvIn( (Stk::rawwavePath() + "mand3.raw").c_str(), true );
+  soundfile_[3] = new WvIn( (Stk::rawwavePath() + "mand4.raw").c_str(), true );
+  soundfile_[4] = new WvIn( (Stk::rawwavePath() + "mand5.raw").c_str(), true );
+  soundfile_[5] = new WvIn( (Stk::rawwavePath() + "mand6.raw").c_str(), true );
+  soundfile_[6] = new WvIn( (Stk::rawwavePath() + "mand7.raw").c_str(), true );
+  soundfile_[7] = new WvIn( (Stk::rawwavePath() + "mand8.raw").c_str(), true );
+  soundfile_[8] = new WvIn( (Stk::rawwavePath() + "mand9.raw").c_str(), true );
+  soundfile_[9] = new WvIn( (Stk::rawwavePath() + "mand10.raw").c_str(), true );
+  soundfile_[10] = new WvIn( (Stk::rawwavePath() + "mand11.raw").c_str(), true );
+  soundfile_[11] = new WvIn( (Stk::rawwavePath() + "mand12.raw").c_str(), true );
 
-  directBody = 1.0;
-  mic = 0;
-  dampTime = 0;
-  waveDone = soundfile[mic]->isFinished();
+  mic_ = 0;
+  dampTime_ = 0;
+  waveDone_ = soundfile_[mic_]->isFinished();
 }
 
 Mandolin :: ~Mandolin()
 {
   for ( int i=0; i<12; i++ )
-    delete soundfile[i];
+    delete soundfile_[i];
 }
 
-void Mandolin :: pluck(MY_FLOAT amplitude)
+void Mandolin :: pluck(StkFloat amplitude)
 {
   // This function gets interesting, because pluck
   // may be longer than string length, so we just
   // reset the soundfile and add in the pluck in
   // the tick method.
-  soundfile[mic]->reset();
-  waveDone = false;
-  pluckAmplitude = amplitude;
+  soundfile_[mic_]->reset();
+  waveDone_ = false;
+  pluckAmplitude_ = amplitude;
   if ( amplitude < 0.0 ) {
-    std::cerr << "Mandolin: pluck amplitude parameter less than zero!" << std::endl;
-    pluckAmplitude = 0.0;
+    errorString_ << "Mandolin::pluck: amplitude parameter less than zero ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    pluckAmplitude_ = 0.0;
   }
   else if ( amplitude > 1.0 ) {
-    std::cerr << "Mandolin: pluck amplitude parameter greater than 1.0!" << std::endl;
-    pluckAmplitude = 1.0;
+    errorString_ << "Mandolin::pluck: amplitude parameter greater than one ... setting to 1.0!";
+    handleError( StkError::WARNING );
+    pluckAmplitude_ = 1.0;
   }
 
   // Set the pick position, which puts zeroes at position * length.
-  combDelay->setDelay((MY_FLOAT) 0.5 * pluckPosition * lastLength); 
-  dampTime = (long) lastLength;   // See tick method below.
+  combDelay_.setDelay( 0.5 * pluckPosition_ * lastLength_ ); 
+  dampTime_ = (long) lastLength_;   // See tick method below.
 }
 
-void Mandolin :: pluck(MY_FLOAT amplitude, MY_FLOAT position)
+void Mandolin :: pluck(StkFloat amplitude, StkFloat position)
 {
   // Pluck position puts zeroes at position * length.
-  pluckPosition = position;
+  pluckPosition_ = position;
   if ( position < 0.0 ) {
-    std::cerr << "Mandolin: pluck position parameter less than zero!" << std::endl;
-    pluckPosition = 0.0;
+    std::cerr << "Mandolin::pluck: position parameter less than zero ... setting to 0.0!";
+    handleError( StkError::WARNING );
+    pluckPosition_ = 0.0;
   }
   else if ( position > 1.0 ) {
-    std::cerr << "Mandolin: pluck position parameter greater than 1.0!" << std::endl;
-    pluckPosition = 1.0;
+    errorString_ << "Mandolin::pluck: amplitude parameter greater than one ... setting to 1.0!";
+    handleError( StkError::WARNING );
+    pluckPosition_ = 1.0;
   }
 
-  this->pluck(amplitude);
+  this->pluck( amplitude );
 }
 
-void Mandolin :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
+void Mandolin :: noteOn(StkFloat frequency, StkFloat amplitude)
 {
-  this->setFrequency(frequency);
-  this->pluck(amplitude);
+  this->setFrequency( frequency );
+  this->pluck( amplitude );
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Mandolin: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
+  errorString_ << "Mandolin::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
+  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 
-void Mandolin :: setBodySize(MY_FLOAT size)
+void Mandolin :: setBodySize(StkFloat size)
 {
   // Scale the commuted body response by its sample rate (22050).
-  MY_FLOAT rate = size * 22050.0 / Stk::sampleRate();
+  StkFloat rate = size * 22050.0 / Stk::sampleRate();
   for ( int i=0; i<12; i++ )
-    soundfile[i]->setRate(rate);
+    soundfile_[i]->setRate( rate );
 }
 
-MY_FLOAT Mandolin :: tick()
+StkFloat Mandolin :: tick()
 {
-  MY_FLOAT temp = 0.0;
-  if ( !waveDone ) {
+  StkFloat temp = 0.0;
+  if ( !waveDone_ ) {
     // Scale the pluck excitation with comb
     // filtering for the duration of the file.
-    temp = soundfile[mic]->tick() * pluckAmplitude;
-    temp = temp - combDelay->tick(temp);
-    waveDone = soundfile[mic]->isFinished();
+    temp = soundfile_[mic_]->tick() * pluckAmplitude_;
+    temp = temp - combDelay_.tick(temp);
+    waveDone_ = soundfile_[mic_]->isFinished();
   }
 
   // Damping hack to help avoid overflow on re-plucking.
-  if ( dampTime >=0 ) {
-    dampTime -= 1;
+  if ( dampTime_ >=0 ) {
+    dampTime_ -= 1;
     // Calculate 1st delay filtered reflection plus pluck excitation.
-    lastOutput = delayLine->tick( filter->tick( temp + (delayLine->lastOut() * (MY_FLOAT) 0.7) ) );
+    lastOutput_ = delayLine_.tick( filter_.tick( temp + (delayLine_.lastOut() * 0.7) ) );
     // Calculate 2nd delay just like the 1st.
-    lastOutput += delayLine2->tick( filter2->tick( temp + (delayLine2->lastOut() * (MY_FLOAT) 0.7) ) );
+    lastOutput_ += delayLine2_.tick( filter2_.tick( temp + (delayLine2_.lastOut() * 0.7) ) );
   }
   else { // No damping hack after 1 period.
     // Calculate 1st delay filtered reflection plus pluck excitation.
-    lastOutput = delayLine->tick( filter->tick( temp + (delayLine->lastOut() * loopGain) ) );
+    lastOutput_ = delayLine_.tick( filter_.tick( temp + (delayLine_.lastOut() * loopGain_) ) );
     // Calculate 2nd delay just like the 1st.
-    lastOutput += delayLine2->tick( filter2->tick( temp + (delayLine2->lastOut() * loopGain) ) );
+    lastOutput_ += delayLine2_.tick( filter2_.tick( temp + (delayLine2_.lastOut() * loopGain_) ) );
   }
 
-  lastOutput *= (MY_FLOAT) 0.3;
-  return lastOutput;
+  lastOutput_ *= 0.3;
+  return lastOutput_;
 }
 
-void Mandolin :: controlChange(int number, MY_FLOAT value)
+StkFloat *Mandolin :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  MY_FLOAT norm = value * ONE_OVER_128;
+  return Instrmnt::tick( vector, vectorSize );
+}
+
+StkFrames& Mandolin :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Instrmnt::tick( frames, channel );
+}
+
+void Mandolin :: controlChange(int number, StkFloat value)
+{
+  StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    std::cerr << "Mandolin: Control value less than zero!" << std::endl;
+    errorString_ << "Mandolin::controlChange: control value less than zero ... setting to zero!";
+    handleError( StkError::WARNING );
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    std::cerr << "Mandolin: Control value greater than 128.0!" << std::endl;
+    errorString_ << "Mandolin::controlChange: control value greater than 128.0 ... setting to 128.0!";
+    handleError( StkError::WARNING );
   }
 
   if (number == __SK_BodySize_) // 2
@@ -163,15 +179,18 @@ void Mandolin :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_PickPosition_) // 4
     this->setPluckPosition( norm );
   else if (number == __SK_StringDamping_) // 11
-    this->setBaseLoopGain((MY_FLOAT) 0.97 + (norm * (MY_FLOAT) 0.03));
+    this->setBaseLoopGain( 0.97 + (norm * 0.03));
   else if (number == __SK_StringDetune_) // 1
-    this->setDetune((MY_FLOAT) 1.0 - (norm * (MY_FLOAT) 0.1));
+    this->setDetune( 1.0 - (norm * 0.1) );
   else if (number == __SK_AfterTouch_Cont_) // 128
-    mic = (int) (norm * 11.0);
-  else
-    std::cerr << "Mandolin: Undefined Control Number (" << number << ")!!" << std::endl;
+    mic_ = (int) (norm * 11.0);
+  else {
+    errorString_ << "Mandolin::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 
 #if defined(_STK_DEBUG_)
-  std::cerr << "Mandolin: controlChange number = " << number << ", value = " << value << std::endl;
+    errorString_ << "Mandolin::controlChange: number = " << number << ", value = " << value << ".";
+    handleError( StkError::DEBUG_WARNING );
 #endif
 }

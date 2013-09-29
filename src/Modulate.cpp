@@ -6,7 +6,7 @@
     modulations to give a nice, natural human
     modulation function.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
 */
 /***************************************************/
 
@@ -15,62 +15,58 @@
 Modulate :: Modulate()
 {
   // Concatenate the STK rawwave path to the rawwave file
-  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
-  vibrato->setFrequency( 6.0 );
-  vibratoGain = 0.04;
+  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
+  vibrato_->setFrequency( 6.0 );
+  vibratoGain_ = 0.04;
 
-  noise = new SubNoise(330);
-  randomGain = 0.05;
+  noise_.setRate( 330 );
+  randomGain_ = 0.05;
 
-  filter = new OnePole( 0.999 );
-  filter->setGain( randomGain );
+  filter_.setPole( 0.999 );
+  filter_.setGain( randomGain_ );
 }
 
 Modulate :: ~Modulate()
 {
-  delete vibrato;
-  delete noise;
-  delete filter;
+  delete vibrato_;
 }
 
 void Modulate :: reset()
 {
-  lastOutput = (MY_FLOAT)  0.0;
+  lastOutput_ = (StkFloat)  0.0;
 }
 
-void Modulate :: setVibratoRate(MY_FLOAT aRate)
+void Modulate :: setVibratoRate(StkFloat rate)
 {
-  vibrato->setFrequency( aRate );
+  vibrato_->setFrequency( rate );
 }
 
-void Modulate :: setVibratoGain(MY_FLOAT aGain)
+void Modulate :: setVibratoGain(StkFloat gain)
 {
-  vibratoGain = aGain;
+  vibratoGain_ = gain;
 }
 
-void Modulate :: setRandomGain(MY_FLOAT aGain)
+void Modulate :: setRandomGain(StkFloat gain)
 {
-  randomGain = aGain;
-  filter->setGain( randomGain );
+  randomGain_ = gain;
+  filter_.setGain( randomGain_ );
 }
 
-MY_FLOAT Modulate :: tick()
+StkFloat Modulate :: tick()
 {
   // Compute periodic and random modulations.
-  lastOutput = vibratoGain * vibrato->tick();
-  lastOutput += filter->tick( noise->tick() );
-  return lastOutput;                        
+  lastOutput_ = vibratoGain_ * vibrato_->tick();
+  lastOutput_ += filter_.tick( noise_.tick() );
+  return lastOutput_;
 }
 
-MY_FLOAT *Modulate :: tick(MY_FLOAT *vector, unsigned int vectorSize)
+StkFloat *Modulate :: tick(StkFloat *vector, unsigned int vectorSize)
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick();
-
-  return vector;
+  return Generator::tick( vector, vectorSize );
 }
 
-MY_FLOAT Modulate :: lastOut() const
+StkFrames& Modulate :: tick( StkFrames& frames, unsigned int channel )
 {
-  return lastOutput;
+  return Generator::tick( frames, channel );
 }
+

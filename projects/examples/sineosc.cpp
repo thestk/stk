@@ -13,7 +13,7 @@ int main()
 
   try {
     // Define and load the sine wave file
-    input = new WaveLoop( "rawwaves/sinewave.raw", TRUE );
+    input = new WaveLoop( "rawwaves/sinewave.raw", true );
 
     // Define and open a 16-bit, one-channel WAV formatted output file
     output = new WvOut( "hellosine.wav", 1, WvOut::WVOUT_WAV, Stk::STK_SINT16 );
