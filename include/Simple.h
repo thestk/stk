@@ -1,3 +1,15 @@
+#ifndef STK_SIMPLE_H
+#define STK_SIMPLE_H
+
+#include "Instrmnt.h"
+#include "ADSR.h"
+#include "FileLoop.h"
+#include "OnePole.h"
+#include "BiQuad.h"
+#include "Noise.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class Simple
     \brief STK wavetable/noise instrument.
@@ -13,19 +25,9 @@
        - Envelope Rate = 11
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_SIMPLE_H
-#define STK_SIMPLE_H
-
-#include "Instrmnt.h"
-#include "ADSR.h"
-#include "WaveLoop.h"
-#include "OnePole.h"
-#include "BiQuad.h"
-#include "Noise.h"
 
 class Simple : public Instrmnt
 {
@@ -34,38 +36,39 @@ class Simple : public Instrmnt
   /*!
     An StkError will be thrown if the rawwave path is incorrectly set.
   */
-  Simple();
+  Simple( void );
 
   //! Class destructor.
-  ~Simple();
+  ~Simple( void );
 
   //! Clear internal states.
-  void clear();
+  void clear( void );
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(StkFloat frequency);
+  void setFrequency( StkFloat frequency );
 
   //! Start envelope toward "on" target.
-  void keyOn();
+  void keyOn( void );
 
   //! Start envelope toward "off" target.
-  void keyOff();
+  void keyOff( void );
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
 
-  StkFloat computeSample( void );
-
   ADSR      adsr_; 
-  WaveLoop *loop_;
+  FileLoop *loop_;
   OnePole   filter_;
   BiQuad    biquad_;
   Noise     noise_;
@@ -73,5 +76,17 @@ class Simple : public Instrmnt
   StkFloat  loopGain_;
 
 };
+
+inline StkFloat Simple :: tick( unsigned int )
+{
+  lastFrame_[0] = loopGain_ * loop_->tick();
+  biquad_.tick( noise_.tick() );
+  lastFrame_[0] += (1.0 - loopGain_) * biquad_.lastOut();
+  lastFrame_[0] = filter_.tick( lastFrame_[0] );
+  lastFrame_[0] *= adsr_.tick();
+  return lastFrame_[0];
+}
+
+} // stk namespace
 
 #endif

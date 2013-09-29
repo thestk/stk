@@ -20,8 +20,8 @@
 /***************************************************/
 
 #include "BlitSaw.h"
-#include <cmath>
-#include <limits>
+
+namespace stk {
  
 BlitSaw:: BlitSaw( StkFloat frequency )
 {
@@ -38,7 +38,7 @@ void BlitSaw :: reset()
 {
   phase_ = 0.0f;
   state_ = 0.0;
-  lastOutput_ = 0;
+  lastFrame_[0] = 0.0;
 }
 
 void BlitSaw :: setFrequency( StkFloat frequency )
@@ -88,38 +88,4 @@ void BlitSaw :: updateHarmonics( void )
 #endif
 }
 
-StkFloat BlitSaw :: computeSample( void )
-{
-  // The code below implements the BLIT algorithm of Stilson and
-  // Smith, followed by a summation and filtering operation to produce
-  // a sawtooth waveform.  After experimenting with various approaches
-  // to calculate the average value of the BLIT over one period, I
-  // found that an estimate of C2_ = 1.0 / period (in samples) worked
-  // most consistently.  A "leaky integrator" is then applied to the
-  // difference of the BLIT output and C2_. (GPS - 1 October 2005)
-
-  // A fully  optimized version of this code would replace the two sin 
-  // calls with a pair of fast sin oscillators, for which stable fast 
-  // two-multiply algorithms are well known. In the spirit of STK,
-  // which favors clarity over performance, the optimization has 
-  // not been made here.
-
-  // Avoid a divide by zero, or use of a denormalized divisor 
-  // at the sinc peak, which has a limiting value of m_ / p_.
-  StkFloat denominator = sin( phase_ );
-  if ( fabs(denominator) <= std::numeric_limits<StkFloat>::epsilon() )
-    lastOutput_ = a_;
-  else {
-    lastOutput_ =  sin( m_ * phase_ );
-    lastOutput_ /= p_ * denominator;
-  }
-
-  lastOutput_ += state_ - C2_;
-  state_ = lastOutput_ * 0.995;
-
-  phase_ += rate_;
-  if ( phase_ >= PI ) phase_ -= PI;
-    
-	return lastOutput_;
-}
-
+} // stk namespace

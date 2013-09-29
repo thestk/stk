@@ -8,17 +8,20 @@
     into which data is written.  This class should not be used when
     low-latency is desired.
 
-    RtWvOut supports multi-channel data in both interleaved and
-    non-interleaved formats.  It is important to distinguish the
-    tick() methods, which output single samples to all channels in a
-    sample frame, from the tickFrame() method, which take a pointer or
-    reference to multi-channel sample frame data.
+    RtWvOut supports multi-channel data in interleaved format.  It is
+    important to distinguish the tick() method that outputs a single
+    sample to all channels in a sample frame from the overloaded one
+    that takes a reference to an StkFrames object for multi-channel
+    and/or multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "RtWvOut.h"
+#include <string.h>
+
+namespace stk {
 
 // Streaming status states.
 enum { RUNNING, EMPTYING, FINISHED };
@@ -73,7 +76,9 @@ int RtWvOut :: readBuffer( void *buffer, unsigned int frameCount )
     nFrames -= counter;
   }
 
+  mutex_.lock();
   framesFilled_ -= frameCount;
+  mutex_.unlock();
   if ( framesFilled_ < 0 ) {
     framesFilled_ = 0;
     //    writeIndex_ = readIndex_;
@@ -90,7 +95,10 @@ RtWvOut :: RtWvOut( unsigned int nChannels, StkFloat sampleRate, int device, int
 {
   // We'll let RtAudio deal with channel and sample rate limitations.
   RtAudio::StreamParameters parameters;
-  parameters.deviceId = device;
+  if ( device == 0 )
+    parameters.deviceId = dac_.getDefaultOutputDevice();
+  else
+    parameters.deviceId = device - 1;
   parameters.nChannels = nChannels;
   unsigned int size = bufferFrames;
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
@@ -104,12 +112,13 @@ RtWvOut :: RtWvOut( unsigned int nChannels, StkFloat sampleRate, int device, int
   }
 
   data_.resize( size * nBuffers, nChannels );
-  unsigned int offset = (unsigned int ) (data_.frames() / 2.0);
-  writeIndex_ = offset;    // start writing half-way into buffer
-  framesFilled_ = offset;
+
+  // Start writing half-way into buffer.
+  writeIndex_ = (unsigned int ) (data_.frames() / 2.0);
+  framesFilled_ = writeIndex_;
 }
 
-RtWvOut :: ~RtWvOut()
+RtWvOut :: ~RtWvOut( void )
 {
   // Change status flag to signal callback to clear the buffer and close.
   status_ = EMPTYING;
@@ -117,7 +126,7 @@ RtWvOut :: ~RtWvOut()
   dac_.closeStream();
 }
 
-void RtWvOut :: start()
+void RtWvOut :: start( void )
 {
   if ( stopped_ ) {
     dac_.startStream();
@@ -125,7 +134,7 @@ void RtWvOut :: start()
   }
 }
 
-void RtWvOut :: stop()
+void RtWvOut :: stop( void )
 {
   if ( !stopped_ ) {
     dac_.stopStream();
@@ -133,7 +142,7 @@ void RtWvOut :: stop()
   }
 }
 
-void RtWvOut :: computeSample( const StkFloat sample )
+void RtWvOut :: tick( const StkFloat sample )
 {
   if ( stopped_ ) this->start();
 
@@ -147,65 +156,57 @@ void RtWvOut :: computeSample( const StkFloat sample )
   for ( unsigned int j=0; j<nChannels; j++ )
     data_[index++] = input;
 
+  mutex_.lock();
   framesFilled_++;
+  mutex_.unlock();
   frameCounter_++;
   writeIndex_++;
   if ( writeIndex_ == data_.frames() )
     writeIndex_ = 0;
 }
 
-void RtWvOut :: computeFrames( const StkFrames& frames )
+void RtWvOut :: tick( StkFrames& frames )
 {
+#if defined(_STK_DEBUG_)
   if ( data_.channels() != frames.channels() ) {
-    errorString_ << "RtWvOut::computeFrames(): incompatible channel value in StkFrames argument!";
+    errorString_ << "RtWvOut::tick(): incompatible channel value in StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
+#endif
 
   if ( stopped_ ) this->start();
 
-  // Block until we have room for the frames of output data.
-  while ( data_.frames() - framesFilled_ < frames.frames() ) Stk::sleep( 1 );
+  // See how much space we have and fill as much as we can ... if we
+  // still have samples left in the frames object, then wait and
+  // repeat.
+  unsigned int framesEmpty, nFrames, bytes, framesWritten = 0;
+  unsigned int nChannels = data_.channels();
+  while ( framesWritten < frames.frames() ) {
 
-  unsigned int j, nChannels = data_.channels();
-  if ( nChannels == 1 || frames.interleaved() ) {
+    // Block until we have some room for output data.
+    while ( framesFilled_ == (long) data_.frames() ) Stk::sleep( 1 );
+    framesEmpty = data_.frames() - framesFilled_;
 
-    unsigned int index, iFrames = 0;
-    for ( unsigned int i=0; i<frames.frames(); i++ ) {
+    // Copy data in one chunk up to the end of the data buffer.
+    nFrames = framesEmpty;
+    if ( writeIndex_ + nFrames > data_.frames() )
+      nFrames = data_.frames() - writeIndex_;
+    if ( nFrames > frames.frames() - framesWritten )
+      nFrames = frames.frames() - framesWritten;
+    bytes = nFrames * nChannels * sizeof( StkFloat );
+    StkFloat *samples = &data_[writeIndex_ * nChannels];
+    memcpy( samples, &frames[framesWritten * nChannels], bytes );
+    for ( unsigned int i=0; i<nFrames * nChannels; i++ ) clipTest( *samples++ );
 
-      index = writeIndex_ * nChannels;
-      for ( j=0; j<nChannels; j++ )
-        data_[index] = frames[iFrames++];
-        clipTest( data_[index++] );
+    writeIndex_ += nFrames;
+    if ( writeIndex_ == data_.frames() ) writeIndex_ = 0;
 
-      framesFilled_++;
-      frameCounter_++;
-      writeIndex_++;
-      if ( writeIndex_ == data_.frames() )
-        writeIndex_ = 0;
-    }
-  }
-  else { // non-interleaved frames
-
-    unsigned long hop = frames.frames();
-    unsigned int index, iFrame;
-    for ( unsigned int i=0; i<frames.frames(); i++ ) {
-
-      iFrame = i;
-      index = writeIndex_ * nChannels;
-      for ( j=0; j<nChannels; j++ ) {
-        data_[index] = frames[iFrame];
-        clipTest( data_[index++] );
-        iFrame += hop;
-      }
-
-      framesFilled_++;
-      frameCounter_++;
-      writeIndex_++;
-      if ( writeIndex_ == data_.frames() )
-        writeIndex_ = 0;
-    }
+    framesWritten += nFrames;
+    mutex_.lock();
+    framesFilled_ += nFrames;
+    mutex_.unlock();
+    frameCounter_ += nFrames;
   }
 }
 
-
-
+} // stk namespace

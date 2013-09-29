@@ -7,22 +7,25 @@
     order, if necessary, before being transmitted.
 
     InetWvOut supports multi-channel data.  It is important to
-    distinguish the tick() methods, which output single samples to all
-    channels in a sample frame, from the tickFrame() method, which
-    takes a reference to multi-channel sample frame data.
+    distinguish the tick() method that outputs a single sample to all
+    channels in a sample frame from the overloaded one that takes a
+    reference to an StkFrames object for multi-channel and/or
+    multi-frame data.
 
     This class connects to a socket server, the port and IP address of
     which must be specified as constructor arguments.  The default
     data type is signed 16-bit integers but any of the defined
     StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "InetWvOut.h"
 #include "TcpClient.h"
 #include "UdpSocket.h"
+
+namespace stk {
 
 InetWvOut :: InetWvOut( unsigned long packetFrames )
   : buffer_(0), soket_(0), bufferFrames_(packetFrames), bufferBytes_(0)
@@ -175,9 +178,15 @@ void InetWvOut :: incrementFrame( void )
   }
 }
 
-void InetWvOut :: computeSample( const StkFloat sample )
+void InetWvOut :: tick( const StkFloat sample )
 {
-  if ( !soket_ || !soket_->isValid( soket_->id() ) ) return;
+  if ( !soket_ || !soket_->isValid( soket_->id() ) ) {
+#if defined(_STK_DEBUG_)
+    errorString_ << "InetWvOut::tick(): a valid socket connection does not exist!";
+    handleError( StkError::DEBUG_WARNING );
+#endif
+    return;
+  }
 
   unsigned int nChannels = data_.channels();
   StkFloat input = sample;
@@ -188,43 +197,34 @@ void InetWvOut :: computeSample( const StkFloat sample )
   this->incrementFrame();
 }
 
-void InetWvOut :: computeFrames( const StkFrames& frames )
+void InetWvOut :: tick( const StkFrames& frames )
 {
-  if ( !soket_ || !soket_->isValid( soket_->id() ) ) return;
+  if ( !soket_ || !soket_->isValid( soket_->id() ) ) {
+#if defined(_STK_DEBUG_)
+    errorString_ << "InetWvOut::tick(): a valid socket connection does not exist!";
+    handleError( StkError::DEBUG_WARNING );
+#endif
+    return;
+  }
 
+#if defined(_STK_DEBUG_)
   if ( data_.channels() != frames.channels() ) {
-    errorString_ << "InetWvOut::computeFrames(): incompatible channel value in StkFrames argument!";
+    errorString_ << "InetWvOut::tick(): incompatible channel value in StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
+#endif
 
   unsigned int j, nChannels = data_.channels();
-  if ( nChannels == 1 || frames.interleaved() ) {
+  unsigned int iFrames = 0;
+  for ( unsigned int i=0; i<frames.frames(); i++ ) {
 
-    unsigned int iFrames = 0;
-    for ( unsigned int i=0; i<frames.frames(); i++ ) {
-
-      for ( j=0; j<nChannels; j++ ) {
-        data_[iData_] = frames[iFrames++];
-        clipTest( data_[iData_++] );
-      }
-
-      this->incrementFrame();
+    for ( j=0; j<nChannels; j++ ) {
+      data_[iData_] = frames[iFrames++];
+      clipTest( data_[iData_++] );
     }
-  }
-  else { // non-interleaved frames
 
-    unsigned long hop = frames.frames();
-    unsigned int index;
-    for ( unsigned int i=0; i<frames.frames(); i++ ) {
-
-      index = i;
-      for ( j=0; j<nChannels; j++ ) {
-        data_[iData_] = frames[index];
-        clipTest( data_[iData_++] );
-        index += hop;
-      }
-
-      this->incrementFrame();
-    }
+    this->incrementFrame();
   }
 }
+
+} // stk namespace

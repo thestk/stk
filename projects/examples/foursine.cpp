@@ -2,6 +2,7 @@
 
 #include "SineWave.h"
 #include "FileWvOut.h"
+using namespace stk;
 
 int main()
 {
@@ -29,7 +30,7 @@ int main()
   for ( i=0; i<4; i++ )
     inputs[i].tick( frames, i );
 
-  output.tickFrame( frames );
+  output.tick( frames );
 
   // Now write the first sine to all four channels for two seconds
   for ( i=0; i<88200; i++ ) {

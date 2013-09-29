@@ -29,17 +29,19 @@
        - Register State = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "BlowHole.h"
 #include "SKINI.msg"
-#include <math.h>
+#include <cmath>
 
-BlowHole :: BlowHole(StkFloat lowestFrequency)
+namespace stk {
+
+BlowHole :: BlowHole( StkFloat lowestFrequency )
 {
-  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  length_ = (unsigned long) ( Stk::sampleRate() / lowestFrequency + 1 );
   // delays[0] is the delay line between the reed and the register vent.
   delays_[0].setDelay( 5.0 * Stk::sampleRate() / 22050.0 );
   // delays[1] is the delay line between the register vent and the tonehole.
@@ -83,11 +85,11 @@ BlowHole :: BlowHole(StkFloat lowestFrequency)
   vibratoGain_ = 0.01;
 }
 
-BlowHole :: ~BlowHole()
+BlowHole :: ~BlowHole( void )
 {
 }
 
-void BlowHole :: clear()
+void BlowHole :: clear( void )
 {
   delays_[0].clear();
   delays_[1].clear();
@@ -97,7 +99,7 @@ void BlowHole :: clear()
   vent_.tick( 0.0 );
 }
 
-void BlowHole :: setFrequency(StkFloat frequency)
+void BlowHole :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -114,7 +116,7 @@ void BlowHole :: setFrequency(StkFloat frequency)
   delays_[1].setDelay(delay);
 }
 
-void BlowHole :: setVent(StkFloat newValue)
+void BlowHole :: setVent( StkFloat newValue )
 {
   // This method allows setting of the register vent "open-ness" at
   // any point between "Open" (newValue = 1) and "Closed"
@@ -132,7 +134,7 @@ void BlowHole :: setVent(StkFloat newValue)
   vent_.setGain( gain );
 }
 
-void BlowHole :: setTonehole(StkFloat newValue)
+void BlowHole :: setTonehole( StkFloat newValue )
 {
   // This method allows setting of the tonehole "open-ness" at
   // any point between "Open" (newValue = 1) and "Closed"
@@ -150,19 +152,19 @@ void BlowHole :: setTonehole(StkFloat newValue)
   tonehole_.setB0( new_coeff );
 }
 
-void BlowHole :: startBlowing(StkFloat amplitude, StkFloat rate)
+void BlowHole :: startBlowing( StkFloat amplitude, StkFloat rate )
 {
   envelope_.setRate( rate );
   envelope_.setTarget( amplitude );
 }
 
-void BlowHole :: stopBlowing(StkFloat rate)
+void BlowHole :: stopBlowing( StkFloat rate )
 {
   envelope_.setRate( rate );
   envelope_.setTarget( 0.0 ); 
 }
 
-void BlowHole :: noteOn(StkFloat frequency, StkFloat amplitude)
+void BlowHole :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->startBlowing( 0.55 + (amplitude * 0.30), amplitude * 0.005 );
@@ -174,7 +176,7 @@ void BlowHole :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void BlowHole :: noteOff(StkFloat amplitude)
+void BlowHole :: noteOff( StkFloat amplitude )
 {
   this->stopBlowing( amplitude * 0.01 );
 
@@ -184,42 +186,7 @@ void BlowHole :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat BlowHole :: computeSample()
-{
-  StkFloat pressureDiff;
-  StkFloat breathPressure;
-  StkFloat temp;
-
-  // Calculate the breath pressure (envelope + noise + vibrato)
-  breathPressure = envelope_.tick(); 
-  breathPressure += breathPressure * noiseGain_ * noise_.tick();
-  breathPressure += breathPressure * vibratoGain_ * vibrato_.tick();
-
-  // Calculate the differential pressure = reflected - mouthpiece pressures
-  pressureDiff = delays_[0].lastOut() - breathPressure;
-
-  // Do two-port junction scattering for register vent
-  StkFloat pa = breathPressure + pressureDiff * reedTable_.tick( pressureDiff );
-  StkFloat pb = delays_[1].lastOut();
-  vent_.tick( pa+pb );
-
-  lastOutput_ = delays_[0].tick( vent_.lastOut()+pb );
-  lastOutput_ *= outputGain_;
-
-  // Do three-port junction scattering (under tonehole)
-  pa += vent_.lastOut();
-  pb = delays_[2].lastOut();
-  StkFloat pth = tonehole_.lastOut();
-  temp = scatter_ * (pa + pb - 2 * pth);
-
-  delays_[2].tick( filter_.tick(pa + temp) * -0.95 );
-  delays_[1].tick( pb + temp );
-  tonehole_.tick( pa + pb - pth + temp );
-
-  return lastOutput_;
-}
-
-void BlowHole :: controlChange(int number, StkFloat value)
+void BlowHole :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -253,3 +220,5 @@ void BlowHole :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

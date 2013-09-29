@@ -7,11 +7,13 @@
     systems, the pthread library is used. Under
     Windows, critical sections are used.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Mutex.h"
+
+namespace stk {
 
 Mutex :: Mutex()
 {
@@ -98,3 +100,5 @@ void Mutex :: signal()
 
 #endif 
 }
+
+} // stk namespace

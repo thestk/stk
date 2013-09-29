@@ -1,3 +1,10 @@
+#ifndef STK_BEETHREE_H
+#define STK_BEETHREE_H
+
+#include "FM.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class BeeThree
     \brief STK Hammond-oid organ FM synthesis instrument.
@@ -28,14 +35,9 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_BEETHREE_H
-#define STK_BEETHREE_H
-
-#include "FM.h"
 
 class BeeThree : public FM
 {
@@ -44,17 +46,45 @@ class BeeThree : public FM
   /*!
     An StkError will be thrown if the rawwave path is incorrectly set.
   */
-  BeeThree();
+  BeeThree( void );
 
   //! Class destructor.
-  ~BeeThree();
+  ~BeeThree( void );
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
 
-  StkFloat computeSample( void );
 };
+
+inline StkFloat BeeThree :: tick( unsigned int )
+{
+  register StkFloat temp;
+
+  if ( modDepth_ > 0.0 )	{
+    temp = 1.0 + ( modDepth_ * vibrato_.tick() * 0.1 );
+    waves_[0]->setFrequency( baseFrequency_ * temp * ratios_[0] );
+    waves_[1]->setFrequency( baseFrequency_ * temp * ratios_[1] );
+    waves_[2]->setFrequency( baseFrequency_ * temp * ratios_[2] );
+    waves_[3]->setFrequency( baseFrequency_ * temp * ratios_[3] );
+  }
+
+  waves_[3]->addPhaseOffset( twozero_.lastOut() );
+  temp = control1_ * 2.0 * gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
+  twozero_.tick( temp );
+
+  temp += control2_ * 2.0 * gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
+  temp += gains_[1] * adsr_[1]->tick() * waves_[1]->tick();
+  temp += gains_[0] * adsr_[0]->tick() * waves_[0]->tick();
+
+  lastFrame_[0] = temp * 0.125;
+  return lastFrame_[0];
+}
+
+} // stk namespace
 
 #endif

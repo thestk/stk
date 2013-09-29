@@ -11,9 +11,11 @@
 #include "RtAudio.h"
 
 #include <signal.h>
+#include <string.h>
 #include <iostream>
 #include <algorithm>
 using std::min;
+using namespace stk;
 
 StkFloat float_random(StkFloat max) // Return random float between 0.0 and max
 {	

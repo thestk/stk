@@ -9,9 +9,11 @@
 
   where <name> is the string used in the SKINI stream.
 
-  by Perry R. Cook, 1995 - 2004.
+  by Perry R. Cook, 1995 - 2009.
 */
 /*********************************************************/
+
+namespace stk {
 
 #define NOPE        -32767
 #define YEP         1
@@ -124,4 +126,4 @@
 #define __SK_SINGER_RndVibAmt_       3008
 #define __SK_SINGER_VibFreq_         __SK_Expression_
 
-
+} // stk namespace

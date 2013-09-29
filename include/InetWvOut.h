@@ -1,3 +1,11 @@
+#ifndef STK_INETWVOUT_H
+#define STK_INETWVOUT_H
+
+#include "WvOut.h"
+#include "Socket.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class InetWvOut
     \brief STK internet streaming output class.
@@ -7,24 +15,19 @@
     order, if necessary, before being transmitted.
 
     InetWvOut supports multi-channel data.  It is important to
-    distinguish the tick() methods, which output single samples to all
-    channels in a sample frame, from the tickFrame() method, which
-    takes a reference to multi-channel sample frame data.
+    distinguish the tick() method that outputs a single sample to all
+    channels in a sample frame from the overloaded one that takes a
+    reference to an StkFrames object for multi-channel and/or
+    multi-frame data.
 
     This class connects to a socket server, the port and IP address of
     which must be specified as constructor arguments.  The default
     data type is signed 16-bit integers but any of the defined
     StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_INETWVOUT_H
-#define STK_INETWVOUT_H
-
-#include "WvOut.h"
-#include "Socket.h"
 
 class InetWvOut : public WvOut
 {
@@ -51,13 +54,29 @@ class InetWvOut : public WvOut
                 std::string hostname = "localhost", unsigned int nChannels = 1, Stk::StkFormat format = STK_SINT16 );
 
   //! If a connection is open, write out remaining samples in the queue and then disconnect.
-  void disconnect(void);
+  void disconnect( void );
+
+  //! Output a single sample to all channels in a sample frame.
+  /*!
+    An StkError is thrown if an output error occurs.  If a socket
+    connection does not exist, the function does nothing (a warning
+    will be issued if _STK_DEBUG_ is defined during compilation).
+  */
+  void tick( const StkFloat sample );
+
+  //! Output the StkFrames data.
+  /*!
+    An StkError will be thrown if an output error occurs.  An
+    StkError will also be thrown if _STK_DEBUG_ is defined during
+    compilation and there is an incompatability between the number of
+    channels in the FileWvOut object and that in the StkFrames object.
+    If a socket connection does not exist, the function does nothing
+    (a warning will be issued if _STK_DEBUG_ is defined during
+    compilation).
+  */
+  void tick( const StkFrames& frames );
 
  protected:
-
-  void computeSample( const StkFloat sample );
-
-  void computeFrames( const StkFrames& frames );
 
   void incrementFrame( void );
 
@@ -73,5 +92,7 @@ class InetWvOut : public WvOut
   unsigned int dataBytes_;
   Stk::StkFormat dataType_;
 };
+
+} // stk namespace
 
 #endif

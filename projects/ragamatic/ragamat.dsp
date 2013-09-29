@@ -124,10 +124,6 @@ SOURCE=.\Drone.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Effect.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\Effect.h
 # End Source File
 # Begin Source File
@@ -156,23 +152,11 @@ SOURCE=..\..\include\FileWvIn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Filter.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\Filter.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Generator.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\Generator.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\Instrmnt.cpp
 # End Source File
 # Begin Source File
 
@@ -312,23 +296,15 @@ SOURCE=.\VoicDrum.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\WaveLoop.cpp
+SOURCE=..\..\src\FileLoop.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\WaveLoop.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
+SOURCE=..\..\include\FileLoop.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\include\WvIn.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvOut.cpp
 # End Source File
 # Begin Source File
 

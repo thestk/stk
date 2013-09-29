@@ -8,6 +8,8 @@
 #include <algorithm>
 using std::min;
 
+using namespace stk;
+
 void usage(void) {
   // Error function in case of incorrect command-line
   // argument specifications.

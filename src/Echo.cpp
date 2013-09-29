@@ -4,12 +4,14 @@
 
     This class implements an echo effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Echo.h"
 #include <iostream>
+
+namespace stk {
 
 Echo :: Echo( unsigned long maximumDelay ) : Effect()
 {
@@ -19,15 +21,10 @@ Echo :: Echo( unsigned long maximumDelay ) : Effect()
   this->clear();
 }
 
-Echo :: ~Echo()
-{
-}
-
-void Echo :: clear()
+void Echo :: clear( void )
 {
   delayLine_.clear();
-  lastOutput_[0] = 0.0;
-  lastOutput_[1] = 0.0;
+  lastFrame_[0] = 0.0;
 }
 
 void Echo :: setMaximumDelay( unsigned long delay )
@@ -54,10 +51,4 @@ void Echo :: setDelay( unsigned long delay )
   delayLine_.setDelay( size );
 }
 
-StkFloat Echo :: computeSample(StkFloat input)
-{
-  lastOutput_[0] = effectMix_ * delayLine_.tick(input);
-  lastOutput_[0] += input * (1.0 - effectMix_);
-  lastOutput_[1] = lastOutput_[0];
-  return lastOutput_[0];
-}
+} // stk namespace

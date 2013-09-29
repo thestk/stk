@@ -1,3 +1,10 @@
+#ifndef STK_TCPSERVER_H
+#define STK_TCPSERVER_H
+
+#include "Socket.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class TcpServer
     \brief STK TCP socket server class.
@@ -19,14 +26,9 @@
     less than or equal to zero indicate a closed
     or lost connection or the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_TCPSERVER_H
-#define STK_TCPSERVER_H
-
-#include "Socket.h"
 
 class TcpServer : public Socket
 {
@@ -58,4 +60,6 @@ class TcpServer : public Socket
 
 };
 
-#endif // defined(STK_TCPSERVER_H)
+} // stk namespace
+
+#endif

@@ -20,18 +20,16 @@ endif
 vpath %.h $(INCLUDE)
 
 CC       = @CXX@
-DEFS     = @byte_order@
-DEFS    += @debug@
-CFLAGS   = @cflags@
-CFLAGS  += @warn@ -I$(INCLUDE) -I../../src/include
+DEFS     = @CPPFLAGS@
+DEFS    += @byte_order@
+CFLAGS   = @CXXFLAGS@
+CFLAGS  += -I$(INCLUDE) -I$(INCLUDE)/../src/include
 LIBRARY = @LIBS@
-LIBRARY += @frameworks@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
   PROGRAMS += effects
 	OBJECTS += RtMidi.o RtAudio.o Thread.o Mutex.o Socket.o TcpServer.o @objects@
-	DEFS    += @audio_apis@
 endif
 
 RAWWAVES = @rawwaves@
@@ -59,6 +57,7 @@ $(OBJECTS) : Stk.h
 clean : 
 	-rm $(OBJECT_PATH)/*.o
 	-rm $(PROGRAMS) *.exe
+	-rm -fR *.dSYM
 
 strip : 
 	strip $(PROGRAMS)

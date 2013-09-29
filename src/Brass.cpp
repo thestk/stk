@@ -16,7 +16,7 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
@@ -24,16 +24,18 @@
 #include "SKINI.msg"
 #include <cmath>
 
-Brass :: Brass(StkFloat lowestFrequency)
+namespace stk {
+
+Brass :: Brass( StkFloat lowestFrequency )
 {
-  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  length_ = (unsigned long) ( Stk::sampleRate() / lowestFrequency + 1 );
   delayLine_.setMaximumDelay( length_ );
   delayLine_.setDelay( 0.5 * length_ );
 
   lipFilter_.setGain( 0.03 );
   dcBlock_.setBlockZero();
 
-  adsr_.setAllTimes( 0.005, 0.001, 1.0, 0.010);
+  adsr_.setAllTimes( 0.005, 0.001, 1.0, 0.010 );
 
   vibrato_.setFrequency( 6.137 );
   vibratoGain_ = 0.0;
@@ -46,18 +48,18 @@ Brass :: Brass(StkFloat lowestFrequency)
   this->setFrequency( 220.0 );
 }
 
-Brass :: ~Brass()
+Brass :: ~Brass( void )
 {
 }
 
-void Brass :: clear()
+void Brass :: clear( void )
 {
   delayLine_.clear();
   lipFilter_.clear();
   dcBlock_.clear();
 }
 
-void Brass :: setFrequency(StkFloat frequency)
+void Brass :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -74,7 +76,7 @@ void Brass :: setFrequency(StkFloat frequency)
   lipFilter_.setResonance( freakency, 0.997 );
 }
 
-void Brass :: setLip(StkFloat frequency)
+void Brass :: setLip( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -86,20 +88,20 @@ void Brass :: setLip(StkFloat frequency)
   lipFilter_.setResonance( freakency, 0.997 );
 }
 
-void Brass :: startBlowing(StkFloat amplitude, StkFloat rate)
+void Brass :: startBlowing( StkFloat amplitude, StkFloat rate )
 {
   adsr_.setAttackRate( rate );
   maxPressure_ = amplitude;
   adsr_.keyOn();
 }
 
-void Brass :: stopBlowing(StkFloat rate)
+void Brass :: stopBlowing( StkFloat rate )
 {
   adsr_.setReleaseRate( rate );
   adsr_.keyOff();
 }
 
-void Brass :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Brass :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->startBlowing( amplitude, amplitude * 0.001 );
@@ -110,7 +112,7 @@ void Brass :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Brass :: noteOff(StkFloat amplitude)
+void Brass :: noteOff( StkFloat amplitude )
 {
   this->stopBlowing( amplitude * 0.005 );
 
@@ -120,26 +122,7 @@ void Brass :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Brass :: computeSample()
-{
-  StkFloat breathPressure = maxPressure_ * adsr_.tick();
-  breathPressure += vibratoGain_ * vibrato_.tick();
-
-  StkFloat mouthPressure = 0.3 * breathPressure;
-  StkFloat borePressure = 0.85 * delayLine_.lastOut();
-  StkFloat deltaPressure = mouthPressure - borePressure; // Differential pressure.
-  deltaPressure = lipFilter_.tick( deltaPressure );      // Force - > position.
-  deltaPressure *= deltaPressure;                        // Basic position to area mapping.
-  if ( deltaPressure > 1.0 ) deltaPressure = 1.0;        // Non-linear saturation.
-
-  // The following input scattering assumes the mouthPressure = area.
-  lastOutput_ = deltaPressure * mouthPressure + ( 1.0 - deltaPressure) * borePressure;
-  lastOutput_ = delayLine_.tick( dcBlock_.tick( lastOutput_ ) );
-
-  return lastOutput_;
-}
-
-void Brass :: controlChange(int number, StkFloat value)
+void Brass :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -175,3 +158,5 @@ void Brass :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

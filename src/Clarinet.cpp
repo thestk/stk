@@ -18,14 +18,16 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Clarinet.h"
 #include "SKINI.msg"
 
-Clarinet :: Clarinet(StkFloat lowestFrequency)
+namespace stk {
+
+Clarinet :: Clarinet( StkFloat lowestFrequency )
 {
   length_ = (long) (Stk::sampleRate() / lowestFrequency + 1);
   delayLine_.setMaximumDelay( length_ );
@@ -39,17 +41,17 @@ Clarinet :: Clarinet(StkFloat lowestFrequency)
   vibratoGain_ = (StkFloat) 0.1;
 }
 
-Clarinet :: ~Clarinet()
+Clarinet :: ~Clarinet( void )
 {
 }
 
-void Clarinet :: clear()
+void Clarinet :: clear( void )
 {
   delayLine_.clear();
   filter_.tick( 0.0 );
 }
 
-void Clarinet :: setFrequency(StkFloat frequency)
+void Clarinet :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -65,19 +67,19 @@ void Clarinet :: setFrequency(StkFloat frequency)
   delayLine_.setDelay(delay);
 }
 
-void Clarinet :: startBlowing(StkFloat amplitude, StkFloat rate)
+void Clarinet :: startBlowing( StkFloat amplitude, StkFloat rate )
 {
   envelope_.setRate(rate);
   envelope_.setTarget(amplitude); 
 }
 
-void Clarinet :: stopBlowing(StkFloat rate)
+void Clarinet :: stopBlowing( StkFloat rate )
 {
   envelope_.setRate(rate);
   envelope_.setTarget((StkFloat) 0.0); 
 }
 
-void Clarinet :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Clarinet :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency(frequency);
   this->startBlowing((StkFloat) 0.55 + (amplitude * (StkFloat) 0.30), amplitude * (StkFloat) 0.005);
@@ -89,7 +91,7 @@ void Clarinet :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Clarinet :: noteOff(StkFloat amplitude)
+void Clarinet :: noteOff( StkFloat amplitude )
 {
   this->stopBlowing( amplitude * 0.01 );
 
@@ -99,32 +101,7 @@ void Clarinet :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Clarinet :: computeSample()
-{
-  StkFloat pressureDiff;
-  StkFloat breathPressure;
-
-  // Calculate the breath pressure (envelope + noise + vibrato)
-  breathPressure = envelope_.tick(); 
-  breathPressure += breathPressure * noiseGain_ * noise_.tick();
-  breathPressure += breathPressure * vibratoGain_ * vibrato_.tick();
-
-  // Perform commuted loss filtering.
-  pressureDiff = -0.95 * filter_.tick(delayLine_.lastOut());
-
-  // Calculate pressure difference of reflected and mouthpiece pressures.
-  pressureDiff = pressureDiff - breathPressure;
-
-  // Perform non-linear scattering using pressure difference in reed function.
-  lastOutput_ = delayLine_.tick(breathPressure + pressureDiff * reedTable_.tick(pressureDiff));
-
-  // Apply output gain.
-  lastOutput_ *= outputGain_;
-
-  return lastOutput_;
-}
-
-void Clarinet :: controlChange(int number, StkFloat value)
+void Clarinet :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -158,3 +135,5 @@ void Clarinet :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

@@ -91,18 +91,6 @@ SOURCE=.\crtsine.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\FileRead.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\FileWvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\Generator.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\RtAudio.cpp
 # End Source File
 # Begin Source File
@@ -112,14 +100,6 @@ SOURCE=..\..\src\SineWave.cpp
 # Begin Source File
 
 SOURCE=..\..\src\Stk.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WaveLoop.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -133,13 +113,9 @@ SOURCE=..\..\include\RtAudio.h
 
 SOURCE=..\..\include\Stk.h
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\include\WaveLoop.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\WvIn.h
+# Begin Source File
+
+SOURCE=..\..\include\Generator.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

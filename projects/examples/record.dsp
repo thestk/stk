@@ -101,7 +101,11 @@ SOURCE=.\record.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\RtAudio.cpp
+SOURCE=..\..\src\Mutex.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\RtAudio.cpp
 # End Source File
 # Begin Source File
 
@@ -110,14 +114,6 @@ SOURCE=..\..\src\RtWvIn.cpp
 # Begin Source File
 
 SOURCE=..\..\src\Stk.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvOut.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -130,6 +126,10 @@ SOURCE=..\..\include\RtAudio.h
 # Begin Source File
 
 SOURCE=..\..\include\RtWvIn.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Mutex.h
 # End Source File
 # Begin Source File
 

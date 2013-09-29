@@ -1,3 +1,21 @@
+#ifndef STK_MESSAGER_H
+#define STK_MESSAGER_H
+
+#include "Stk.h"
+#include "Skini.h"
+#include <queue>
+
+#if defined(__STK_REALTIME__)
+
+#include "Mutex.h"
+#include "Thread.h"
+#include "TcpServer.h"
+#include "RtMidi.h"
+
+#endif // __STK_REALTIME__
+
+namespace stk {
+
 /***************************************************/
 /*! \class Messager
     \brief STK input control message parser.
@@ -28,31 +46,11 @@
     This class is primarily for use in STK example programs but it is
     generic enough to work in many other contexts.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
-#ifndef STK_MESSAGER_H
-#define STK_MESSAGER_H
-
-#include "Stk.h"
-#include "Skini.h"
-#include <queue>
-
 const int DEFAULT_QUEUE_LIMIT = 200;
-
-#if defined(__STK_REALTIME__)
-
-#include "Mutex.h"
-#include "Thread.h"
-#include "TcpServer.h"
-#include "RtMidi.h"
-
-extern "C" THREAD_RETURN THREAD_TYPE stdinHandler(void * ptr);
-
-extern "C" THREAD_RETURN THREAD_TYPE socketHandler(void * ptr);
-
-#endif // __STK_REALTIME__
 
 class Messager : public Stk
 {
@@ -162,5 +160,7 @@ class Messager : public Stk
 #endif
 
 };
+
+} // stk namespace
 
 #endif

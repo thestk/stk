@@ -13,16 +13,17 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Sitar.h"
-#include <math.h>
 
-Sitar :: Sitar(StkFloat lowestFrequency)
+namespace stk {
+
+Sitar :: Sitar( StkFloat lowestFrequency )
 {
-  unsigned long length = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  unsigned long length = (unsigned long) ( Stk::sampleRate() / lowestFrequency + 1 );
   delayLine_.setMaximumDelay( length );
   delay_ = 0.5 * length;
   delayLine_.setDelay( delay_ );
@@ -35,17 +36,17 @@ Sitar :: Sitar(StkFloat lowestFrequency)
   this->clear();
 }
 
-Sitar :: ~Sitar()
+Sitar :: ~Sitar( void )
 {
 }
 
-void Sitar :: clear()
+void Sitar :: clear( void )
 {
   delayLine_.clear();
   loopFilter_.clear();
 }
 
-void Sitar :: setFrequency(StkFloat frequency)
+void Sitar :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -61,12 +62,12 @@ void Sitar :: setFrequency(StkFloat frequency)
   if ( loopGain_ > 0.9995 ) loopGain_ = 0.9995;
 }
 
-void Sitar :: pluck(StkFloat amplitude)
+void Sitar :: pluck( StkFloat amplitude )
 {
   envelope_.keyOn();
 }
 
-void Sitar :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Sitar :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->pluck( amplitude );
@@ -78,7 +79,7 @@ void Sitar :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Sitar :: noteOff(StkFloat amplitude)
+void Sitar :: noteOff( StkFloat amplitude )
 {
   loopGain_ = (StkFloat) 1.0 - amplitude;
   if ( loopGain_ < 0.0 ) {
@@ -98,18 +99,4 @@ void Sitar :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Sitar :: computeSample()
-{
-  if ( fabs(targetDelay_ - delay_) > 0.001 ) {
-    if ( targetDelay_ < delay_ )
-      delay_ *= 0.99999;
-    else
-      delay_ *= 1.00001;
-    delayLine_.setDelay( delay_ );
-  }
-
-  lastOutput_ = delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ ) + 
-                                (amGain_ * envelope_.tick() * noise_.tick()));
-  
-  return lastOutput_;
-}
+} // stk namespace

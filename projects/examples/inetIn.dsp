@@ -125,14 +125,6 @@ SOURCE=..\..\src\Thread.cpp
 
 SOURCE=..\..\src\UdpSocket.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvOut.cpp
-# End Source File
 # End Group
 # Begin Group "Header Files"
 

@@ -10,15 +10,19 @@
 
     RtWvIn supports multi-channel data in both interleaved and
     non-interleaved formats.  It is important to distinguish the
-    tick() methods, which return samples produced by averaging across
-    sample frames, from the tickFrame() methods, which return
-    references or pointers to multi-channel sample frames.
+    tick() method that computes a single frame (and returns only the
+    specified sample of a multi-channel frame) from the overloaded one
+    that takes an StkFrames object for multi-channel and/or
+    multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "RtWvIn.h"
+#include <string.h>
+
+namespace stk {
 
 // This function is automatically called by RtAudio to supply input audio data.
 int read( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
@@ -56,7 +60,9 @@ void RtWvIn :: fillBuffer( void *buffer, unsigned int nFrames )
     nSamples -= counter;
   }
 
+  mutex_.lock();
   framesFilled_ += nFrames;
+  mutex_.unlock();
   if ( framesFilled_ > data_.frames() ) {
     framesFilled_ = data_.frames();
     errorString_ << "RtWvIn: audio buffer overrun!";
@@ -69,7 +75,10 @@ RtWvIn :: RtWvIn( unsigned int nChannels, StkFloat sampleRate, int device, int b
 {
   // We'll let RtAudio deal with channel and sample rate limitations.
   RtAudio::StreamParameters parameters;
-  parameters.deviceId = device;
+  if ( device == 0 )
+    parameters.deviceId = adc_.getDefaultInputDevice();
+  else
+    parameters.deviceId = device - 1;
   parameters.nChannels = nChannels;
   unsigned int size = bufferFrames;
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
@@ -82,7 +91,7 @@ RtWvIn :: RtWvIn( unsigned int nChannels, StkFloat sampleRate, int device, int b
   }
 
   data_.resize( size * nBuffers, nChannels );
-  lastOutputs_.resize( 1, nChannels );
+  lastFrame_.resize( 1, nChannels );
 }
 
 RtWvIn :: ~RtWvIn()
@@ -104,22 +113,82 @@ void RtWvIn :: stop()
   if ( !stopped_ ) {
     adc_.stopStream();
     stopped_ = true;
+    for ( unsigned int i=0; i<lastFrame_.size(); i++ ) lastFrame_[i] = 0.0;
   }
 }
 
-void RtWvIn :: computeFrame( void )
+StkFloat RtWvIn :: tick( unsigned int channel )
 {
+#if defined(_STK_DEBUG_)
+  if ( channel >= data_.channels() ) {
+    errorString_ << "RtWvIn::tick(): channel argument is incompatible with streamed channels!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
   if ( stopped_ ) this->start();
 
   // Block until at least one frame is available.
-  while ( framesFilled_ == 0 )
-    Stk::sleep( 1 );
+  while ( framesFilled_ == 0 ) Stk::sleep( 1 );
 
-  for ( unsigned int i=0; i<lastOutputs_.size(); i++ )
-    lastOutputs_[i] = data_( readIndex_, i );
+  unsigned long index = readIndex_ * lastFrame_.channels();
+  for ( unsigned int i=0; i<lastFrame_.size(); i++ )
+    lastFrame_[i] = data_[index++];
 
+  mutex_.lock();
   framesFilled_--;
+  mutex_.unlock();
   readIndex_++;
   if ( readIndex_ >= data_.frames() )
     readIndex_ = 0;
+
+  return lastFrame_[channel];
 }
+
+StkFrames& RtWvIn :: tick( StkFrames& frames )
+{
+  unsigned int nChannels = lastFrame_.channels();
+#if defined(_STK_DEBUG_)
+  if ( nChannels != frames.channels() ) {
+    errorString_ << "RtWvIn::tick(): StkFrames argument is incompatible with adc channels!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  if ( stopped_ ) this->start();
+
+  // See how much space we have and fill as much as we can ... if we
+  // still have space left in the frames object, then wait and repeat.
+  unsigned int nFrames, bytes, framesRead = 0;
+  while ( framesRead < frames.frames() ) {
+
+    // Block until we have some input data.
+    while ( framesFilled_ == 0 ) Stk::sleep( 1 );
+
+    // Copy data in one chunk up to the end of the data buffer.
+    nFrames = framesFilled_;
+    if ( readIndex_ + nFrames > data_.frames() )
+      nFrames = data_.frames() - readIndex_;
+    if ( nFrames > frames.frames() - framesRead )
+      nFrames = frames.frames() - framesRead;
+    bytes = nFrames * nChannels * sizeof( StkFloat );
+    StkFloat *samples = &data_[readIndex_ * nChannels];
+    memcpy( &frames[framesRead * nChannels], samples, bytes );
+
+    readIndex_ += nFrames;
+    if ( readIndex_ == data_.frames() ) readIndex_ = 0;
+
+    framesRead += nFrames;
+    mutex_.lock();
+    framesFilled_ -= nFrames;
+    mutex_.unlock();
+  }
+
+  unsigned long index = (frames.frames() - 1) * nChannels;
+  for ( unsigned int i=0; i<lastFrame_.size(); i++ )
+    lastFrame_[i] = frames[index++];
+
+  return frames;
+}
+
+} // stk namespace

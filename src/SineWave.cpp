@@ -9,12 +9,14 @@
 
     The "table" length, set in SineWave.h, is 2048 samples by default.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "SineWave.h"
 #include <cmath>
+
+namespace stk {
 
 StkFrames SineWave :: table_;
 
@@ -42,10 +44,10 @@ void SineWave :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
     this->setRate( oldRate * rate_ / newRate );
 }
 
-void SineWave :: reset(void)
+void SineWave :: reset( void )
 {
   time_ = 0.0;
-  lastOutput_ = 0;
+  lastFrame_[0] = 0;
 }
 
 void SineWave :: setFrequency( StkFloat frequency )
@@ -58,55 +60,19 @@ void SineWave :: addTime( StkFloat time )
 {
   // Add an absolute time in samples.
   time_ += time;
-
-  while ( time_ < 0.0 )
-    time_ += TABLE_SIZE;
-  while ( time_ >= TABLE_SIZE )
-    time_ -= TABLE_SIZE;
 }
 
-void SineWave :: addPhase( StkFloat angle )
+void SineWave :: addPhase( StkFloat phase )
 {
   // Add a time in cycles (one cycle = TABLE_SIZE).
-  time_ += TABLE_SIZE * angle;
-
-  while ( time_ < 0.0 )
-    time_ += TABLE_SIZE;
-  while ( time_ >= TABLE_SIZE )
-    time_ -= TABLE_SIZE;
+  time_ += TABLE_SIZE * phase;
 }
 
-void SineWave :: addPhaseOffset( StkFloat angle )
+void SineWave :: addPhaseOffset( StkFloat phaseOffset )
 {
-  // Add a phase offset in cycles, where 1.0 = TABLE_SIZE.
-  phaseOffset_ = TABLE_SIZE * angle;
+  // Add a phase offset relative to any previous offset value.
+  time_ += ( phaseOffset - phaseOffset_ ) * TABLE_SIZE;
+  phaseOffset_ = phaseOffset;
 }
 
-StkFloat SineWave :: computeSample( void )
-{
-  // Check limits of time address ... if necessary, recalculate modulo
-  // TABLE_SIZE.
-  while ( time_ < 0.0 )
-    time_ += TABLE_SIZE;
-  while ( time_ >= TABLE_SIZE )
-    time_ -= TABLE_SIZE;
-
-  StkFloat tyme;
-  if ( phaseOffset_ ) {
-    tyme = time_ + phaseOffset_;
-    while ( tyme < 0.0 )
-      tyme += TABLE_SIZE;
-    while ( tyme >= TABLE_SIZE )
-      tyme -= TABLE_SIZE;
-  }
-  else {
-    tyme = time_;
-  }
-
-  lastOutput_ = table_.interpolate( tyme );
-
-  // Increment time, which can be negative.
-  time_ += rate_;
-
-  return lastOutput_;
-}
+} // stk namespace

@@ -24,7 +24,7 @@
          - Two Fixed = 7
          - Clump = 8
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
@@ -32,7 +32,9 @@
 #include "SKINI.msg"
 #include <cmath>
 
-ModalBar :: ModalBar()
+namespace stk {
+
+ModalBar :: ModalBar( void )
   : Modal()
 {
   // Concatenate the STK rawwave path to the rawwave file
@@ -43,12 +45,12 @@ ModalBar :: ModalBar()
   this->setPreset( 0 );
 }
 
-ModalBar :: ~ModalBar()
+ModalBar :: ~ModalBar( void )
 {
   delete wave_;
 }
 
-void ModalBar :: setStickHardness(StkFloat hardness)
+void ModalBar :: setStickHardness( StkFloat hardness )
 {
   stickHardness_ = hardness;
   if ( hardness < 0.0 ) {
@@ -66,7 +68,7 @@ void ModalBar :: setStickHardness(StkFloat hardness)
   masterGain_ = 0.1 + (1.8 * stickHardness_);
 }
 
-void ModalBar :: setStrikePosition(StkFloat position)
+void ModalBar :: setStrikePosition( StkFloat position )
 {
   strikePosition_ = position;
   if ( position < 0.0 ) {
@@ -92,7 +94,7 @@ void ModalBar :: setStrikePosition(StkFloat position)
   this->setModeGain(2, 0.11 * temp);
 }
 
-void ModalBar :: setPreset(int preset)
+void ModalBar :: setPreset( int preset )
 {
   // Presets:
   //     First line:  relative modal frequencies (negative number is
@@ -156,7 +158,7 @@ void ModalBar :: setPreset(int preset)
     vibratoGain_ = 0.0;
 }
 
-void ModalBar :: controlChange(int number, StkFloat value)
+void ModalBar :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -194,3 +196,5 @@ void ModalBar :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

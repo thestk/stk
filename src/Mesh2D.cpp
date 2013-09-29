@@ -27,7 +27,9 @@
 #include "Mesh2D.h"
 #include "SKINI.msg"
 
-Mesh2D :: Mesh2D(short nX, short nY)
+namespace stk {
+
+Mesh2D :: Mesh2D( short nX, short nY )
 {
   this->setNX(nX);
   this->setNY(nY);
@@ -52,11 +54,11 @@ Mesh2D :: Mesh2D(short nX, short nY)
   yInput_ = 0;
 }
 
-Mesh2D :: ~Mesh2D()
+Mesh2D :: ~Mesh2D( void )
 {
 }
 
-void Mesh2D :: clear()
+void Mesh2D :: clear( void )
 {
   this->clearMesh();
 
@@ -70,7 +72,7 @@ void Mesh2D :: clear()
   counter_=0;
 }
 
-void Mesh2D :: clearMesh()
+void Mesh2D :: clearMesh( void )
 {
   int x, y;
   for (x=0; x<NXMAX-1; x++) {
@@ -94,7 +96,7 @@ void Mesh2D :: clearMesh()
   }
 }
 
-StkFloat Mesh2D :: energy()
+StkFloat Mesh2D :: energy( void )
 {
   // Return total energy contained in wave variables Note that some
   // energy is also contained in any filter delay elements.
@@ -134,7 +136,7 @@ StkFloat Mesh2D :: energy()
   return(e);
 }
 
-void Mesh2D :: setNX(short lenX)
+void Mesh2D :: setNX( short lenX )
 {
   NX_ = lenX;
   if ( lenX < 2 ) {
@@ -149,7 +151,7 @@ void Mesh2D :: setNX(short lenX)
   }
 }
 
-void Mesh2D :: setNY(short lenY)
+void Mesh2D :: setNY( short lenY )
 {
   NY_ = lenY;
   if ( lenY < 2 ) {
@@ -164,7 +166,7 @@ void Mesh2D :: setNY(short lenY)
   }
 }
 
-void Mesh2D :: setDecay(StkFloat decayFactor)
+void Mesh2D :: setDecay( StkFloat decayFactor )
 {
   StkFloat gain = decayFactor;
   if ( decayFactor < 0.0 ) {
@@ -186,7 +188,7 @@ void Mesh2D :: setDecay(StkFloat decayFactor)
     filterX_[i].setGain( gain );
 }
 
-void Mesh2D :: setInputPosition(StkFloat xFactor, StkFloat yFactor)
+void Mesh2D :: setInputPosition( StkFloat xFactor, StkFloat yFactor )
 {
   if ( xFactor < 0.0 ) {
     errorString_ << "Mesh2D::setInputPosition xFactor value is less than 0.0!";
@@ -215,7 +217,7 @@ void Mesh2D :: setInputPosition(StkFloat xFactor, StkFloat yFactor)
     yInput_ = (short) (yFactor * (NY_ - 1));
 }
 
-void Mesh2D :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Mesh2D :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   // Input at corner.
   if ( counter_ & 1 ) {
@@ -233,7 +235,7 @@ void Mesh2D :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Mesh2D :: noteOff(StkFloat amplitude)
+void Mesh2D :: noteOff( StkFloat amplitude )
 {
 #if defined(_STK_DEBUG_)
   errorString_ << "Mesh2D::NoteOff: amplitude = " << amplitude << ".";
@@ -246,28 +248,28 @@ StkFloat Mesh2D :: inputTick( StkFloat input )
   if ( counter_ & 1 ) {
     vxp1_[xInput_][yInput_] += input;
     vyp1_[xInput_][yInput_] += input;
-    lastOutput_ = tick1();
+    lastFrame_[0] = tick1();
   }
   else {
     vxp_[xInput_][yInput_] += input;
     vyp_[xInput_][yInput_] += input;
-    lastOutput_ = tick0();
+    lastFrame_[0] = tick0();
   }
 
   counter_++;
-  return lastOutput_;
+  return lastFrame_[0];
 }
 
-StkFloat Mesh2D :: computeSample()
+StkFloat Mesh2D :: tick( unsigned int )
 {
-  lastOutput_ = ((counter_ & 1) ? this->tick1() : this->tick0());
+  lastFrame_[0] = ((counter_ & 1) ? this->tick1() : this->tick0());
   counter_++;
-  return lastOutput_;
+  return lastFrame_[0];
 }
 
 const StkFloat VSCALE = 0.5;
 
-StkFloat Mesh2D :: tick0()
+StkFloat Mesh2D :: tick0( void )
 {
   int x, y;
   StkFloat outsamp = 0;
@@ -315,7 +317,7 @@ StkFloat Mesh2D :: tick0()
   return outsamp;
 }
 
-StkFloat Mesh2D :: tick1()
+StkFloat Mesh2D :: tick1( void )
 {
   int x, y;
   StkFloat outsamp = 0;
@@ -362,7 +364,7 @@ StkFloat Mesh2D :: tick1()
   return outsamp;
 }
 
-void Mesh2D :: controlChange(int number, StkFloat value)
+void Mesh2D :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -394,3 +396,5 @@ void Mesh2D :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

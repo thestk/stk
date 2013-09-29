@@ -1,3 +1,12 @@
+#ifndef STK_BLITSQUARE_H
+#define STK_BLITSQUARE_H
+
+#include "Generator.h"
+#include <cmath>
+#include <limits>
+
+namespace stk {
+
 /***************************************************/
 /*! \class BlitSquare
     \brief STK band-limited square wave class.
@@ -29,11 +38,6 @@
     Modified algorithm code by Gary Scavone, 2005 - 2006.
 */
 /***************************************************/
-
-#ifndef STK_BLITSQUARE_H
-#define STK_BLITSQUARE_H
-
-#include "Generator.h"
 
 class BlitSquare: public Generator
 {
@@ -77,10 +81,25 @@ class BlitSquare: public Generator
   */
   void setHarmonics( unsigned int nHarmonics = 0 );
 
+  //! Return the last computed output value.
+  StkFloat lastOut( void ) const { return lastFrame_[0]; };
+
+  //! Compute and return one output sample.
+  StkFloat tick( void );
+
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument must be less than the number of
+    channels in the StkFrames argument (the first channel is specified
+    by 0).  However, range checking is only performed if _STK_DEBUG_
+    is defined during compilation, in which case an out-of-range value
+    will trigger an StkError exception.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+
  protected:
 
   void updateHarmonics( void );
-  StkFloat computeSample( void );
 
   unsigned int nHarmonics_;
   unsigned int m_;
@@ -91,5 +110,61 @@ class BlitSquare: public Generator
   StkFloat lastBlitOutput_;
   StkFloat dcbState_;
 };
+
+inline StkFloat BlitSquare :: tick( void )
+{
+  StkFloat temp = lastBlitOutput_;
+
+  // A fully  optimized version of this would replace the two sin calls
+  // with a pair of fast sin oscillators, for which stable fast 
+  // two-multiply algorithms are well known. In the spirit of STK,
+  // which favors clarity over performance, the optimization has 
+  // not been made here.
+
+  // Avoid a divide by zero, or use of a denomralized divisor
+  // at the sinc peak, which has a limiting value of 1.0.
+  StkFloat denominator = sin( phase_ );
+  if ( fabs( denominator )  < std::numeric_limits<StkFloat>::epsilon() ) {
+    // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
+    if ( phase_ < 0.1f || phase_ > TWO_PI - 0.1f )
+      lastBlitOutput_ = a_;
+    else
+      lastBlitOutput_ = -a_;
+  }
+  else {
+    lastBlitOutput_ =  sin( m_ * phase_ );
+    lastBlitOutput_ /= p_ * denominator;
+  }
+
+  lastBlitOutput_ += temp;
+
+  // Now apply DC blocker.
+  lastFrame_[0] = lastBlitOutput_ - dcbState_ + 0.999 * lastFrame_[0];
+  dcbState_ = lastBlitOutput_;
+
+  phase_ += rate_;
+  if ( phase_ >= TWO_PI ) phase_ -= TWO_PI;
+
+	return lastFrame_[0];
+}
+
+inline StkFrames& BlitSquare :: tick( StkFrames& frames, unsigned int channel )
+{
+#if defined(_STK_DEBUG_)
+  if ( channel >= frames.channels() ) {
+    errorString_ << "BlitSquare::tick(): channel and StkFrames arguments are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  StkFloat *samples = &frames[channel];
+  unsigned int hop = frames.channels();
+  for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
+    *samples = BlitSquare::tick();
+
+  return frames;
+}
+
+} // stk namespace
 
 #endif

@@ -5,6 +5,8 @@
 #include "Granulate.h"
 #include "RtAudio.h"
 
+using namespace stk;
+
 // This tick() function handles sample computation only.  It will be
 // called automatically when the system needs a new buffer of audio
 // samples.
@@ -13,9 +15,15 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
 {
   Granulate *grani = (Granulate *) dataPointer;
   register StkFloat *samples = (StkFloat *) outputBuffer;
+  const StkFrames& lastframe = grani->lastFrame();
+  unsigned int nChannels = lastframe.channels();
 
-  for ( unsigned int i=0; i<nBufferFrames; i++ )
-    *samples++ = grani->tick();
+  unsigned int j;
+  for ( unsigned int i=0; i<nBufferFrames; i++ ) {
+    grani->tick();
+    for ( j=0; j<nChannels; j++ )
+      *samples++ = lastframe[j];
+  }
 
   return 0;
 }
@@ -67,7 +75,7 @@ int main( int argc, char *argv[] )
   // Figure out how many bytes in an StkFloat and setup the RtAudio stream.
   RtAudio::StreamParameters parameters;
   parameters.deviceId = dac.getDefaultOutputDevice();
-  parameters.nChannels = 1;
+  parameters.nChannels = grani.channelsOut();
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
   unsigned int bufferFrames = RT_BUFFER_SIZE;
   try {

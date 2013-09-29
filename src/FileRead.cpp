@@ -32,7 +32,10 @@
 #include "FileRead.h"
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <string.h>
 #include <cmath>
+
+namespace stk {
 
 FileRead :: FileRead()
   : fd_(0)
@@ -730,3 +733,4 @@ void FileRead :: read( StkFrames& buffer, unsigned long startFrame, bool doNorma
   handleError( StkError::FILE_ERROR);
 }
 
+} // stk namespace

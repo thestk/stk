@@ -1,3 +1,10 @@
+#ifndef STK_MODALBAR_H
+#define STK_MODALBAR_H
+
+#include "Modal.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class ModalBar
     \brief STK resonant bar instrument class.
@@ -24,38 +31,35 @@
          - Two Fixed = 7
          - Clump = 8
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_MODALBAR_H
-#define STK_MODALBAR_H
-
-#include "Modal.h"
 
 class ModalBar : public Modal
 {
 public:
   //! Class constructor.
-  ModalBar();
+  ModalBar( void );
 
   //! Class destructor.
-  ~ModalBar();
+  ~ModalBar( void );
 
   //! Set stick hardness (0.0 - 1.0).
-  void setStickHardness(StkFloat hardness);
+  void setStickHardness( StkFloat hardness );
 
   //! Set stick position (0.0 - 1.0).
-  void setStrikePosition(StkFloat position);
+  void setStrikePosition( StkFloat position );
 
   //! Select a bar preset (currently modulo 9).
-  void setPreset(int preset);
+  void setPreset( int preset );
 
   //! Set the modulation (vibrato) depth.
-  void setModulationDepth(StkFloat mDepth);
+  void setModulationDepth( StkFloat mDepth );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
 };
+
+} // stk namespace
 
 #endif

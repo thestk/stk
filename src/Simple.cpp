@@ -13,17 +13,19 @@
        - Envelope Rate = 11
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Simple.h"
 #include "SKINI.msg"
 
-Simple :: Simple()
+namespace stk {
+
+Simple :: Simple( void )
 {
   // Concatenate the STK rawwave path to the rawwave file
-  loop_ = new WaveLoop( (Stk::rawwavePath() + "impuls10.raw").c_str(), true );
+  loop_ = new FileLoop( (Stk::rawwavePath() + "impuls10.raw").c_str(), true );
 
   filter_.setPole( 0.5 );
   baseFrequency_ = 440.0;
@@ -31,22 +33,22 @@ Simple :: Simple()
   loopGain_ = 0.5;
 }  
 
-Simple :: ~Simple()
+Simple :: ~Simple( void )
 {
   delete loop_;
 }
 
-void Simple :: keyOn()
+void Simple :: keyOn( void )
 {
   adsr_.keyOn();
 }
 
-void Simple :: keyOff()
+void Simple :: keyOff( void )
 {
   adsr_.keyOff();
 }
 
-void Simple :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Simple :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->keyOn();
   this->setFrequency( frequency );
@@ -57,7 +59,7 @@ void Simple :: noteOn(StkFloat frequency, StkFloat amplitude)
   handleError( StkError::DEBUG_WARNING );
 #endif
 }
-void Simple :: noteOff(StkFloat amplitude)
+void Simple :: noteOff( StkFloat amplitude )
 {
   this->keyOff();
 
@@ -67,23 +69,13 @@ void Simple :: noteOff(StkFloat amplitude)
 #endif
 }
 
-void Simple :: setFrequency(StkFloat frequency)
+void Simple :: setFrequency( StkFloat frequency )
 {
   biquad_.setResonance( frequency, 0.98, true );
   loop_->setFrequency( frequency );
 }
 
-StkFloat Simple :: computeSample()
-{
-  lastOutput_ = loopGain_ * loop_->tick();
-  biquad_.tick( noise_.tick() );
-  lastOutput_ += (1.0 - loopGain_) * biquad_.lastOut();
-  lastOutput_ = filter_.tick( lastOutput_ );
-  lastOutput_ *= adsr_.tick();
-  return lastOutput_;
-}
-
-void Simple :: controlChange(int number, StkFloat value)
+void Simple :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -119,3 +111,5 @@ void Simple :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

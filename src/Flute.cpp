@@ -18,16 +18,18 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Flute.h"
 #include "SKINI.msg"
 
-Flute :: Flute(StkFloat lowestFrequency)
+namespace stk {
+
+Flute :: Flute( StkFloat lowestFrequency )
 {
-  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  length_ = (unsigned long) ( Stk::sampleRate() / lowestFrequency + 1 );
   boreDelay_.setMaximumDelay( length_ );
   boreDelay_.setDelay( 100.0 );
 
@@ -54,11 +56,11 @@ Flute :: Flute(StkFloat lowestFrequency)
   lastFrequency_ = 220.0;
 }
 
-Flute :: ~Flute()
+Flute :: ~Flute( void )
 {
 }
 
-void Flute :: clear()
+void Flute :: clear( void )
 {
   jetDelay_.clear();
   boreDelay_.clear();
@@ -66,7 +68,7 @@ void Flute :: clear()
   dcBlock_.clear();
 }
 
-void Flute :: setFrequency(StkFloat frequency)
+void Flute :: setFrequency( StkFloat frequency )
 {
   lastFrequency_ = frequency;
   if ( frequency <= 0.0 ) {
@@ -87,20 +89,20 @@ void Flute :: setFrequency(StkFloat frequency)
   jetDelay_.setDelay(delay * jetRatio_);
 }
 
-void Flute :: startBlowing(StkFloat amplitude, StkFloat rate)
+void Flute :: startBlowing( StkFloat amplitude, StkFloat rate )
 {
   adsr_.setAttackRate( rate );
   maxPressure_ = amplitude / (StkFloat) 0.8;
   adsr_.keyOn();
 }
 
-void Flute :: stopBlowing(StkFloat rate)
+void Flute :: stopBlowing( StkFloat rate )
 {
   adsr_.setReleaseRate( rate );
   adsr_.keyOff();
 }
 
-void Flute :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Flute :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->startBlowing( 1.1 + (amplitude * 0.20), amplitude * 0.02 );
@@ -112,7 +114,7 @@ void Flute :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Flute :: noteOff(StkFloat amplitude)
+void Flute :: noteOff( StkFloat amplitude )
 {
   this->stopBlowing( amplitude * 0.02 );
 
@@ -122,12 +124,12 @@ void Flute :: noteOff(StkFloat amplitude)
 #endif
 }
 
-void Flute :: setJetReflection(StkFloat coefficient)
+void Flute :: setJetReflection( StkFloat coefficient )
 {
   jetReflection_ = coefficient;
 }
 
-void Flute :: setEndReflection(StkFloat coefficient)
+void Flute :: setEndReflection( StkFloat coefficient )
 {         
   endReflection_ = coefficient;
 }               
@@ -140,28 +142,7 @@ void Flute :: setJetDelay( StkFloat aRatio )
   jetDelay_.setDelay(temp * aRatio); // Scaled by ratio.
 }
 
-StkFloat Flute :: computeSample()
-{
-  StkFloat pressureDiff;
-  StkFloat breathPressure;
-
-  // Calculate the breath pressure (envelope + noise + vibrato)
-  breathPressure = maxPressure_ * adsr_.tick();
-  breathPressure += breathPressure * ( noiseGain_ * noise_.tick() + vibratoGain_ * vibrato_.tick() );
-
-  StkFloat temp = filter_.tick( boreDelay_.lastOut() );
-  temp = dcBlock_.tick( temp ); // Block DC on reflection.
-
-  pressureDiff = breathPressure - (jetReflection_ * temp);
-  pressureDiff = jetDelay_.tick( pressureDiff );
-  pressureDiff = jetTable_.tick( pressureDiff ) + (endReflection_ * temp);
-  lastOutput_ = (StkFloat) 0.3 * boreDelay_.tick( pressureDiff );
-
-  lastOutput_ *= outputGain_;
-  return lastOutput_;
-}
-
-void Flute :: controlChange(int number, StkFloat value)
+void Flute :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -195,3 +176,5 @@ void Flute :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

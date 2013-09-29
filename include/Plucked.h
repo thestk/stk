@@ -1,3 +1,14 @@
+#ifndef STK_PLUCKED_H
+#define STK_PLUCKED_H
+
+#include "Instrmnt.h"
+#include "DelayA.h"
+#include "OneZero.h"
+#include "OnePole.h"
+#include "Noise.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class Plucked
     \brief STK plucked string model class.
@@ -13,46 +24,38 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_PLUCKED_H
-#define STK_PLUCKED_H
-
-#include "Instrmnt.h"
-#include "DelayA.h"
-#include "OneZero.h"
-#include "OnePole.h"
-#include "Noise.h"
 
 class Plucked : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  Plucked(StkFloat lowestFrequency);
+  Plucked( StkFloat lowestFrequency );
 
   //! Class destructor.
-  ~Plucked();
+  ~Plucked( void );
 
   //! Reset and clear all internal state.
-  void clear();
+  void clear( void );
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(StkFloat frequency);
+  void setFrequency( StkFloat frequency );
 
   //! Pluck the string with the given amplitude using the current frequency.
-  void pluck(StkFloat amplitude);
+  void pluck( StkFloat amplitude );
 
   //! Start a note with the given frequency and amplitude.
-  virtual void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay).
-  virtual void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:  
-
-  StkFloat computeSample( void );
 
   DelayA   delayLine_;
   OneZero  loopFilter_;
@@ -62,6 +65,14 @@ class Plucked : public Instrmnt
   unsigned long length_;
 
 };
+
+inline StkFloat Plucked :: tick( unsigned int )
+{
+  // Here's the whole inner loop of the instrument!!
+  return lastFrame_[0] = 3.0 * delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ ) ); 
+}
+
+} // stk namespace
 
 #endif
 

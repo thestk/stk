@@ -5,11 +5,13 @@
     This class provides common functionality for TCP and UDP internet
     socket server and client subclasses.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Socket.h"
+
+namespace stk {
 
 Socket :: Socket()
 {
@@ -43,28 +45,13 @@ void Socket :: close( int socket )
 #endif
 }
 
-int Socket :: id( void ) const
-{
-  return soket_;
-}
-
-int Socket :: port( void ) const
-{
-  return port_;
-}
-
-bool Socket :: isValid( int socket )
-{
-  return socket != -1;
-}
-
 void Socket :: setBlocking( int socket, bool enable )
 {
   if ( !isValid( socket ) ) return;
 
 #if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
 
-  int tmp = ::fcntl(socket, F_GETFL, 0);
+  int tmp = ::fcntl( socket, F_GETFL, 0 );
   if ( tmp >= 0 )
     tmp = ::fcntl( socket, F_SETFL, enable ? (tmp &~ O_NONBLOCK) : (tmp | O_NONBLOCK) );
 
@@ -88,3 +75,4 @@ int Socket :: readBuffer(int socket, void *buffer, long bufferSize, int flags )
   return recv( socket, (char *)buffer, bufferSize, flags );
 }
 
+} // stk namespace

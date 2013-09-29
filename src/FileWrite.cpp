@@ -17,12 +17,15 @@
     type, the data type will automatically be modified.  Compressed
     data types are not supported.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "FileWrite.h"
+#include <string.h>
 #include <cmath>
+
+namespace stk {
 
 const FileWrite::FILE_TYPE FileWrite :: FILE_RAW = 1;
 const FileWrite::FILE_TYPE FileWrite :: FILE_WAV = 2;
@@ -699,3 +702,5 @@ void FileWrite :: write( StkFrames& buffer )
   errorString_ << "FileWrite::write(): error writing data to file!";
   handleError( StkError::FILE_ERROR );
 }
+
+} // stk namespace

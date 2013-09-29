@@ -1,3 +1,10 @@
+#ifndef STK_FMVOICES_H
+#define STK_FMVOICES_H
+
+#include "FM.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class FMVoices
     \brief STK singing FM synthesis instrument.
@@ -26,14 +33,9 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_FMVOICES_H
-#define STK_FMVOICES_H
-
-#include "FM.h"
 
 class FMVoices : public FM
 {
@@ -42,27 +44,55 @@ class FMVoices : public FM
   /*!
     An StkError will be thrown if the rawwave path is incorrectly set.
   */
-  FMVoices();
+  FMVoices( void );
 
   //! Class destructor.
-  ~FMVoices();
+  ~FMVoices( void );
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(StkFloat frequency);
+  void setFrequency( StkFloat frequency );
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  virtual void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
-
-  StkFloat computeSample( void );
 
   int currentVowel_;
   StkFloat tilt_[3];
   StkFloat mods_[3];
 };
+
+inline StkFloat FMVoices :: tick( unsigned int )
+{
+  register StkFloat temp, temp2;
+
+  temp = gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
+  temp2 = vibrato_.tick() * modDepth_ * 0.1;
+
+  waves_[0]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[0]);
+  waves_[1]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[1]);
+  waves_[2]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[2]);
+  waves_[3]->setFrequency(baseFrequency_ * (1.0 + temp2) * ratios_[3]);
+
+  waves_[0]->addPhaseOffset(temp * mods_[0]);
+  waves_[1]->addPhaseOffset(temp * mods_[1]);
+  waves_[2]->addPhaseOffset(temp * mods_[2]);
+  waves_[3]->addPhaseOffset( twozero_.lastOut() );
+  twozero_.tick( temp );
+  temp =  gains_[0] * tilt_[0] * adsr_[0]->tick() * waves_[0]->tick();
+  temp += gains_[1] * tilt_[1] * adsr_[1]->tick() * waves_[1]->tick();
+  temp += gains_[2] * tilt_[2] * adsr_[2]->tick() * waves_[2]->tick();
+
+  lastFrame_[0] = temp * 0.33;
+  return lastFrame_[0];
+}
+
+} // stk namespace
 
 #endif

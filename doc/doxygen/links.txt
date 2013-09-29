@@ -1,8 +1,8 @@
 /*! \page links Miscellaneous Links
 
-- <A HREF="http://music.mcgill.ca/~gary/rtaudio/">The %RtAudio WWW site</A>
+- <A HREF="http://www.music.mcgill.ca/~gary/rtaudio/">The %RtAudio WWW site</A>
 
-- <A HREF="http://music.mcgill.ca/~gary/rtmidi/">The %RtMidi WWW site</A>
+- <A HREF="http://www.music.mcgill.ca/~gary/rtmidi/">The %RtMidi WWW site</A>
 
 - <A HREF="http://ccrma.stanford.edu/~woony/software/stkx/">StkX: A Cocoa STK Framework for Mac OS X by Woon Seung Yeo</A>
 

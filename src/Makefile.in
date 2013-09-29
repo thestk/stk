@@ -7,11 +7,12 @@ RM = /bin/rm
 OBJECT_PATH = @object_path@
 vpath %.o $(OBJECT_PATH)
 
-OBJECTS	=	Stk.o Generator.o Noise.o SubNoise.o Blit.o BlitSaw.o BlitSquare.o \
-					Envelope.o ADSR.o Asymp.o Modulate.o SingWave.o SineWave.o Granulate.o \
-					FileRead.o FileWrite.o WvIn.o FileWvIn.o WaveLoop.o WvOut.o FileWvOut.o \
-					Filter.o OneZero.o OnePole.o PoleZero.o TwoZero.o TwoPole.o \
+OBJECTS	=	Stk.o Generator.o Noise.o Blit.o BlitSaw.o BlitSquare.o Granulate.o \
+					Envelope.o ADSR.o Asymp.o Modulate.o SineWave.o FileLoop.o SingWave.o \
+					FileRead.o FileWrite.o WvIn.o FileWvIn.o WvOut.o FileWvOut.o \
+					Filter.o Fir.o Iir.o OneZero.o OnePole.o PoleZero.o TwoZero.o TwoPole.o \
 					BiQuad.o FormSwep.o Delay.o DelayL.o DelayA.o \
+					\
 					Effect.o PRCRev.o JCRev.o NRev.o \
 					Chorus.o Echo.o PitShift.o \
 					Function.o ReedTable.o JetTable.o BowTable.o \
@@ -25,7 +26,6 @@ OBJECTS	=	Stk.o Generator.o Noise.o SubNoise.o Blit.o BlitSaw.o BlitSquare.o \
 					\
 					Messager.o Skini.o MidiFileIn.o
 
-
 INCLUDE = @include@
 ifeq ($(strip $(INCLUDE)),)
 	vpath %.h ../include
@@ -36,20 +36,19 @@ else
 endif
 
 CC       = @CXX@
-DEFS     = @byte_order@
-DEFS    += @debug@
-CFLAGS   = @cflags@
-CFLAGS  += @warn@ $(INCLUDE) -Iinclude
+DEFS     = @CPPFLAGS@
+DEFS    += @byte_order@
+CFLAGS   = @CXXFLAGS@
+CFLAGS  += $(INCLUDE) -Iinclude
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
 	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o RtWvIn.o InetWvOut.o InetWvIn.o Thread.o Mutex.o Socket.o TcpClient.o TcpServer.o UdpSocket.o @objects@
-	DEFS    += @audio_apis@
 endif
 
 RAWWAVES = @rawwaves@
 ifeq ($(strip $(RAWWAVES)), )
-	RAWWAVES = ../rawwaves/
+	RAWWAVES = ../../rawwaves/
 endif
 DEFS    += -DRAWWAVE_PATH=\"$(RAWWAVES)\"
 
@@ -70,3 +69,4 @@ $(OBJECTS) : Stk.h
 clean : 
 	-rm $(OBJECT_PATH)/*.o
 	-rm $(LIBRARY)
+	-rm -fR *.dSYM

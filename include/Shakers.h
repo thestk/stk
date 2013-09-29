@@ -1,3 +1,10 @@
+#ifndef STK_SHAKERS_H
+#define STK_SHAKERS_H
+
+#include "Instrmnt.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class Shakers
     \brief PhISEM and PhOLIES class.
@@ -48,14 +55,9 @@
         - Little Rocks = 21
         - Tuned Bamboo Chimes = 22
 
-    by Perry R. Cook, 1996 - 2004.
+    by Perry R. Cook, 1996 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_SHAKERS_H
-#define STK_SHAKERS_H
-
-#include "Instrmnt.h"
 
 const int MAX_FREQS = 8;
 const int NUM_INSTR = 24;
@@ -64,35 +66,37 @@ class Shakers : public Instrmnt
 {
  public:
   //! Class constructor.
-  Shakers();
+  Shakers( void );
 
   //! Class destructor.
-  ~Shakers();
+  ~Shakers( void );
 
   //! Start a note with the given instrument and amplitude.
   /*!
     Use the instrument numbers above, converted to frequency values
     as if MIDI note numbers, to select a particular instrument.
   */
-  void noteOn(StkFloat instrument, StkFloat amplitude);
+  void noteOn( StkFloat instrument, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
 
-  StkFloat computeSample( void );
-  int setupName(char* instr);
-  int setupNum(int inst);
-  int setFreqAndReson(int which, StkFloat freq, StkFloat reson);
-  void setDecays(StkFloat sndDecay, StkFloat sysDecay);
-  void setFinalZs(StkFloat z0, StkFloat z1, StkFloat z2);
-  StkFloat wuter_tick();
-  StkFloat tbamb_tick();
-  StkFloat ratchet_tick();
+  int setupName( char* instr );
+  int setupNum( int inst );
+  int setFreqAndReson( int which, StkFloat freq, StkFloat reson );
+  void setDecays( StkFloat sndDecay, StkFloat sysDecay );
+  void setFinalZs( StkFloat z0, StkFloat z1, StkFloat z2 );
+  StkFloat wuter_tick( void );
+  StkFloat tbamb_tick( void );
+  StkFloat ratchet_tick( void );
 
   int instType_;
   int ratchetPos_, lastRatchetPos_;
@@ -121,5 +125,7 @@ class Shakers : public Instrmnt
   StkFloat decayScale_[NUM_INSTR];
 
 };
+
+} // stk namespace
 
 #endif

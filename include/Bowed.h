@@ -1,3 +1,16 @@
+#ifndef STK_BOWED_H
+#define STK_BOWED_H
+
+#include "Instrmnt.h"
+#include "DelayL.h"
+#include "BowTable.h"
+#include "OnePole.h"
+#include "BiQuad.h"
+#include "SineWave.h"
+#include "ADSR.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class Bowed
     \brief STK bowed string instrument class.
@@ -17,57 +30,47 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_BOWED_H
-#define STK_BOWED_H
-
-#include "Instrmnt.h"
-#include "DelayL.h"
-#include "BowTable.h"
-#include "OnePole.h"
-#include "BiQuad.h"
-#include "SineWave.h"
-#include "ADSR.h"
 
 class Bowed : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  Bowed(StkFloat lowestFrequency);
+  Bowed( StkFloat lowestFrequency );
 
   //! Class destructor.
-  ~Bowed();
+  ~Bowed( void );
 
   //! Reset and clear all internal state.
-  void clear();
+  void clear( void );
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(StkFloat frequency);
+  void setFrequency( StkFloat frequency );
 
   //! Set vibrato gain.
-  void setVibrato(StkFloat gain);
+  void setVibrato( StkFloat gain );
 
   //! Apply breath pressure to instrument with given amplitude and rate of increase.
-  void startBowing(StkFloat amplitude, StkFloat rate);
+  void startBowing( StkFloat amplitude, StkFloat rate );
 
   //! Decrease breath pressure with given rate of decrease.
-  void stopBowing(StkFloat rate);
+  void stopBowing( StkFloat rate );
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
-
-  StkFloat computeSample( void );
 
   DelayL   neckDelay_;
   DelayL   bridgeDelay_;
@@ -82,5 +85,28 @@ class Bowed : public Instrmnt
   StkFloat betaRatio_;
 
 };
+
+inline StkFloat Bowed :: tick( unsigned int )
+{
+  StkFloat bowVelocity = maxVelocity_ * adsr_.tick();
+  StkFloat bridgeRefl = -stringFilter_.tick( bridgeDelay_.lastOut() );
+  StkFloat nutRefl = -neckDelay_.lastOut();
+  StkFloat stringVel = bridgeRefl + nutRefl;               // Sum is string velocity
+  StkFloat velDiff = bowVelocity - stringVel;              // Differential velocity
+  StkFloat newVel = velDiff * bowTable_.tick( velDiff );   // Non-Linear bow function
+  neckDelay_.tick(bridgeRefl + newVel);                    // Do string propagations
+  bridgeDelay_.tick(nutRefl + newVel);
+    
+  if ( vibratoGain_ > 0.0 )  {
+    neckDelay_.setDelay( (baseDelay_ * (1.0 - betaRatio_) ) + 
+                         (baseDelay_ * vibratoGain_ * vibrato_.tick()) );
+  }
+
+  lastFrame_[0] = bodyFilter_.tick( bridgeDelay_.lastOut() );
+
+  return lastFrame_[0];
+}
+
+} // stk namespace
 
 #endif

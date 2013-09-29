@@ -5,6 +5,7 @@
 // by Gary Scavone, 2003-2004.
 
 #include <iostream>
+#include <stdlib.h>
 #include "RtMidi.h"
 
 int main()

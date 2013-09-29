@@ -7,9 +7,9 @@
 
     FileWvOut writes samples to an audio file and supports
     multi-channel data.  It is important to distinguish the tick()
-    methods, which output single samples to all channels in a sample
-    frame, from the tickFrame() methods, which take a pointer or
-    reference to multi-channel sample frame data.
+    method that outputs a single sample to all channels in a sample
+    frame from the overloaded one that takes a reference to an
+    StkFrames object for multi-channel and/or multi-frame data.
 
     See the FileWrite class for a description of the supported audio
     file formats.
@@ -17,11 +17,13 @@
     Currently, FileWvOut is non-interpolating and the output rate is
     always Stk::sampleRate().
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "FileWvOut.h"
+
+namespace stk {
 
 FileWvOut :: FileWvOut( unsigned int bufferFrames )
   :bufferFrames_( bufferFrames )
@@ -88,13 +90,15 @@ void FileWvOut :: incrementFrame( void )
   }
 }
 
-void FileWvOut :: computeSample( const StkFloat sample )
+void FileWvOut :: tick( const StkFloat sample )
 {
+#if defined(_STK_DEBUG_)
   if ( !file_.isOpen() ) {
-    errorString_ << "FileWvOut::computeSample(): no file open!";
+    errorString_ << "FileWvOut::tick(): no file open!";
     handleError( StkError::WARNING );
     return;
   }
+#endif
 
   unsigned int nChannels = data_.channels();
   StkFloat input = sample;
@@ -105,48 +109,32 @@ void FileWvOut :: computeSample( const StkFloat sample )
   this->incrementFrame();
 }
 
-void FileWvOut :: computeFrames( const StkFrames& frames )
+void FileWvOut :: tick( const StkFrames& frames )
 {
+#if defined(_STK_DEBUG_)
   if ( !file_.isOpen() ) {
-    errorString_ << "FileWvOut::computeFrames(): no file open!";
+    errorString_ << "FileWvOut::tick(): no file open!";
     handleError( StkError::WARNING );
     return;
   }
 
   if ( data_.channels() != frames.channels() ) {
-    errorString_ << "FileWvOut::computeFrames(): incompatible channel value in StkFrames argument!";
+    errorString_ << "FileWvOut::tick(): incompatible channel value in StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
+#endif
 
+  unsigned int iFrames = 0;
   unsigned int j, nChannels = data_.channels();
-  if ( nChannels == 1 || frames.interleaved() ) {
+  for ( unsigned int i=0; i<frames.frames(); i++ ) {
 
-    unsigned int iFrames = 0;
-    for ( unsigned int i=0; i<frames.frames(); i++ ) {
-
-      for ( j=0; j<nChannels; j++ ) {
-        data_[iData_] = frames[iFrames++];
-        clipTest( data_[iData_++] );
-      }
-
-      this->incrementFrame();
+    for ( j=0; j<nChannels; j++ ) {
+      data_[iData_] = frames[iFrames++];
+      clipTest( data_[iData_++] );
     }
-  }
-  else { // non-interleaved frames
 
-    unsigned long hop = frames.frames();
-    unsigned int index;
-    for ( unsigned int i=0; i<frames.frames(); i++ ) {
-
-      index = i;
-      for ( j=0; j<nChannels; j++ ) {
-        data_[iData_] = frames[index];
-        clipTest( data_[iData_++] );
-        index += hop;
-      }
-
-      this->incrementFrame();
-    }
+    this->incrementFrame();
   }
 }
 
+} // stk namespace

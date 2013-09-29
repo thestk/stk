@@ -1,53 +1,50 @@
-/***************************************************/
-/*! \class Generator
-    \brief STK abstract unit generator parent class.
-
-    This class provides common functionality for
-    STK unit generator sample-source subclasses.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
-*/
-/***************************************************/
-
 #ifndef STK_GENERATOR_H
 #define STK_GENERATOR_H
 
 #include "Stk.h"
 
+namespace stk {
+
+/***************************************************/
+/*! \class Generator
+    \brief STK abstract unit generator parent class.
+
+    This class provides limited common functionality for STK unit
+    generator sample-source subclasses.  It is general enough to
+    support both monophonic and polyphonic output classes.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+*/
+/***************************************************/
+
 class Generator : public Stk
 {
  public:
+
   //! Class constructor.
-  Generator( void );
+  Generator( void ) { lastFrame_.resize( 1, 1, 0.0 ); };
 
-  //! Class destructor.
-  virtual ~Generator( void );
+  //! Return the number of output channels for the class.
+  unsigned int channelsOut( void ) const { return lastFrame_.channels(); };
 
-  //! Return the last output value.
-  virtual StkFloat lastOut( void ) const { return lastOutput_; };
+  //! Return an StkFrames reference to the last output sample frame.
+  const StkFrames& lastFrame( void ) const { return lastFrame_; };
 
-  //! Compute one sample and output.
-  StkFloat tick( void );
-
-  //! Fill a channel of the StkFrames object with computed outputs.
+  //! Fill the StkFrames object with computed sample frames, starting at the specified channel.
   /*!
-    The \c channel argument should be zero or greater (the first
-    channel is specified by 0).  An StkError will be thrown if the \c
-    channel argument is equal to or greater than the number of
-    channels in the StkFrames object.
+    The \c channel argument plus the number of output channels must
+    be less than the number of channels in the StkFrames argument (the
+    first channel is specified by 0).  However, range checking is only
+    performed if _STK_DEBUG_ is defined during compilation, in which
+    case an out-of-range value will trigger an StkError exception.
   */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 0 ) = 0;
 
- protected:
+  protected:
 
-  // This abstract function must be implemented in all subclasses.
-  // It is used to get around a C++ problem with overloaded virtual
-  // functions.
-  virtual StkFloat computeSample( void ) = 0;
-
-  StkFloat lastOutput_;
-
+  StkFrames lastFrame_;
 };
 
-#endif
+} // stk namespace
 
+#endif

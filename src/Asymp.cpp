@@ -6,7 +6,7 @@
     which asymptotically approaches a target value.
     The algorithm used is of the form:
 
-    x[n] = a x[n-1] + (1-a) target,
+    y[n] = a y[n-1] + (1-a) target,
 
     where a = exp(-T/tau), T is the sample period, and
     tau is a time constant.  The user can set the time
@@ -19,20 +19,26 @@
     to \e keyOn and \e keyOff messages by ramping to
     1.0 on keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Asymp.h"
 #include <cmath>
 
-Asymp :: Asymp(void) : Envelope()
+namespace stk {
+
+Asymp :: Asymp( void )
 {
+  value_ = 0.0;
+  target_ = 0.0;
+  state_ = 0;
   factor_ = exp( -1.0 / ( 0.3 * Stk::sampleRate() ) );
   constant_ = 0.0;
+  Stk::addSampleRateAlert( this );
 }
 
-Asymp :: ~Asymp(void)
+Asymp :: ~Asymp( void )
 {    
 }
 
@@ -44,33 +50,31 @@ void Asymp :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
   }
 }
 
-void Asymp :: keyOn(void)
+void Asymp :: keyOn( void )
 {
-  Envelope::keyOn();
-  constant_ = ( 1.0 - factor_ ) * target_;
+  this->setTarget( 1.0 );
 }
 
-void Asymp :: keyOff(void)
+void Asymp :: keyOff( void )
 {
-  Envelope::keyOff();
-  constant_ = ( 1.0 - factor_ ) * target_;
+  this->setTarget( 0.0 );
 }
 
-void Asymp :: setTau(StkFloat tau)
+void Asymp :: setTau( StkFloat tau )
 {
- if (tau <= 0.0) {
+  if ( tau <= 0.0 ) {
     errorString_ << "Asymp::setTau: negative or zero tau not allowed ... ignoring!";
     handleError( StkError::WARNING );
     return;
   }
 
- factor_ = std::exp( -1.0 / ( tau * Stk::sampleRate() ) );
+  factor_ = std::exp( -1.0 / ( tau * Stk::sampleRate() ) );
   constant_ = ( 1.0 - factor_ ) * target_;
 }
 
-void Asymp :: setTime(StkFloat time)
+void Asymp :: setTime( StkFloat time )
 {
-  if (time <= 0.0) {
+  if ( time <= 0.0 ) {
     errorString_ << "Asymp::setTime: negative or zero times not allowed ... ignoring!";
     handleError( StkError::WARNING );
     return;
@@ -81,34 +85,19 @@ void Asymp :: setTime(StkFloat time)
   constant_ = ( 1.0 - factor_ ) * target_;
 }
 
-void Asymp :: setTarget(StkFloat target)
+void Asymp :: setTarget( StkFloat target )
 {
-  Envelope::setTarget( target );
+  target_ = target;
+  if ( value_ != target_ ) state_ = 1;
   constant_ = ( 1.0 - factor_ ) * target_;
 }
 
-StkFloat Asymp :: computeSample(void)
+void Asymp :: setValue( StkFloat value )
 {
-  if (state_) {
-
-    value_ = factor_ * value_ + constant_;
-
-    // Check threshold.
-    if ( target_ > value_ ) {
-      if ( target_ - value_ <= TARGET_THRESHOLD ) {
-        value_ = target_;
-        state_ = 0;
-      }
-    }
-    else {
-      if ( value_ - target_ <= TARGET_THRESHOLD ) {
-        value_ = target_;
-        state_ = 0;
-      }
-    }
-  }
-
-  lastOutput_ = value_;
-  return value_;
+  state_ = 0;
+  target_ = value;
+  value_ = value;
 }
+
+} // stk namespace
 

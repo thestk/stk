@@ -1,3 +1,11 @@
+#ifndef STK_MESH2D_H
+#define STK_MESH2D_H
+
+#include "Instrmnt.h"
+#include "OnePole.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class Mesh2D
     \brief Two-dimensional rectilinear waveguide mesh class.
@@ -24,12 +32,6 @@
 */
 /***************************************************/
 
-#ifndef STK_MESH2D_H
-#define STK_MESH2D_H
-
-#include "Instrmnt.h"
-#include "OnePole.h"
-
 const short NXMAX = 12;
 const short NYMAX = 12;
 
@@ -37,44 +39,45 @@ class Mesh2D : public Instrmnt
 {
  public:
   //! Class constructor, taking the x and y dimensions in samples.
-  Mesh2D(short nX, short nY);
+  Mesh2D( short nX, short nY );
 
   //! Class destructor.
-  ~Mesh2D();
+  ~Mesh2D( void );
 
   //! Reset and clear all internal state.
-  void clear(); 
+  void clear( void );
 
   //! Set the x dimension size in samples.
-  void setNX(short lenX);
+  void setNX( short lenX );
 
   //! Set the y dimension size in samples.
-  void setNY(short lenY);
+  void setNY( short lenY );
 
   //! Set the x, y input position on a 0.0 - 1.0 scale.
-  void setInputPosition(StkFloat xFactor, StkFloat yFactor);
+  void setInputPosition( StkFloat xFactor, StkFloat yFactor );
 
   //! Set the loss filters gains (0.0 - 1.0).
-  void setDecay(StkFloat decayFactor);
+  void setDecay( StkFloat decayFactor );
 
   //! Impulse the mesh with the given amplitude (frequency ignored).
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay) ... currently ignored.
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
 
   //! Calculate and return the signal energy stored in the mesh.
-  StkFloat energy();
+  StkFloat energy( void );
 
   //! Input a sample to the mesh and compute one output sample.
   StkFloat inputTick( StkFloat input );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
-
-  StkFloat computeSample( void );
 
   StkFloat tick0();
   StkFloat tick1();
@@ -98,5 +101,7 @@ class Mesh2D : public Instrmnt
 
   int counter_; // time in samples
 };
+
+} // stk namespace
 
 #endif

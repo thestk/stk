@@ -22,8 +22,8 @@
 /***************************************************/
 
 #include "Blit.h"
-#include <cmath>
-#include <limits>
+
+namespace stk {
  
 Blit:: Blit( StkFloat frequency )
 {
@@ -39,7 +39,7 @@ Blit :: ~Blit()
 void Blit :: reset()
 {
   phase_ = 0.0;
-  lastOutput_ = 0;
+  lastFrame_[0] = 0.0;
 }
 
 void Blit :: setFrequency( StkFloat frequency )
@@ -75,31 +75,4 @@ void Blit :: updateHarmonics( void )
 #endif
 }
 
-StkFloat Blit :: computeSample( void )
-{
-  // The code below implements the SincM algorithm of Stilson and
-  // Smith with an additional scale factor of P / M applied to
-  // normalize the output.
-
-  // A fully optimized version of this code would replace the two sin
-  // calls with a pair of fast sin oscillators, for which stable fast
-  // two-multiply algorithms are well known. In the spirit of STK,
-  // which favors clarity over performance, the optimization has not
-  // been made here.
-
-  // Avoid a divide by zero at the sinc peak, which has a limiting
-  // value of 1.0.
-  StkFloat denominator = sin( phase_ );
-  if ( denominator <= std::numeric_limits<StkFloat>::epsilon() ) {
-    lastOutput_ = 1.0;
-  } else {
-    lastOutput_ =  sin( m_ * phase_ );
-    lastOutput_ /= m_ * denominator;
-  }
-
-  phase_ += rate_;
-  if ( phase_ >= PI ) phase_ -= PI;
-    
-	return lastOutput_;
-}
-
+} // stk namespace

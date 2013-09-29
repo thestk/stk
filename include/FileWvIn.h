@@ -1,17 +1,26 @@
+#ifndef STK_FILEWVIN_H
+#define STK_FILEWVIN_H
+
+#include "WvIn.h"
+#include "FileRead.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class FileWvIn
     \brief STK audio file input class.
 
     This class inherits from WvIn.  It provides a "tick-level"
     interface to the FileRead class.  It also provides variable-rate
-    "playback" functionality.  Audio file support is provided by the
-    FileRead class.  Linear interpolation is used for fractional "read
-    rates".
+    playback functionality.  Audio file support is provided by the
+    FileRead class.  Linear interpolation is used for fractional read
+    rates.
 
-    FileWvIn supports multi-channel data.  It is important to distinguish
-    the tick() methods, which return samples produced by averaging
-    across sample frames, from the tickFrame() methods, which return
-    references to multi-channel sample frames.
+    FileWvIn supports multi-channel data.  It is important to
+    distinguish the tick() method that computes a single frame (and
+    returns only the specified sample of a multi-channel frame) from
+    the overloaded one that takes an StkFrames object for
+    multi-channel and/or multi-frame data.
 
     FileWvIn will either load the entire content of an audio file into
     local memory or incrementally read file data from disk in chunks.
@@ -21,21 +30,14 @@
     chunks of \e chunkSize each (also in sample frames).
 
     When the file end is reached, subsequent calls to the tick()
-    functions return zero-valued data and isFinished() returns \e
-    true.
+    functions return zeros and isFinished() returns \e true.
 
     See the FileRead class for a description of the supported audio
     file formats.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_FILEWVIN_H
-#define STK_FILEWVIN_H
-
-#include "WvIn.h"
-#include "FileRead.h"
 
 class FileWvIn : public WvIn
 {
@@ -52,7 +54,7 @@ public:
             unsigned long chunkThreshold = 1000000, unsigned long chunkSize = 1024 );
 
   //! Class destructor.
-  virtual ~FileWvIn();
+  ~FileWvIn( void );
 
   //! Open the specified file and load its data.
   /*!
@@ -64,30 +66,30 @@ public:
     limits.  If the data format is floating-point, no scaling is
     performed.
   */
-  void openFile( std::string fileName, bool raw = false, bool doNormalize = true );
+  virtual void openFile( std::string fileName, bool raw = false, bool doNormalize = true );
 
   //! Close a file if one is open.
-  void closeFile( void );
+  virtual void closeFile( void );
 
   //! Clear outputs and reset time (file) pointer to zero.
-  void reset( void );
+  virtual void reset( void );
 
   //! Normalize data to a maximum of +-1.0.
   /*!
     This function has no effect when data is incrementally loaded
     from disk.
   */
-  void normalize( void );
+  virtual void normalize( void );
 
   //! Normalize data to a maximum of \e +-peak.
   /*!
     This function has no effect when data is incrementally loaded
     from disk.
   */
-  void normalize( StkFloat peak );
+  virtual void normalize( StkFloat peak );
 
   //! Return the file size in sample frames.
-  unsigned long getSize( void ) const { return data_.frames(); };
+  virtual unsigned long getSize( void ) const { return data_.frames(); };
 
   //! Return the input file sample rate in Hz (not the data read rate).
   /*!
@@ -95,7 +97,7 @@ public:
     their headers.  STK RAW files have a sample rate of 22050 Hz
     by definition.  MAT-files are assumed to have a rate of 44100 Hz.
   */
-  StkFloat getFileRate( void ) const { return data_.dataRate(); };
+  virtual StkFloat getFileRate( void ) const { return data_.dataRate(); };
 
   //! Query whether reading is complete.
   bool isFinished( void ) const { return finished_; };
@@ -104,7 +106,7 @@ public:
   /*!
     If the rate value is negative, the data is read in reverse order.
   */
-  void setRate( StkFloat rate );
+  virtual void setRate( StkFloat rate );
 
   //! Increment the read pointer by \e time samples.
   /*!
@@ -121,12 +123,44 @@ public:
   */
   void setInterpolate( bool doInterpolate ) { interpolate_ = doInterpolate; };
 
-  StkFloat lastOut( void ) const;
+  //! Return the specified channel value of the last computed frame.
+  /*!
+    If no file is loaded, the returned value is 0.0.  The \c
+    channel argument must be less than the number of output channels,
+    which can be determined with the channelsOut() function (the first
+    channel is specified by 0).  However, range checking is only
+    performed if _STK_DEBUG_ is defined during compilation, in which
+    case an out-of-range value will trigger an StkError exception. \sa
+    lastFrame()
+  */
+  StkFloat lastOut( unsigned int channel = 0 );
+
+  //! Compute a sample frame and return the specified \c channel value.
+  /*!
+    For multi-channel files, use the lastFrame() function to get
+    all values from the computed frame.  If no file data is loaded,
+    the returned value is 0.0.  The \c channel argument must be less
+    than the number of channels in the file data (the first channel is
+    specified by 0).  However, range checking is only performed if
+    _STK_DEBUG_ is defined during compilation, in which case an
+    out-of-range value will trigger an StkError exception.
+  */
+  virtual StkFloat tick( unsigned int channel = 0 );
+
+  //! Fill the StkFrames argument with computed frames and return the same reference.
+  /*!
+    The number of channels in the StkFrames argument must equal
+    the number of channels in the file data.  However, this is only
+    checked if _STK_DEBUG_ is defined during compilation, in which
+    case an incompatibility will trigger an StkError exception.  If no
+    file data is loaded, the function does nothing (a warning will be
+    issued if _STK_DEBUG_ is defined during compilation).
+  */
+  virtual StkFrames& tick( StkFrames& frames );
 
 protected:
 
-  virtual void computeFrame( void );
-  virtual void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
+  void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
 
   FileRead file_;
   bool finished_;
@@ -140,5 +174,20 @@ protected:
   long chunkPointer_;
 
 };
+
+inline StkFloat FileWvIn :: lastOut( unsigned int channel )
+{
+#if defined(_STK_DEBUG_)
+  if ( channel >= data_.channels() ) {
+    errorString_ << "FileWvIn::lastOut(): channel argument and soundfile data are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  if ( finished_ ) return 0.0;
+  return lastFrame_[channel];
+}
+
+} // stk namespace
 
 #endif

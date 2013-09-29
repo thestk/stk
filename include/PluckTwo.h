@@ -1,3 +1,13 @@
+#ifndef STK_PLUCKTWO_H
+#define STK_PLUCKTWO_H
+
+#include "Instrmnt.h"
+#include "DelayL.h"
+#include "DelayA.h"
+#include "OneZero.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class PluckTwo
     \brief STK enhanced plucked string model class.
@@ -14,41 +24,33 @@
     use possibly subject to patents held by
     Stanford University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_PLUCKTWO_H
-#define STK_PLUCKTWO_H
-
-#include "Instrmnt.h"
-#include "DelayL.h"
-#include "DelayA.h"
-#include "OneZero.h"
 
 class PluckTwo : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  PluckTwo(StkFloat lowestFrequency);
+  PluckTwo( StkFloat lowestFrequency );
 
   //! Class destructor.
-  virtual ~PluckTwo();
+  virtual ~PluckTwo( void );
 
   //! Reset and clear all internal state.
-  void clear();
+  void clear( void );
 
   //! Set instrument parameters for a particular frequency.
-  virtual void setFrequency(StkFloat frequency);
+  virtual void setFrequency( StkFloat frequency );
 
   //! Detune the two strings by the given factor.  A value of 1.0 produces unison strings.
-  void setDetune(StkFloat detune);
+  void setDetune( StkFloat detune );
 
   //! Efficient combined setting of frequency and detuning.
-  void setFreqAndDetune(StkFloat frequency, StkFloat detune);
+  void setFreqAndDetune( StkFloat frequency, StkFloat detune );
 
   //! Set the pluck or "excitation" position along the string (0.0 - 1.0).
-  void setPluckPosition(StkFloat position);
+  void setPluckPosition( StkFloat position );
 
   //! Set the base loop gain.
   /*!
@@ -56,14 +58,14 @@ class PluckTwo : public Instrmnt
     Because of high-frequency loop filter roll-off, higher
     frequency settings have greater loop gains.
   */
-  void setBaseLoopGain(StkFloat aGain);
+  void setBaseLoopGain( StkFloat aGain );
 
   //! Stop a note with the given amplitude (speed of decay).
-  virtual void noteOff(StkFloat amplitude);
+  virtual void noteOff( StkFloat amplitude );
+
+  virtual StkFloat tick( unsigned int channel = 0 ) = 0;
 
  protected:
-
-  virtual StkFloat computeSample( void ) = 0;
 
   DelayA  delayLine_;
   DelayA  delayLine2_;
@@ -81,5 +83,7 @@ class PluckTwo : public Instrmnt
   StkFloat pluckPosition_;
 
 };
+
+} // stk namespace
 
 #endif

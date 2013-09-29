@@ -107,19 +107,7 @@ SOURCE=..\..\src\FileWvIn.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Filter.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\FM.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\Generator.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\Instrmnt.cpp
 # End Source File
 # Begin Source File
 
@@ -179,15 +167,7 @@ SOURCE=..\..\src\Voicer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\WaveLoop.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvOut.cpp
+SOURCE=..\..\src\FileLoop.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -259,7 +239,7 @@ SOURCE=..\..\include\Voicer.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\WaveLoop.h
+SOURCE=..\..\include\FileLoop.h
 # End Source File
 # Begin Source File
 

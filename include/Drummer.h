@@ -1,3 +1,12 @@
+#ifndef STK_DRUMMER_H
+#define STK_DRUMMER_H
+
+#include "Instrmnt.h"
+#include "FileWvIn.h"
+#include "OnePole.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class Drummer
     \brief STK drum sample player class.
@@ -11,16 +20,9 @@
     of simultaneous voices) via a #define in the
     Drummer.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_DRUMMER_H
-#define STK_DRUMMER_H
-
-#include "Instrmnt.h"
-#include "FileWvIn.h"
-#include "OnePole.h"
 
 const int DRUM_NUMWAVES = 11;
 const int DRUM_POLYPHONY = 4;
@@ -32,10 +34,10 @@ class Drummer : public Instrmnt
   /*!
     An StkError will be thrown if the rawwave path is incorrectly set.
   */
-  Drummer();
+  Drummer( void );
 
   //! Class destructor.
-  ~Drummer();
+  ~Drummer( void );
 
   //! Start a note with the given drum type and amplitude.
   /*!
@@ -44,14 +46,15 @@ class Drummer : public Instrmnt
     instrument.  An StkError will be thrown if the rawwave path is
     incorrectly set.
   */
-  void noteOn(StkFloat instrument, StkFloat amplitude);
+  void noteOn( StkFloat instrument, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
-
-  StkFloat computeSample( void );
 
   FileWvIn waves_[DRUM_POLYPHONY];
   OnePole  filters_[DRUM_POLYPHONY];
@@ -59,5 +62,31 @@ class Drummer : public Instrmnt
   std::vector<int> soundNumber_;
   int      nSounding_;
 };
+
+inline StkFloat Drummer :: tick( unsigned int )
+{
+  lastFrame_[0] = 0.0;
+  if ( nSounding_ == 0 ) return lastFrame_[0];
+
+  for ( int i=0; i<DRUM_POLYPHONY; i++ ) {
+    if ( soundOrder_[i] >= 0 ) {
+      if ( waves_[i].isFinished() ) {
+        // Re-order the list.
+        for ( int j=0; j<DRUM_POLYPHONY; j++ ) {
+          if ( soundOrder_[j] > soundOrder_[i] )
+            soundOrder_[j] -= 1;
+        }
+        soundOrder_[i] = -1;
+        nSounding_--;
+      }
+      else
+        lastFrame_[0] += filters_[i].tick( waves_[i].tick() );
+    }
+  }
+
+  return lastFrame_[0];
+}
+
+} // stk namespace
 
 #endif

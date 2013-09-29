@@ -1,3 +1,16 @@
+#ifndef STK_SAXOFONY_H
+#define STK_SAXOFONY_H
+
+#include "Instrmnt.h"
+#include "DelayL.h"
+#include "ReedTable.h"
+#include "OneZero.h"
+#include "Envelope.h"
+#include "Noise.h"
+#include "SineWave.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class Saxofony
     \brief STK faux conical bore reed instrument class.
@@ -31,20 +44,9 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_SAXOFONY_H
-#define STK_SAXOFONY_H
-
-#include "Instrmnt.h"
-#include "DelayL.h"
-#include "ReedTable.h"
-#include "OneZero.h"
-#include "Envelope.h"
-#include "Noise.h"
-#include "SineWave.h"
 
 class Saxofony : public Instrmnt
 {
@@ -53,38 +55,39 @@ class Saxofony : public Instrmnt
   /*!
     An StkError will be thrown if the rawwave path is incorrectly set.
   */
-  Saxofony(StkFloat lowestFrequency);
+  Saxofony( StkFloat lowestFrequency );
 
   //! Class destructor.
-  ~Saxofony();
+  ~Saxofony( void );
 
   //! Reset and clear all internal state.
-  void clear();
+  void clear( void );
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(StkFloat frequency);
+  void setFrequency( StkFloat frequency );
 
   //! Set the "blowing" position between the air column terminations (0.0 - 1.0).
-  void setBlowPosition(StkFloat aPosition);
+  void setBlowPosition( StkFloat aPosition );
 
   //! Apply breath pressure to instrument with given amplitude and rate of increase.
-  void startBlowing(StkFloat amplitude, StkFloat rate);
+  void startBlowing( StkFloat amplitude, StkFloat rate );
 
   //! Decrease breath pressure with given rate of decrease.
-  void stopBlowing(StkFloat rate);
+  void stopBlowing( StkFloat rate );
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
-
-  StkFloat computeSample( void );
 
   DelayL    delays_[2];
   ReedTable reedTable_;
@@ -99,5 +102,28 @@ class Saxofony : public Instrmnt
   StkFloat position_;
 
 };
+
+inline StkFloat Saxofony :: tick( unsigned int )
+{
+  StkFloat pressureDiff;
+  StkFloat breathPressure;
+  StkFloat temp;
+
+  // Calculate the breath pressure (envelope + noise + vibrato)
+  breathPressure = envelope_.tick(); 
+  breathPressure += breathPressure * noiseGain_ * noise_.tick();
+  breathPressure += breathPressure * vibratoGain_ * vibrato_.tick();
+
+  temp = -0.95 * filter_.tick( delays_[0].lastOut() );
+  lastFrame_[0] = temp - delays_[1].lastOut();
+  pressureDiff = breathPressure - lastFrame_[0];
+  delays_[1].tick( temp );
+  delays_[0].tick( breathPressure - (pressureDiff * reedTable_.tick(pressureDiff)) - temp );
+
+  lastFrame_[0] *= outputGain_;
+  return lastFrame_[0];
+}
+
+} // stk namespace
 
 #endif

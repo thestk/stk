@@ -9,6 +9,8 @@
 #include <algorithm>
 using std::min;
 
+using namespace stk;
+
 // The TickData structure holds all the class instances and data that
 // are shared by the various processing functions.
 struct TickData {

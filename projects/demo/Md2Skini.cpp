@@ -12,9 +12,8 @@
 
 #include "RtMidi.h"
 #include "SKINI.msg"
-#include <stdio.h>
 #include <iostream>
-#include <string>
+#include <stdlib.h>
 
 void usage(void) {
   std::cout << "\nuseage: Md2Skini <flag(s)>\n\n";
@@ -161,6 +160,8 @@ void midiCallback( double deltatime, std::vector< unsigned char > *bytes, void *
     if ( file != NULL )
       fprintf( file, "%s  %.3f  %d  %.1f  %.1f\n", typeName.c_str(), deltatime, channel, (float)databyte1, (float)databyte2 );
   }
+
+  fflush( stdout );
 }
 
 int main( int argc,char *argv[] )

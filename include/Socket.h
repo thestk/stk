@@ -1,16 +1,3 @@
-/***************************************************/
-/*! \class Socket
-    \brief STK internet socket abstract base class.
-
-    This class provides common functionality for TCP and UDP internet
-    socket server and client subclasses.  This class also provides a
-    number of static functions for use with external socket
-    descriptors.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
-*/
-/***************************************************/
-
 #ifndef STK_SOCKET_H
 #define STK_SOCKET_H
 
@@ -33,6 +20,21 @@
 
 #endif
 
+namespace stk {
+
+/***************************************************/
+/*! \class Socket
+    \brief STK internet socket abstract base class.
+
+    This class provides common functionality for TCP and UDP internet
+    socket server and client subclasses.  This class also provides a
+    number of static functions for use with external socket
+    descriptors.
+
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+*/
+/***************************************************/
+
 class Socket : public Stk
 {
  public:
@@ -52,13 +54,13 @@ class Socket : public Stk
   static void close( int socket );
 
   //! Return the socket descriptor.
-  int id( void ) const;
+  int id( void ) const { return soket_; };
 
   //! Return the socket port number.
-  int port( void ) const;
+  int port( void ) const { return port_; };
 
   //! Returns true if the socket descriptor is valid.
-  static bool isValid( int socket );
+  static bool isValid( int socket ) { return socket != -1; };
 
   //! If enable = false, the socket is set to non-blocking mode.  When first created, sockets are by default in blocking mode.
   static void setBlocking( int socket, bool enable );
@@ -82,4 +84,6 @@ class Socket : public Stk
 
 };
 
-#endif // defined(STK_SOCKET_H)
+} // stk namespace
+
+#endif

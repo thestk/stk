@@ -1,3 +1,10 @@
+#ifndef STK_FILEWRITE_H
+#define STK_FILEWRITE_H
+
+#include "Stk.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class FileWrite
     \brief STK audio file output class.
@@ -17,14 +24,9 @@
     type, the data type will automatically be modified.  Compressed
     data types are not supported.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_FILEWRITE_H
-#define STK_FILEWRITE_H
-
-#include "Stk.h"
 
 class FileWrite : public Stk
 {
@@ -39,7 +41,7 @@ class FileWrite : public Stk
   static const FILE_TYPE FILE_MAT; /*!< Matlab MAT-file type. */
 
   //! Default constructor.
-  FileWrite();
+  FileWrite( void );
 
   //! Overloaded constructor used to specify a file name, type, and data format with this object.
   /*!
@@ -108,5 +110,7 @@ class FileWrite : public Stk
   bool byteswap_;
 
 };
+
+} // stk namespace
 
 #endif

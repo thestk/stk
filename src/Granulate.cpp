@@ -3,21 +3,23 @@
     \brief STK granular synthesis class.
 
     This class implements a real-time granular synthesis algorithm
-    that operates on an input soundfile.  Currently, only monophonic
-    files are supported.  Various functions are provided to allow
-    control over voice and grain parameters.
+    that operates on an input soundfile.  Multi-channel files are
+    supported.  Various functions are provided to allow control over
+    voice and grain parameters.
 
     The functionality of this class is based on the program MacPod by
     Chris Rolfe and Damian Keller, though there are likely to be a
     number of differences in the actual implementation.
 
-    by Gary Scavone, 2005.
+    by Gary Scavone, 2005 - 2009.
 */
 /***************************************************/
 
 #include "Granulate.h"
 #include "FileRead.h"
 #include <cmath>
+
+namespace stk {
 
 Granulate :: Granulate( void )
 {
@@ -38,7 +40,7 @@ Granulate :: Granulate( unsigned int nVoices, std::string fileName, bool typeRaw
   this->setVoices( nVoices );
 }
 
-Granulate :: ~Granulate()
+Granulate :: ~Granulate( void )
 {
 }
 
@@ -85,13 +87,9 @@ void Granulate :: openFile( std::string fileName, bool typeRaw )
 {
   // Attempt to load the soundfile data.
   FileRead file( fileName, typeRaw );
-  if ( file.channels() != 1 ) {
-    errorString_ << "Granulate::openFile: this class currently only supports monophonic soundfiles.";
-    handleError( StkError::FUNCTION_ARGUMENT );
-  }
-
   data_.resize( file.fileSize(), file.channels() );
   file.read( data_ );
+  lastFrame_.resize( 1, file.channels(), 0.0 );
 
   this->reset();
 
@@ -102,7 +100,7 @@ void Granulate :: openFile( std::string fileName, bool typeRaw )
 
 }
 
-void Granulate :: reset()
+void Granulate :: reset( void )
 {
   gPointer_ = 0;
 
@@ -115,7 +113,8 @@ void Granulate :: reset()
     grains_[i].state = GRAIN_STOPPED;
   }
 
-  lastOutput_ = 0.0;
+  for ( unsigned int i=0; i<lastFrame_.channels(); i++ )
+    lastFrame_[i] = 0.0;
 }
 
 void Granulate :: setVoices( unsigned int nVoices )
@@ -200,13 +199,22 @@ void Granulate :: calculateGrain( Granulate::Grain& grain )
   grain.startPointer = grain.pointer;
 }
 
-StkFloat Granulate :: computeSample( void )
+StkFloat Granulate :: tick( unsigned int channel )
 {
-  lastOutput_ = 0.0;
-  if ( data_.size() == 0 ) return lastOutput_;
+#if defined(_STK_DEBUG_)
+  if ( channel >= data_.channels() ) {
+    errorString_ << "Granulate::tick(): channel argument and soundfile data are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  unsigned int i, j, nChannels = lastFrame_.channels();
+  for ( j=0; j<nChannels; j++ ) lastFrame_[j] = 0.0;
+
+  if ( data_.size() == 0 ) return 0.0;
 
   StkFloat sample;
-  for ( unsigned int i=0; i<grains_.size(); i++ ) {
+  for ( i=0; i<grains_.size(); i++ ) {
 
     if ( grains_[i].counter == 0 ) { // Update the grain state.
 
@@ -251,16 +259,20 @@ StkFloat Granulate :: computeSample( void )
 
     // Accumulate the grain outputs.
     if ( grains_[i].state > 0 ) {
-      sample = data_[ grains_[i].pointer++ ];
+      for ( j=0; j<nChannels; j++ ) {
+        sample = data_[ nChannels * grains_[i].pointer + j ];        
 
-      if ( grains_[i].state == GRAIN_FADEIN || grains_[i].state == GRAIN_FADEOUT ) {
-        sample *= grains_[i].eScaler;
-        grains_[i].eScaler += grains_[i].eRate;
+        if ( grains_[i].state == GRAIN_FADEIN || grains_[i].state == GRAIN_FADEOUT ) {
+          sample *= grains_[i].eScaler;
+          grains_[i].eScaler += grains_[i].eRate;
+        }
+
+        lastFrame_[j] += sample;
       }
 
-      lastOutput_ += sample;
 
-      // Check pointer limits.
+      // Increment and check pointer limits.
+      grains_[i].pointer++;
       if ( grains_[i].pointer >= data_.frames() )
         grains_[i].pointer = 0;
     }
@@ -276,6 +288,7 @@ StkFloat Granulate :: computeSample( void )
     stretchCounter_ = 0;
   }
 
-  return lastOutput_ * gain_;
+  return lastFrame_[channel];
 }
 
+} // stk namespace

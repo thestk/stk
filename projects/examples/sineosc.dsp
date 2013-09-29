@@ -102,10 +102,6 @@ SOURCE=..\..\src\FileWvOut.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Generator.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\sineosc.cpp
 # End Source File
 # Begin Source File
@@ -114,15 +110,7 @@ SOURCE=..\..\src\Stk.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\WaveLoop.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvOut.cpp
+SOURCE=..\..\src\FileLoop.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -138,7 +126,19 @@ SOURCE=..\..\include\Stk.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\WaveLoop.h
+SOURCE=..\..\include\FileRead.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWrite.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileLoop.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\FileWvOut.h
 # End Source File
 # Begin Source File
 

@@ -17,14 +17,16 @@
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Bowed.h"
 #include "SKINI.msg"
 
-Bowed :: Bowed(StkFloat lowestFrequency)
+namespace stk {
+
+Bowed :: Bowed( StkFloat lowestFrequency )
 {
   unsigned long length;
   length = (long) ( Stk::sampleRate() / lowestFrequency + 1 );
@@ -54,17 +56,17 @@ Bowed :: Bowed(StkFloat lowestFrequency)
   this->setFrequency( 220.0 );
 }
 
-Bowed :: ~Bowed()
+Bowed :: ~Bowed( void )
 {
 }
 
-void Bowed :: clear()
+void Bowed :: clear( void )
 {
   neckDelay_.clear();
   bridgeDelay_.clear();
 }
 
-void Bowed :: setFrequency(StkFloat frequency)
+void Bowed :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -80,20 +82,20 @@ void Bowed :: setFrequency(StkFloat frequency)
   neckDelay_.setDelay( baseDelay_ * (1.0 - betaRatio_) );  // bow to nut (finger) length
 }
 
-void Bowed :: startBowing(StkFloat amplitude, StkFloat rate)
+void Bowed :: startBowing( StkFloat amplitude, StkFloat rate )
 {
-  adsr_.setRate( rate );
+  adsr_.setAttackRate( rate );
   adsr_.keyOn();
   maxVelocity_ = 0.03 + ( 0.2 * amplitude ); 
 }
 
-void Bowed :: stopBowing(StkFloat rate)
+void Bowed :: stopBowing( StkFloat rate )
 {
-  adsr_.setRate( rate );
+  adsr_.setReleaseRate( rate );
   adsr_.keyOff();
 }
 
-void Bowed :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Bowed :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->startBowing( amplitude, amplitude * 0.001 );
   this->setFrequency( frequency );
@@ -104,7 +106,7 @@ void Bowed :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Bowed :: noteOff(StkFloat amplitude)
+void Bowed :: noteOff( StkFloat amplitude )
 {
   this->stopBowing( (1.0 - amplitude) * 0.005 );
 
@@ -114,41 +116,12 @@ void Bowed :: noteOff(StkFloat amplitude)
 #endif
 }
 
-void Bowed :: setVibrato(StkFloat gain)
+void Bowed :: setVibrato( StkFloat gain )
 {
   vibratoGain_ = gain;
 }
 
-StkFloat Bowed :: computeSample()
-{
-  StkFloat bowVelocity;
-  StkFloat bridgeRefl;
-  StkFloat nutRefl;
-  StkFloat newVel;
-  StkFloat velDiff;
-  StkFloat stringVel;
-    
-  bowVelocity = maxVelocity_ * adsr_.tick();
-
-  bridgeRefl = -stringFilter_.tick( bridgeDelay_.lastOut() );
-  nutRefl = -neckDelay_.lastOut();
-  stringVel = bridgeRefl + nutRefl;               // Sum is String Velocity
-  velDiff = bowVelocity - stringVel;              // Differential Velocity
-  newVel = velDiff * bowTable_.tick( velDiff );   // Non-Linear Bow Function
-  neckDelay_.tick(bridgeRefl + newVel);           // Do string propagations
-  bridgeDelay_.tick(nutRefl + newVel);
-    
-  if ( vibratoGain_ > 0.0 )  {
-    neckDelay_.setDelay( (baseDelay_ * (1.0 - betaRatio_) ) + 
-                         (baseDelay_ * vibratoGain_ * vibrato_.tick()) );
-  }
-
-  lastOutput_ = bodyFilter_.tick( bridgeDelay_.lastOut() );
-
-  return lastOutput_;
-}
-
-void Bowed :: controlChange(int number, StkFloat value)
+void Bowed :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -185,3 +158,5 @@ void Bowed :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

@@ -25,7 +25,7 @@
          - Tibetan Bowl = 3
 
     by Georg Essl, 1999 - 2004.
-    Modified for Stk 4.0 by Gary Scavone.
+    Modified for STK 4.0 by Gary Scavone.
 */
 /***************************************************/
 
@@ -33,7 +33,9 @@
 #include "SKINI.msg"
 #include <cmath>
 
-BandedWG :: BandedWG()
+namespace stk {
+
+BandedWG :: BandedWG( void )
 {
   doPluck_ = true;
 
@@ -55,22 +57,22 @@ BandedWG :: BandedWG()
   strikeAmp_ = 0.0;
 }
 
-BandedWG :: ~BandedWG()
+BandedWG :: ~BandedWG( void )
 {
 }
 
-void BandedWG :: clear()
+void BandedWG :: clear( void )
 {
-  for (int i=0; i<nModes_; i++) {
+  for ( int i=0; i<nModes_; i++ ) {
     delay_[i].clear();
     bandpass_[i].clear();
   }
 }
 
-void BandedWG :: setPreset(int preset)
+void BandedWG :: setPreset( int preset )
 {
   int i;
-  switch (preset){
+  switch ( preset ) {
 
   case 1: // Tuned Bar
     presetModes_ = 4;
@@ -167,7 +169,7 @@ void BandedWG :: setPreset(int preset)
   setFrequency( frequency_ );
 }
 
-void BandedWG :: setFrequency(StkFloat frequency)
+void BandedWG :: setFrequency( StkFloat frequency )
 {
   frequency_ = frequency;
   if ( frequency <= 0.0 ) {
@@ -208,25 +210,25 @@ void BandedWG :: setFrequency(StkFloat frequency)
   //strikePosition_ = (int)(strikePosition_*(length/modes_[0])/olen);
 }
 
-void BandedWG :: setStrikePosition(StkFloat position)
+void BandedWG :: setStrikePosition( StkFloat position )
 {
   strikePosition_ = (int)(delay_[0].getDelay() * position / 2.0);
 }
 
-void BandedWG :: startBowing(StkFloat amplitude, StkFloat rate)
+void BandedWG :: startBowing( StkFloat amplitude, StkFloat rate )
 {
-  adsr_.setRate(rate);
+  adsr_.setAttackRate(rate);
   adsr_.keyOn();
   maxVelocity_ = 0.03 + (0.1 * amplitude); 
 }
 
-void BandedWG :: stopBowing(StkFloat rate)
+void BandedWG :: stopBowing( StkFloat rate )
 {
-  adsr_.setRate(rate);
+  adsr_.setReleaseRate(rate);
   adsr_.keyOff();
 }
 
-void BandedWG :: pluck(StkFloat amplitude)
+void BandedWG :: pluck( StkFloat amplitude )
 {
   int j;
   StkFloat min_len = delay_[nModes_-1].getDelay();
@@ -237,7 +239,7 @@ void BandedWG :: pluck(StkFloat amplitude)
   //	strikeAmp_ += amplitude;
 }
 
-void BandedWG :: noteOn(StkFloat frequency, StkFloat amplitude)
+void BandedWG :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency(frequency);
 
@@ -252,7 +254,7 @@ void BandedWG :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void BandedWG :: noteOff(StkFloat amplitude)
+void BandedWG :: noteOff( StkFloat amplitude )
 {
   if ( !doPluck_ )
     this->stopBowing((1.0 - amplitude) * 0.005);
@@ -263,7 +265,7 @@ void BandedWG :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat BandedWG :: computeSample()
+StkFloat BandedWG :: tick( unsigned int )
 {
   int k;
 
@@ -274,12 +276,12 @@ StkFloat BandedWG :: computeSample()
     //  strikeAmp_ = 0.0;
   }
   else {
-    if (integrationConstant_ == 0.0)
+    if ( integrationConstant_ == 0.0 )
       velocityInput_ = 0.0;
     else
       velocityInput_ = integrationConstant_ * velocityInput_;
 
-    for (k=0; k<nModes_; k++)
+    for ( k=0; k<nModes_; k++ )
       velocityInput_ += baseGain_ * delay_[k].lastOut();
       
     if ( trackVelocity_ )  {
@@ -296,18 +298,18 @@ StkFloat BandedWG :: computeSample()
   }
 
   StkFloat data = 0.0;  
-  for (k=0; k<nModes_; k++) {
+  for ( k=0; k<nModes_; k++ ) {
     bandpass_[k].tick(input + gains_[k] * delay_[k].lastOut());
     delay_[k].tick(bandpass_[k].lastOut());
     data += bandpass_[k].lastOut();
   }
   
-  //lastOutput = data * nModes_;
-  lastOutput_ = data * 4;
-  return lastOutput_;
+  //lastFrame_[0] = data * nModes_;
+  lastFrame_[0] = data * 4;
+  return lastFrame_[0];
 }
 
-void BandedWG :: controlChange(int number, StkFloat value)
+void BandedWG :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -375,4 +377,4 @@ void BandedWG :: controlChange(int number, StkFloat value)
 #endif
 }
 
-
+} // stk namespace

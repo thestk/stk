@@ -17,11 +17,14 @@
     read/write methods.  Values less than or equal to zero indicate
     the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "UdpSocket.h"
+#include <string.h>
+
+namespace stk {
 
 UdpSocket :: UdpSocket(int port )
 {
@@ -102,3 +105,5 @@ int UdpSocket :: writeBufferTo( const void *buffer, long bufferSize, int port, s
   this->setAddress( &address, port, hostname );
   return sendto( soket_, (const char *)buffer, bufferSize, flags, (struct sockaddr *)&address, sizeof(address) );
 }
+
+} // stk namespace

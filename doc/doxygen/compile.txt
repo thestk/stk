@@ -56,7 +56,7 @@ STK compiles with realtime support on the following flavors of the Unix operatin
   <TD>Macintosh OS X</TD>
   <TD>CoreAudio</TD>
   <TD>__MACOSX_CORE__</TD>
-  <TD><TT>pthread, CoreAudio, CoreMIDI, CoreFoundation</TT></TD>
+  <TD><TT>pthread, CoreAudio, CoreMidi, CoreFoundation</TT></TD>
 </TR>
 </TABLE>
 </CENTER>
@@ -69,13 +69,11 @@ a particular program into a project directory.  Taking the
 would be necessary to set up a directory that includes the files
 <TT>sineosc.cpp</TT>, the rawwave file <TT>sinewave.raw</TT> in a
 subdirectory called <TT>rawwaves</TT>, and the header and source files
-for the classes Stk, FileRead, FileWrite, WvIn, FileWvIn, WaveLoop,
-WvOut, and FileWvOut.  The program could then be compiled on a
-little-endian system, such as a PC running Linux, using the GNU g++
-compiler as follows:
-\code
-g++ -Wall -D__LITTLE_ENDIAN__ -o sineosc Stk.cpp FileRead.cpp FileWrite.cpp WvIn.cpp FileWvIn.cpp WaveLoop.cpp WvOut.cpp FileWvOut.cpp sineosc.cpp
-\endcode
+for the classes Stk, FileRead, FileWrite, FileWvIn, FileLoop, and
+FileWvOut.  The program could then be compiled on a little-endian
+system, such as a PC running Linux, using the GNU g++ compiler as
+follows:
+\code g++ -Wall -D__LITTLE_ENDIAN__ -o sineosc Stk.cpp FileRead.cpp FileWrite.cpp FileWvIn.cpp FileLoop.cpp FileWvOut.cpp sineosc.cpp \endcode
 
 Note that the <TT>sineosc.cpp</TT> example does not make use of realtime audio or MIDI input/output classes.  For programs using any of the STK realtime classes mentioned above, it is necessary to specify an audio/MIDI API preprocessor definition and link with the appropriate libraries or frameworks.
 
@@ -95,7 +93,7 @@ g++ -Wall -D__LITTLE_ENDIAN__ -I/usr/include/stk -o sineosc sineosc.cpp -lstk
 With the header files in a standard search path, it is possible to modify the <TT>\#include</TT> statements in the <TT>sineosc.cpp</TT> program as follows:
 
 \code
-#include "stk/WaveLoop.h"
+#include "stk/FileLoop.h"
 #include "stk/FileWvOut.h"
 \endcode
 
@@ -117,7 +115,7 @@ includes the necessary ToolKit files from the distribution
 <TT>src</TT> and <TT>include</TT> directories.  For the example
 program from the previous tutorial chapter, create a VC++ console
 application project, add the Stk, FileRead, FileWrite, WvIn, FileWvIn,
-WaveLoop, WvOut, and FileWvOut class files, as well as
+FileLoop, WvOut, and FileWvOut class files, as well as
 <TT>sineosc.cpp</TT>, and make sure the <TT>sinewave.raw</TT> file is
 in the subdirectory <TT>rawwaves</TT>.
 

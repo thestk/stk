@@ -1,6 +1,20 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2007.
+By Perry R. Cook and Gary P. Scavone, 1995-2009.
+
+v4.4: (30 April 2009)
+- all classes embedded in the "stk" namespace (except RtAudio, RtMidi, and RtError)
+- class WaveLoop renamed FileLoop
+- significant efficiency improvements via code restructuring and inlining
+- some class source (.cpp) files deleted as part of inlining (Generator, Filter, Function, WvIn, WvOut, Effect, Instrmnt, BowTable, ReedTable, JetTable, Vector3D)
+- updates to RtAudio and RtMidi
+- previous "tickFrame()" functions renamed "tick" for more consistent API
+- more consistent and scalable approach to multichannel data and computations
+- multichannel support added to Granulate class
+- Filter class made abstract.  New Iir and Fir classes made for non-order-specific filtering.
+- new TapDelay class
+- SubNoise class deleted (same as sub-sampled "ticking" of Noise class)
+
 
 v4.3.1: (7 December 2007)
 - further headerless file support in FileRead
@@ -14,6 +28,7 @@ v4.3.0: (13 August 2007)
 - an official MIT-like license
 - new functionality to automatically update class data when the STK sample rate changes (partly implemented)
 - updates for new RtAudio version 4.0
+- removed RtDuplex class, users should use RtAudio directly with a callback function
 - bug fix in interpolate() function in Stk.h for non-interleaved data
 - fixes / improvements to the Granulate class
 - fix in Whistle when doing animation

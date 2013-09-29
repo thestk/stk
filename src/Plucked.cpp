@@ -13,26 +13,28 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Plucked.h"
 
+namespace stk {
+
 Plucked :: Plucked( StkFloat lowestFrequency )
 {
-  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
+  length_ = (unsigned long) ( Stk::sampleRate() / lowestFrequency + 1 );
   loopGain_ = 0.999;
   delayLine_.setMaximumDelay( length_ );
   delayLine_.setDelay( 0.5 * length_ );
   this->clear();
 }
 
-Plucked :: ~Plucked()
+Plucked :: ~Plucked( void )
 {
 }
 
-void Plucked :: clear()
+void Plucked :: clear( void )
 {
   delayLine_.clear();
   loopFilter_.clear();
@@ -92,7 +94,7 @@ void Plucked :: noteOn( StkFloat frequency, StkFloat amplitude )
 #endif
 }
 
-void Plucked :: noteOff(StkFloat amplitude)
+void Plucked :: noteOff( StkFloat amplitude )
 {
   loopGain_ = 1.0 - amplitude;
   if ( loopGain_ < 0.0 ) {
@@ -112,10 +114,4 @@ void Plucked :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Plucked :: computeSample()
-{
-  // Here's the whole inner loop of the instrument!!
-  lastOutput_ = delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ ) ); 
-  lastOutput_ *= 3.0;
-  return lastOutput_;
-}
+} // stk namespace

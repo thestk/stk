@@ -11,12 +11,14 @@
     of simultaneous voices) via a #define in the
     Drummer.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Drummer.h"
 #include <cmath>
+
+namespace stk {
 
 // Not really General MIDI yet.
 unsigned char genMIDIMap[128] =
@@ -53,7 +55,7 @@ char waveNames[DRUM_NUMWAVES][16] =
     "tambourn.raw"
   };
 
-Drummer :: Drummer() : Instrmnt()
+Drummer :: Drummer( void ) : Instrmnt()
 {
   // This counts the number of sounding voices.
   nSounding_ = 0;
@@ -61,11 +63,11 @@ Drummer :: Drummer() : Instrmnt()
   soundNumber_ = std::vector<int> (DRUM_POLYPHONY, -1);
 }
 
-Drummer :: ~Drummer()
+Drummer :: ~Drummer( void )
 {
 }
 
-void Drummer :: noteOn(StkFloat instrument, StkFloat amplitude)
+void Drummer :: noteOn( StkFloat instrument, StkFloat amplitude )
 {
 #if defined(_STK_DEBUG_)
   errorString_ << "Drummer::NoteOn: instrument = " << instrument << ", amplitude = " << amplitude << '.';
@@ -110,7 +112,7 @@ void Drummer :: noteOn(StkFloat instrument, StkFloat amplitude)
         if ( soundOrder_[iWave] < 0 ) break;
       nSounding_ += 1;
     }
-    else {
+    else { // interrupt oldest voice
       for ( iWave=0; iWave<DRUM_POLYPHONY; iWave++ )
         if ( soundOrder_[iWave] == 0 ) break;
       // Re-order the list.
@@ -121,6 +123,7 @@ void Drummer :: noteOn(StkFloat instrument, StkFloat amplitude)
     }
     soundOrder_[iWave] = nSounding_ - 1;
     soundNumber_[iWave] = noteNumber;
+    std::cout << "iWave = " << iWave << ", nSounding = " << nSounding_ << ", soundOrder[] = " << soundOrder_[iWave] << std::endl;
 
     // Concatenate the STK rawwave path to the rawwave file
     waves_[iWave].openFile( (Stk::rawwavePath() + waveNames[ genMIDIMap[ noteNumber ] ]).c_str(), true );
@@ -131,7 +134,7 @@ void Drummer :: noteOn(StkFloat instrument, StkFloat amplitude)
   }
 
 #if defined(_STK_DEBUG_)
-  errorString_ << "Drummer::noteOn: number sounding = " << nSounding_ << '\n';
+  errorString_ << "Drummer::noteOn: number sounding = " << nSounding_ << ", notes: ";
   for ( int i=0; i<nSounding_; i++ ) errorString_ << soundNumber_[i] << "  ";
   errorString_ << '\n';
   handleError( StkError::DEBUG_WARNING );
@@ -145,26 +148,4 @@ void Drummer :: noteOff( StkFloat amplitude )
   while ( i < nSounding_ ) filters_[i++].setGain( amplitude * 0.01 );
 }
 
-StkFloat Drummer :: computeSample()
-{
-  lastOutput_ = 0.0;
-  if ( nSounding_ == 0 ) return lastOutput_;
-
-  for ( int i=0; i<DRUM_POLYPHONY; i++ ) {
-    if ( soundOrder_[i] >= 0 ) {
-      if ( waves_[i].isFinished() ) {
-        // Re-order the list.
-        for ( int j=0; j<DRUM_POLYPHONY; j++ ) {
-          if ( soundOrder_[j] > soundOrder_[i] )
-            soundOrder_[j] -= 1;
-        }
-        soundOrder_[i] = -1;
-        nSounding_--;
-      }
-      else
-        lastOutput_ += filters_[i].tick( waves_[i].tick() );
-    }
-  }
-
-  return lastOutput_;
-}
+} // stk namespace

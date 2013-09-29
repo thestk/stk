@@ -2,6 +2,7 @@
 
 #include "BeeThree.h"
 #include "RtAudio.h"
+using namespace stk;
 
 // The TickData structure holds all the class instances and data that
 // are shared by the various processing functions.

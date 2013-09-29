@@ -19,12 +19,14 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "FM.h"
 #include "SKINI.msg"
+
+namespace stk {
 
 FM :: FM( unsigned int operators )
   : nOperators_(operators)
@@ -73,7 +75,7 @@ FM :: FM( unsigned int operators )
   }
 }
 
-FM :: ~FM()
+FM :: ~FM( void )
 {
   for (unsigned int i=0; i<nOperators_; i++ ) {
     delete waves_[i];
@@ -81,21 +83,21 @@ FM :: ~FM()
   }
 }
 
-void FM :: loadWaves(const char **filenames )
+void FM :: loadWaves( const char **filenames )
 {
   for (unsigned int i=0; i<nOperators_; i++ )
-    waves_[i] = new WaveLoop( filenames[i], true );
+    waves_[i] = new FileLoop( filenames[i], true );
 }
 
-void FM :: setFrequency(StkFloat frequency)
+void FM :: setFrequency( StkFloat frequency )
 {    
   baseFrequency_ = frequency;
 
-  for (unsigned int i=0; i<nOperators_; i++ )
+  for ( unsigned int i=0; i<nOperators_; i++ )
     waves_[i]->setFrequency( baseFrequency_ * ratios_[i] );
 }
 
-void FM :: setRatio(unsigned int waveIndex, StkFloat ratio)
+void FM :: setRatio( unsigned int waveIndex, StkFloat ratio )
 {
   if ( waveIndex < 0 ) {
     errorString_ << "FM::setRatio: waveIndex parameter is less than zero!";
@@ -115,7 +117,7 @@ void FM :: setRatio(unsigned int waveIndex, StkFloat ratio)
     waves_[waveIndex]->setFrequency( ratio );
 }
 
-void FM :: setGain(unsigned int waveIndex, StkFloat gain)
+void FM :: setGain( unsigned int waveIndex, StkFloat gain )
 {
   if ( waveIndex < 0 ) {
     errorString_ << "FM::setGain: waveIndex parameter is less than zero!";
@@ -131,39 +133,19 @@ void FM :: setGain(unsigned int waveIndex, StkFloat gain)
   gains_[waveIndex] = gain;
 }
 
-void FM :: setModulationSpeed(StkFloat mSpeed)
+void FM :: keyOn( void )
 {
-  vibrato_.setFrequency( mSpeed );
-}
-
-void FM :: setModulationDepth(StkFloat mDepth)
-{
-  modDepth_ = mDepth;
-}
-
-void FM :: setControl1(StkFloat cVal)
-{
-  control1_ = cVal * 2.0;
-}
-
-void FM :: setControl2(StkFloat cVal)
-{
-  control2_ = cVal * 2.0;
-}
-
-void FM :: keyOn()
-{
-  for (unsigned int i=0; i<nOperators_; i++ )
+  for ( unsigned int i=0; i<nOperators_; i++ )
     adsr_[i]->keyOn();
 }
 
-void FM :: keyOff()
+void FM :: keyOff( void )
 {
-  for (unsigned int i=0; i<nOperators_; i++ )
+  for ( unsigned int i=0; i<nOperators_; i++ )
     adsr_[i]->keyOff();
 }
 
-void FM :: noteOff(StkFloat amplitude)
+void FM :: noteOff( StkFloat amplitude )
 {
   this->keyOff();
 
@@ -173,7 +155,7 @@ void FM :: noteOff(StkFloat amplitude)
 #endif
 }
 
-void FM :: controlChange(int number, StkFloat value)
+void FM :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -212,3 +194,4 @@ void FM :: controlChange(int number, StkFloat value)
 #endif
 }
 
+} // stk namespace

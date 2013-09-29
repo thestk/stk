@@ -1,3 +1,14 @@
+#ifndef STK_BANDEDWG_H
+#define STK_BANDEDWG_H
+
+#include "Instrmnt.h"
+#include "DelayL.h"
+#include "BowTable.h"
+#include "ADSR.h"
+#include "BiQuad.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class BandedWG
     \brief Banded waveguide modeling class.
@@ -25,63 +36,55 @@
          - Tibetan Bowl = 3
 
     by Georg Essl, 1999 - 2004.
-    Modified for Stk 4.0 by Gary Scavone.
+    Modified for STK 4.0 by Gary Scavone.
 */
 /***************************************************/
 
-#ifndef STK_BANDEDWG_H
-#define STK_BANDEDWG_H
-
 const int MAX_BANDED_MODES = 20;
-
-#include "Instrmnt.h"
-#include "DelayL.h"
-#include "BowTable.h"
-#include "ADSR.h"
-#include "BiQuad.h"
 
 class BandedWG : public Instrmnt
 {
  public:
   //! Class constructor.
-  BandedWG();
+  BandedWG( void );
 
   //! Class destructor.
-  ~BandedWG();
+  ~BandedWG( void );
 
   //! Reset and clear all internal state.
-  void clear();
+  void clear( void );
 
   //! Set strike position (0.0 - 1.0).
-  void setStrikePosition(StkFloat position);
+  void setStrikePosition( StkFloat position );
 
   //! Select a preset.
-  void setPreset(int preset);
+  void setPreset( int preset );
 
   //! Set instrument parameters for a particular frequency.
-  void setFrequency(StkFloat frequency);
+  void setFrequency( StkFloat frequency );
 
   //! Apply bow velocity/pressure to instrument with given amplitude and rate of increase.
-  void startBowing(StkFloat amplitude, StkFloat rate);
+  void startBowing( StkFloat amplitude, StkFloat rate );
 
   //! Decrease bow velocity/breath pressure with given rate of decrease.
-  void stopBowing(StkFloat rate);
+  void stopBowing( StkFloat rate );
 
   //! Pluck the instrument with given amplitude.
-  void pluck(StkFloat amp);
+  void pluck( StkFloat amp );
 
   //! Start a note with the given frequency and amplitude.
-  void noteOn(StkFloat frequency, StkFloat amplitude);
+  void noteOn( StkFloat frequency, StkFloat amplitude );
 
   //! Stop a note with the given amplitude (speed of decay).
-  void noteOff(StkFloat amplitude);
+  void noteOff( StkFloat amplitude );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  void controlChange(int number, StkFloat value);
+  void controlChange( int number, StkFloat value );
+
+  //! Compute and return one output sample.
+  StkFloat tick( unsigned int channel = 0 );
 
  protected:
-
-  StkFloat computeSample( void );
 
   bool doPluck_;
   bool trackVelocity_;
@@ -107,5 +110,7 @@ class BandedWG : public Instrmnt
   int strikePosition_;
 
 };
+
+} // stk namespace
 
 #endif

@@ -31,14 +31,16 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "Saxofony.h"
 #include "SKINI.msg"
 
-Saxofony :: Saxofony(StkFloat lowestFrequency)
+namespace stk {
+
+Saxofony :: Saxofony( StkFloat lowestFrequency )
 {
   length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
   // Initialize blowing position to 0.2 of length / 2.
@@ -58,18 +60,18 @@ Saxofony :: Saxofony(StkFloat lowestFrequency)
   vibratoGain_ = 0.1;
 }
 
-Saxofony :: ~Saxofony()
+Saxofony :: ~Saxofony( void )
 {
 }
 
-void Saxofony :: clear()
+void Saxofony :: clear( void )
 {
   delays_[0].clear();
   delays_[1].clear();
   filter_.clear();
 }
 
-void Saxofony :: setFrequency(StkFloat frequency)
+void Saxofony :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -86,7 +88,7 @@ void Saxofony :: setFrequency(StkFloat frequency)
   delays_[1].setDelay( position_ * delay );
 }
 
-void Saxofony :: setBlowPosition(StkFloat position)
+void Saxofony :: setBlowPosition( StkFloat position )
 {
   if ( position_ == position ) return;
 
@@ -101,19 +103,19 @@ void Saxofony :: setBlowPosition(StkFloat position)
   delays_[1].setDelay( position_ * totalDelay );
 }
 
-void Saxofony :: startBlowing(StkFloat amplitude, StkFloat rate)
+void Saxofony :: startBlowing( StkFloat amplitude, StkFloat rate )
 {
   envelope_.setRate( rate );
   envelope_.setTarget( amplitude );
 }
 
-void Saxofony :: stopBlowing(StkFloat rate)
+void Saxofony :: stopBlowing( StkFloat rate )
 {
   envelope_.setRate( rate );
   envelope_.setTarget( 0.0 );
 }
 
-void Saxofony :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Saxofony :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->startBlowing( 0.55 + (amplitude * 0.30), amplitude * 0.005 );
@@ -125,7 +127,7 @@ void Saxofony :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Saxofony :: noteOff(StkFloat amplitude)
+void Saxofony :: noteOff( StkFloat amplitude )
 {
   this->stopBlowing( amplitude * 0.01 );
 
@@ -135,28 +137,7 @@ void Saxofony :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Saxofony :: computeSample()
-{
-  StkFloat pressureDiff;
-  StkFloat breathPressure;
-  StkFloat temp;
-
-  // Calculate the breath pressure (envelope + noise + vibrato)
-  breathPressure = envelope_.tick(); 
-  breathPressure += breathPressure * noiseGain_ * noise_.tick();
-  breathPressure += breathPressure * vibratoGain_ * vibrato_.tick();
-
-  temp = -0.95 * filter_.tick( delays_[0].lastOut() );
-  lastOutput_ = temp - delays_[1].lastOut();
-  pressureDiff = breathPressure - lastOutput_;
-  delays_[1].tick( temp );
-  delays_[0].tick( breathPressure - (pressureDiff * reedTable_.tick(pressureDiff)) - temp );
-
-  lastOutput_ *= outputGain_;
-  return lastOutput_;
-}
-
-void Saxofony :: controlChange(int number, StkFloat value)
+void Saxofony :: controlChange( int number, StkFloat value )
 {
   StkFloat norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
@@ -194,3 +175,5 @@ void Saxofony :: controlChange(int number, StkFloat value)
     handleError( StkError::DEBUG_WARNING );
 #endif
 }
+
+} // stk namespace

@@ -1,3 +1,11 @@
+#ifndef STK_FILEWVOUT_H
+#define STK_FILEWVOUT_H
+
+#include "WvOut.h"
+#include "FileWrite.h"
+
+namespace stk {
+
 /***************************************************/
 /*! \class FileWvOut
     \brief STK audio file output class.
@@ -7,9 +15,9 @@
 
     FileWvOut writes samples to an audio file and supports
     multi-channel data.  It is important to distinguish the tick()
-    methods, which output single samples to all channels in a sample
-    frame, from the tickFrame() methods, which take a pointer or
-    reference to multi-channel sample frame data.
+    method that outputs a single sample to all channels in a sample
+    frame from the overloaded one that takes a reference to an
+    StkFrames object for multi-channel and/or multi-frame data.
 
     See the FileWrite class for a description of the supported audio
     file formats.
@@ -17,15 +25,9 @@
     Currently, FileWvOut is non-interpolating and the output rate is
     always Stk::sampleRate().
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
-
-#ifndef STK_FILEWVOUT_H
-#define STK_FILEWVOUT_H
-
-#include "WvOut.h"
-#include "FileWrite.h"
 
 class FileWvOut : public WvOut
 {
@@ -69,11 +71,22 @@ class FileWvOut : public WvOut
   */
   void closeFile( void );
 
+  //! Output a single sample to all channels in a sample frame.
+  /*!
+    An StkError is thrown if an output error occurs.
+  */
+  void tick( const StkFloat sample );
+
+  //! Output the StkFrames data.
+  /*!
+    An StkError will be thrown if an output error occurs.  An
+    StkError will also be thrown if _STK_DEBUG_ is defined during
+    compilation and there is an incompatability between the number of
+    channels in the FileWvOut object and that in the StkFrames object.
+  */
+  void tick( const StkFrames& frames );
+
  protected:
-
-  void computeSample( const StkFloat sample );
-
-  void computeFrames( const StkFrames& frames );
 
   void incrementFrame( void );
 
@@ -83,5 +96,7 @@ class FileWvOut : public WvOut
   unsigned int iData_;
 
 };
+
+} // stk namespace
 
 #endif

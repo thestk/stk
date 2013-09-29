@@ -19,20 +19,23 @@
     less than or equal to zero indicate a closed
     or lost connection or the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
 */
 /***************************************************/
 
 #include "TcpClient.h"
+#include <string.h>
 
-TcpClient :: TcpClient(int port, std::string hostname )
+namespace stk {
+
+TcpClient :: TcpClient( int port, std::string hostname )
 {
 #if defined(__OS_WINDOWS__)  // windoze-only stuff
   WSADATA wsaData;
   WORD wVersionRequested = MAKEWORD(1,1);
 
-  WSAStartup(wVersionRequested, &wsaData);
-  if (wsaData.wVersion != wVersionRequested) {
+  WSAStartup( wVersionRequested, &wsaData );
+  if ( wsaData.wVersion != wVersionRequested ) {
     errorString_ << "TcpClient: Incompatible Windows socket library version!";
     handleError( StkError::PROCESS_SOCKET );
   }
@@ -42,7 +45,7 @@ TcpClient :: TcpClient(int port, std::string hostname )
   connect( port, hostname );
 }
 
-TcpClient :: ~TcpClient()
+TcpClient :: ~TcpClient( void )
 {
 }
 
@@ -52,21 +55,21 @@ int TcpClient :: connect( int port, std::string hostname )
   this->close( soket_ );
 
   // Create the client-side socket
-  soket_ = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (soket_ < 0) {
+  soket_ = ::socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+  if ( soket_ < 0 ) {
     errorString_ << "TcpClient: Couldn't create socket client!";
     handleError( StkError::PROCESS_SOCKET );
   }
 
   int flag = 1;
   int result = setsockopt( soket_, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(int) );
-  if (result < 0) {
+  if ( result < 0 ) {
     errorString_ << "TcpClient: Error setting socket options!";
     handleError( StkError::PROCESS_SOCKET );
   }
 
   struct hostent *hostp;
-  if ( (hostp = gethostbyname( hostname.c_str() )) == 0 ) {
+  if ( ( hostp = gethostbyname( hostname.c_str() ) ) == 0 ) {
     errorString_ << "TcpClient: unknown host (" << hostname << ")!";
     handleError( StkError::PROCESS_SOCKET_IPADDR );
   }
@@ -74,12 +77,11 @@ int TcpClient :: connect( int port, std::string hostname )
   // Fill in the address structure
   struct sockaddr_in server_address;
   server_address.sin_family = AF_INET;
-  memcpy((void *)&server_address.sin_addr, hostp->h_addr, hostp->h_length);
+  memcpy( (void *)&server_address.sin_addr, hostp->h_addr, hostp->h_length );
   server_address.sin_port = htons(port);
 
   // Connect to the server
-  if ( ::connect(soket_, (struct sockaddr *)&server_address,
-                 sizeof(server_address) ) < 0) {
+  if ( ::connect( soket_, (struct sockaddr *)&server_address, sizeof(server_address) ) < 0 ) {
     errorString_ << "TcpClient: Couldn't connect to socket server!";
     handleError( StkError::PROCESS_SOCKET );
   }
@@ -87,14 +89,16 @@ int TcpClient :: connect( int port, std::string hostname )
   return soket_;
 }
 
-int TcpClient :: writeBuffer(const void *buffer, long bufferSize, int flags )
+int TcpClient :: writeBuffer( const void *buffer, long bufferSize, int flags )
 {
   if ( !isValid( soket_ ) ) return -1;
   return send( soket_, (const char *)buffer, bufferSize, flags );
 }
 
-int TcpClient :: readBuffer(void *buffer, long bufferSize, int flags )
+int TcpClient :: readBuffer( void *buffer, long bufferSize, int flags )
 {
   if ( !isValid( soket_ ) ) return -1;
   return recv( soket_, (char *)buffer, bufferSize, flags );
 }
+
+} // stk namespace

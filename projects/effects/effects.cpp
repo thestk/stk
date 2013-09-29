@@ -13,9 +13,12 @@
 #include "RtAudio.h"
 
 #include <signal.h>
+#include <string.h>
 #include <iostream>
 #include <algorithm>
 using std::min;
+
+using namespace stk;
 
 void usage(void) {
   // Error function in case of incorrect command-line argument specifications
@@ -33,7 +36,7 @@ static void finish(int ignore){ done = true; }
 // The TickData structure holds all the class instances and data that
 // are shared by the various processing functions.
 struct TickData {
-  Effect  *effect;
+  unsigned int effectId;
   PRCRev   prcrev;
   JCRev    jcrev;
   NRev     nrev;
@@ -51,7 +54,7 @@ struct TickData {
 
   // Default constructor.
   TickData()
-    : effect(0), t60(1.0), counter(0),
+    : effectId(0), t60(1.0), counter(0),
       settling( false ), haveMessage( false ) {}
 };
 
@@ -90,18 +93,7 @@ void processMessage( TickData* data )
 
     case 20: { // effect type change
       int type = data->message.intValues[1];
-      if ( type == 0 )
-        data->effect = &(data->echo);
-      else if ( type == 1 )
-        data->effect = &(data->shifter);
-      else if ( type == 2 )
-        data->effect = &(data->chorus);
-      else if ( type == 3 )
-        data->effect = &(data->prcrev);
-      else if ( type == 4 )
-        data->effect = &(data->jcrev);
-      else if ( type == 5 )
-        data->effect = &(data->nrev);
+      data->effectId = (unsigned int) type;
       break;
     }
 
@@ -153,6 +145,7 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
   TickData *data = (TickData *) dataPointer;
   register StkFloat *oSamples = (StkFloat *) outputBuffer, *iSamples = (StkFloat *) inputBuffer;
   register StkFloat sample;
+  Effect *effect;
   int i, counter, nTicks = (int) nBufferFrames;
 
   while ( nTicks > 0 && !done ) {
@@ -170,9 +163,35 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     counter = min( nTicks, data->counter );
     data->counter -= counter;
     for ( i=0; i<counter; i++ ) {
-      sample = data->envelope.tick() * data->effect->tick( *iSamples++ );
-      *oSamples++ = sample; // two channels interleaved
-      *oSamples++ = sample;
+      if ( data->effectId < 2 ) { // Echo and PitShift ... mono output
+        if ( data->effectId == 0 )
+          sample = data->envelope.tick() * data->echo.tick( *iSamples++ );
+        else
+          sample = data->envelope.tick() * data->shifter.tick( *iSamples++ );
+        *oSamples++ = sample; // two channels interleaved
+        *oSamples++ = sample;
+      }
+      else { // Chorus or a reverb ... stereo output
+        if ( data->effectId == 2 ) {
+          data->chorus.tick( *iSamples++ );
+          effect = (Effect *) &(data->chorus);
+        }
+        else if ( data->effectId == 3 ) {
+          data->prcrev.tick( *iSamples++ );
+          effect = (Effect *) &(data->prcrev);
+        }
+        else if ( data->effectId == 4 ) {
+          data->jcrev.tick( *iSamples++ );
+          effect = (Effect *) &(data->jcrev);
+        }
+        else {
+          data->nrev.tick( *iSamples++ );
+          effect = (Effect *) &(data->nrev);
+        }
+        const StkFrames& samples = effect->lastFrame();
+        *oSamples++ = data->envelope.tick() * samples[0];
+        *oSamples++ = data->envelope.lastOut() * samples[1];
+      }
       nTicks--;
     }
     if ( nTicks == 0 ) break;
@@ -183,7 +202,6 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
 
   return 0;
 }
-
 
 int main( int argc, char *argv[] )
 {
@@ -230,7 +248,6 @@ int main( int argc, char *argv[] )
   }
 
   data.envelope.setRate( 0.001 );
-  data.effect = &( data.echo );
 
   // Install an interrupt handler function.
 	(void) signal( SIGINT, finish );

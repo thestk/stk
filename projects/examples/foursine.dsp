@@ -85,15 +85,7 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\src\FileRead.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\FileWrite.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\FileWvIn.cpp
 # End Source File
 # Begin Source File
 
@@ -105,27 +97,11 @@ SOURCE=.\foursine.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\Generator.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\SineWave.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\Stk.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WaveLoop.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvIn.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\WvOut.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -142,14 +118,6 @@ SOURCE=..\..\include\FileWvOut.h
 # Begin Source File
 
 SOURCE=..\..\include\Stk.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\WaveLoop.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\WvIn.h
 # End Source File
 # Begin Source File
 

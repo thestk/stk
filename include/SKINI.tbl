@@ -1,6 +1,8 @@
 
 #include "SKINI.msg"
 
+namespace stk {
+
 #define __SK_MaxMsgTypes_ 80
 
 struct SkiniSpec { char messageString[32];
@@ -129,3 +131,5 @@ struct SkiniSpec skini_msgs[__SK_MaxMsgTypes_] =
 /*                    message.                                           */
 /*                                                                       */
 /*************************************************************************/
+
+} // stk namespace

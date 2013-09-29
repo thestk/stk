@@ -22,7 +22,7 @@
     STK WWW site: http://ccrma.stanford.edu/software/stk/
 
     The Synthesis ToolKit in C++ (STK)
-    Copyright (c) 1995-2007 Perry R. Cook and Gary P. Scavone
+    Copyright (c) 1995-2009 Perry R. Cook and Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -51,6 +51,8 @@
 /***************************************************/
 
 #include "Stk.h"
+
+namespace stk {
 
 StkFloat Stk :: srate_ = (StkFloat) SRATE;
 std::string Stk :: rawwavepath_ = RAWWAVE_PATH;
@@ -224,8 +226,8 @@ void Stk :: handleError( std::string message, StkError::Type type )
 // StkFrames definitions
 //
 
-StkFrames :: StkFrames( unsigned int nFrames, unsigned int nChannels, bool interleaved )
-  : nFrames_( nFrames ), nChannels_( nChannels ), interleaved_( interleaved )
+StkFrames :: StkFrames( unsigned int nFrames, unsigned int nChannels )
+  : nFrames_( nFrames ), nChannels_( nChannels )
 {
   size_ = nFrames_ * nChannels_;
   bufferSize_ = size_;
@@ -244,8 +246,8 @@ StkFrames :: StkFrames( unsigned int nFrames, unsigned int nChannels, bool inter
   dataRate_ = Stk::sampleRate();
 }
 
-StkFrames :: StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels, bool interleaved )
-  : nFrames_( nFrames ), nChannels_( nChannels ), interleaved_( interleaved )
+StkFrames :: StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels )
+  : nFrames_( nFrames ), nChannels_( nChannels )
 {
   size_ = nFrames_ * nChannels_;
   bufferSize_ = size_;
@@ -269,10 +271,22 @@ StkFrames :: ~StkFrames()
   if ( data_ ) free( data_ );
 }
 
-bool StkFrames :: empty() const
+StkFrames :: StkFrames( const StkFrames& f )
+  : size_(0), bufferSize_(0)
 {
-  if ( size_ > 0 ) return false;
-  else return true;
+  resize( f.frames(), f.channels() );
+  dataRate_ = Stk::sampleRate();
+  for ( unsigned int i=0; i<size_; i++ ) data_[i] = f[i];
+}
+
+StkFrames& StkFrames :: operator= ( const StkFrames& f )
+{
+  size_ = 0;
+  bufferSize_ = 0;
+  resize( f.frames(), f.channels() );
+  dataRate_ = Stk::sampleRate();
+  for ( unsigned int i=0; i<size_; i++ ) data_[i] = f[i];
+  return *this;
 }
 
 void StkFrames :: resize( size_t nFrames, unsigned int nChannels )
@@ -301,87 +315,25 @@ void StkFrames :: resize( size_t nFrames, unsigned int nChannels, StkFloat value
   for ( size_t i=0; i<size_; i++ ) data_[i] = value;
 }
 
-StkFloat& StkFrames :: operator[] ( size_t n )
-{
-#if defined(_STK_DEBUG_)
-    if ( n >= size_ ) {
-      std::ostringstream error;
-      error << "StkFrames::operator[]: invalid index (" << n << ") value!";
-      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
-    }
-#endif
-
-  return data_[n];
-}
-
-StkFloat StkFrames :: operator[] ( size_t n ) const
-{
-#if defined(_STK_DEBUG_)
-    if ( n >= size_ ) {
-      std::ostringstream error;
-      error << "StkFrames::operator[]: invalid index (" << n << ") value!";
-      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
-    }
-#endif
-
-  return data_[n];
-}
-
-StkFloat& StkFrames :: operator() ( size_t frame, unsigned int channel )
-{
-#if defined(_STK_DEBUG_)
-    if ( frame >= nFrames_ || channel >= nChannels_ ) {
-      std::ostringstream error;
-      error << "StkFrames::operator(): invalid frame (" << frame << ") or channel (" << channel << ") value!";
-      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
-    }
-#endif
-
-  if ( interleaved_ )
-    return data_[ frame * nChannels_ + channel ];
-  else
-    return data_[ channel * nFrames_ + frame ];
-}
-
-StkFloat StkFrames :: operator() ( size_t frame, unsigned int channel ) const
-{
-#if defined(_STK_DEBUG_)
-    if ( frame >= nFrames_ || channel >= nChannels_ ) {
-      std::ostringstream error;
-      error << "StkFrames::operator(): invalid frame (" << frame << ") or channel (" << channel << ") value!";
-      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
-    }
-#endif
-
-  if ( interleaved_ )
-    return data_[ frame * nChannels_ + channel ];
-  else
-    return data_[ channel * nFrames_ + frame ];
-}
-
 StkFloat StkFrames :: interpolate( StkFloat frame, unsigned int channel ) const
 {
 #if defined(_STK_DEBUG_)
-    if ( frame >= (StkFloat) nFrames_ || channel >= nChannels_ ) {
-      std::ostringstream error;
-      error << "StkFrames::interpolate: invalid frame (" << frame << ") or channel (" << channel << ") value!";
-      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
-    }
+  if ( frame < 0.0 || frame > (StkFloat) ( nFrames_ - 1 ) || channel >= nChannels_ ) {
+    std::ostringstream error;
+    error << "StkFrames::interpolate: invalid frame (" << frame << ") or channel (" << channel << ") value!";
+    Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+  }
 #endif
 
   size_t iIndex = ( size_t ) frame;                    // integer part of index
   StkFloat output, alpha = frame - (StkFloat) iIndex;  // fractional part of index
 
-  if ( interleaved_ ) {
-    iIndex = iIndex * nChannels_ + channel;
-    output = data_[ iIndex ];
+  iIndex = iIndex * nChannels_ + channel;
+  output = data_[ iIndex ];
+  if ( alpha > 0.0 )
     output += ( alpha * ( data_[ iIndex + nChannels_ ] - output ) );
-  }
-  else {
-    iIndex += channel * nFrames_;
-    output = data_[ iIndex ];
-    output += ( alpha * ( data_[ ++iIndex ] - output ) );
-  }
 
   return output;
 }
+
+} // stk namespace

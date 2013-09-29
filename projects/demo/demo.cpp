@@ -28,13 +28,15 @@ using std::min;
 bool done;
 static void finish(int ignore){ done = true; }
 
+using namespace stk;
+
 // The TickData structure holds all the class instances and data that
 // are shared by the various processing functions.
 struct TickData {
   WvOut **wvout;
   Instrmnt **instrument;
   Voicer *voicer;
-  Effect *reverb;
+  PRCRev reverb;
   Messager messager;
   Skini::Message message;
   StkFloat volume;
@@ -51,7 +53,7 @@ struct TickData {
 
   // Default constructor.
   TickData()
-    : wvout(0), instrument(0), voicer(0), reverb(0), volume(1.0), t60(1.0),
+    : wvout(0), instrument(0), voicer(0), volume(1.0), t60(1.0),
       nWvOuts(0), nVoices(1), currentVoice(0), channels(2), counter(0),
       realtime( false ), settling( false ), haveMessage( false ) {}
 };
@@ -90,7 +92,7 @@ void processMessage( TickData* data )
 
   case __SK_ControlChange_:
     if (value1 == 44.0)
-      data->reverb->setEffectMix(value2  * ONE_OVER_128);
+      data->reverb.setEffectMix(value2  * ONE_OVER_128);
     else if (value1 == 7.0)
       data->volume = value2 * ONE_OVER_128;
     else if (value1 == 49.0)
@@ -183,7 +185,7 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     counter = min( nTicks, data->counter );
     data->counter -= counter;
     for ( int i=0; i<counter; i++ ) {
-      sample = data->volume * data->reverb->tick( data->voicer->tick() );
+      sample = data->volume * data->reverb.tick( data->voicer->tick() );
       for ( unsigned int j=0; j<data->nWvOuts; j++ ) data->wvout[j]->tick(sample);
       if ( data->realtime )
         for ( int k=0; k<data->channels; k++ ) *samples++ = sample;
@@ -211,6 +213,10 @@ int main( int argc, char *argv[] )
   // it before instantiating any objects!  If the sample rate is
   // specified in the command line, it will override this setting.
   Stk::setSampleRate( 44100.0 );
+
+  // Depending on how you compile STK, you may need to explicitly set
+  // the path to the rawwave directory.
+  Stk::setRawwavePath( "../../rawwaves/" );
 
   // By default, warning messages are not printed.  If we want to see
   // them, we need to specify that here.
@@ -267,8 +273,8 @@ int main( int argc, char *argv[] )
 #endif
 
   // Set the reverb parameters.
-  data.reverb = new PRCRev( data.t60 );
-  data.reverb->setEffectMix(0.2);
+  data.reverb.setT60( data.t60 );
+  data.reverb.setEffectMix(0.2);
 
   // Install an interrupt handler function.
 	(void) signal(SIGINT, finish);
@@ -315,7 +321,6 @@ int main( int argc, char *argv[] )
   for ( i=0; i<(int)data.nWvOuts; i++ ) delete data.wvout[i];
   free( data.wvout );
 
-  delete data.reverb;
   delete data.voicer;
 
   for ( i=0; i<data.nVoices; i++ ) delete data.instrument[i];
