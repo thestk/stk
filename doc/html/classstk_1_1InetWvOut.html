@@ -203,7 +203,7 @@ An <a class="el" href="classstk_1_1StkError.html" title="STK error handling clas
           <td class="paramtype">const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>frames</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -213,6 +213,8 @@ An <a class="el" href="classstk_1_1StkError.html" title="STK error handling clas
 Output the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> data. 
 <p>
 An <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> will be thrown if an output error occurs. An <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> will also be thrown if _STK_DEBUG_ is defined during compilation and there is an incompatability between the number of channels in the <a class="el" href="classstk_1_1FileWvOut.html" title="STK audio file output class.">FileWvOut</a> object and that in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object. If a socket connection does not exist, the function does nothing (a warning will be issued if _STK_DEBUG_ is defined during compilation). 
+<p>Implements <a class="el" href="classstk_1_1WvOut.html#7e20334ec73dde8c6c5edef697812b7e">stk::WvOut</a>.</p>
+
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>

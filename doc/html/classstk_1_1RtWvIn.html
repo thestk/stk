@@ -211,7 +211,7 @@ For multi-channel files, use the <a class="el" href="classstk_1_1WvIn.html#3ab86
           <td class="paramtype"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>frames</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -221,6 +221,8 @@ For multi-channel files, use the <a class="el" href="classstk_1_1WvIn.html#3ab86
 Fill the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument with computed frames and return the same reference. 
 <p>
 If the device is "stopped", it is "started". The number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument must equal the number of channels specified during instantiation. However, this is only checked if _STK_DEBUG_ is defined during compilation, in which case an incompatibility will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. 
+<p>Implements <a class="el" href="classstk_1_1WvIn.html#76718752b0cc1ab767ba4e70d72b9453">stk::WvIn</a>.</p>
+
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>
