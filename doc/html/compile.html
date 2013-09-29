@@ -24,11 +24,11 @@ Unix Systems:</a></h2>
 <tr bgcolor="beige">
 <td width="5%"><b>OS:</b> </td><td width="5%"><b>Realtime Audio/MIDI API:</b> </td><td width="5%"><b>Preprocessor Definition:</b> </td><td width="5%"><b>Library or Framework:</b>  </td></tr>
 <tr>
-<td>Linux </td><td>ALSA </td><td>__LINUX_ALSA__, __LINUX_ALSASEQ__, __LITTLE_ENDIAN__ </td><td><code>asound, pthread</code>  </td></tr>
+<td>Linux </td><td>ALSA </td><td>__LINUX_ALSA__, __LITTLE_ENDIAN__ </td><td><code>asound, pthread</code>  </td></tr>
 <tr>
-<td>Linux </td><td>OSS (version 4.0 only, use ALSA for MIDI support) </td><td>__LINUX_OSS__, __LINUX_ALSASEQ__, __LITTLE_ENDIAN__ </td><td><code>asound, pthread</code>  </td></tr>
+<td>Linux </td><td>OSS (version 4.0 only, use ALSA for MIDI support) </td><td>__LINUX_OSS__, __LINUX_ALSA__, __LITTLE_ENDIAN__ </td><td><code>asound, pthread</code>  </td></tr>
 <tr>
-<td>Linux and Macintosh OS-X </td><td>Jack (audio only, use ALSA for MIDI support) </td><td>__UNIX_JACK__, __LINUX_ALSASEQ__, __LITTLE_ENDIAN__ </td><td><code>asound, pthread, jack</code>  </td></tr>
+<td>Linux and Macintosh OS-X </td><td>Jack </td><td>__UNIX_JACK__, __LITTLE_ENDIAN__ </td><td><code>asound, pthread, jack</code>  </td></tr>
 <tr>
 <td>Macintosh OS X </td><td>CoreAudio </td><td>__MACOSX_CORE__ </td><td><code>pthread, CoreAudio, CoreMidi, CoreFoundation</code>  </td></tr>
 </table>
@@ -59,7 +59,7 @@ Windows:</a></h2>
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

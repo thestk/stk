@@ -81,7 +81,7 @@ const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;<
 <p>This class can be used to manage a group of STK instrument classes. Individual voices can be controlled via unique note tags. Instrument groups can be controlled by group number.</p>
 <p>A previously constructed STK instrument class is linked with a voice manager using the <a class="el" href="classstk_1_1Voicer.html#aff9fc9304ef6ae9f7aa1e15611728b8c" title="Add an instrument with an optional group number to the voice manager.">addInstrument()</a> function. An optional group number argument can be specified to the <a class="el" href="classstk_1_1Voicer.html#aff9fc9304ef6ae9f7aa1e15611728b8c" title="Add an instrument with an optional group number to the voice manager.">addInstrument()</a> function as well (default group = 0). The voice manager does not delete any instrument instances ... it is the responsibility of the user to allocate and deallocate all instruments.</p>
 <p>The <a class="el" href="classstk_1_1Voicer.html#a3e504b3a6b896772b0f94a12faf0ee70" title="Mix one sample frame of all sounding voices and return the specified channel value...">tick()</a> function returns the mix of all sounding voices. Each noteOn returns a unique tag (credits to the NeXT MusicKit), so you can send control changes to specific voices within an ensemble. Alternately, control changes can be sent to all voices in a given group.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2012. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="aff9fc9304ef6ae9f7aa1e15611728b8c"></a><!-- doxytag: member="stk::Voicer::addInstrument" ref="aff9fc9304ef6ae9f7aa1e15611728b8c" args="(Instrmnt *instrument, int group=0)" -->
 <div class="memitem">
@@ -428,7 +428,7 @@ const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;<
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

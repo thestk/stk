@@ -52,7 +52,7 @@ Inheritance diagram for stk::RtWvIn:</div>
 <p>STK realtime audio (blocking) input class. </p>
 <p>This class provides a simplified interface to <a class="el" href="classRtAudio.html" title="Realtime audio i/o C++ classes.">RtAudio</a> for realtime audio input. It is a subclass of <a class="el" href="classstk_1_1WvIn.html" title="STK audio input abstract base class.">WvIn</a>. This class makes use of RtAudio's callback functionality by creating a large ring-buffer from which data is read. This class should not be used when low-latency is desired.</p>
 <p><a class="el" href="classstk_1_1RtWvIn.html" title="STK realtime audio (blocking) input class.">RtWvIn</a> supports multi-channel data in both interleaved and non-interleaved formats. It is important to distinguish the <a class="el" href="classstk_1_1RtWvIn.html#ad2ace75cfe44dd82dd706d2c8dac7901" title="Compute a sample frame and return the specified channel value.">tick()</a> method that computes a single frame (and returns only the specified sample of a multi-channel frame) from the overloaded one that takes an <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object for multi-channel and/or multi-frame data.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2012. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ab84c98c568346d1ad86251961f7d1fba"></a><!-- doxytag: member="stk::RtWvIn::RtWvIn" ref="ab84c98c568346d1ad86251961f7d1fba" args="(unsigned int nChannels=1, StkFloat sampleRate=Stk::sampleRate(), int device=0, int bufferFrames=RT_BUFFER_SIZE, int nBuffers=20)" -->
 <div class="memitem">
@@ -232,7 +232,7 @@ Inheritance diagram for stk::RtWvIn:</div>
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

@@ -85,22 +85,22 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object as inputs to the filter and replace with corresponding outputs. </p>
 <p>The <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument reference is returned. The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
-<p><div class="fragment"><pre class="fragment"><a name="l00228"></a>00228 {
-<a name="l00229"></a>00229 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
-<a name="l00230"></a>00230 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
-<a name="l00231"></a>00231     oStream_ &lt;&lt; <span class="stringliteral">&quot;LentPitShift::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
-<a name="l00232"></a>00232     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
-<a name="l00233"></a>00233   }
-<a name="l00234"></a>00234 <span class="preprocessor">#endif</span>
-<a name="l00235"></a>00235 <span class="preprocessor"></span>
-<a name="l00236"></a>00236   StkFloat *samples = &amp;frames[channel];
-<a name="l00237"></a>00237   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
-<a name="l00238"></a>00238   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
-<a name="l00239"></a>00239     *samples = <a class="code" href="classstk_1_1LentPitShift.html#a2bbc39e8e78dc672a0be451ec1fd6b7d" title="Input one sample to the filter and return one output.">tick</a>( *samples );
-<a name="l00240"></a>00240   }
-<a name="l00241"></a>00241 
-<a name="l00242"></a>00242   <span class="keywordflow">return</span> frames;
-<a name="l00243"></a>00243 }
+<p><div class="fragment"><pre class="fragment"><a name="l00224"></a>00224 {
+<a name="l00225"></a>00225 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00226"></a>00226 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00227"></a>00227     oStream_ &lt;&lt; <span class="stringliteral">&quot;LentPitShift::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00228"></a>00228     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00229"></a>00229   }
+<a name="l00230"></a>00230 <span class="preprocessor">#endif</span>
+<a name="l00231"></a>00231 <span class="preprocessor"></span>
+<a name="l00232"></a>00232   StkFloat *samples = &amp;frames[channel];
+<a name="l00233"></a>00233   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00234"></a>00234   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00235"></a>00235     *samples = <a class="code" href="classstk_1_1LentPitShift.html#a2bbc39e8e78dc672a0be451ec1fd6b7d" title="Input one sample to the filter and return one output.">tick</a>( *samples );
+<a name="l00236"></a>00236   }
+<a name="l00237"></a>00237 
+<a name="l00238"></a>00238   <span class="keywordflow">return</span> frames;
+<a name="l00239"></a>00239 }
 </pre></div></p>
 
 </div>
@@ -145,23 +145,23 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <code>iFrames</code> object as inputs to the filter and write outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. Each channel argument must be less than the number of channels in the corresponding <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
-<p><div class="fragment"><pre class="fragment"><a name="l00246"></a>00246 {
-<a name="l00247"></a>00247 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
-<a name="l00248"></a>00248 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() ) {
-<a name="l00249"></a>00249     oStream_ &lt;&lt; <span class="stringliteral">&quot;LentPitShift::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
-<a name="l00250"></a>00250     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
-<a name="l00251"></a>00251   }
-<a name="l00252"></a>00252 <span class="preprocessor">#endif</span>
-<a name="l00253"></a>00253 <span class="preprocessor"></span>
-<a name="l00254"></a>00254   StkFloat *iSamples = &amp;iFrames[iChannel];
-<a name="l00255"></a>00255   StkFloat *oSamples = &amp;oFrames[oChannel];
-<a name="l00256"></a>00256   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iHop = iFrames.channels(), oHop = oFrames.channels();
-<a name="l00257"></a>00257   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
-<a name="l00258"></a>00258     *oSamples = <a class="code" href="classstk_1_1LentPitShift.html#a2bbc39e8e78dc672a0be451ec1fd6b7d" title="Input one sample to the filter and return one output.">tick</a>( *iSamples );
-<a name="l00259"></a>00259   }
-<a name="l00260"></a>00260 
-<a name="l00261"></a>00261   <span class="keywordflow">return</span> iFrames;
-<a name="l00262"></a>00262 }
+<p><div class="fragment"><pre class="fragment"><a name="l00242"></a>00242 {
+<a name="l00243"></a>00243 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00244"></a>00244 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() ) {
+<a name="l00245"></a>00245     oStream_ &lt;&lt; <span class="stringliteral">&quot;LentPitShift::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00246"></a>00246     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00247"></a>00247   }
+<a name="l00248"></a>00248 <span class="preprocessor">#endif</span>
+<a name="l00249"></a>00249 <span class="preprocessor"></span>
+<a name="l00250"></a>00250   StkFloat *iSamples = &amp;iFrames[iChannel];
+<a name="l00251"></a>00251   StkFloat *oSamples = &amp;oFrames[oChannel];
+<a name="l00252"></a>00252   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iHop = iFrames.channels(), oHop = oFrames.channels();
+<a name="l00253"></a>00253   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
+<a name="l00254"></a>00254     *oSamples = <a class="code" href="classstk_1_1LentPitShift.html#a2bbc39e8e78dc672a0be451ec1fd6b7d" title="Input one sample to the filter and return one output.">tick</a>( *iSamples );
+<a name="l00255"></a>00255   }
+<a name="l00256"></a>00256 
+<a name="l00257"></a>00257   <span class="keywordflow">return</span> iFrames;
+<a name="l00258"></a>00258 }
 </pre></div></p>
 
 </div>
@@ -182,102 +182,102 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div class="memdoc">
 
 <p>Apply the effect on the input samples and store it. </p>
-<p>The samples stored in the input frame vector are processed and the delayed result are stored in the output frame vector </p>
+<p>The samples stored in the input frame vector are processed and the delayed result are stored in the output frame vector. </p>
 
-<p><div class="fragment"><pre class="fragment"><a name="l00114"></a>00114 {
-<a name="l00115"></a>00115   StkFloat x_t;    <span class="comment">// input coefficient</span>
-<a name="l00116"></a>00116   StkFloat x_t_T;  <span class="comment">// previous input coefficient at T samples</span>
-<a name="l00117"></a>00117   StkFloat coeff;  <span class="comment">// new coefficient for the difference function</span>
-<a name="l00118"></a>00118 
-<a name="l00119"></a>00119   <span class="keywordtype">int</span> alternativePitch = tMax_;  <span class="comment">// Global minimum storage</span>
-<a name="l00120"></a>00120   lastPeriod_ = tMax_+1;         <span class="comment">// Storage of the lowest local minimum under the threshold</span>
+<p><div class="fragment"><pre class="fragment"><a name="l00110"></a>00110 {
+<a name="l00111"></a>00111   StkFloat x_t;    <span class="comment">// input coefficient</span>
+<a name="l00112"></a>00112   StkFloat x_t_T;  <span class="comment">// previous input coefficient at T samples</span>
+<a name="l00113"></a>00113   StkFloat coeff;  <span class="comment">// new coefficient for the difference function</span>
+<a name="l00114"></a>00114 
+<a name="l00115"></a>00115   <span class="keywordtype">int</span> alternativePitch = tMax_;  <span class="comment">// Global minimum storage</span>
+<a name="l00116"></a>00116   lastPeriod_ = tMax_+1;         <span class="comment">// Storage of the lowest local minimum under the threshold</span>
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118   <span class="comment">// Loop variables</span>
+<a name="l00119"></a>00119   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> delay_;
+<a name="l00120"></a>00120   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n;
 <a name="l00121"></a>00121 
-<a name="l00122"></a>00122   <span class="comment">// Loop variables</span>
-<a name="l00123"></a>00123   <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> delay_;
-<a name="l00124"></a>00124   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n;
-<a name="l00125"></a>00125 
-<a name="l00126"></a>00126   <span class="comment">// Initialization of the dt coefficients.  Since the</span>
-<a name="l00127"></a>00127   <span class="comment">// frames are of tMax_ length, there is no overlapping</span>
-<a name="l00128"></a>00128   <span class="comment">// between the successive windows where pitch tracking</span>
-<a name="l00129"></a>00129   <span class="comment">// is performed.</span>
-<a name="l00130"></a>00130   <span class="keywordflow">for</span> ( delay_=1; delay_&lt;=tMax_; delay_++ )
-<a name="l00131"></a>00131     dt[delay_] = 0.;
-<a name="l00132"></a>00132 
-<a name="l00133"></a>00133   <span class="comment">// Calculation of the dt coefficients and update of the input delay line.</span>
-<a name="l00134"></a>00134   <span class="keywordflow">for</span> ( n=0; n&lt;inputFrames.size(); n++ ) {
-<a name="l00135"></a>00135     x_t = inputLine_.tick( inputFrames[ n ] );
-<a name="l00136"></a>00136     <span class="keywordflow">for</span> ( delay_=1; delay_&lt;= tMax_; delay_++ ) {
-<a name="l00137"></a>00137       x_t_T = inputLine_.tapOut( delay_ );
-<a name="l00138"></a>00138       coeff = x_t - x_t_T;
-<a name="l00139"></a>00139       dt[delay_] += coeff * coeff;
-<a name="l00140"></a>00140     }
-<a name="l00141"></a>00141   }
-<a name="l00142"></a>00142 
-<a name="l00143"></a>00143   <span class="comment">// Calculation of the pitch tracking function and test for the minima.</span>
-<a name="l00144"></a>00144   <span class="keywordflow">for</span> ( delay_=1; delay_&lt;=tMax_; delay_++ ) {
-<a name="l00145"></a>00145     cumDt[delay_] = dt[delay_] + cumDt[delay_-1];
-<a name="l00146"></a>00146     dpt[delay_] = dt[delay_] * delay_ / cumDt[delay_];
-<a name="l00147"></a>00147 
-<a name="l00148"></a>00148     <span class="comment">// Look for a minimum</span>
-<a name="l00149"></a>00149     <span class="keywordflow">if</span> ( dpt[delay_-1]-dpt[delay_-2] &lt; 0 &amp;&amp; dpt[delay_]-dpt[delay_-1] &gt; 0 ) {
-<a name="l00150"></a>00150       <span class="comment">// Check if the minimum is under the threshold</span>
-<a name="l00151"></a>00151       <span class="keywordflow">if</span> ( dpt[delay_-1] &lt; threshold_ ){
-<a name="l00152"></a>00152         lastPeriod_ = delay_-1;
-<a name="l00153"></a>00153         <span class="comment">// If a minimum is found, we can stop the loop</span>
-<a name="l00154"></a>00154         <span class="keywordflow">break</span>;
-<a name="l00155"></a>00155       }
-<a name="l00156"></a>00156       <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( dpt[alternativePitch] &gt; dpt[delay_-1] )
-<a name="l00157"></a>00157         <span class="comment">// Otherwise we store it if it is the current global minimum</span>
-<a name="l00158"></a>00158         alternativePitch = delay_-1;
-<a name="l00159"></a>00159     }
-<a name="l00160"></a>00160   }
-<a name="l00161"></a>00161 
-<a name="l00162"></a>00162   <span class="comment">// Test for the last period length.</span>
-<a name="l00163"></a>00163   <span class="keywordflow">if</span> ( dpt[delay_]-dpt[delay_-1] &lt; 0 ) {
-<a name="l00164"></a>00164     <span class="keywordflow">if</span> ( dpt[delay_] &lt; threshold_ )
-<a name="l00165"></a>00165       lastPeriod_ = delay_;
-<a name="l00166"></a>00166     <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( dpt[alternativePitch] &gt; dpt[delay_] )
-<a name="l00167"></a>00167       alternativePitch = delay_;
-<a name="l00168"></a>00168   }
+<a name="l00122"></a>00122   <span class="comment">// Initialization of the dt coefficients.  Since the</span>
+<a name="l00123"></a>00123   <span class="comment">// frames are of tMax_ length, there is no overlapping</span>
+<a name="l00124"></a>00124   <span class="comment">// between the successive windows where pitch tracking</span>
+<a name="l00125"></a>00125   <span class="comment">// is performed.</span>
+<a name="l00126"></a>00126   <span class="keywordflow">for</span> ( delay_=1; delay_&lt;=tMax_; delay_++ )
+<a name="l00127"></a>00127     dt[delay_] = 0.;
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129   <span class="comment">// Calculation of the dt coefficients and update of the input delay line.</span>
+<a name="l00130"></a>00130   <span class="keywordflow">for</span> ( n=0; n&lt;inputFrames.size(); n++ ) {
+<a name="l00131"></a>00131     x_t = inputLine_.tick( inputFrames[ n ] );
+<a name="l00132"></a>00132     <span class="keywordflow">for</span> ( delay_=1; delay_&lt;= tMax_; delay_++ ) {
+<a name="l00133"></a>00133       x_t_T = inputLine_.tapOut( delay_ );
+<a name="l00134"></a>00134       coeff = x_t - x_t_T;
+<a name="l00135"></a>00135       dt[delay_] += coeff * coeff;
+<a name="l00136"></a>00136     }
+<a name="l00137"></a>00137   }
+<a name="l00138"></a>00138 
+<a name="l00139"></a>00139   <span class="comment">// Calculation of the pitch tracking function and test for the minima.</span>
+<a name="l00140"></a>00140   <span class="keywordflow">for</span> ( delay_=1; delay_&lt;=tMax_; delay_++ ) {
+<a name="l00141"></a>00141     cumDt[delay_] = dt[delay_] + cumDt[delay_-1];
+<a name="l00142"></a>00142     dpt[delay_] = dt[delay_] * delay_ / cumDt[delay_];
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144     <span class="comment">// Look for a minimum</span>
+<a name="l00145"></a>00145     <span class="keywordflow">if</span> ( dpt[delay_-1]-dpt[delay_-2] &lt; 0 &amp;&amp; dpt[delay_]-dpt[delay_-1] &gt; 0 ) {
+<a name="l00146"></a>00146       <span class="comment">// Check if the minimum is under the threshold</span>
+<a name="l00147"></a>00147       <span class="keywordflow">if</span> ( dpt[delay_-1] &lt; threshold_ ){
+<a name="l00148"></a>00148         lastPeriod_ = delay_-1;
+<a name="l00149"></a>00149         <span class="comment">// If a minimum is found, we can stop the loop</span>
+<a name="l00150"></a>00150         <span class="keywordflow">break</span>;
+<a name="l00151"></a>00151       }
+<a name="l00152"></a>00152       <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( dpt[alternativePitch] &gt; dpt[delay_-1] )
+<a name="l00153"></a>00153         <span class="comment">// Otherwise we store it if it is the current global minimum</span>
+<a name="l00154"></a>00154         alternativePitch = delay_-1;
+<a name="l00155"></a>00155     }
+<a name="l00156"></a>00156   }
+<a name="l00157"></a>00157 
+<a name="l00158"></a>00158   <span class="comment">// Test for the last period length.</span>
+<a name="l00159"></a>00159   <span class="keywordflow">if</span> ( dpt[delay_]-dpt[delay_-1] &lt; 0 ) {
+<a name="l00160"></a>00160     <span class="keywordflow">if</span> ( dpt[delay_] &lt; threshold_ )
+<a name="l00161"></a>00161       lastPeriod_ = delay_;
+<a name="l00162"></a>00162     <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( dpt[alternativePitch] &gt; dpt[delay_] )
+<a name="l00163"></a>00163       alternativePitch = delay_;
+<a name="l00164"></a>00164   }
+<a name="l00165"></a>00165 
+<a name="l00166"></a>00166   <span class="keywordflow">if</span> ( lastPeriod_ == tMax_+1 )
+<a name="l00167"></a>00167     <span class="comment">// No period has been under the threshold so we used the global minimum</span>
+<a name="l00168"></a>00168     lastPeriod_ = alternativePitch;
 <a name="l00169"></a>00169 
-<a name="l00170"></a>00170   <span class="keywordflow">if</span> ( lastPeriod_ == tMax_+1 )
-<a name="l00171"></a>00171     <span class="comment">// No period has been under the threshold so we used the global minimum</span>
-<a name="l00172"></a>00172     lastPeriod_ = alternativePitch;
+<a name="l00170"></a>00170   <span class="comment">// We put the new zero output coefficients in the output delay line and </span>
+<a name="l00171"></a>00171   <span class="comment">// we get the previous calculated coefficients</span>
+<a name="l00172"></a>00172   outputLine_.tick( zeroFrame, outputFrames );
 <a name="l00173"></a>00173 
-<a name="l00174"></a>00174   <span class="comment">// We put the new zero output coefficients in the output delay line and </span>
-<a name="l00175"></a>00175   <span class="comment">// we get the previous calculated coefficients</span>
-<a name="l00176"></a>00176   outputLine_.tick( zeroFrame, outputFrames );
+<a name="l00174"></a>00174   <span class="comment">// Initialization of the Hamming window used in the algorithm</span>
+<a name="l00175"></a>00175   <span class="keywordflow">for</span> ( <span class="keywordtype">int</span> n=-(<span class="keywordtype">int</span>)lastPeriod_; n&lt;(int)lastPeriod_; n++ )
+<a name="l00176"></a>00176     window[n+lastPeriod_] = (1 + cos(PI*n/lastPeriod_)) / 2    ;
 <a name="l00177"></a>00177 
-<a name="l00178"></a>00178   <span class="comment">// Initialization of the Hamming window used in the algorithm</span>
-<a name="l00179"></a>00179   <span class="keywordflow">for</span> ( <span class="keywordtype">int</span> n=-(<span class="keywordtype">int</span>)lastPeriod_; n&lt;(int)lastPeriod_; n++ )
-<a name="l00180"></a>00180     window[n+lastPeriod_] = (1 + cos(PI*n/lastPeriod_)) / 2    ;
+<a name="l00178"></a>00178   <span class="keywordtype">int</span> M;  <span class="comment">// Index of reading in the input delay line</span>
+<a name="l00179"></a>00179   <span class="keywordtype">int</span> N;  <span class="comment">// Index of writing in the output delay line</span>
+<a name="l00180"></a>00180   <span class="keywordtype">double</span> sample;  <span class="comment">// Temporary storage for the new coefficient</span>
 <a name="l00181"></a>00181 
-<a name="l00182"></a>00182   <span class="keywordtype">int</span> M;  <span class="comment">// Index of reading in the input delay line</span>
-<a name="l00183"></a>00183   <span class="keywordtype">int</span> N;  <span class="comment">// Index of writing in the output delay line</span>
-<a name="l00184"></a>00184   <span class="keywordtype">double</span> sample;  <span class="comment">// Temporary storage for the new coefficient</span>
-<a name="l00185"></a>00185 
-<a name="l00186"></a>00186   <span class="comment">// We loop for all the frames of length lastPeriod_ presents between inputPtr and tMax_</span>
-<a name="l00187"></a>00187   <span class="keywordflow">for</span> ( ; inputPtr&lt;(int)(tMax_-lastPeriod_); inputPtr+=lastPeriod_ ) {
-<a name="l00188"></a>00188     <span class="comment">// Test for the decision of compression/expansion</span>
-<a name="l00189"></a>00189     <span class="keywordflow">while</span> ( outputPtr &lt; inputPtr ) {
-<a name="l00190"></a>00190       <span class="comment">// Coefficients for the linear interpolation</span>
-<a name="l00191"></a>00191       env[1] = fmod( outputPtr + tMax_, 1.0 );
-<a name="l00192"></a>00192       env[0] = 1.0 - env[1];
-<a name="l00193"></a>00193       M = tMax_ - inputPtr + lastPeriod_ - 1; <span class="comment">// New reading pointer</span>
-<a name="l00194"></a>00194       N = 2*tMax_ - (<span class="keywordtype">unsigned</span> long)floor(outputPtr + tMax_) + lastPeriod_ - 1; <span class="comment">// New writing pointer</span>
-<a name="l00195"></a>00195       <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j=0; j&lt;2*lastPeriod_; j++,M--,N-- ) {
-<a name="l00196"></a>00196         sample = inputLine_.tapOut(M) * window[j] / 2.;
-<a name="l00197"></a>00197         <span class="comment">// Linear interpolation</span>
-<a name="l00198"></a>00198         outputLine_.addTo(N, env[0] * sample);
-<a name="l00199"></a>00199         outputLine_.addTo(N-1, env[1] * sample);
-<a name="l00200"></a>00200       }
-<a name="l00201"></a>00201       outputPtr = outputPtr + lastPeriod_ * periodRatio_; <span class="comment">// new output pointer</span>
-<a name="l00202"></a>00202     }
-<a name="l00203"></a>00203   }
-<a name="l00204"></a>00204   <span class="comment">// Shifting of the pointers waiting for the new frame of length tMax_.</span>
-<a name="l00205"></a>00205   outputPtr -= tMax_;
-<a name="l00206"></a>00206   inputPtr  -= tMax_;
-<a name="l00207"></a>00207 }
+<a name="l00182"></a>00182   <span class="comment">// We loop for all the frames of length lastPeriod_ presents between inputPtr and tMax_</span>
+<a name="l00183"></a>00183   <span class="keywordflow">for</span> ( ; inputPtr&lt;(int)(tMax_-lastPeriod_); inputPtr+=lastPeriod_ ) {
+<a name="l00184"></a>00184     <span class="comment">// Test for the decision of compression/expansion</span>
+<a name="l00185"></a>00185     <span class="keywordflow">while</span> ( outputPtr &lt; inputPtr ) {
+<a name="l00186"></a>00186       <span class="comment">// Coefficients for the linear interpolation</span>
+<a name="l00187"></a>00187       env[1] = fmod( outputPtr + tMax_, 1.0 );
+<a name="l00188"></a>00188       env[0] = 1.0 - env[1];
+<a name="l00189"></a>00189       M = tMax_ - inputPtr + lastPeriod_ - 1; <span class="comment">// New reading pointer</span>
+<a name="l00190"></a>00190       N = 2*tMax_ - (<span class="keywordtype">unsigned</span> long)floor(outputPtr + tMax_) + lastPeriod_ - 1; <span class="comment">// New writing pointer</span>
+<a name="l00191"></a>00191       <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j=0; j&lt;2*lastPeriod_; j++,M--,N-- ) {
+<a name="l00192"></a>00192         sample = inputLine_.tapOut(M) * window[j] / 2.;
+<a name="l00193"></a>00193         <span class="comment">// Linear interpolation</span>
+<a name="l00194"></a>00194         outputLine_.addTo(env[0] * sample, N);
+<a name="l00195"></a>00195         outputLine_.addTo(env[1] * sample, N-1);
+<a name="l00196"></a>00196       }
+<a name="l00197"></a>00197       outputPtr = outputPtr + lastPeriod_ * periodRatio_; <span class="comment">// new output pointer</span>
+<a name="l00198"></a>00198     }
+<a name="l00199"></a>00199   }
+<a name="l00200"></a>00200   <span class="comment">// Shifting of the pointers waiting for the new frame of length tMax_.</span>
+<a name="l00201"></a>00201   outputPtr -= tMax_;
+<a name="l00202"></a>00202   inputPtr  -= tMax_;
+<a name="l00203"></a>00203 }
 </pre></div></p>
 
 </div>
@@ -290,7 +290,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

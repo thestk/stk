@@ -75,7 +75,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>This class implements a simple envelope generator which asymptotically approaches a target value. The algorithm used is of the form:</p>
 <p>y[n] = a y[n-1] + (1-a) target,</p>
 <p>where a = exp(-T/tau), T is the sample period, and tau is a time constant. The user can set the time constant (default value = 0.3) and target value. Theoretically, this recursion never reaches its target, though the calculations in this class are stopped when the current value gets within a small threshold value of the target (at which time the current value is set to the target). It responds to <em>keyOn</em> and <em>keyOff</em> messages by ramping to 1.0 on keyOn and to 0.0 on keyOff.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2012. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="aebd8ebaf6f6c9570d3ee78e1bcbbcbd2"></a><!-- doxytag: member="stk::Asymp::setTau" ref="aebd8ebaf6f6c9570d3ee78e1bcbbcbd2" args="(StkFloat tau)" -->
 <div class="memitem">
@@ -155,7 +155,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

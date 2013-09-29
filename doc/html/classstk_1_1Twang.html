@@ -34,9 +34,6 @@ Inheritance diagram for stk::Twang:</div>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a813e99ee79974707a3afbfcab963c086"></a><!-- doxytag: member="stk::Twang::Twang" ref="a813e99ee79974707a3afbfcab963c086" args="(StkFloat lowestFrequency=50.0)" -->
 &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Twang.html#a813e99ee79974707a3afbfcab963c086">Twang</a> (StkFloat lowestFrequency=50.0)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class constructor, taking the lowest desired playing frequency. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adae2759ef254101f91aa3a0a5c3fba39"></a><!-- doxytag: member="stk::Twang::~Twang" ref="adae2759ef254101f91aa3a0a5c3fba39" args="(void)" -->
-&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Twang.html#adae2759ef254101f91aa3a0a5c3fba39">~Twang</a> (void)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class destructor. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7cdd4bf2e486239429f6d4f0f277cea9"></a><!-- doxytag: member="stk::Twang::clear" ref="a7cdd4bf2e486239429f6d4f0f277cea9" args="(void)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Twang.html#a7cdd4bf2e486239429f6d4f0f277cea9">clear</a> (void)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reset and clear all internal state. <br/></td></tr>
@@ -53,9 +50,8 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the nominal loop gain.  <a href="#ad7921c51f38b4e6e32d7db48cc101068"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Twang.html#a7076c25dd3a06262b3bf927bc64bf89e">setLoopFilter</a> (std::vector&lt; StkFloat &gt; coefficients)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the loop filter coefficients.  <a href="#a7076c25dd3a06262b3bf927bc64bf89e"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab54245fcb75144a8ffcc879789abc952"></a><!-- doxytag: member="stk::Twang::lastFrame" ref="ab54245fcb75144a8ffcc879789abc952" args="(void) const " -->
-const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Twang.html#ab54245fcb75144a8ffcc879789abc952">lastFrame</a> (void) const </td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return an <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> reference to the last output sample frame. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Twang.html#aa25943e277f1cc396074d6be2969f0be">lastOut</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return an <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> reference to the last output sample frame.  <a href="#aa25943e277f1cc396074d6be2969f0be"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3441ff449e3f7a451873e67d4c680ce9"></a><!-- doxytag: member="stk::Twang::tick" ref="a3441ff449e3f7a451873e67d4c680ce9" args="(StkFloat input)" -->
 StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Twang.html#a3441ff449e3f7a451873e67d4c680ce9">tick</a> (StkFloat input)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute and return one output sample. <br/></td></tr>
@@ -68,7 +64,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>STK enhanced plucked string class. </p>
 <p>This class implements an enhanced plucked-string physical model, a la Jaffe-Smith, Smith, Karjalainen and others. It includes a comb filter to simulate pluck position. The <a class="el" href="classstk_1_1Twang.html#a3441ff449e3f7a451873e67d4c680ce9" title="Compute and return one output sample.">tick()</a> function takes an input sample, which is added to the delayline input. This can be used to implement commuted synthesis (if the input samples are derived from the impulse response of a body filter) and/or feedback (as in an electric guitar model).</p>
 <p>This is a digital waveguide model, making its use possibly subject to patents held by Stanford University, Yamaha, and others.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2012. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="ad7921c51f38b4e6e32d7db48cc101068"></a><!-- doxytag: member="stk::Twang::setLoopGain" ref="ad7921c51f38b4e6e32d7db48cc101068" args="(StkFloat loopGain)" -->
 <div class="memitem">
@@ -112,6 +108,30 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 </div>
 </div>
+<a class="anchor" id="aa25943e277f1cc396074d6be2969f0be"></a><!-- doxytag: member="stk::Twang::lastOut" ref="aa25943e277f1cc396074d6be2969f0be" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">StkFloat stk::Twang::lastOut </td>
+          <td>(</td>
+          <td class="paramtype">void&nbsp;</td>
+          <td class="paramname"></td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Return an <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> reference to the last output sample frame. </p>
+<p>Return the last computed output value. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00074"></a>00074 { <span class="keywordflow">return</span> lastOutput_; };
+</pre></div></p>
+
+</div>
+</div>
 <a class="anchor" id="ae9e770c446e1459a5e89c0bc8285f5e3"></a><!-- doxytag: member="stk::Twang::tick" ref="ae9e770c446e1459a5e89c0bc8285f5e3" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
 <div class="memitem">
 <div class="memproto">
@@ -140,21 +160,21 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <code>iFrames</code> object as inputs to the class and write outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. Each channel argument must be less than the number of channels in the corresponding <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
-<p><div class="fragment"><pre class="fragment"><a name="l00121"></a>00121 {
-<a name="l00122"></a>00122 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
-<a name="l00123"></a>00123 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
-<a name="l00124"></a>00124     oStream_ &lt;&lt; <span class="stringliteral">&quot;Twang::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
-<a name="l00125"></a>00125     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
-<a name="l00126"></a>00126   }
-<a name="l00127"></a>00127 <span class="preprocessor">#endif</span>
-<a name="l00128"></a>00128 <span class="preprocessor"></span>
-<a name="l00129"></a>00129   StkFloat *samples = &amp;frames[channel];
-<a name="l00130"></a>00130   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
-<a name="l00131"></a>00131   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
-<a name="l00132"></a>00132     *samples = <a class="code" href="classstk_1_1Twang.html#a3441ff449e3f7a451873e67d4c680ce9" title="Compute and return one output sample.">tick</a>( *samples );
-<a name="l00133"></a>00133 
-<a name="l00134"></a>00134   <span class="keywordflow">return</span> frames;
-<a name="l00135"></a>00135 }
+<p><div class="fragment"><pre class="fragment"><a name="l00123"></a>00123 {
+<a name="l00124"></a>00124 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00125"></a>00125 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00126"></a>00126     oStream_ &lt;&lt; <span class="stringliteral">&quot;Twang::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00127"></a>00127     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00128"></a>00128   }
+<a name="l00129"></a>00129 <span class="preprocessor">#endif</span>
+<a name="l00130"></a>00130 <span class="preprocessor"></span>
+<a name="l00131"></a>00131   StkFloat *samples = &amp;frames[channel];
+<a name="l00132"></a>00132   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00133"></a>00133   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00134"></a>00134     *samples = <a class="code" href="classstk_1_1Twang.html#a3441ff449e3f7a451873e67d4c680ce9" title="Compute and return one output sample.">tick</a>( *samples );
+<a name="l00135"></a>00135 
+<a name="l00136"></a>00136   <span class="keywordflow">return</span> frames;
+<a name="l00137"></a>00137 }
 </pre></div></p>
 
 </div>
@@ -199,22 +219,22 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <code>iFrames</code> object as inputs to the effect and write outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. Each channel argument must be less than the number of channels in the corresponding <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
-<p><div class="fragment"><pre class="fragment"><a name="l00138"></a>00138 {
-<a name="l00139"></a>00139 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
-<a name="l00140"></a>00140 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() ) {
-<a name="l00141"></a>00141     oStream_ &lt;&lt; <span class="stringliteral">&quot;Twang::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
-<a name="l00142"></a>00142     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
-<a name="l00143"></a>00143   }
-<a name="l00144"></a>00144 <span class="preprocessor">#endif</span>
-<a name="l00145"></a>00145 <span class="preprocessor"></span>
-<a name="l00146"></a>00146   StkFloat *iSamples = &amp;iFrames[iChannel];
-<a name="l00147"></a>00147   StkFloat *oSamples = &amp;oFrames[oChannel];
-<a name="l00148"></a>00148   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iHop = iFrames.channels(), oHop = oFrames.channels();
-<a name="l00149"></a>00149   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop )
-<a name="l00150"></a>00150     *oSamples = <a class="code" href="classstk_1_1Twang.html#a3441ff449e3f7a451873e67d4c680ce9" title="Compute and return one output sample.">tick</a>( *iSamples );
-<a name="l00151"></a>00151 
-<a name="l00152"></a>00152   <span class="keywordflow">return</span> iFrames;
-<a name="l00153"></a>00153 }
+<p><div class="fragment"><pre class="fragment"><a name="l00140"></a>00140 {
+<a name="l00141"></a>00141 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00142"></a>00142 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() ) {
+<a name="l00143"></a>00143     oStream_ &lt;&lt; <span class="stringliteral">&quot;Twang::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00144"></a>00144     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00145"></a>00145   }
+<a name="l00146"></a>00146 <span class="preprocessor">#endif</span>
+<a name="l00147"></a>00147 <span class="preprocessor"></span>
+<a name="l00148"></a>00148   StkFloat *iSamples = &amp;iFrames[iChannel];
+<a name="l00149"></a>00149   StkFloat *oSamples = &amp;oFrames[oChannel];
+<a name="l00150"></a>00150   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iHop = iFrames.channels(), oHop = oFrames.channels();
+<a name="l00151"></a>00151   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop )
+<a name="l00152"></a>00152     *oSamples = <a class="code" href="classstk_1_1Twang.html#a3441ff449e3f7a451873e67d4c680ce9" title="Compute and return one output sample.">tick</a>( *iSamples );
+<a name="l00153"></a>00153 
+<a name="l00154"></a>00154   <span class="keywordflow">return</span> iFrames;
+<a name="l00155"></a>00155 }
 </pre></div></p>
 
 </div>
@@ -227,7 +247,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

@@ -48,7 +48,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK noise generator. </p>
 <p>Generic random number generation using the C rand() function. The quality of the rand() function varies from one OS to another.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2012. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a2d442a08883be25f10952dff4e515f98"></a><!-- doxytag: member="stk::Noise::Noise" ref="a2d442a08883be25f10952dff4e515f98" args="(unsigned int seed=0)" -->
 <div class="memitem">
@@ -123,22 +123,22 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Generator.html#a86bb0421223cf27e25704d5f27b97425">stk::Generator</a>.</p>
 
-<p><div class="fragment"><pre class="fragment"><a name="l00064"></a>00064 {
-<a name="l00065"></a>00065 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
-<a name="l00066"></a>00066 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
-<a name="l00067"></a>00067     oStream_ &lt;&lt; <span class="stringliteral">&quot;Noise::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
-<a name="l00068"></a>00068     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
-<a name="l00069"></a>00069   }
-<a name="l00070"></a>00070 <span class="preprocessor">#endif</span>
-<a name="l00071"></a>00071 <span class="preprocessor"></span>
-<a name="l00072"></a>00072   StkFloat *samples = &amp;frames[channel];
-<a name="l00073"></a>00073   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
-<a name="l00074"></a>00074   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
-<a name="l00075"></a>00075     *samples = (StkFloat) ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
-<a name="l00076"></a>00076 
-<a name="l00077"></a>00077   lastFrame_[0] = *(samples-hop);
-<a name="l00078"></a>00078   <span class="keywordflow">return</span> frames;
-<a name="l00079"></a>00079 }
+<p><div class="fragment"><pre class="fragment"><a name="l00065"></a>00065 {
+<a name="l00066"></a>00066 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00068"></a>00068     oStream_ &lt;&lt; <span class="stringliteral">&quot;Noise::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00069"></a>00069     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00070"></a>00070   }
+<a name="l00071"></a>00071 <span class="preprocessor">#endif</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span>
+<a name="l00073"></a>00073   StkFloat *samples = &amp;frames[channel];
+<a name="l00074"></a>00074   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00075"></a>00075   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00076"></a>00076     *samples = (StkFloat) ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
+<a name="l00077"></a>00077 
+<a name="l00078"></a>00078   lastFrame_[0] = *(samples-hop);
+<a name="l00079"></a>00079   <span class="keywordflow">return</span> frames;
+<a name="l00080"></a>00080 }
 </pre></div></p>
 
 </div>
@@ -151,7 +151,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

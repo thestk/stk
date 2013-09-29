@@ -72,13 +72,18 @@ Directory Structure:</a></h2>
 <p class="endli"></p>
 </li>
 <li>
+<p class="startli">The <em><b>eguitar</b></em> project demonstrates how to make an electric guitar with feedback and distortion.</p>
+<p></p>
+<p class="endli"></p>
+</li>
+<li>
 The <em><b>examples</b></em> project contains several simple programs that demonstrate audio input/output, including the audio internet streaming classes, as well as most of the tutorial programs. </li>
 </ol>
 <h2><a class="anchor" id="compiling">
 Compiling:</a></h2>
 <ul>
 <li>
-<p class="startli"><b>Windows95/98/2000/XP/7:</b> Realtime support is available using either DirectSound or ASIO audio drivers. For DirectSound support, use the <code>__WINDOWS_DS__</code> preprocessor definition and link with the <code>dsound.lib</code>, <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. For ASIO support, use the <code>__WINDOWS_ASIO__</code> preprocessor definition, include all the files in the <code>src/asio/</code> directory (i.e. <code>asio.h,cpp</code>, <code>asiodrivers.h,cpp</code>, ...), and link with the <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. In addition, the <code>__LITTLE_ENDIAN__</code> and <code>__WINDOWS_MM__</code> preprocessor definitions are necessary for all Windows systems (<a class="el" href="classRtMidi.html" title="An abstract base class for realtime MIDI input/output.">RtMidi</a> uses the Windows MultiMedia MIDI API). Visual C++ .NET project files are provided in each project directory. As well, the MinGW compiler is supported (see below). It is important to link with the non-debug libraries when compiling "release" program versions and debug libraries when compiling "debug" program versions.</p>
+<p class="startli"><b>Windows95/98/2000/XP/7:</b> Realtime support is available using either DirectSound or ASIO audio drivers. For DirectSound support, use the <code>__WINDOWS_DS__</code> preprocessor definition and link with the <code>dsound.lib</code>, <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. For ASIO support, use the <code>__WINDOWS_ASIO__</code> preprocessor definition, include all the files in the <code>src/asio/</code> directory (i.e. <code>asio.h,cpp</code>, <code>asiodrivers.h,cpp</code>, ...), and link with the <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. In addition, the <code>__LITTLE_ENDIAN__</code> and <code>__WINDOWS_MM__</code> preprocessor definitions are necessary for all Windows systems (<a class="el" href="classRtMidi.html" title="An abstract base class for realtime MIDI input/output.">RtMidi</a> uses the Windows MultiMedia MIDI API). Fairly old Visual C++ project files are provided in each project directory, though they may not work on newer versions of MSVS. As well, the MinGW compiler is supported (see below). It is important to link with the non-debug libraries when compiling "release" program versions and debug libraries when compiling "debug" program versions.</p>
 <p class="endli"></p>
 </li>
 <li>
@@ -128,8 +133,6 @@ Control Data:</a></h2>
 Redirect or pipe SKINI scorefiles to an executable. </li>
 <li>
 Pipe realtime SKINI input messages to an executable (not possible under Windows95/98). </li>
-<li>
-Socket realtime SKINI input messages to an executable. </li>
 <li>
 Acquire realtime MIDI messages from a MIDI port on your computer. </li>
 </ol>
@@ -219,15 +222,13 @@ Demo: Realtime Use</a></h2>
 <li>
 <em>-ip</em> for realtime SKINI control input via piping, </li>
 <li>
-<em>-is &lt;port&gt;</em> for realtime SKINI control input via socketing (with an optional port number), </li>
-<li>
 <em>-im &lt;port&gt;</em> for MIDI control input (with optional port, -1 = virtual port where possible), </li>
 <li>
 <em>-s RATE</em> to specify a sample rate, </li>
 <li>
 <em>-n NUMBER</em> to specify multivoice polyphony </li>
 </ul>
-<p>The <em>-ip</em> and <em>-is</em> flags must be used when piping or socketing realtime SKINI control data to an STK program. The <em>-im</em> flag must be used to read MIDI control input from your MIDI port. Note that you can use all three input types simultaneously.</p>
+<p>The <em>-ip</em> flag must be used when piping realtime SKINI control data to an STK program. The <em>-im</em> flag must be used to read MIDI control input from your MIDI port. Note that you can use both input types simultaneously.</p>
 <p>Assuming a successful compilation of the <em><b>demo</b></em> program, typing:</p>
 <div class="fragment"><pre class="fragment">demo BeeThree -or -<span class="keywordflow">if</span> scores/bookert.ski
 </pre></div><p>from the <em><b>demo</b></em> directory will play the scorefile <em>bookert.ski</em> using the STK BeeThree instrument and stream the resulting audio data in realtime to the audio output channel of your computer. Typing <code>demo</code> without any arguments will provide a full program usage description.</p>
@@ -235,17 +236,7 @@ Demo: Realtime Use</a></h2>
 Realtime Control Input using Tcl/Tk Graphical User Interfaces:</a></h2>
 <p>There are a number of <a href="http://dev.scriptics.com">Tcl/Tk</a> GUIs supplied with the STK projects. These scripts require Tcl/Tk version 8.0 or later, which can be downloaded for free over the WWW. On Unix and Windows2000/XP platforms, you can run the various executable scripts (e.g. StkDemo.bat) provided with each project to start everything up (you may need to symbolically link the wishXX executable to the name <em>wish</em>). The Physical.bat script just implements the following command-line sequence:</p>
 <div class="fragment"><pre class="fragment">wish &lt; tcl/Physical.tcl | demo Clarinet -or -ip
-</pre></div><p>On WindowsXX and Unix platforms, the following operations are necessary to establish a socket connection between the Tcl/Tk GUI and the STK program: </p>
-<ol>
-<li>
-Open a DOS shell and start the STK program with the <em>-is</em> flag (ex. <em><b>demo Clarinet -or -is</b></em>). </li>
-<li>
-Open the Tcl/Tk GUI (e.g. tcl/Physical.tcl) by double-clicking on it, or type <code>wish &lt; tcl/Physical.tcl</code> in another DOS shell. </li>
-<li>
-Establish the socket connection by selecting <em>Socket</em> under the Communications menu item in the Tcl/Tk GUI. </li>
-</ol>
-<p>Note that it is possible to specify a hostname when establishing the socket connection from the socket client. Thus, the STK socket server program and the Tcl/Tk GUI need not necessarily reside on the same computer.</p>
-<h2><a class="anchor" id="midi">
+</pre></div><h2><a class="anchor" id="midi">
 Realtime MIDI Control Input:</a></h2>
 <p>On all supported realtime platforms, you can direct realtime MIDI input to the STK Clarinet by typing:</p>
 <div class="fragment"><pre class="fragment">demo Clarinet -or -im
@@ -259,7 +250,7 @@ Polyphony:</a></h2>
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

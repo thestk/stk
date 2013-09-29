@@ -53,7 +53,7 @@ Inheritance diagram for stk::InetWvIn:</div>
 <p>This Wvin subclass reads streamed audio data over a network via a TCP or UDP socket connection. The data is assumed in big-endian, or network, byte order. Only a single socket connection is supported.</p>
 <p><a class="el" href="classstk_1_1InetWvIn.html" title="STK internet streaming input class.">InetWvIn</a> supports multi-channel data. It is important to distinguish the <a class="el" href="classstk_1_1InetWvIn.html#a2109090620c80013ef3ae68cb975fb17" title="Compute a sample frame and return the specified channel value.">tick()</a> method that computes a single frame (and returns only the specified sample of a multi-channel frame) from the overloaded one that takes an <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object for multi-channel and/or multi-frame data.</p>
 <p>This class implements a socket server. When using the TCP protocol, the server "listens" for a single remote connection within the InetWvIn::start() function. For the UDP protocol, no attempt is made to verify packet delivery or order. The default data type for the incoming stream is signed 16-bit integers, though any of the defined StkFormats are permissible.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2012. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ad97edafdfb9db2aee77b11d3086113a4"></a><!-- doxytag: member="stk::InetWvIn::InetWvIn" ref="ad97edafdfb9db2aee77b11d3086113a4" args="(unsigned long bufferFrames=1024, unsigned int nBuffers=8)" -->
 <div class="memitem">
@@ -239,7 +239,7 @@ Inheritance diagram for stk::InetWvIn:</div>
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

@@ -32,12 +32,9 @@ Inheritance diagram for stk::Shakers:</div>
 <p><a href="classstk_1_1Shakers-members.html">List of all members.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34e4859c572a158d8fda15b7a5c6954d"></a><!-- doxytag: member="stk::Shakers::Shakers" ref="a34e4859c572a158d8fda15b7a5c6954d" args="(void)" -->
-&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Shakers.html#a34e4859c572a158d8fda15b7a5c6954d">Shakers</a> (void)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class constructor. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa1b2ab640268da68b867de1495f19a77"></a><!-- doxytag: member="stk::Shakers::~Shakers" ref="aa1b2ab640268da68b867de1495f19a77" args="(void)" -->
-&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Shakers.html#aa1b2ab640268da68b867de1495f19a77">~Shakers</a> (void)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class destructor. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0de428431174d08f6776ef141594d1b6"></a><!-- doxytag: member="stk::Shakers::Shakers" ref="a0de428431174d08f6776ef141594d1b6" args="(int type=0)" -->
+&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Shakers.html#a0de428431174d08f6776ef141594d1b6">Shakers</a> (int type=0)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class constructor taking instrument type argument. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Shakers.html#a81ffb0ad1e350993af10b2795ec01861">noteOn</a> (StkFloat instrument, StkFloat amplitude)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Start a note with the given instrument and amplitude.  <a href="#a81ffb0ad1e350993af10b2795ec01861"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab63b4b57f8306eb7cf1adbf5a5cd1d05"></a><!-- doxytag: member="stk::Shakers::noteOff" ref="ab63b4b57f8306eb7cf1adbf5a5cd1d05" args="(StkFloat amplitude)" -->
@@ -63,34 +60,32 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <li>Number Of Objects = 11</li>
 <li>Resonance Frequency = 1</li>
 <li>Shake Energy = 128</li>
-<li>Instrument Selection = 1071<ul>
+<li>Instrument Selection = 1071</li>
 <li>Maraca = 0</li>
 <li>Cabasa = 1</li>
 <li>Sekere = 2</li>
-<li>Guiro = 3</li>
-<li>Water Drops = 4</li>
+<li>Tambourine = 3</li>
+<li>Sleigh Bells = 4</li>
 <li>Bamboo Chimes = 5</li>
-<li>Tambourine = 6</li>
-<li>Sleigh Bells = 7</li>
+<li>Sand Paper = 6</li>
+<li>Coke Can = 7</li>
 <li>Sticks = 8</li>
 <li>Crunch = 9</li>
-<li>Wrench = 10</li>
-<li>Sand Paper = 11</li>
-<li>Coke Can = 12</li>
-<li>Next Mug = 13</li>
-<li>Penny + Mug = 14</li>
-<li>Nickle + Mug = 15</li>
-<li>Dime + Mug = 16</li>
-<li>Quarter + Mug = 17</li>
-<li>Franc + Mug = 18</li>
-<li>Peso + Mug = 19</li>
-<li>Big Rocks = 20</li>
-<li>Little Rocks = 21</li>
+<li>Big Rocks = 10</li>
+<li>Little Rocks = 11</li>
+<li>Next Mug = 12</li>
+<li>Penny + Mug = 13</li>
+<li>Nickle + Mug = 14</li>
+<li>Dime + Mug = 15</li>
+<li>Quarter + Mug = 16</li>
+<li>Franc + Mug = 17</li>
+<li>Peso + Mug = 18</li>
+<li>Guiro = 19</li>
+<li>Wrench = 20</li>
+<li>Water Drops = 21</li>
 <li>Tuned Bamboo Chimes = 22</li>
 </ul>
-</li>
-</ul>
-<p>by Perry R. Cook, 1995-2011. </p>
+<p>by Perry R. Cook with updates by Gary Scavone, 1995-2012. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a81ffb0ad1e350993af10b2795ec01861"></a><!-- doxytag: member="stk::Shakers::noteOn" ref="a81ffb0ad1e350993af10b2795ec01861" args="(StkFloat instrument, StkFloat amplitude)" -->
 <div class="memitem">
@@ -154,31 +149,31 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Instrmnt.html#a34c6733ca145763462d9e44ae3c772b6">stk::Instrmnt</a>.</p>
 
-<p><div class="fragment"><pre class="fragment"><a name="l00140"></a>00140 {
-<a name="l00141"></a>00141   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = lastFrame_.channels();
-<a name="l00142"></a>00142 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
-<a name="l00143"></a>00143 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; frames.channels() - nChannels ) {
-<a name="l00144"></a>00144     oStream_ &lt;&lt; <span class="stringliteral">&quot;Shakers::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
-<a name="l00145"></a>00145     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
-<a name="l00146"></a>00146   }
-<a name="l00147"></a>00147 <span class="preprocessor">#endif</span>
-<a name="l00148"></a>00148 <span class="preprocessor"></span>
-<a name="l00149"></a>00149   StkFloat *samples = &amp;frames[channel];
-<a name="l00150"></a>00150   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, hop = frames.channels() - nChannels;
-<a name="l00151"></a>00151   <span class="keywordflow">if</span> ( nChannels == 1 ) {
-<a name="l00152"></a>00152     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
-<a name="l00153"></a>00153       *samples++ = <a class="code" href="classstk_1_1Shakers.html#ae06ebba276cef74cb8c83db4e33f21c2" title="Compute and return one output sample.">tick</a>();
-<a name="l00154"></a>00154   }
-<a name="l00155"></a>00155   <span class="keywordflow">else</span> {
-<a name="l00156"></a>00156     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
-<a name="l00157"></a>00157       *samples++ = <a class="code" href="classstk_1_1Shakers.html#ae06ebba276cef74cb8c83db4e33f21c2" title="Compute and return one output sample.">tick</a>();
-<a name="l00158"></a>00158       <span class="keywordflow">for</span> ( j=1; j&lt;nChannels; j++ )
-<a name="l00159"></a>00159         *samples++ = lastFrame_[j];
-<a name="l00160"></a>00160     }
-<a name="l00161"></a>00161   }
-<a name="l00162"></a>00162 
-<a name="l00163"></a>00163   <span class="keywordflow">return</span> frames;
-<a name="l00164"></a>00164 }
+<p><div class="fragment"><pre class="fragment"><a name="l00304"></a>00304 {
+<a name="l00305"></a>00305   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = lastFrame_.channels();
+<a name="l00306"></a>00306 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00307"></a>00307 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; frames.channels() - nChannels ) {
+<a name="l00308"></a>00308     oStream_ &lt;&lt; <span class="stringliteral">&quot;Shakers::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00309"></a>00309     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00310"></a>00310   }
+<a name="l00311"></a>00311 <span class="preprocessor">#endif</span>
+<a name="l00312"></a>00312 <span class="preprocessor"></span>
+<a name="l00313"></a>00313   StkFloat *samples = &amp;frames[channel];
+<a name="l00314"></a>00314   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, hop = frames.channels() - nChannels;
+<a name="l00315"></a>00315   <span class="keywordflow">if</span> ( nChannels == 1 ) {
+<a name="l00316"></a>00316     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00317"></a>00317       *samples++ = <a class="code" href="classstk_1_1Shakers.html#ae06ebba276cef74cb8c83db4e33f21c2" title="Compute and return one output sample.">tick</a>();
+<a name="l00318"></a>00318   }
+<a name="l00319"></a>00319   <span class="keywordflow">else</span> {
+<a name="l00320"></a>00320     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00321"></a>00321       *samples++ = <a class="code" href="classstk_1_1Shakers.html#ae06ebba276cef74cb8c83db4e33f21c2" title="Compute and return one output sample.">tick</a>();
+<a name="l00322"></a>00322       <span class="keywordflow">for</span> ( j=1; j&lt;nChannels; j++ )
+<a name="l00323"></a>00323         *samples++ = lastFrame_[j];
+<a name="l00324"></a>00324     }
+<a name="l00325"></a>00325   }
+<a name="l00326"></a>00326 
+<a name="l00327"></a>00327   <span class="keywordflow">return</span> frames;
+<a name="l00328"></a>00328 }
 </pre></div></p>
 
 </div>
@@ -191,7 +186,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

@@ -57,7 +57,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>The various <em>realtime</em> message acquisition mechanisms (from MIDI, socket, or stdin) take place asynchronously, filling the message queue. A call to <a class="el" href="classstk_1_1Messager.html#a18525952880382c25322e57353a34372" title="Pop the next message from the queue and write it to the referenced message structure...">popMessage()</a> will pop the next available control message from the queue and return it via the referenced Message structure. When a <em>non-realtime</em> scorefile is set, it is not possible to start reading realtime input messages (from MIDI, socket, or stdin). Likewise, it is not possible to read from a scorefile when a realtime input mechanism is running.</p>
 <p>When MIDI input is started, input is also automatically read from stdin. This allows for program termination via the terminal window. An __SK_Exit_ message is pushed onto the stack whenever an "exit" or "Exit" message is received from stdin or when all socket connections close and no stdin thread is running.</p>
 <p>This class is primarily for use in STK example programs but it is generic enough to work in many other contexts.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2012. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a18525952880382c25322e57353a34372"></a><!-- doxytag: member="stk::Messager::popMessage" ref="a18525952880382c25322e57353a34372" args="(Skini::Message &amp;message)" -->
 <div class="memitem">
@@ -171,7 +171,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

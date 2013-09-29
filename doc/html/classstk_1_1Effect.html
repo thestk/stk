@@ -23,14 +23,15 @@ Inheritance diagram for stk::Effect:</div>
  <div class="center">
   <img src="classstk_1_1Effect.png" usemap="#stk::Effect_map" alt=""/>
   <map id="stk::Effect_map" name="stk::Effect_map">
-<area href="classstk_1_1Stk.html" alt="stk::Stk" shape="rect" coords="318,0,414,24"/>
-<area href="classstk_1_1Chorus.html" alt="stk::Chorus" shape="rect" coords="0,112,96,136"/>
-<area href="classstk_1_1Echo.html" alt="stk::Echo" shape="rect" coords="106,112,202,136"/>
-<area href="classstk_1_1JCRev.html" alt="stk::JCRev" shape="rect" coords="212,112,308,136"/>
-<area href="classstk_1_1LentPitShift.html" alt="stk::LentPitShift" shape="rect" coords="318,112,414,136"/>
-<area href="classstk_1_1NRev.html" alt="stk::NRev" shape="rect" coords="424,112,520,136"/>
-<area href="classstk_1_1PitShift.html" alt="stk::PitShift" shape="rect" coords="530,112,626,136"/>
-<area href="classstk_1_1PRCRev.html" alt="stk::PRCRev" shape="rect" coords="636,112,732,136"/>
+<area href="classstk_1_1Stk.html" alt="stk::Stk" shape="rect" coords="0,0,96,24"/>
+<area href="classstk_1_1Chorus.html" alt="stk::Chorus" shape="rect" coords="106,112,202,136"/>
+<area href="classstk_1_1Echo.html" alt="stk::Echo" shape="rect" coords="106,168,202,192"/>
+<area href="classstk_1_1FreeVerb.html" alt="stk::FreeVerb" shape="rect" coords="106,224,202,248"/>
+<area href="classstk_1_1JCRev.html" alt="stk::JCRev" shape="rect" coords="106,280,202,304"/>
+<area href="classstk_1_1LentPitShift.html" alt="stk::LentPitShift" shape="rect" coords="106,336,202,360"/>
+<area href="classstk_1_1NRev.html" alt="stk::NRev" shape="rect" coords="106,392,202,416"/>
+<area href="classstk_1_1PitShift.html" alt="stk::PitShift" shape="rect" coords="106,448,202,472"/>
+<area href="classstk_1_1PRCRev.html" alt="stk::PRCRev" shape="rect" coords="106,504,202,528"/>
 </map>
  </div>
 </div>
@@ -51,13 +52,13 @@ const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;<
 virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Effect.html#a0598128d1edc97729951310cc5df5171">clear</a> ()=0</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reset and clear all internal state. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab4facbc9b317f18c139577e52fd69c3d"></a><!-- doxytag: member="stk::Effect::setEffectMix" ref="ab4facbc9b317f18c139577e52fd69c3d" args="(StkFloat mix)" -->
-void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Effect.html#ab4facbc9b317f18c139577e52fd69c3d">setEffectMix</a> (StkFloat mix)</td></tr>
+virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Effect.html#ab4facbc9b317f18c139577e52fd69c3d">setEffectMix</a> (StkFloat mix)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the mixture of input and "effected" levels in the output (0.0 = input only, 1.0 = effect only). <br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK abstract effects parent class. </p>
 <p>This class provides common functionality for STK effects subclasses. It is general enough to support both monophonic and polyphonic input/output classes.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2012. </p>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="Effect_8h_source.html">Effect.h</a></li>
 </ul>
@@ -66,7 +67,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

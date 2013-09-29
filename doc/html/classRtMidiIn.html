@@ -33,13 +33,16 @@ Inheritance diagram for RtMidiIn:</div>
 typedef void(*&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a297d2eb3c3420b437970a6fc59d89cbf">RtMidiCallback</a> )(double timeStamp, std::vector&lt; unsigned char &gt; *message, void *userData)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User callback function type definition. <br/></td></tr>
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a1d70da3ef18d24c5b3f0cc01888e093d">RtMidiIn</a> (const std::string clientName=std::string(&quot;RtMidi Input Client&quot;), unsigned int queueSizeLimit=100)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Default constructor that allows an optional client name and queue size.  <a href="#a1d70da3ef18d24c5b3f0cc01888e093d"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af865d88c154b6fdadc640da5dc278d40"></a><!-- doxytag: member="RtMidiIn::~RtMidiIn" ref="af865d88c154b6fdadc640da5dc278d40" args="()" -->
-&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#af865d88c154b6fdadc640da5dc278d40">~RtMidiIn</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#aeeaeed8dae387dffc70e73e6e88b4d1a">RtMidiIn</a> (<a class="el" href="classRtMidi.html#aac66af04a85fe5c5f07c360574a19406">RtMidi::Api</a> api=UNSPECIFIED, const std::string clientName=std::string(&quot;RtMidi Input Client&quot;), unsigned int queueSizeLimit=100)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Default constructor that allows an optional api, client name and queue size.  <a href="#aeeaeed8dae387dffc70e73e6e88b4d1a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae79f4da8a1b2e7efecdd1047670b27dc"></a><!-- doxytag: member="RtMidiIn::~RtMidiIn" ref="ae79f4da8a1b2e7efecdd1047670b27dc" args="(void)" -->
+&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#ae79f4da8a1b2e7efecdd1047670b27dc">~RtMidiIn</a> (void)  throw ()</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">If a MIDI connection is still open, it will be closed by the destructor. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a7e853661b1056083e07318d67c51f6fd">openPort</a> (unsigned int portNumber=0, const std::string Portname=std::string(&quot;RtMidi Input&quot;))</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Open a MIDI input connection.  <a href="#a7e853661b1056083e07318d67c51f6fd"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6475a11eeb0c8bf22157c3887b100164"></a><!-- doxytag: member="RtMidiIn::getCurrentApi" ref="a6475a11eeb0c8bf22157c3887b100164" args="(void)" -->
+<a class="el" href="classRtMidi.html#aac66af04a85fe5c5f07c360574a19406">RtMidi::Api</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a6475a11eeb0c8bf22157c3887b100164">getCurrentApi</a> (void)  throw ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns the MIDI API specifier for the current instance of <a class="el" href="classRtMidiIn.html" title="A realtime MIDI input class.">RtMidiIn</a>. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a39df8f81a22f729a9904707dde487d2c">openPort</a> (unsigned int portNumber=0, const std::string portName=std::string(&quot;RtMidi Input&quot;))</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Open a MIDI input connection.  <a href="#a39df8f81a22f729a9904707dde487d2c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a245261b3f12ce727faed18fcfeef18c2">openVirtualPort</a> (const std::string portName=std::string(&quot;RtMidi Input&quot;))</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a virtual input port, with optional name, to allow software connections (OS X and ALSA only).  <a href="#a245261b3f12ce727faed18fcfeef18c2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a7590563461c7467608a4b3806406b32d">setCallback</a> (<a class="el" href="classRtMidiIn.html#a297d2eb3c3420b437970a6fc59d89cbf">RtMidiCallback</a> callback, void *userData=0)</td></tr>
@@ -62,15 +65,21 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>A realtime MIDI input class. </p>
 <p>This class provides a common, platform-independent API for realtime MIDI input. It allows access to a single MIDI input port. Incoming MIDI messages are either saved to a queue for retrieval using the <a class="el" href="classRtMidiIn.html#a1ba10ecd276b30a8579c7d60a9c890eb" title="Fill the user-provided vector with the data bytes for the next available MIDI message...">getMessage()</a> function or immediately passed to a user-specified callback function. Create multiple instances of this class to connect to more than one MIDI device at the same time. With the OS-X and Linux ALSA MIDI APIs, it is also possible to open a virtual input port to which other MIDI software clients can connect.</p>
-<p>by Gary P. Scavone, 2003-2008. </p>
+<p>by Gary P. Scavone, 2003-2012. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a1d70da3ef18d24c5b3f0cc01888e093d"></a><!-- doxytag: member="RtMidiIn::RtMidiIn" ref="a1d70da3ef18d24c5b3f0cc01888e093d" args="(const std::string clientName=std::string(&quot;RtMidi Input Client&quot;), unsigned int queueSizeLimit=100)" -->
+<a class="anchor" id="aeeaeed8dae387dffc70e73e6e88b4d1a"></a><!-- doxytag: member="RtMidiIn::RtMidiIn" ref="aeeaeed8dae387dffc70e73e6e88b4d1a" args="(RtMidi::Api api=UNSPECIFIED, const std::string clientName=std::string(&quot;RtMidi Input Client&quot;), unsigned int queueSizeLimit=100)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">RtMidiIn::RtMidiIn </td>
           <td>(</td>
+          <td class="paramtype"><a class="el" href="classRtMidi.html#aac66af04a85fe5c5f07c360574a19406">RtMidi::Api</a>&nbsp;</td>
+          <td class="paramname"> <em>api</em> = <code>UNSPECIFIED</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const std::string&nbsp;</td>
           <td class="paramname"> <em>clientName</em> = <code>std::string(&quot;RtMidi&nbsp;Input&nbsp;Client&quot;)</code>, </td>
         </tr>
@@ -89,13 +98,14 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div>
 <div class="memdoc">
 
-<p>Default constructor that allows an optional client name and queue size. </p>
-<p>An exception will be thrown if a MIDI system initialization error occurs. The queue size defines the maximum number of messages that can be held in the MIDI queue (when not using a callback function). If the queue size limit is reached, incoming messages will be ignored. </p>
+<p>Default constructor that allows an optional api, client name and queue size. </p>
+<p>An exception will be thrown if a MIDI system initialization error occurs. The queue size defines the maximum number of messages that can be held in the MIDI queue (when not using a callback function). If the queue size limit is reached, incoming messages will be ignored.</p>
+<p>If no API argument is specified and multiple API support has been compiled, the default order of use is JACK, ALSA (Linux) and CORE, Jack (OS-X). </p>
 
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a7e853661b1056083e07318d67c51f6fd"></a><!-- doxytag: member="RtMidiIn::openPort" ref="a7e853661b1056083e07318d67c51f6fd" args="(unsigned int portNumber=0, const std::string Portname=std::string(&quot;RtMidi Input&quot;))" -->
+<a class="anchor" id="a39df8f81a22f729a9904707dde487d2c"></a><!-- doxytag: member="RtMidiIn::openPort" ref="a39df8f81a22f729a9904707dde487d2c" args="(unsigned int portNumber=0, const std::string portName=std::string(&quot;RtMidi Input&quot;))" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -109,12 +119,12 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string&nbsp;</td>
-          <td class="paramname"> <em>Portname</em> = <code>std::string(&quot;RtMidi&nbsp;Input&quot;)</code></td><td>&nbsp;</td>
+          <td class="paramname"> <em>portName</em> = <code>std::string(&nbsp;&quot;RtMidi&nbsp;Input&quot;&nbsp;)</code></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td><code> [virtual]</code></td>
+          <td></td><td></td><td><code> [inline, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -124,6 +134,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>An optional port number greater than 0 can be specified. Otherwise, the default or first port found is opened. </p>
 
 <p>Implements <a class="el" href="classRtMidi.html#ad9e30a89638f93193cb40edebaa536f5">RtMidi</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00427"></a>00427 { <span class="keywordflow">return</span> rtapi_-&gt;openPort( portNumber, portName ); }
+</pre></div></p>
 
 </div>
 </div>
@@ -135,9 +148,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td class="memname">void RtMidiIn::openVirtualPort </td>
           <td>(</td>
           <td class="paramtype">const std::string&nbsp;</td>
-          <td class="paramname"> <em>portName</em> = <code>std::string(&quot;RtMidi&nbsp;Input&quot;)</code></td>
+          <td class="paramname"> <em>portName</em> = <code>std::string(&nbsp;&quot;RtMidi&nbsp;Input&quot;&nbsp;)</code></td>
           <td>&nbsp;)&nbsp;</td>
-          <td><code> [virtual]</code></td>
+          <td><code> [inline, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -147,6 +160,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>This function creates a virtual MIDI input port to which other software applications can connect. This type of functionality is currently only supported by the Macintosh OS-X and Linux ALSA APIs (the function does nothing for the other APIs). </p>
 
 <p>Implements <a class="el" href="classRtMidi.html#a9200cde4f5337c0bc421d20bd4fcf654">RtMidi</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00428"></a>00428 { <span class="keywordflow">return</span> rtapi_-&gt;openVirtualPort( portName ); }
+</pre></div></p>
 
 </div>
 </div>
@@ -169,7 +185,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [inline]</code></td>
         </tr>
       </table>
 </div>
@@ -177,6 +193,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Set a callback function to be invoked for incoming MIDI messages. </p>
 <p>The callback function will be called whenever an incoming MIDI message is received. While not absolutely necessary, it is best to set the callback function before opening a MIDI port to avoid leaving some messages in the queue. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00430"></a>00430 { <span class="keywordflow">return</span> rtapi_-&gt;setCallback( callback, userData ); }
+</pre></div></p>
 
 </div>
 </div>
@@ -187,9 +206,10 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td class="memname">void RtMidiIn::cancelCallback </td>
           <td>(</td>
+          <td class="paramtype">void&nbsp;</td>
           <td class="paramname"></td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [inline]</code></td>
         </tr>
       </table>
 </div>
@@ -197,6 +217,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Cancel use of the current callback function (if one exists). </p>
 <p>Subsequent incoming MIDI messages will be written to the queue and can be retrieved with the <em>getMessage</em> function. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00431"></a>00431 { <span class="keywordflow">return</span> rtapi_-&gt;cancelCallback(); }
+</pre></div></p>
 
 </div>
 </div>
@@ -210,7 +233,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td class="paramtype">unsigned int&nbsp;</td>
           <td class="paramname"> <em>portNumber</em> = <code>0</code></td>
           <td>&nbsp;)&nbsp;</td>
-          <td><code> [virtual]</code></td>
+          <td><code> [inline, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -220,6 +243,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>An empty string is returned if an invalid port specifier is provided. </p>
 
 <p>Implements <a class="el" href="classRtMidi.html#a799e2b9f4df39b298518f2b394db3391">RtMidi</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00433"></a>00433 { <span class="keywordflow">return</span> rtapi_-&gt;getPortName( portNumber ); }
+</pre></div></p>
 
 </div>
 </div>
@@ -248,7 +274,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [inline]</code></td>
         </tr>
       </table>
 </div>
@@ -256,6 +282,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Specify whether certain MIDI message types should be queued or ignored during input. </p>
 <p>o By default, MIDI timing and active sensing messages are ignored during message input because of their relative high data rates. MIDI sysex messages are ignored by default as well. Variable values of "true" imply that the respective message type will be ignored. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00434"></a>00434 { <span class="keywordflow">return</span> rtapi_-&gt;ignoreTypes( midiSysex, midiTime, midiSense ); }
+</pre></div></p>
 
 </div>
 </div>
@@ -269,7 +298,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td class="paramtype">std::vector&lt; unsigned char &gt; *&nbsp;</td>
           <td class="paramname"> <em>message</em></td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [inline]</code></td>
         </tr>
       </table>
 </div>
@@ -277,6 +306,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Fill the user-provided vector with the data bytes for the next available MIDI message in the input queue and return the event delta-time in seconds. </p>
 <p>This function returns immediately whether a new message is available or not. A valid message is indicated by a non-zero vector size. An exception is thrown if an error occurs during message retrieval or an input connection was not previously established. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00435"></a>00435 { <span class="keywordflow">return</span> rtapi_-&gt;getMessage( message ); }
+</pre></div></p>
 
 </div>
 </div>
@@ -288,7 +320,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2012 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>
