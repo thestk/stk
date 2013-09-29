@@ -10,7 +10,7 @@
     two series allpass units and two parallel comb
     filters.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -21,10 +21,15 @@ namespace stk {
 
 PRCRev :: PRCRev( StkFloat T60 )
 {
+  if ( T60 <= 0.0 ) {
+    oStream_ << "PRCRev::PRCRev: argument (" << T60 << ") must be positive!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
   lastFrame_.resize( 1, 2, 0.0 ); // resize lastFrame_ for stereo output
 
   // Delay lengths for 44100 Hz sample rate.
-  int lengths[4]= {353, 1097, 1777, 2137};
+  int lengths[4]= {341, 613, 1557, 2137};
   double scaler = Stk::sampleRate() / 44100.0;
 
   // Scale the delay lengths if necessary.
@@ -64,6 +69,11 @@ void PRCRev :: clear( void )
 
 void PRCRev :: setT60( StkFloat T60 )
 {
+  if ( T60 <= 0.0 ) {
+    oStream_ << "PRCRev::setT60: argument (" << T60 << ") must be positive!";
+    handleError( StkError::WARNING ); return;
+  }
+
   combCoefficient_[0] = pow(10.0, (-3.0 * combDelays_[0].getDelay() / (T60 * Stk::sampleRate())));
   combCoefficient_[1] = pow(10.0, (-3.0 * combDelays_[1].getDelay() / (T60 * Stk::sampleRate())));
 }
@@ -72,7 +82,7 @@ StkFrames& PRCRev :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() - 1 ) {
-    errorString_ << "PRCRev::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "PRCRev::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -81,8 +91,7 @@ StkFrames& PRCRev :: tick( StkFrames& frames, unsigned int channel )
   unsigned int hop = frames.channels();
   for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
     *samples = tick( *samples );
-    *samples++;
-    *samples = lastFrame_[1];
+    *(samples+1) = lastFrame_[1];
   }
 
   return frames;
@@ -92,7 +101,7 @@ StkFrames& PRCRev :: tick( StkFrames& iFrames, StkFrames& oFrames, unsigned int 
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() - 1 ) {
-    errorString_ << "PRCRev::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "PRCRev::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -101,8 +110,8 @@ StkFrames& PRCRev :: tick( StkFrames& iFrames, StkFrames& oFrames, unsigned int 
   StkFloat *oSamples = &oFrames[oChannel];
   unsigned int iHop = iFrames.channels(), oHop = oFrames.channels();
   for ( unsigned int i=0; i<iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
-    *oSamples++ = tick( *iSamples );
-    *oSamples = lastFrame_[1];
+    *oSamples = tick( *iSamples );
+    *(oSamples+1) = lastFrame_[1];
   }
 
   return iFrames;

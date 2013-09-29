@@ -35,7 +35,7 @@ namespace stk {
     See the FileRead class for a description of the supported audio
     file formats.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -98,6 +98,9 @@ public:
     by definition.  MAT-files are assumed to have a rate of 44100 Hz.
   */
   virtual StkFloat getFileRate( void ) const { return data_.dataRate(); };
+
+  //! Query whether a file is open.
+  bool isOpen( void ) { return file_.isOpen(); };
 
   //! Query whether reading is complete.
   bool isFinished( void ) const { return finished_; };
@@ -179,7 +182,7 @@ inline StkFloat FileWvIn :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= data_.channels() ) {
-    errorString_ << "FileWvIn::lastOut(): channel argument and soundfile data are incompatible!";
+    oStream_ << "FileWvIn::lastOut(): channel argument and soundfile data are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

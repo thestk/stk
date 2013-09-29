@@ -40,7 +40,14 @@ AC_MSG_RESULT($INCLUDE_PATH)
 
 # Check for realtime support disable
 AC_MSG_CHECKING(whether to compile realtime support)
-AC_ARG_ENABLE(realtime, [  --disable-realtime = only compile generic non-realtime classes], [AC_SUBST( realtime, [no] ) AC_SUBST( sound_api, [] )], [AC_SUBST( realtime, [yes] ) ] )
+AC_ARG_ENABLE(realtime,
+         [  --disable-realtime = only compile generic non-realtime classes],
+         realtime=$enableval)
+if test "$realtime" = "no"; then
+   AC_SUBST( sound_api, [] )
+else
+   AC_SUBST( realtime, [yes] )
+fi
 AC_MSG_RESULT($realtime)
 
 # Check for math library
@@ -49,9 +56,19 @@ AC_CHECK_LIB(m, cos, , AC_MSG_ERROR(math library is needed!))
 # Check for debug
 AC_MSG_CHECKING(whether to compile debug version)
 AC_ARG_ENABLE(debug,
-  [  --enable-debug = enable various debug output],
-  [AC_SUBST( cppflag, ["-D_STK_DEBUG_ -D__RTAUDIO_DEBUG__ -D__RTMIDI_DEBUG__"] ) AC_SUBST( cxxflag, ["-g"] ) AC_SUBST( object_path, [Debug] ) AC_MSG_RESULT(yes)],
-  [AC_SUBST( cppflag, [] ) AC_SUBST( cxxflag, [-O3] ) AC_SUBST( object_path, [Release] ) AC_MSG_RESULT(no)])
+        [  --enable-debug = enable various debug output],
+        debug=$enableval)
+if test "$debug" = "yes"; then
+   AC_SUBST( cppflag, ["-D_STK_DEBUG_ -D__RTAUDIO_DEBUG__ -D__RTMIDI_DEBUG__"] )
+   AC_SUBST( cxxflag, ["-g"] )
+   AC_SUBST( object_path, [Debug] )
+else
+  AC_SUBST( debug, [no] )
+  AC_SUBST( cppflag, [] )
+  AC_SUBST( cxxflag, [-O3] )
+  AC_SUBST( object_path, [Release] )
+fi
+AC_MSG_RESULT($debug)
 
 # Checks for functions
 if test $realtime = yes; then
@@ -63,6 +80,7 @@ fi
 CPPFLAGS="$CPPFLAGS $cppflag"
 
 # For debugging and optimization ... overwrite default because it has both -g and -O2
+echo "$CXXFLAGS"
 CXXFLAGS="$cxxflag"
 
 # Check compiler and use -Wall if gnu.
@@ -72,9 +90,20 @@ fi
 
 CXXFLAGS="$CXXFLAGS $cxxflag"
 
+AC_CANONICAL_HOST
+
+AC_SUBST( sharedlib, ["libstk.so"] )
+AC_SUBST( sharedname, ["libstk.so.\$(RELEASE)"] )
+AC_SUBST( libflags, ["-shared -Wl,-soname,\$(SHAREDLIB).\$(MAJOR) -o \$(SHAREDLIB).\$(RELEASE)"] )
+case $host in
+  *-apple*)
+  AC_SUBST( sharedlib, ["libstk.dylib"] )
+  AC_SUBST( sharedname, ["libstk.\$(RELEASE).dylib"] )
+  AC_SUBST( libflags, ["-dynamiclib -o libstk.\$(RELEASE).dylib"] )
+esac
+
 if test $realtime = yes; then
   # Checks for package options and external software
-  AC_CANONICAL_HOST
   AC_MSG_CHECKING(for audio API)
   case $host in
     *-*-linux*)

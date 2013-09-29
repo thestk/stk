@@ -32,7 +32,7 @@ namespace stk {
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -55,10 +55,10 @@ class Flute : public Instrmnt
   void setFrequency( StkFloat frequency );
 
   //! Set the reflection coefficient for the jet delay (-1.0 - 1.0).
-  void setJetReflection( StkFloat coefficient );
+  void setJetReflection( StkFloat coefficient ) { jetReflection_ = coefficient; };
 
   //! Set the reflection coefficient for the air column delay (-1.0 - 1.0).
-  void setEndReflection( StkFloat coefficient );
+  void setEndReflection( StkFloat coefficient ) { endReflection_ = coefficient; };
 
   //! Set the length of the jet delay in terms of a ratio of jet delay to air column delay lengths.
   void setJetDelay( StkFloat aRatio );
@@ -81,6 +81,16 @@ class Flute : public Instrmnt
   //! Compute and return one output sample.
   StkFloat tick( unsigned int channel = 0 );
 
+  //! Fill a channel of the StkFrames object with computed outputs.
+  /*!
+    The \c channel argument must be less than the number of
+    channels in the StkFrames argument (the first channel is specified
+    by 0).  However, range checking is only performed if _STK_DEBUG_
+    is defined during compilation, in which case an out-of-range value
+    will trigger an StkError exception.
+  */
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+
  protected:
 
   DelayL   jetDelay_;
@@ -91,7 +101,7 @@ class Flute : public Instrmnt
   Noise    noise_;
   ADSR     adsr_;
   SineWave vibrato_;
-  unsigned long length_;
+
   StkFloat lastFrequency_;
   StkFloat maxPressure_;
   StkFloat jetReflection_;
@@ -112,7 +122,7 @@ inline StkFloat Flute :: tick( unsigned int )
   breathPressure = maxPressure_ * adsr_.tick();
   breathPressure += breathPressure * ( noiseGain_ * noise_.tick() + vibratoGain_ * vibrato_.tick() );
 
-  StkFloat temp = filter_.tick( boreDelay_.lastOut() );
+  StkFloat temp = -filter_.tick( boreDelay_.lastOut() );
   temp = dcBlock_.tick( temp ); // Block DC on reflection.
 
   pressureDiff = breathPressure - (jetReflection_ * temp);
@@ -122,6 +132,33 @@ inline StkFloat Flute :: tick( unsigned int )
 
   lastFrame_[0] *= outputGain_;
   return lastFrame_[0];
+}
+
+inline StkFrames& Flute :: tick( StkFrames& frames, unsigned int channel )
+{
+  unsigned int nChannels = lastFrame_.channels();
+#if defined(_STK_DEBUG_)
+  if ( channel > frames.channels() - nChannels ) {
+    oStream_ << "Flute::tick(): channel and StkFrames arguments are incompatible!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+#endif
+
+  StkFloat *samples = &frames[channel];
+  unsigned int j, hop = frames.channels() - nChannels;
+  if ( nChannels == 1 ) {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
+      *samples++ = tick();
+  }
+  else {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
+      *samples++ = tick();
+      for ( j=1; j<nChannels; j++ )
+        *samples++ = lastFrame_[j];
+    }
+  }
+
+  return frames;
 }
 
 } // stk namespace

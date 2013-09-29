@@ -15,7 +15,7 @@
     that takes an StkFrames object for multi-channel and/or
     multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -65,7 +65,7 @@ void RtWvIn :: fillBuffer( void *buffer, unsigned int nFrames )
   mutex_.unlock();
   if ( framesFilled_ > data_.frames() ) {
     framesFilled_ = data_.frames();
-    errorString_ << "RtWvIn: audio buffer overrun!";
+    oStream_ << "RtWvIn: audio buffer overrun!";
     handleError( StkError::WARNING );
   }
 }
@@ -121,7 +121,7 @@ StkFloat RtWvIn :: tick( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= data_.channels() ) {
-    errorString_ << "RtWvIn::tick(): channel argument is incompatible with streamed channels!";
+    oStream_ << "RtWvIn::tick(): channel argument is incompatible with streamed channels!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -150,7 +150,7 @@ StkFrames& RtWvIn :: tick( StkFrames& frames )
   unsigned int nChannels = lastFrame_.channels();
 #if defined(_STK_DEBUG_)
   if ( nChannels != frames.channels() ) {
-    errorString_ << "RtWvIn::tick(): StkFrames argument is incompatible with adc channels!";
+    oStream_ << "RtWvIn::tick(): StkFrames argument is incompatible with adc channels!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

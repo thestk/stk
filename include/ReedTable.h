@@ -20,7 +20,7 @@ namespace stk {
     Smith (1986), Hirschman, Cook, Scavone, and
     others for more information.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -99,7 +99,7 @@ inline StkFrames& ReedTable :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "ReedTable::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "ReedTable::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -120,7 +120,7 @@ inline StkFrames& ReedTable :: tick( StkFrames& iFrames, StkFrames& oFrames, uns
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "ReedTable::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "ReedTable::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

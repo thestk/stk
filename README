@@ -1,6 +1,6 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2010.
+By Perry R. Cook and Gary P. Scavone, 1995-2011.
 
 This distribution of the Synthesis ToolKit in C++ (STK) contains the following:
 
@@ -23,21 +23,20 @@ programming language.  STK was designed to facilitate rapid
 development of music synthesis and audio processing software, with an
 emphasis on cross-platform functionality, realtime control, ease of
 use, and educational example code.  The Synthesis ToolKit is extremely
-portable (it's mostly platform-independent C and C++ code), and it's
+portable (most classes are platform-independent C++ code), and it's
 completely user-extensible (all source included, no unusual libraries,
 and no hidden drivers).  We like to think that this increases the
-chances that our programs will still work in another 5-10 years.  In
-fact, the ToolKit has been working continuously for nearly 15 years
-now.  STK currently runs with "realtime" support (audio and MIDI) on
-Linux, Macintosh OS X, and Windows computer platforms.  Generic,
-non-realtime support has been tested under NeXTStep, Sun, and other
-platforms and should work with any standard C++ compiler.
+chances that our programs will still work in another 5-10 years.  STK
+currently runs with "realtime" support (audio and MIDI) on Linux,
+Macintosh OS X, and Windows computer platforms.  Generic, non-realtime
+support has been tested under NeXTStep, Sun, and other platforms and
+should work with any standard C++ compiler.
 
-The Synthesis ToolKit is free for non-commercial use.  The only parts
-of the Synthesis ToolKit that are platform-dependent concern real-time
-audio and MIDI input and output, and that is taken care of with a few
-special classes.  The interface for MIDI input and the simple Tcl/Tk
-graphical user interfaces (GUIs) provided is the same, so it's easy to
+The Synthesis ToolKit is free for non-commercial use.  The only
+classes of the Synthesis ToolKit that are platform-dependent concern
+sockets, threads, mutexes, and real-time audio and MIDI input and
+output.  The interface for MIDI input and the simple Tcl/Tk graphical
+user interfaces (GUIs) provided is the same, so it's easy to
 experiment in real time using either the GUIs or MIDI.  The Synthesis
 ToolKit can generate simultaneous SND (AU), WAV, AIFF, and MAT-file
 output soundfile formats (as well as realtime sound output), so you
@@ -81,7 +80,8 @@ Despite being available in one form or another since 1996, we still
 consider STK to be alpha software.  We attempt to maintain backward
 compatability but changes are sometimes made in an effort to improve
 the overall design or performance of the software.  Please read the
-Release Notes to see what has changed since the last release.
+"Release Notes" in the /doc directory to see what has changed since
+the last release.
 
 A new StkFrames class has been created to facilitate the handling and
 passing of multichannel, vectorized audio data.  All STK classes have
@@ -99,8 +99,7 @@ though the behavior of such is very hardware dependent.  Under Linux,
 Macintosh OS-X, and Irix, audio input and output are possible with
 very low latency.  Using the Windoze DirectSound API, minimum
 dependable output sound latency seems to be around 20 milliseconds or
-so, while input sound latency is on the order of a hundred
-milliseconds or more!
+so, while input sound latency is generally higher.
 
 As mentioned above, it is possible to record the audio ouput of an STK
 program to .snd, .wav, .raw, .aif, and .mat (Matlab MAT-file) output
@@ -146,7 +145,7 @@ LICENSE:
 STK WWW site: http://ccrma.stanford.edu/software/stk/
 
 The Synthesis ToolKit in C++ (STK)
-Copyright (c) 1995-2010 Perry R. Cook and Gary P. Scavone
+Copyright (c) 1995-2011 Perry R. Cook and Gary P. Scavone
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -215,7 +214,4 @@ The answers lie below.
 5) I wanted to reimplement, and newly implement more of the intelligent and physical performer models I've talked about in some of my papers. But I wanted to do it in a portable way, and in such a way that I can hook up modules quickly.  I also wanted to make these instruments connectable to such player objects, so folks like Brad Garton who really think a lot about the players can connect them to my instruments, a lot about which I think.
 
 6) More rationalizations to follow . . .
-
-
-
 

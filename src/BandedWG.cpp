@@ -40,13 +40,13 @@ BandedWG :: BandedWG( void )
   doPluck_ = true;
 
   bowTable_.setSlope( 3.0 );
-  adsr_.setAllTimes( 0.02, 0.005, 0.9, 0.01);
+  adsr_.setAllTimes( 0.02, 0.005, 0.9, 0.01 );
 
   frequency_ = 220.0;
   this->setPreset(0);
 
   bowPosition_ = 0;
-  baseGain_ = (StkFloat) 0.999;
+  baseGain_ = 0.999;
   
   integrationConstant_ = 0.0;
   trackVelocity_ = false;
@@ -171,16 +171,17 @@ void BandedWG :: setPreset( int preset )
 
 void BandedWG :: setFrequency( StkFloat frequency )
 {
-  frequency_ = frequency;
+#if defined(_STK_DEBUG_)
   if ( frequency <= 0.0 ) {
-    errorString_ << "BandedWG::setFrequency: parameter is less than or equal to zero!";
-    handleError( StkError::WARNING );
-    frequency_ = 220.0;
+    oStream_ << "BandedWG::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
   }
-  if (frequency_ > 1568.0) frequency_ = 1568.0;
+#endif
+
+  if (frequency > 1568.0) frequency = 1568.0;
 
   StkFloat radius;
-  StkFloat base = Stk::sampleRate() / frequency_;
+  StkFloat base = Stk::sampleRate() / frequency;
   StkFloat length;
   for (int i=0; i<presetModes_; i++) {
     // Calculate the delay line lengths for each mode.
@@ -200,7 +201,7 @@ void BandedWG :: setFrequency( StkFloat frequency )
     // Set the bandpass filter resonances
     radius = 1.0 - PI * 32 / Stk::sampleRate(); //frequency_ * modes_[i] / Stk::sampleRate()/32;
     if ( radius < 0.0 ) radius = 0.0;
-    bandpass_[i].setResonance(frequency_ * modes_[i], radius, true);
+    bandpass_[i].setResonance(frequency * modes_[i], radius, true);
 
     delay_[i].clear();
     bandpass_[i].clear();
@@ -241,28 +242,18 @@ void BandedWG :: pluck( StkFloat amplitude )
 
 void BandedWG :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
-  this->setFrequency(frequency);
+  this->setFrequency( frequency );
 
   if ( doPluck_ )
-    this->pluck(amplitude);
+    this->pluck( amplitude );
   else
-    this->startBowing(amplitude, amplitude * 0.001);
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "BandedWG::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
+    this->startBowing( amplitude, amplitude * 0.001 );
 }
 
 void BandedWG :: noteOff( StkFloat amplitude )
 {
   if ( !doPluck_ )
-    this->stopBowing((1.0 - amplitude) * 0.005);
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "BandedWG::NoteOff: amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
+    this->stopBowing( (1.0 - amplitude) * 0.005 );
 }
 
 StkFloat BandedWG :: tick( unsigned int )
@@ -311,51 +302,47 @@ StkFloat BandedWG :: tick( unsigned int )
 
 void BandedWG :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "BandedWG::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
+#if defined(_STK_DEBUG_)
+  if ( value < 0 || ( number != 101 && value > 128.0 ) ) {
+    oStream_ << "BandedWG::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
   }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "BandedWG::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
+#endif
 
+  StkFloat normalizedValue = value * ONE_OVER_128;
   if (number == __SK_BowPressure_) { // 2
-    if ( norm == 0.0 )
+    if ( normalizedValue == 0.0 )
       doPluck_ = true;
     else {
       doPluck_ = false;
-      bowTable_.setSlope( 10.0 - (9.0 * norm));
+      bowTable_.setSlope( 10.0 - (9.0 * normalizedValue));
     }
   }
   else if (number == 4)	{ // 4
     if ( !trackVelocity_ ) trackVelocity_ = true;
-    bowTarget_ += 0.005 * (norm - bowPosition_);
-    bowPosition_ = norm;
+    bowTarget_ += 0.005 * (normalizedValue - bowPosition_);
+    bowPosition_ = normalizedValue;
     //adsr_.setTarget(bowPosition_);
   }
   else if (number == 8) // 8
-    this->setStrikePosition( norm );
+    this->setStrikePosition( normalizedValue );
   else if (number == __SK_AfterTouch_Cont_) { // 128
-    //bowTarget_ += 0.02 * (norm - bowPosition_);
-    //bowPosition_ = norm;
+    //bowTarget_ += 0.02 * (normalizedValue - bowPosition_);
+    //bowPosition_ = normalizedValue;
     if ( trackVelocity_ ) trackVelocity_ = false;
-    maxVelocity_ = 0.13 * norm; 
-    adsr_.setTarget(norm);
+    maxVelocity_ = 0.13 * normalizedValue; 
+    adsr_.setTarget(normalizedValue);
   }      
   else if (number == __SK_ModWheel_) { // 1
-    //    baseGain_ = 0.9989999999 + (0.001 * norm );
-	  baseGain_ = 0.8999999999999999 + (0.1 * norm);
+    //    baseGain_ = 0.9989999999 + (0.001 * normalizedValue );
+	  baseGain_ = 0.8999999999999999 + (0.1 * normalizedValue);
     //	std::cerr << "Yuck!" << std::endl;
     for (int i=0; i<nModes_; i++)
       gains_[i]=(StkFloat) basegains_[i]*baseGain_;
     //      gains_[i]=(StkFloat) pow(baseGain_, (int)((StkFloat)delay_[i].getDelay()+i));
   }
   else if (number == __SK_ModFrequency_) // 11
-    integrationConstant_ = norm;
+    integrationConstant_ = normalizedValue;
   else if (number == __SK_Sustain_)	{ // 64
     if (value < 65) doPluck_ = true;
     else doPluck_ = false;
@@ -365,15 +352,12 @@ void BandedWG :: controlChange( int number, StkFloat value )
     else trackVelocity_ = true;
   }
   else if (number == __SK_ProphesyRibbon_) // 16
-    this->setPreset((int) value);  
+    this->setPreset((int) value);
+#if defined(_STK_DEBUG_)
   else {
-    errorString_ << "BandedWG::controlChange: undefined control number (" << number << ")!";
+    oStream_ << "BandedWG::controlChange: undefined control number (" << number << ")!";
     handleError( StkError::WARNING );
   }
-
-#if defined(_STK_DEBUG_)
-    errorString_ << "BandedWG::controlChange: number = " << number << ", value = " << value << ".";
-    handleError( StkError::DEBUG_WARNING );
 #endif
 }
 

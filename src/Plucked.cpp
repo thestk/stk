@@ -1,10 +1,13 @@
 /***************************************************/
 /*! \class Plucked
-    \brief STK plucked string model class.
+    \brief STK basic plucked string class.
 
     This class implements a simple plucked string
     physical model based on the Karplus-Strong
     algorithm.
+
+    For a more advanced plucked string implementation,
+    see the stk::Twang class.
 
     This is a digital waveguide model, making its
     use possibly subject to patents held by
@@ -13,7 +16,7 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -23,11 +26,15 @@ namespace stk {
 
 Plucked :: Plucked( StkFloat lowestFrequency )
 {
-  length_ = (unsigned long) ( Stk::sampleRate() / lowestFrequency + 1 );
-  loopGain_ = 0.999;
-  delayLine_.setMaximumDelay( length_ );
-  delayLine_.setDelay( 0.5 * length_ );
-  this->clear();
+  if ( lowestFrequency <= 0.0 ) {
+    oStream_ << "Plucked::Plucked: argument is less than or equal to zero!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  unsigned long delays = (unsigned long) ( Stk::sampleRate() / lowestFrequency );
+  delayLine_.setMaximumDelay( delays + 1 );
+
+  this->setFrequency( 220.0 );
 }
 
 Plucked :: ~Plucked( void )
@@ -43,42 +50,31 @@ void Plucked :: clear( void )
 
 void Plucked :: setFrequency( StkFloat frequency )
 {
-  StkFloat freakency = frequency;
+#if defined(_STK_DEBUG_)
   if ( frequency <= 0.0 ) {
-    errorString_ << "Plucked::setFrequency: parameter is less than or equal to zero!";
-    handleError( StkError::WARNING );
-    freakency = 220.0;
+    oStream_ << "Plucked::setFrequency: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
   }
+#endif
 
-  // Delay = length - approximate filter delay.
-  StkFloat delay = (Stk::sampleRate() / freakency) - 0.5;
-  if ( delay <= 0.0 )
-    delay = 0.3;
-  else if ( delay > length_ )
-    delay = length_;
+  // Delay = length - filter delay.
+  StkFloat delay = ( Stk::sampleRate() / frequency ) - loopFilter_.phaseDelay( frequency );
   delayLine_.setDelay( delay );
 
-  loopGain_ = 0.995 + (freakency * 0.000005);
+  loopGain_ = 0.995 + (frequency * 0.000005);
   if ( loopGain_ >= 1.0 ) loopGain_ = 0.99999;
 }
 
 void Plucked :: pluck( StkFloat amplitude )
 {
-  StkFloat gain = amplitude;
-  if ( gain > 1.0 ) {
-    errorString_ << "Plucked::pluck: amplitude is greater than 1.0 ... setting to 1.0!";
-    handleError( StkError::WARNING );
-    gain = 1.0;
-  }
-  else if ( gain < 0.0 ) {
-    errorString_ << "Plucked::pluck: amplitude is < 0.0  ... setting to 0.0!";
-    handleError( StkError::WARNING );
-    gain = 0.0;
+  if ( amplitude < 0.0 || amplitude > 1.0 ) {
+    oStream_ << "Plucked::pluck: amplitude is out of range!";
+    handleError( StkError::WARNING ); return;
   }
 
-  pickFilter_.setPole( 0.999 - (gain * 0.15) );
-  pickFilter_.setGain( gain * 0.5 );
-  for (unsigned long i=0; i<length_; i++)
+  pickFilter_.setPole( 0.999 - (amplitude * 0.15) );
+  pickFilter_.setGain( amplitude * 0.5 );
+  for ( unsigned long i=0; i<delayLine_.getDelay(); i++ )
     // Fill delay with noise additively with current contents.
     delayLine_.tick( 0.6 * delayLine_.lastOut() + pickFilter_.tick( noise_.tick() ) );
 }
@@ -87,31 +83,16 @@ void Plucked :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->pluck( amplitude );
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Plucked::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Plucked :: noteOff( StkFloat amplitude )
 {
-  loopGain_ = 1.0 - amplitude;
-  if ( loopGain_ < 0.0 ) {
-    errorString_ << "Plucked::noteOff: amplitude is greater than 1.0 ... setting to 1.0!";
-    handleError( StkError::WARNING );
-    loopGain_ = 0.0;
-  }
-  else if ( loopGain_ > 1.0 ) {
-    errorString_ << "Plucked::noteOff: amplitude is < 0.0  ... setting to 0.0!";
-    handleError( StkError::WARNING );
-    loopGain_ = (StkFloat) 0.99999;
+  if ( amplitude < 0.0 || amplitude > 1.0 ) {
+    oStream_ << "Plucked::noteOff: amplitude is out of range!";
+    handleError( StkError::WARNING ); return;
   }
 
-#if defined(_STK_DEBUG_)
-  errorString_ << "Plucked::NoteOff: amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
+  loopGain_ = 1.0 - amplitude;
 }
 
 } // stk namespace

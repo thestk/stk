@@ -5,7 +5,7 @@
     This class implements a chorus effect.  It takes a monophonic
     input signal and produces a stereo output signal.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -36,6 +36,16 @@ void Chorus :: clear( void )
   lastFrame_[0] = 0.0;
   lastFrame_[1] = 0.0;
 }
+
+  void Chorus :: setModDepth( StkFloat depth )
+{
+  if ( depth < 0.0 || depth > 1.0 ) {
+    oStream_ << "Chorus::setModDepth(): depth argument must be between 0.0 - 1.0!";
+    handleError( StkError::WARNING ); return;
+  }
+
+    modDepth_ = depth;
+};
 
 void Chorus :: setModFrequency( StkFloat frequency )
 {

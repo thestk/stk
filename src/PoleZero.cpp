@@ -7,7 +7,7 @@
     coefficient.  Another method is provided to create a DC blocking
     filter.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -32,6 +32,11 @@ PoleZero :: ~PoleZero()
 
 void PoleZero :: setCoefficients( StkFloat b0, StkFloat b1, StkFloat a1, bool clearState )
 {
+  if ( std::abs( a1 ) >= 1.0 ) {
+    oStream_ << "PoleZero::setCoefficients: a1 argument (" << a1 << ") should be less than 1.0!";
+    handleError( StkError::WARNING ); return;
+  }
+
   b_[0] = b0;
   b_[1] = b1;
   a_[1] = a1;
@@ -41,6 +46,11 @@ void PoleZero :: setCoefficients( StkFloat b0, StkFloat b1, StkFloat a1, bool cl
 
 void PoleZero :: setAllpass( StkFloat coefficient )
 {
+  if ( std::abs( coefficient ) >= 1.0 ) {
+    oStream_ << "PoleZero::setAllpass: argument (" << coefficient << ") makes filter unstable!";
+    handleError( StkError::WARNING ); return;
+  }
+
   b_[0] = coefficient;
   b_[1] = 1.0;
   a_[0] = 1.0; // just in case
@@ -49,6 +59,11 @@ void PoleZero :: setAllpass( StkFloat coefficient )
 
 void PoleZero :: setBlockZero( StkFloat thePole )
 {
+  if ( std::abs( thePole ) >= 1.0 ) {
+    oStream_ << "PoleZero::setBlockZero: argument (" << thePole << ") makes filter unstable!";
+    handleError( StkError::WARNING ); return;
+  }
+
   b_[0] = 1.0;
   b_[1] = -1.0;
   a_[0] = 1.0; // just in case

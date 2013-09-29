@@ -12,7 +12,7 @@ namespace stk {
   This class provides a common interface for
   all STK instruments.
 
-  by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+  by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -65,7 +65,7 @@ class Instrmnt : public Stk
     performed if _STK_DEBUG_ is defined during compilation, in which
     case an out-of-range value will trigger an StkError exception.
   */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 0 ) = 0;
 
  protected:
 
@@ -73,9 +73,9 @@ class Instrmnt : public Stk
 
 };
 
-inline void Instrmnt :: setFrequency(StkFloat frequency)
+inline void Instrmnt :: setFrequency( StkFloat frequency )
 {
-  errorString_ << "Instrmnt::setFrequency: virtual setFrequency function call!";
+  oStream_ << "Instrmnt::setFrequency: virtual setFrequency function call!";
   handleError( StkError::WARNING );
 }
 
@@ -83,7 +83,7 @@ inline StkFloat Instrmnt :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= lastFrame_.channels() ) {
-    errorString_ << "Instrmnt::lastOut(): channel argument is invalid!";
+    oStream_ << "Instrmnt::lastOut(): channel argument is invalid!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -91,36 +91,9 @@ inline StkFloat Instrmnt :: lastOut( unsigned int channel )
   return lastFrame_[channel];
 }
 
-inline StkFrames& Instrmnt :: tick( StkFrames& frames, unsigned int channel )
-{
-  unsigned int nChannels = lastFrame_.channels();
-#if defined(_STK_DEBUG_)
-  if ( channel > frames.channels() - nChannels ) {
-    errorString_ << "Instrmnt::tick(): channel and StkFrames arguments are incompatible!";
-    handleError( StkError::FUNCTION_ARGUMENT );
-  }
-#endif
-
-  StkFloat *samples = &frames[channel];
-  unsigned int j, hop = frames.channels() - nChannels;
-  if ( nChannels == 1 ) {
-    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
-      *samples++ = tick();
-  }
-  else {
-    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
-      *samples++ = tick();
-      for ( j=1; j<nChannels; j++ )
-        *samples++ = lastFrame_[j];
-    }
-  }
-
-  return frames;
-}
-
 inline void Instrmnt :: controlChange( int number, StkFloat value )
 {
-  errorString_ << "Instrmnt::controlChange: virtual function call!";
+  oStream_ << "Instrmnt::controlChange: virtual function call!";
   handleError( StkError::WARNING );
 }
 

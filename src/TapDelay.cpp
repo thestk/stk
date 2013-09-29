@@ -10,7 +10,7 @@
     A non-interpolating delay line is typically used in fixed
     delay-length applications, such as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -24,13 +24,13 @@ TapDelay :: TapDelay( std::vector<unsigned long> taps, unsigned long maxDelay )
   // If we want to allow a delay of maxDelay, we need a
   // delayline of length = maxDelay+1.
   if ( maxDelay < 1 ) {
-    errorString_ << "TapDelay::TapDelay: maxDelay must be > 0!\n";
+    oStream_ << "TapDelay::TapDelay: maxDelay must be > 0!\n";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
   for ( unsigned int i=0; i<taps.size(); i++ ) {
     if ( taps[i] > maxDelay ) {
-      errorString_ << "TapDelay::TapDelay: maxDelay must be > than all tap delay values!\n";
+      oStream_ << "TapDelay::TapDelay: maxDelay must be > than all tap delay values!\n";
       handleError( StkError::FUNCTION_ARGUMENT );
     }
   }
@@ -50,17 +50,10 @@ void TapDelay :: setMaximumDelay( unsigned long delay )
 {
   if ( delay < inputs_.size() ) return;
 
-  if ( delay < 0 ) {
-    errorString_ << "TapDelay::setMaximumDelay: argument (" << delay << ") less than zero!\n";
-    handleError( StkError::WARNING );
-    return;
-  }
-
   for ( unsigned int i=0; i<delays_.size(); i++ ) {
     if ( delay < delays_[i] ) {
-      errorString_ << "TapDelay::setMaximumDelay: argument (" << delay << ") less than a current tap delay setting (" << delays_[i] << ")!\n";
-      handleError( StkError::WARNING );
-      return;
+      oStream_ << "TapDelay::setMaximumDelay: argument (" << delay << ") less than a current tap delay setting (" << delays_[i] << ")!\n";
+      handleError( StkError::WARNING ); return;
     }
   }
 
@@ -69,6 +62,18 @@ void TapDelay :: setMaximumDelay( unsigned long delay )
 
 void TapDelay :: setTapDelays( std::vector<unsigned long> taps )
 {
+  for ( unsigned int i=0; i<taps.size(); i++ ) {
+    if ( taps[i] > inputs_.size() - 1 ) { // The value is too big.
+      oStream_ << "TapDelay::setTapDelay: argument (" << taps[i] << ") greater than maximum!\n";
+      handleError( StkError::WARNING ); return;
+    }
+
+    if ( taps[i] < 0 ) {
+      error << "TapDelay::setDelay: argument (" << taps[i] << ") less than zero!\n";
+      handleError( StkError::WARNING ); return;
+    }
+  }
+
   if ( taps.size() != outPoint_.size() ) {
     outPoint_.resize( taps.size() );
     delays_.resize( taps.size() );
@@ -76,27 +81,10 @@ void TapDelay :: setTapDelays( std::vector<unsigned long> taps )
   }
 
   for ( unsigned int i=0; i<taps.size(); i++ ) {
-    if ( taps[i] > inputs_.size() - 1 ) { // The value is too big.
-      errorString_ << "TapDelay::setTapDelay: argument (" << taps[i] << ") too big ... setting to maximum!\n";
-      handleError( StkError::WARNING );
-
-      // Force delay to maximum length.
-      outPoint_[i] = inPoint_ + 1;
-      if ( outPoint_[i] == inputs_.size() ) outPoint_[i] = 0;
-      delays_[i] = inputs_.size() - 1;
-    }
-    else if ( taps[i] < 0 ) {
-      errorString_ << "TapDelay::setDelay: argument (" << taps[i] << ") less than zero ... setting to zero!\n";
-      handleError( StkError::WARNING );
-
-      outPoint_[i] = inPoint_;
-      delays_[i] = 0;
-    }
-    else { // read chases write
-      if ( inPoint_ >= taps[i] ) outPoint_[i] = inPoint_ - taps[i];
-      else outPoint_[i] = inputs_.size() + inPoint_ - taps[i];
-      delays_[i] = taps[i];
-    }
+    // read chases write
+    if ( inPoint_ >= taps[i] ) outPoint_[i] = inPoint_ - taps[i];
+    else outPoint_[i] = inputs_.size() + inPoint_ - taps[i];
+    delays_[i] = taps[i];
   }
 }
 

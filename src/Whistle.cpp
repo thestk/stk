@@ -1,5 +1,5 @@
 /***************************************************/
-/*! \class Whistle
+/*! \Class Whistle
     \brief STK police/referee whistle instrument class.
 
     This class implements a hybrid physical/spectral
@@ -12,7 +12,7 @@
        - Blowing Frequency Modulation = 2
        - Volume = 128
 
-    by Perry R. Cook  1996 - 2010.
+    by Perry R. Cook  1995-2011.
 */
 /***************************************************/
 
@@ -82,24 +82,34 @@ void Whistle :: clear( void )
 
 void Whistle :: setFrequency( StkFloat frequency )
 {
-  StkFloat freakency = frequency * 4;  // the whistle is a transposing instrument
+#if defined(_STK_DEBUG_)
   if ( frequency <= 0.0 ) {
-    errorString_ << "Whistle::setFrequency: parameter is less than or equal to zero!";
-    handleError( StkError::WARNING );
-    freakency = 220.0;
+    oStream_ << "Whistle::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
   }
+#endif
 
-  baseFrequency_ = freakency;
+  baseFrequency_ = frequency * 4;  // the whistle is a transposing instrument
 }
 
 void Whistle :: startBlowing( StkFloat amplitude, StkFloat rate )
 {
+  if ( amplitude <= 0.0 || rate <= 0.0 ) {
+    oStream_ << "Whistle::startBlowing: one or more arguments is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+
   envelope_.setRate( ENV_RATE );
   envelope_.setTarget( amplitude );
 }
 
 void Whistle :: stopBlowing( StkFloat rate )
 {
+  if ( rate <= 0.0 ) {
+    oStream_ << "Whistle::stopBlowing: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+
   envelope_.setRate( rate );
   envelope_.keyOff();
 }
@@ -108,20 +118,11 @@ void Whistle :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->startBlowing( amplitude*2.0 ,amplitude * 0.2 );
-#if defined(_STK_DEBUG_)
-  errorString_ << "Whistle::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Whistle :: noteOff( StkFloat amplitude )
 {
   this->stopBlowing( amplitude * 0.02 );
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Whistle::NoteOff: amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 int frameCount = 0;
@@ -221,41 +222,34 @@ StkFloat Whistle :: tick( unsigned int )
 
 void Whistle :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "Whistle::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
+#if defined(_STK_DEBUG_)
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "Whistle::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
   }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "Whistle::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
+#endif
 
+  StkFloat normalizedValue = value * ONE_OVER_128;
   if ( number == __SK_NoiseLevel_ ) // 4
-    noiseGain_ = 0.25 * norm;
+    noiseGain_ = 0.25 * normalizedValue;
   else if ( number == __SK_ModFrequency_ ) // 11
-    fippleFreqMod_ = norm;
+    fippleFreqMod_ = normalizedValue;
   else if ( number == __SK_ModWheel_ ) // 1
-    fippleGainMod_ = norm;
+    fippleGainMod_ = normalizedValue;
   else if ( number == __SK_AfterTouch_Cont_ ) // 128
-    envelope_.setTarget( norm * 2.0 );
+    envelope_.setTarget( normalizedValue * 2.0 );
   else if ( number == __SK_Breath_ ) // 2
-    blowFreqMod_ = norm * 0.5;
+    blowFreqMod_ = normalizedValue * 0.5;
   else if ( number == __SK_Sustain_ )	{ // 64
     subSample_ = (int) value;
     if ( subSample_ < 1.0 ) subSample_ = 1;
     envelope_.setRate( ENV_RATE / subSample_ );
   }
+#if defined(_STK_DEBUG_)
   else {
-    errorString_ << "Whistle::controlChange: undefined control number (" << number << ")!";
+    oStream_ << "Whistle::controlChange: undefined control number (" << number << ")!";
     handleError( StkError::WARNING );
   }
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Whistle::controlChange: number = " << number << ", value = " << value << '.';
-  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 

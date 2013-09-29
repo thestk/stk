@@ -4,7 +4,7 @@
 
     This class implements an echo effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -29,26 +29,22 @@ void Echo :: clear( void )
 
 void Echo :: setMaximumDelay( unsigned long delay )
 {
-  length_ = delay;
   if ( delay == 0 ) {
-    errorString_ << "Echo::setMaximumDelay: parameter cannot be zero ... setting to 10!";
-    handleError( StkError::WARNING );
-    length_ = 10;
+    oStream_ << "Echo::setMaximumDelay: parameter cannot be zero!";
+    handleError( StkError::WARNING ); return;
   }
 
-  delayLine_.setMaximumDelay( length_ );
+  delayLine_.setMaximumDelay( delay );
 }
 
 void Echo :: setDelay( unsigned long delay )
 {
-  unsigned long size = delay;
   if ( delay > length_ ) {
-    errorString_ << "Echo::setDelay: parameter is greater than maximum delay length ... setting to max!";
-    handleError( StkError::WARNING );
-    size = length_;
+    oStream_ << "Echo::setDelay: parameter is greater than maximum delay length!";
+    handleError( StkError::WARNING ); return;
   }
 
-  delayLine_.setDelay( size );
+  delayLine_.setDelay( delay );
 }
 
 } // stk namespace

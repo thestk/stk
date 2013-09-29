@@ -14,7 +14,7 @@ namespace stk {
     This class implements a chorus effect.  It takes a monophonic
     input signal and produces a stereo output signal.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -30,8 +30,8 @@ class Chorus : public Effect
   //! Reset and clear all internal state.
   void clear( void );
 
-  //! Set modulation depth.
-  void setModDepth( StkFloat depth ) { modDepth_ = depth; };
+  //! Set modulation depth in range 0.0 - 1.0.
+  void setModDepth( StkFloat depth );
 
   //! Set modulation frequency.
   void setModFrequency( StkFloat frequency );
@@ -94,7 +94,7 @@ inline StkFloat Chorus :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel > 1 ) {
-    errorString_ << "Chorus::lastOut(): channel argument must be less than 2!";
+    oStream_ << "Chorus::lastOut(): channel argument must be less than 2!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -106,7 +106,7 @@ inline StkFloat Chorus :: tick( StkFloat input, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel > 1 ) {
-    errorString_ << "Chorus::tick(): channel argument must be less than 2!";
+    oStream_ << "Chorus::tick(): channel argument must be less than 2!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -122,7 +122,7 @@ inline StkFrames& Chorus :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() - 1 ) {
-    errorString_ << "Chorus::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Chorus::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -130,6 +130,8 @@ inline StkFrames& Chorus :: tick( StkFrames& frames, unsigned int channel )
   StkFloat *samples = &frames[channel];
   unsigned int hop = frames.channels() - 1;
   for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
+    delayLine_[0].setDelay( baseLength_ * 0.707 * ( 1.0 + modDepth_ * mods_[0].tick() ) );
+    delayLine_[1].setDelay( baseLength_  * 0.5 *  ( 1.0 - modDepth_ * mods_[1].tick() ) );
     *samples = effectMix_ * ( delayLine_[0].tick( *samples ) - *samples ) + *samples;
     samples++;
     *samples = effectMix_ * ( delayLine_[1].tick( *samples ) - *samples ) + *samples;
@@ -144,7 +146,7 @@ inline StkFrames& Chorus :: tick( StkFrames& iFrames, StkFrames& oFrames, unsign
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() - 1 ) {
-    errorString_ << "Chorus::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Chorus::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -153,8 +155,10 @@ inline StkFrames& Chorus :: tick( StkFrames& iFrames, StkFrames& oFrames, unsign
   StkFloat *oSamples = &oFrames[oChannel];
   unsigned int iHop = iFrames.channels(), oHop = oFrames.channels();
   for ( unsigned int i=0; i<iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
-    *oSamples++ = effectMix_ * ( delayLine_[0].tick( *iSamples ) - *iSamples ) + *iSamples;
-    *oSamples = effectMix_ * ( delayLine_[1].tick( *iSamples ) - *iSamples ) + *iSamples;
+    delayLine_[0].setDelay( baseLength_ * 0.707 * ( 1.0 + modDepth_ * mods_[0].tick() ) );
+    delayLine_[1].setDelay( baseLength_  * 0.5 *  ( 1.0 - modDepth_ * mods_[1].tick() ) );
+    *oSamples = effectMix_ * ( delayLine_[0].tick( *iSamples ) - *iSamples ) + *iSamples;
+    *(oSamples+1) = effectMix_ * ( delayLine_[1].tick( *iSamples ) - *iSamples ) + *iSamples;
   }
 
   lastFrame_[0] = *(oSamples-oHop);

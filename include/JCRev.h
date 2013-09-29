@@ -3,6 +3,7 @@
 
 #include "Effect.h"
 #include "Delay.h"
+#include "OnePole.h"
 
 namespace stk {
 
@@ -10,14 +11,20 @@ namespace stk {
 /*! \class JCRev
     \brief John Chowning's reverberator class.
 
-    This class takes a monophonic input signal and produces a stereo
-    output signal.  It is derived from the CLM JCRev function, which
-    is based on the use of networks of simple allpass and comb delay
-    filters.  This class implements three series allpass units,
-    followed by four parallel comb filters, and two decorrelation
-    delay lines in parallel at the output.
+    This class takes a monophonic input signal and
+    produces a stereo output signal.  It is derived
+    from the CLM JCRev function, which is based on
+    the use of networks of simple allpass and comb
+    delay filters.  This class implements three
+    series allpass units, followed by four parallel
+    comb filters, and two decorrelation delay lines
+    in parallel at the output.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    Although not in the original JC reverberator,
+    one-pole lowpass filters have been added inside
+    the feedback comb filters.
+
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -82,6 +89,7 @@ class JCRev : public Effect
 
   Delay allpassDelays_[3];
   Delay combDelays_[4];
+  OnePole combFilters_[4];
   Delay outLeftDelay_;
   Delay outRightDelay_;
   StkFloat allpassCoefficient_;
@@ -93,7 +101,7 @@ inline StkFloat JCRev :: lastOut( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel > 1 ) {
-    errorString_ << "JCRev::lastOut(): channel argument must be less than 2!";
+    oStream_ << "JCRev::lastOut(): channel argument must be less than 2!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -105,7 +113,7 @@ inline StkFloat JCRev :: tick( StkFloat input, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel > 1 ) {
-    errorString_ << "JCRev::tick(): channel argument must be less than 2!";
+    oStream_ << "JCRev::tick(): channel argument must be less than 2!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -131,10 +139,10 @@ inline StkFloat JCRev :: tick( StkFloat input, unsigned int channel )
   allpassDelays_[2].tick(temp2);
   temp2 = -(allpassCoefficient_ * temp2) + temp;
     
-  temp3 = temp2 + (combCoefficient_[0] * combDelays_[0].lastOut());
-  temp4 = temp2 + (combCoefficient_[1] * combDelays_[1].lastOut());
-  temp5 = temp2 + (combCoefficient_[2] * combDelays_[2].lastOut());
-  temp6 = temp2 + (combCoefficient_[3] * combDelays_[3].lastOut());
+  temp3 = temp2 + ( combFilters_[0].tick( combCoefficient_[0] * combDelays_[0].lastOut() ) );
+  temp4 = temp2 + ( combFilters_[1].tick( combCoefficient_[1] * combDelays_[1].lastOut() ) );
+  temp5 = temp2 + ( combFilters_[2].tick( combCoefficient_[2] * combDelays_[2].lastOut() ) );
+  temp6 = temp2 + ( combFilters_[3].tick( combCoefficient_[3] * combDelays_[3].lastOut() ) );
 
   combDelays_[0].tick(temp3);
   combDelays_[1].tick(temp4);
@@ -149,7 +157,7 @@ inline StkFloat JCRev :: tick( StkFloat input, unsigned int channel )
   lastFrame_[0] += temp;
   lastFrame_[1] += temp;
     
-  return lastFrame_[channel];
+  return 0.7 * lastFrame_[channel];
 }
 
 } // stk namespace

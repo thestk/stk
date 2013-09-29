@@ -7,7 +7,7 @@
     (non-sweeping BiQuad filters), where N is set
     during instantiation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -20,7 +20,7 @@ Modal :: Modal( unsigned int modes )
   : nModes_(modes)
 {
   if ( nModes_ == 0 ) {
-    errorString_ << "Modal: 'modes' argument to constructor is zero!";
+    oStream_ << "Modal: 'modes' argument to constructor is zero!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -65,6 +65,13 @@ void Modal :: clear( void )
 
 void Modal :: setFrequency( StkFloat frequency )
 {
+#if defined(_STK_DEBUG_)
+  if ( frequency <= 0.0 ) {
+    oStream_ << "Modal::setFrequency: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
   baseFrequency_ = frequency;
   for ( unsigned int i=0; i<nModes_; i++ )
     this->setRatioAndRadius( i, ratios_[i], radii_[i] );
@@ -73,9 +80,8 @@ void Modal :: setFrequency( StkFloat frequency )
 void Modal :: setRatioAndRadius( unsigned int modeIndex, StkFloat ratio, StkFloat radius )
 {
   if ( modeIndex >= nModes_ ) {
-    errorString_ << "Modal::setRatioAndRadius: modeIndex parameter is greater than number of modes!";
-    handleError( StkError::WARNING );
-    return;
+    oStream_ << "Modal::setRatioAndRadius: modeIndex parameter is greater than number of modes!";
+    handleError( StkError::WARNING ); return;
   }
 
   StkFloat nyquist = Stk::sampleRate() / 2.0;
@@ -89,8 +95,8 @@ void Modal :: setRatioAndRadius( unsigned int modeIndex, StkFloat ratio, StkFloa
     while (temp * baseFrequency_ > nyquist) temp *= 0.5;
     ratios_[modeIndex] = temp;
 #if defined(_STK_DEBUG_)
-    errorString_ << "Modal::setRatioAndRadius: aliasing would occur here ... correcting.";
-    handleError( StkError::DEBUG_WARNING );
+    oStream_ << "Modal::setRatioAndRadius: aliasing would occur here ... correcting.";
+    handleError( StkError::DEBUG_PRINT );
 #endif
   }
   radii_[modeIndex] = radius;
@@ -105,9 +111,8 @@ void Modal :: setRatioAndRadius( unsigned int modeIndex, StkFloat ratio, StkFloa
 void Modal :: setModeGain( unsigned int modeIndex, StkFloat gain )
 {
   if ( modeIndex >= nModes_ ) {
-    errorString_ << "Modal::setModeGain: modeIndex parameter is greater than number of modes!";
-    handleError( StkError::WARNING );
-    return;
+    oStream_ << "Modal::setModeGain: modeIndex parameter is greater than number of modes!";
+    handleError( StkError::WARNING ); return;
   }
 
   filters_[modeIndex]->setGain( gain );
@@ -115,21 +120,14 @@ void Modal :: setModeGain( unsigned int modeIndex, StkFloat gain )
 
 void Modal :: strike( StkFloat amplitude )
 {
-  StkFloat gain = amplitude;
-  if ( amplitude < 0.0 ) {
-    errorString_ << "Modal::strike: amplitude is less than zero ... setting to zero!";
+  if ( amplitude < 0.0 || amplitude > 1.0 ) {
+    oStream_ << "Modal::strike: amplitude is out of range!";
     handleError( StkError::WARNING );
-    gain = 0.0;
-  }
-  else if ( amplitude > 1.0 ) {
-    errorString_ << "Modal::strike: amplitude is greater than one ... setting to 1.0!";
-    handleError( StkError::WARNING );
-    gain = 1.0;
   }
 
   envelope_.setRate( 1.0 );
-  envelope_.setTarget( gain );
-  onepole_.setPole( 1.0 - gain );
+  envelope_.setTarget( amplitude );
+  onepole_.setPole( 1.0 - amplitude );
   envelope_.tick();
   wave_->reset();
 
@@ -145,13 +143,8 @@ void Modal :: strike( StkFloat amplitude )
 
 void Modal :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
-  this->strike(amplitude);
-  this->setFrequency(frequency);
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Modal::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
+  this->strike( amplitude );
+  this->setFrequency( frequency );
 }
 
 void Modal :: noteOff( StkFloat amplitude )
@@ -159,11 +152,6 @@ void Modal :: noteOff( StkFloat amplitude )
   // This calls damp, but inverts the meaning of amplitude (high
   // amplitude means fast damping).
   this->damp( 1.0 - (amplitude * 0.03) );
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Modal::NoteOff: amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Modal :: damp( StkFloat amplitude )

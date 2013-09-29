@@ -22,7 +22,7 @@
     STK WWW site: http://ccrma.stanford.edu/software/stk/
 
     The Synthesis ToolKit in C++ (STK)
-    Copyright (c) 1995-2010 Perry R. Cook and Gary P. Scavone
+    Copyright (c) 1995-2011 Perry R. Cook and Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -65,6 +65,7 @@ const Stk::StkFormat Stk :: STK_FLOAT64 = 0x20;
 bool Stk :: showWarnings_ = true;
 bool Stk :: printErrors_ = true;
 std::vector<Stk *> Stk :: alertList_;
+std::ostringstream Stk :: oStream_;
 
 Stk :: Stk( void )
   : ignoreSampleRateChange_(false)
@@ -192,8 +193,8 @@ void Stk :: sleep(unsigned long milliseconds)
 
 void Stk :: handleError( StkError::Type type )
 {
-  handleError( errorString_.str(), type );
-  errorString_.str( std::string() ); // reset the ostringstream buffer
+  handleError( oStream_.str(), type );
+  oStream_.str( std::string() ); // reset the ostringstream buffer
 }
 
 void Stk :: handleError( const char *message, StkError::Type type )
@@ -208,7 +209,7 @@ void Stk :: handleError( std::string message, StkError::Type type )
     if ( !showWarnings_ ) return;
     std::cerr << '\n' << message << '\n' << std::endl;
   }
-  else if (type == StkError::DEBUG_WARNING) {
+  else if (type == StkError::DEBUG_PRINT) {
 #if defined(_STK_DEBUG_)
     std::cerr << '\n' << message << '\n' << std::endl;
 #endif

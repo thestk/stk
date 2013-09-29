@@ -401,7 +401,7 @@ proc patchChange {value} {
             .right.cont1 config -state normal -label "Vibrato Amount"
             set cont1 4.0
             set cont2 64.0
-            set cont4 64.0
+            set cont4 24.0
             set cont11 64.0
             printWhatz "ControlChange    0.0  1 " 1  $cont1
             printWhatz "ControlChange    0.0  1 " 2  $cont2

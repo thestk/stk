@@ -5,7 +5,7 @@
     This class implements a simple pitch shifter
     using delay lines.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -54,7 +54,7 @@ StkFrames& PitShift :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "PitShift::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "PitShift::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -71,7 +71,7 @@ StkFrames& PitShift :: tick( StkFrames& iFrames, StkFrames& oFrames, unsigned in
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "PitShift::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "PitShift::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

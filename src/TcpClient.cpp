@@ -19,12 +19,13 @@
     less than or equal to zero indicate a closed
     or lost connection or the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
 #include "TcpClient.h"
 #include <cstring>
+#include <sstream>
 
 namespace stk {
 
@@ -36,7 +37,7 @@ TcpClient :: TcpClient( int port, std::string hostname )
 
   WSAStartup( wVersionRequested, &wsaData );
   if ( wsaData.wVersion != wVersionRequested ) {
-    errorString_ << "TcpClient: Incompatible Windows socket library version!";
+    oStream_ << "TcpClient: Incompatible Windows socket library version!";
     handleError( StkError::PROCESS_SOCKET );
   }
 #endif
@@ -57,20 +58,20 @@ int TcpClient :: connect( int port, std::string hostname )
   // Create the client-side socket
   soket_ = ::socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
   if ( soket_ < 0 ) {
-    errorString_ << "TcpClient: Couldn't create socket client!";
+    oStream_ << "TcpClient: Couldn't create socket client!";
     handleError( StkError::PROCESS_SOCKET );
   }
 
   int flag = 1;
   int result = setsockopt( soket_, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(int) );
   if ( result < 0 ) {
-    errorString_ << "TcpClient: Error setting socket options!";
+    oStream_ << "TcpClient: Error setting socket options!";
     handleError( StkError::PROCESS_SOCKET );
   }
 
   struct hostent *hostp;
   if ( ( hostp = gethostbyname( hostname.c_str() ) ) == 0 ) {
-    errorString_ << "TcpClient: unknown host (" << hostname << ")!";
+    oStream_ << "TcpClient: unknown host (" << hostname << ")!";
     handleError( StkError::PROCESS_SOCKET_IPADDR );
   }
 
@@ -82,7 +83,7 @@ int TcpClient :: connect( int port, std::string hostname )
 
   // Connect to the server
   if ( ::connect( soket_, (struct sockaddr *)&server_address, sizeof(server_address) ) < 0 ) {
-    errorString_ << "TcpClient: Couldn't connect to socket server!";
+    oStream_ << "TcpClient: Couldn't connect to socket server!";
     handleError( StkError::PROCESS_SOCKET );
   }
 

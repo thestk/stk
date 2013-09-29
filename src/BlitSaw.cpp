@@ -25,6 +25,11 @@ namespace stk {
  
 BlitSaw:: BlitSaw( StkFloat frequency )
 {
+  if ( frequency <= 0.0 ) {
+    oStream_ << "BlitSaw::BlitSaw: argument (" << frequency << ") must be positive!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
   nHarmonics_ = 0;
   this->reset();
   this->setFrequency( frequency );
@@ -43,10 +48,10 @@ void BlitSaw :: reset()
 
 void BlitSaw :: setFrequency( StkFloat frequency )
 {
-#if defined(_STK_DEBUG_)
-  errorString_ << "BlitSaw::setFrequency: frequency = " << frequency << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
+  if ( frequency <= 0.0 ) {
+    oStream_ << "BlitSaw::setFrequency: argument (" << frequency << ") must be positive!";
+    handleError( StkError::WARNING ); return;
+  }
 
   p_ = Stk::sampleRate() / frequency;
   C2_ = 1 / p_;
@@ -81,11 +86,6 @@ void BlitSaw :: updateHarmonics( void )
     m_ = 2 * nHarmonics_ + 1;
 
   a_ = m_ / p_;
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "BlitSaw::updateHarmonics: nHarmonics_ = " << nHarmonics_ << ", m_ = " << m_ << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 } // stk namespace

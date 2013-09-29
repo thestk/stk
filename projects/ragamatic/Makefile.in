@@ -30,7 +30,7 @@ LIBRARY = @LIBS@
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
   PROGRAMS = ragamat
-	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o Thread.o Mutex.o Socket.o TcpServer.o @objects@
+	OBJECTS += RtMidi.o RtAudio.o Thread.o Mutex.o Socket.o TcpServer.o @objects@
 endif
 
 RAWWAVES = @rawwaves@
@@ -51,7 +51,7 @@ ragamat: ragamat.cpp $(OBJECTS)
 	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o ragamat ragamat.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
 
 libragamat: ragamat.cpp Tabla.cpp Drone.cpp VoicDrum.cpp
-	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o ragamat Tabla.cpp Drone.cpp VoicDrum.cpp ragamat.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o ragamat Tabla.cpp Drone.cpp VoicDrum.cpp ragamat.cpp -L../../src -lstk $(LIBRARY)
 
 $(OBJECTS) : Stk.h
 

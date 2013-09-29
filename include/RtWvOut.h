@@ -23,7 +23,7 @@ namespace stk {
     that takes a reference to an StkFrames object for multi-channel
     and/or multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 

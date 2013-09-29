@@ -48,7 +48,7 @@
         - Little Rocks = 21
         - Tuned Bamboo Chimes = 22
 
-    by Perry R. Cook, 1996 - 2010.
+    by Perry R. Cook, 1995-2011.
 */
 /***************************************************/
 
@@ -337,17 +337,12 @@ int Shakers :: setupName( char* instr )
 {
   int which = 0;
 
-  for (int i=0;i<NUM_INSTR;i++)	{
+  for ( int i=0; i<NUM_INSTR; i++ )	{
     if ( !strcmp(instr,instrs[i]) )
 	    which = i;
   }
 
-#if defined(_STK_DEBUG_)
-  errorString_ << "Shakers::setupName: setting instrument to " << instrs[which] << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
-
-  return this->setupNum(which);
+  return this->setupNum( which );
 }
 
 void Shakers :: setFinalZs( StkFloat z0, StkFloat z1, StkFloat z2 )
@@ -800,14 +795,10 @@ void Shakers :: noteOn( StkFloat frequency, StkFloat amplitude )
   // Yep ... pretty kludgey, but it works!
   int noteNum = (int) ((12*log(frequency/220.0)/log(2.0)) + 57.01) % 32;
   if (instType_ !=  noteNum) instType_ = this->setupNum(noteNum);
+
   shakeEnergy_ += amplitude * MAX_SHAKE * 0.1;
   if (shakeEnergy_ > MAX_SHAKE) shakeEnergy_ = MAX_SHAKE;
   if (instType_==10 || instType_==3) ratchetPos_ += 1;
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Shakers::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Shakers :: noteOff( StkFloat amplitude )
@@ -891,23 +882,18 @@ StkFloat Shakers :: tick( unsigned int )
 
 void Shakers :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "Shakers::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
+#if defined(_STK_DEBUG_)
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "Shakers::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
   }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "Shakers::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
+#endif
 
-  StkFloat temp;
   int i;
-
+  StkFloat temp;
+  StkFloat normalizedValue = value * ONE_OVER_128;
   if (number == __SK_Breath_) { // 2 ... energy
-    shakeEnergy_ += norm * MAX_SHAKE * 0.1;
+    shakeEnergy_ += normalizedValue * MAX_SHAKE * 0.1;
     if (shakeEnergy_ > MAX_SHAKE) shakeEnergy_ = MAX_SHAKE;
     if (instType_==10 || instType_==3) {
 	    ratchetPos_ = (int) fabs(value - lastRatchetPos_);
@@ -974,7 +960,7 @@ void Shakers :: controlChange( int number, StkFloat value )
     }
   }
   else if (number == __SK_AfterTouch_Cont_) { // 128
-    shakeEnergy_ += norm * MAX_SHAKE * 0.1;
+    shakeEnergy_ += normalizedValue * MAX_SHAKE * 0.1;
     if (shakeEnergy_ > MAX_SHAKE) shakeEnergy_ = MAX_SHAKE;
     if (instType_==10 || instType_==3)	{
 	    ratchetPos_ = (int) fabs(value - lastRatchetPos_);
@@ -985,15 +971,12 @@ void Shakers :: controlChange( int number, StkFloat value )
   else  if (number == __SK_ShakerInst_) { // 1071
     instType_ = (int) (value + 0.5);	//  Just to be safe
     this->setupNum(instType_);
-  }                                       
+  }
+#if defined(_STK_DEBUG_)
   else {
-    errorString_ << "Shakers::controlChange: undefined control number (" << number << ")!";
+    oStream_ << "Shakers::controlChange: undefined control number (" << number << ")!";
     handleError( StkError::WARNING );
   }
-
-#if defined(_STK_DEBUG_)
-    errorString_ << "Shakers::controlChange: number = " << number << ", value = " << value << '.';
-    handleError( StkError::DEBUG_WARNING );
 #endif
 }
 

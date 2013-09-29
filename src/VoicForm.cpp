@@ -21,7 +21,7 @@
        - Vibrato Gain = 1
        - Loudness (Spectral Tilt) = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -69,14 +69,14 @@ void VoicForm :: clear( void )
 
 void VoicForm :: setFrequency( StkFloat frequency )
 {
-  StkFloat freakency = frequency;
+#if defined(_STK_DEBUG_)
   if ( frequency <= 0.0 ) {
-    errorString_ << "VoicForm::setFrequency: parameter is less than or equal to zero!";
-    handleError( StkError::WARNING );
-    freakency = 220.0;
+    oStream_ << "VoicForm::setFrequency: parameter is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
   }
+#endif
 
-  voiced_->setFrequency( freakency );
+  voiced_->setFrequency( frequency );
 }
 
 bool VoicForm :: setPhoneme( const char *phoneme )
@@ -92,16 +92,12 @@ bool VoicForm :: setPhoneme( const char *phoneme )
       filters_[3].setTargets( Phonemes::formantFrequency(i, 3), Phonemes::formantRadius(i, 3), pow(10.0, Phonemes::formantGain(i, 3 ) / 20.0) );
       this->setVoiced( Phonemes::voiceGain( i ) );
       this->setUnVoiced( Phonemes::noiseGain( i ) );
-#if defined(_STK_DEBUG_)
-      errorString_ << "VoicForm::setPhoneme: found formant " << phoneme << " (number " << i << ").";
-      handleError( StkError::DEBUG_WARNING );
-#endif
     }
     i++;
   }
 
   if ( !found ) {
-    errorString_ << "VoicForm::setPhoneme: phoneme " << phoneme << " not found!";
+    oStream_ << "VoicForm::setPhoneme: phoneme " << phoneme << " not found!";
     handleError( StkError::WARNING );
   }
 
@@ -111,9 +107,8 @@ bool VoicForm :: setPhoneme( const char *phoneme )
 void VoicForm :: setFilterSweepRate( unsigned int whichOne, StkFloat rate )
 {
   if ( whichOne < 0 || whichOne > 3 ) {
-    errorString_ << "VoicForm::setFilterSweepRate: filter select argument outside range 0-3!";
-    handleError( StkError::WARNING );
-    return;
+    oStream_ << "VoicForm::setFilterSweepRate: filter select argument outside range 0-3!";
+    handleError( StkError::WARNING ); return;
   }
 
   filters_[whichOne].setSweepRate(rate);
@@ -134,21 +129,17 @@ void VoicForm :: noteOn( StkFloat frequency, StkFloat amplitude )
 
 void VoicForm :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "VoicForm::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
+#if defined(_STK_DEBUG_)
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "Clarinet::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
   }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "VoicForm::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
+#endif
 
+  StkFloat normalizedValue = value * ONE_OVER_128;
   if (number == __SK_Breath_)	{ // 2
-    this->setVoiced( 1.0 - norm );
-    this->setUnVoiced( 0.01 * norm );
+    this->setVoiced( 1.0 - normalizedValue );
+    this->setUnVoiced( 0.01 * normalizedValue );
   }
   else if (number == __SK_FootControl_)	{ // 4
     StkFloat temp = 0.0;
@@ -180,21 +171,18 @@ void VoicForm :: controlChange( int number, StkFloat value )
     this->setUnVoiced( Phonemes::noiseGain( i ) );
   }
   else if (number == __SK_ModFrequency_) // 11
-    voiced_->setVibratoRate( norm * 12.0);  // 0 to 12 Hz
+    voiced_->setVibratoRate( normalizedValue * 12.0);  // 0 to 12 Hz
   else if (number == __SK_ModWheel_) // 1
-    voiced_->setVibratoGain( norm * 0.2);
+    voiced_->setVibratoGain( normalizedValue * 0.2);
   else if (number == __SK_AfterTouch_Cont_)	{ // 128
-    this->setVoiced( norm );
-    onepole_.setPole( 0.97 - ( norm * 0.2) );
+    this->setVoiced( normalizedValue );
+    onepole_.setPole( 0.97 - ( normalizedValue * 0.2) );
   }
+#if defined(_STK_DEBUG_)
   else {
-    errorString_ << "VoicForm::controlChange: undefined control number (" << number << ")!";
+    oStream_ << "VoicForm::controlChange: undefined control number (" << number << ")!";
     handleError( StkError::WARNING );
   }
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "VoicForm::controlChange: number = " << number << ", value = " << value << '.';
-  handleError( StkError::DEBUG_WARNING );
 #endif
 }
 

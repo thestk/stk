@@ -13,7 +13,7 @@ namespace stk {
     provided for creating a "notch" in the frequency response while
     maintaining a constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -51,6 +51,8 @@ class TwoZero : public Filter
     response has a "notch" or anti-resonance at the given \e
     frequency.  The closer the zeros are to the unit-circle (\e radius
     close to or equal to one), the narrower the resulting notch width.
+    The \e frequency value should be between zero and half the sample
+    rate.  The \e radius value should be positive.
   */
   void setNotch( StkFloat frequency, StkFloat radius );
 
@@ -101,7 +103,7 @@ inline StkFrames& TwoZero :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "TwoZero::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "TwoZero::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -123,7 +125,7 @@ inline StkFrames& TwoZero :: tick( StkFrames& iFrames, StkFrames& oFrames, unsig
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "TwoZero::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "TwoZero::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

@@ -16,7 +16,7 @@ namespace stk {
     Consult Fletcher and Rossing, Karjalainen,
     Cook, and others for more information.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -68,7 +68,7 @@ inline StkFrames& JetTable :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "JetTable::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "JetTable::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -89,7 +89,7 @@ inline StkFrames& JetTable :: tick( StkFrames& iFrames, StkFrames& oFrames, unsi
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "JetTable::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "JetTable::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

@@ -16,7 +16,7 @@ namespace stk {
     modulations to give a nice, natural human
     modulation function.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -90,7 +90,7 @@ inline StkFrames& Modulate :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "Modulate::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Modulate::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

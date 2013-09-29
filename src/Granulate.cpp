@@ -60,14 +60,14 @@ void Granulate :: setGrainParameters( unsigned int duration, unsigned int rampPe
   gDuration_ = duration;
   if ( gDuration_ == 0 ) {
     gDuration_ = 1;
-    errorString_ << "Granulate::setGrainParameters: duration argument cannot be zero ... setting to 1 millisecond.";
+    oStream_ << "Granulate::setGrainParameters: duration argument cannot be zero ... setting to 1 millisecond.";
     handleError( StkError::WARNING );
   }
 
   gRampPercent_ = rampPercent;
   if ( gRampPercent_ > 100 ) {
     gRampPercent_ = 100;
-    errorString_ << "Granulate::setGrainParameters: rampPercent argument cannot be greater than 100 ... setting to 100.";
+    oStream_ << "Granulate::setGrainParameters: rampPercent argument cannot be greater than 100 ... setting to 100.";
     handleError( StkError::WARNING );
   }
 
@@ -94,8 +94,9 @@ void Granulate :: openFile( std::string fileName, bool typeRaw )
   this->reset();
 
 #if defined(_STK_DEBUG_)
-  errorString_ << "Granulate::openFile: file = " << fileName << ", file frames = " << file.fileSize() << '.';
-  handleError( StkError::DEBUG_WARNING );
+  std::ostringstream message;
+  message << "Granulate::openFile: file = " << fileName << ", file frames = " << file.fileSize() << '.';
+  handleError( message.str(), StkError::DEBUG_PRINT );
 #endif
 
 }
@@ -120,8 +121,9 @@ void Granulate :: reset( void )
 void Granulate :: setVoices( unsigned int nVoices )
 {
 #if defined(_STK_DEBUG_)
-  errorString_ << "Granulate::setVoices: nVoices = " << nVoices << ", existing voices = " << grains_.size() << '.';
-  handleError( StkError::DEBUG_WARNING );
+  std::ostringstream message;
+  message << "Granulate::setVoices: nVoices = " << nVoices << ", existing voices = " << grains_.size() << '.';
+  handleError( message.str(), StkError::DEBUG_PRINT );
 #endif
 
   unsigned int oldSize = grains_.size();
@@ -203,7 +205,7 @@ StkFloat Granulate :: tick( unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= data_.channels() ) {
-    errorString_ << "Granulate::tick(): channel argument and soundfile data are incompatible!";
+    oStream_ << "Granulate::tick(): channel argument and soundfile data are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

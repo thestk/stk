@@ -13,7 +13,7 @@ namespace stk {
     provided for setting the pole position along the real axis of the
     z-plane while maintaining a constant peak filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -42,7 +42,8 @@ public:
     z-plane and normalizes the coefficients for a maximum gain of one.
     A positive pole value produces a low-pass filter, while a negative
     pole value produces a high-pass filter.  This method does not
-    affect the filter \e gain value.
+    affect the filter \e gain value. The argument magnitude should be
+    less than one to maintain filter stability.
   */
   void setPole( StkFloat thePole );
 
@@ -89,7 +90,7 @@ inline StkFrames& OnePole :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "OnePole::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "OnePole::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -110,7 +111,7 @@ inline StkFrames& OnePole :: tick( StkFrames& iFrames, StkFrames& oFrames, unsig
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "OnePole::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "OnePole::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

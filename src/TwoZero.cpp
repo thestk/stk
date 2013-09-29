@@ -6,7 +6,7 @@
     provided for creating a "notch" in the frequency response while
     maintaining a constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -32,7 +32,7 @@ TwoZero :: ~TwoZero()
 void TwoZero :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
 {
   if ( !ignoreSampleRateChange_ ) {
-    errorString_ << "TwoZero::sampleRateChanged: you may need to recompute filter coefficients!";
+    oStream_ << "TwoZero::sampleRateChanged: you may need to recompute filter coefficients!";
     handleError( StkError::WARNING );
   }
 }
@@ -48,8 +48,19 @@ void TwoZero :: setCoefficients( StkFloat b0, StkFloat b1, StkFloat b2, bool cle
 
 void TwoZero :: setNotch( StkFloat frequency, StkFloat radius )
 {
+#if defined(_STK_DEBUG_)
+  if ( frequency < 0.0 || frequency > 0.5 * Stk::sampleRate() ) {
+    oStream_ << "TwoZero::setNotch: frequency argument (" << frequency << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+  if ( radius < 0.0 ) {
+    oStream_ << "TwoZero::setNotch: radius argument (" << radius << ") is negative!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
   b_[2] = radius * radius;
-  b_[1] = (StkFloat) -2.0 * radius * cos(TWO_PI * (double) frequency / Stk::sampleRate());
+  b_[1] = -2.0 * radius * cos(TWO_PI * frequency / Stk::sampleRate());
 
   // Normalize the filter gain.
   if ( b_[1] > 0.0 ) // Maximum at z = 0.

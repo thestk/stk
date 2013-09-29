@@ -17,7 +17,7 @@
     Currently, FileWvOut is non-interpolating and the output rate is
     always Stk::sampleRate().
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -64,7 +64,7 @@ void FileWvOut :: openFile( std::string fileName,
   closeFile();
 
   if ( nChannels < 1 ) {
-    errorString_ << "FileWvOut::openFile: the channels argument must be greater than zero!";
+    oStream_ << "FileWvOut::openFile: the channels argument must be greater than zero!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -94,7 +94,7 @@ void FileWvOut :: tick( const StkFloat sample )
 {
 #if defined(_STK_DEBUG_)
   if ( !file_.isOpen() ) {
-    errorString_ << "FileWvOut::tick(): no file open!";
+    oStream_ << "FileWvOut::tick(): no file open!";
     handleError( StkError::WARNING );
     return;
   }
@@ -113,13 +113,13 @@ void FileWvOut :: tick( const StkFrames& frames )
 {
 #if defined(_STK_DEBUG_)
   if ( !file_.isOpen() ) {
-    errorString_ << "FileWvOut::tick(): no file open!";
+    oStream_ << "FileWvOut::tick(): no file open!";
     handleError( StkError::WARNING );
     return;
   }
 
   if ( data_.channels() != frames.channels() ) {
-    errorString_ << "FileWvOut::tick(): incompatible channel value in StkFrames argument!";
+    oStream_ << "FileWvOut::tick(): incompatible channel value in StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

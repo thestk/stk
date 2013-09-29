@@ -29,27 +29,31 @@
 
 namespace stk {
 
-Mesh2D :: Mesh2D( short nX, short nY )
+Mesh2D :: Mesh2D( unsigned short nX, unsigned short nY )
 {
-  this->setNX(nX);
-  this->setNY(nY);
+  if ( nX == 0.0 || nY == 0.0 ) {
+    oStream_ << "Mesh2D::Mesh2D: one or more argument is equal to zero!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  this->setNX( nX );
+  this->setNY( nY );
 
   StkFloat pole = 0.05;
-
-  short i;
-  for (i=0; i<NYMAX; i++) {
+  unsigned short i;
+  for ( i=0; i<NYMAX; i++ ) {
     filterY_[i].setPole( pole );
     filterY_[i].setGain( 0.99 );
   }
 
-  for (i=0; i<NXMAX; i++) {
+  for ( i=0; i<NXMAX; i++ ) {
     filterX_[i].setPole( pole );
     filterX_[i].setGain( 0.99 );
   }
 
   this->clearMesh();
 
-  counter_=0;
+  counter_ = 0;
   xInput_ = 0;
   yInput_ = 0;
 }
@@ -62,26 +66,26 @@ void Mesh2D :: clear( void )
 {
   this->clearMesh();
 
-  short i;
-  for (i=0; i<NY_; i++)
+  unsigned short i;
+  for ( i=0; i<NY_; i++ )
     filterY_[i].clear();
 
-  for (i=0; i<NX_; i++)
+  for ( i=0; i<NX_; i++ )
     filterX_[i].clear();
 
-  counter_=0;
+  counter_ = 0;
 }
 
 void Mesh2D :: clearMesh( void )
 {
   int x, y;
-  for (x=0; x<NXMAX-1; x++) {
-    for (y=0; y<NYMAX-1; y++) {
+  for ( x=0; x<NXMAX-1; x++ ) {
+    for ( y=0; y<NYMAX-1; y++ ) {
       v_[x][y] = 0;
     }
   }
-  for (x=0; x<NXMAX; x++) {
-    for (y=0; y<NYMAX; y++) {
+  for ( x=0; x<NXMAX; x++ ) {
+    for ( y=0; y<NYMAX; y++ ) {
 
       vxp_[x][y] = 0;
       vxm_[x][y] = 0;
@@ -105,8 +109,8 @@ StkFloat Mesh2D :: energy( void )
   StkFloat t;
   StkFloat e = 0;
   if ( counter_ & 1 ) { // Ready for Mesh2D::tick1() to be called.
-    for (x=0; x<NX_; x++) {
-      for (y=0; y<NY_; y++) {
+    for ( x=0; x<NX_; x++ ) {
+      for ( y=0; y<NY_; y++ ) {
         t = vxp1_[x][y];
         e += t*t;
         t = vxm1_[x][y];
@@ -119,8 +123,8 @@ StkFloat Mesh2D :: energy( void )
     }
   }
   else { // Ready for Mesh2D::tick0() to be called.
-    for (x=0; x<NX_; x++) {
-      for (y=0; y<NY_; y++) {
+    for ( x=0; x<NX_; x++ ) {
+      for ( y=0; y<NY_; y++ ) {
         t = vxp_[x][y];
         e += t*t;
         t = vxm_[x][y];
@@ -133,88 +137,66 @@ StkFloat Mesh2D :: energy( void )
     }
   }
 
-  return(e);
+  return e;
 }
 
-void Mesh2D :: setNX( short lenX )
+void Mesh2D :: setNX( unsigned short lenX )
 {
-  NX_ = lenX;
   if ( lenX < 2 ) {
-    errorString_ << "Mesh2D::setNX(" << lenX << "): Minimum length is 2!";
-    handleError( StkError::WARNING );
-    NX_ = 2;
+    oStream_ << "Mesh2D::setNX(" << lenX << "): Minimum length is 2!";
+    handleError( StkError::WARNING ); return;
   }
   else if ( lenX > NXMAX ) {
-    errorString_ << "Mesh2D::setNX(" << lenX << "): Maximum length is " << NXMAX << '!';;
-    handleError( StkError::WARNING );
-    NX_ = NXMAX;
+    oStream_ << "Mesh2D::setNX(" << lenX << "): Maximum length is " << NXMAX << '!';
+    handleError( StkError::WARNING ); return;
   }
+
+  NX_ = lenX;
 }
 
-void Mesh2D :: setNY( short lenY )
+void Mesh2D :: setNY( unsigned short lenY )
 {
-  NY_ = lenY;
   if ( lenY < 2 ) {
-    errorString_ << "Mesh2D::setNY(" << lenY << "): Minimum length is 2!";
-    handleError( StkError::WARNING );
-    NY_ = 2;
+    oStream_ << "Mesh2D::setNY(" << lenY << "): Minimum length is 2!";
+    handleError( StkError::WARNING ); return;
   }
   else if ( lenY > NYMAX ) {
-    errorString_ << "Mesh2D::setNY(" << lenY << "): Maximum length is " << NXMAX << '!';;
-    handleError( StkError::WARNING );
-    NY_ = NYMAX;
+    oStream_ << "Mesh2D::setNY(" << lenY << "): Maximum length is " << NXMAX << '!';
+    handleError( StkError::WARNING ); return;
   }
+
+  NY_ = lenY;
 }
 
 void Mesh2D :: setDecay( StkFloat decayFactor )
 {
-  StkFloat gain = decayFactor;
-  if ( decayFactor < 0.0 ) {
-    errorString_ << "Mesh2D::setDecay: decayFactor value is less than 0.0!";
-    handleError( StkError::WARNING );
-    gain = 0.0;
-  }
-  else if ( decayFactor > 1.0 ) {
-    errorString_ << "Mesh2D::setDecay decayFactor value is greater than 1.0!";
-    handleError( StkError::WARNING );
-    gain = 1.0;
+  if ( decayFactor < 0.0 || decayFactor > 1.0 ) {
+    oStream_ << "Mesh2D::setDecay: decayFactor is out of range!";
+    handleError( StkError::WARNING ); return;
   }
 
   int i;
-  for (i=0; i<NYMAX; i++)
-    filterY_[i].setGain( gain );
+  for ( i=0; i<NYMAX; i++ )
+    filterY_[i].setGain( decayFactor );
 
   for (i=0; i<NXMAX; i++)
-    filterX_[i].setGain( gain );
+    filterX_[i].setGain( decayFactor );
 }
 
 void Mesh2D :: setInputPosition( StkFloat xFactor, StkFloat yFactor )
 {
-  if ( xFactor < 0.0 ) {
-    errorString_ << "Mesh2D::setInputPosition xFactor value is less than 0.0!";
-    handleError( StkError::WARNING );
-    xInput_ = 0;
+  if ( xFactor < 0.0 || xFactor > 1.0 ) {
+    oStream_ << "Mesh2D::setInputPosition xFactor value is out of range!";
+    handleError( StkError::WARNING ); return;
   }
-  else if ( xFactor > 1.0 ) {
-    errorString_ << "Mesh2D::setInputPosition xFactor value is greater than 1.0!";
-    handleError( StkError::WARNING );
-    xInput_ = NX_ - 1;
-  }
-  else
-    xInput_ = (short) (xFactor * (NX_ - 1));
 
-  if ( yFactor < 0.0 ) {
-    errorString_ << "Mesh2D::setInputPosition yFactor value is less than 0.0!";
-    handleError( StkError::WARNING );
-    yInput_ = 0;
+  if ( yFactor < 0.0 || yFactor > 1.0 ) {
+    oStream_ << "Mesh2D::setInputPosition yFactor value is out of range!";
+    handleError( StkError::WARNING ); return;
   }
-  else if ( yFactor > 1.0 ) {
-    errorString_ << "Mesh2D::setInputPosition yFactor value is greater than 1.0!";
-    handleError( StkError::WARNING );
-    yInput_ = NY_ - 1;
-  }
-  else
-    yInput_ = (short) (yFactor * (NY_ - 1));
+
+  xInput_ = (unsigned short) (xFactor * (NX_ - 1));
+  yInput_ = (unsigned short) (yFactor * (NY_ - 1));
 }
 
 void Mesh2D :: noteOn( StkFloat frequency, StkFloat amplitude )
@@ -228,19 +210,11 @@ void Mesh2D :: noteOn( StkFloat frequency, StkFloat amplitude )
     vxp_[xInput_][yInput_] += amplitude;
     vyp_[xInput_][yInput_] += amplitude;
   }
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Mesh2D::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Mesh2D :: noteOff( StkFloat amplitude )
 {
-#if defined(_STK_DEBUG_)
-  errorString_ << "Mesh2D::NoteOff: amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
+  return;
 }
 
 StkFloat Mesh2D :: inputTick( StkFloat input )
@@ -366,34 +340,27 @@ StkFloat Mesh2D :: tick1( void )
 
 void Mesh2D :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "Mesh2D::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
-  }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "Mesh2D::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
-
-  if (number == 2) // 2
-    this->setNX( (short) (norm * (NXMAX-2) + 2) );
-  else if (number == 4) // 4
-    this->setNY( (short) (norm * (NYMAX-2) + 2) );
-  else if (number == 11) // 11
-    this->setDecay( 0.9 + (norm * 0.1) );
-  else if (number == __SK_ModWheel_) // 1
-    this->setInputPosition( norm, norm );
-  else {
-    errorString_ << "Mesh2D::controlChange: undefined control number (" << number << ")!";
-    handleError( StkError::WARNING );
-  }
-
 #if defined(_STK_DEBUG_)
-    errorString_ << "Mesh2D::controlChange: number = " << number << ", value = " << value << ".";
-    handleError( StkError::DEBUG_WARNING );
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "Mesh2D::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
+  StkFloat normalizedValue = value * ONE_OVER_128;
+  if ( number == 2 ) // 2
+    this->setNX( (unsigned short) (normalizedValue * (NXMAX-2) + 2) );
+  else if ( number == 4 ) // 4
+    this->setNY( (unsigned short) (normalizedValue * (NYMAX-2) + 2) );
+  else if ( number == 11 ) // 11
+    this->setDecay( 0.9 + (normalizedValue * 0.1) );
+  else if ( number == __SK_ModWheel_ ) // 1
+    this->setInputPosition( normalizedValue, normalizedValue );
+#if defined(_STK_DEBUG_)
+  else {
+    oStream_ << "Mesh2D::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 #endif
 }
 

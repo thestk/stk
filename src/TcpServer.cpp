@@ -19,7 +19,7 @@
     less than or equal to zero indicate a closed
     or lost connection or the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -36,7 +36,7 @@ TcpServer :: TcpServer( int port )
 
   WSAStartup(wVersionRequested, &wsaData);
   if (wsaData.wVersion != wVersionRequested) {
-    errorString_ << "TcpServer: Incompatible Windows socket library version!";
+    oStream_ << "TcpServer: Incompatible Windows socket library version!";
     handleError( StkError::PROCESS_SOCKET );
   }
 #endif
@@ -44,14 +44,14 @@ TcpServer :: TcpServer( int port )
   // Create the server-side socket
   soket_ = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (soket_ < 0) {
-    errorString_ << "TcpServer: Couldn't create socket server!";
+    oStream_ << "TcpServer: Couldn't create socket server!";
     handleError( StkError::PROCESS_SOCKET );
   }
 
   int flag = 1;
   int result = setsockopt( soket_, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(int) );
   if (result < 0) {
-    errorString_ << "TcpServer: Error setting socket options!";
+    oStream_ << "TcpServer: Error setting socket options!";
     handleError( StkError::PROCESS_SOCKET );
   }
 
@@ -62,13 +62,13 @@ TcpServer :: TcpServer( int port )
 
   // Bind socket to the appropriate port and interface (INADDR_ANY)
   if ( bind( soket_, (struct sockaddr *)&address, sizeof(address) ) < 0 ) {
-    errorString_ << "TcpServer: Couldn't bind socket!";
+    oStream_ << "TcpServer: Couldn't bind socket!";
     handleError( StkError::PROCESS_SOCKET );
   }
 
   // Listen for incoming connection(s)
   if ( listen( soket_, 1 ) < 0 ) {
-    errorString_ << "TcpServer: Couldn't start server listening!";
+    oStream_ << "TcpServer: Couldn't start server listening!";
     handleError( StkError::PROCESS_SOCKET );
   }
 

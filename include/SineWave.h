@@ -18,7 +18,7 @@ namespace stk {
 
     The "table" length, set in SineWave.h, is 2048 samples by default.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -121,7 +121,7 @@ inline StkFrames& SineWave :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "SineWave::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "SineWave::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

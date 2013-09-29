@@ -11,9 +11,11 @@ namespace stk {
     \brief STK bowed string table class.
 
     This class implements a simple bowed string
-    non-linear function, as described by Smith (1986).
+    non-linear function, as described by Smith
+    (1986).  The output is an instantaneous
+    reflection coefficient value.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -21,7 +23,7 @@ class BowTable : public Function
 {
 public:
   //! Default constructor.
-  BowTable( void ) : offset_(0.0), slope_(0.1) {};
+  BowTable( void ) : offset_(0.0), slope_(0.1), minOutput_(0.01), maxOutput_(0.98) {};
 
   //! Set the table offset value.
   /*!
@@ -38,6 +40,12 @@ public:
    pulse, which is related to bow force.
   */
   void setSlope( StkFloat slope ) { slope_ = slope; };
+
+  //! Set the minimum table output value (0.0 - 1.0).
+  void setMinOutput( StkFloat minimum ) { minOutput_ = minimum; };
+
+  //! Set the maximum table output value (0.0 - 1.0).
+  void setMaxOutput( StkFloat maximum ) { maxOutput_ = maximum; };
 
   //! Take one sample input and map to one sample of output.
   StkFloat tick( StkFloat input );
@@ -68,6 +76,8 @@ protected:
 
   StkFloat offset_;
   StkFloat slope_;
+  StkFloat minOutput_;
+  StkFloat maxOutput_;
 
 };
 
@@ -79,11 +89,11 @@ inline StkFloat BowTable :: tick( StkFloat input )
   lastFrame_[0] = (StkFloat) fabs( (double) sample ) + (StkFloat) 0.75;
   lastFrame_[0] = (StkFloat) pow( lastFrame_[0], (StkFloat) -4.0 );
 
-  // Set minimum friction to 0.0
-  // if ( lastFrame_[0] < 0.0 ) lastFrame_[0] = 0.0;
+  // Set minimum threshold
+  if ( lastFrame_[0] < minOutput_ ) lastFrame_[0] = minOutput_;
 
-  // Set maximum friction to 1.0.
-  if ( lastFrame_[0] > 1.0 ) lastFrame_[0] = (StkFloat) 1.0;
+  // Set maximum threshold
+  if ( lastFrame_[0] > maxOutput_ ) lastFrame_[0] = maxOutput_;
 
   return lastFrame_[0];
 }
@@ -92,7 +102,7 @@ inline StkFrames& BowTable :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "BowTable::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "BowTable::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -115,7 +125,7 @@ inline StkFrames& BowTable :: tick( StkFrames& iFrames, StkFrames& oFrames, unsi
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "BowTable::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "BowTable::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

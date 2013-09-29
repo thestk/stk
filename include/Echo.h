@@ -12,7 +12,7 @@ namespace stk {
 
     This class implements an echo effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -79,7 +79,7 @@ inline StkFrames& Echo :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "Echo::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Echo::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -98,7 +98,7 @@ inline StkFrames& Echo :: tick( StkFrames& iFrames, StkFrames& oFrames, unsigned
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "Echo::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "Echo::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

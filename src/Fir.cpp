@@ -16,11 +16,12 @@
     This structure results in one extra multiply per computed sample,
     but allows easy control of the overall filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
 #include "Fir.h"
+#include <cmath>
 
 namespace stk {
 
@@ -36,7 +37,7 @@ Fir :: Fir( std::vector<StkFloat> &coefficients )
 {
   // Check the arguments.
   if ( coefficients.size() == 0 ) {
-    errorString_ << "Fir: coefficient vector must have size > 0!";
+    oStream_ << "Fir: coefficient vector must have size > 0!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -55,7 +56,7 @@ void Fir :: setCoefficients( std::vector<StkFloat> &coefficients, bool clearStat
 {
   // Check the argument.
   if ( coefficients.size() == 0 ) {
-    errorString_ << "Fir::setCoefficients: coefficient vector must have size > 0!";
+    oStream_ << "Fir::setCoefficients: coefficient vector must have size > 0!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 

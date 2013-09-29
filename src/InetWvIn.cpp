@@ -20,11 +20,12 @@
     data type for the incoming stream is signed 16-bit integers,
     though any of the defined StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
 #include "InetWvIn.h"
+#include <sstream>
 
 namespace stk {
 
@@ -47,7 +48,7 @@ InetWvIn :: InetWvIn( unsigned long bufferFrames, unsigned int nBuffers )
 
   // Start the input thread.
   if ( !thread_.start( &inputThread, &threadInfo_ ) ) {
-    errorString_ << "InetWvIn(): unable to start input thread in constructor!";
+    oStream_ << "InetWvIn(): unable to start input thread in constructor!";
     handleError( StkError::PROCESS_THREAD );
   }
 }
@@ -70,7 +71,7 @@ void InetWvIn :: listen( int port, unsigned int nChannels,
   if ( connected_ ) delete soket_;
 
   if ( nChannels < 1 ) {
-    errorString_ << "InetWvIn()::listen(): the channel argument (" << nChannels << ") must be greater than zero.";
+    oStream_ << "InetWvIn()::listen(): the channel argument must be greater than zero.";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -79,7 +80,7 @@ void InetWvIn :: listen( int port, unsigned int nChannels,
   else if ( format == STK_FLOAT64 ) dataBytes_ = 8;
   else if ( format == STK_SINT8 ) dataBytes_ = 1;
   else {
-    errorString_ << "InetWvIn(): unknown data type specified (" << format << ").";
+    oStream_ << "InetWvIn(): unknown data type specified!";
     handleError( StkError::FUNCTION_ARGUMENT );
   } 
   dataType_ = format;
@@ -101,14 +102,14 @@ void InetWvIn :: listen( int port, unsigned int nChannels,
 
   if ( protocol == Socket::PROTO_TCP ) {
     TcpServer *socket = new TcpServer( port );
-    errorString_ << "InetWvIn:listen(): waiting for TCP connection on port " << socket->port() << " ... ";
+    oStream_ << "InetWvIn:listen(): waiting for TCP connection on port " << socket->port() << " ... ";
     handleError( StkError::STATUS );
     fd_ = socket->accept();
     if ( fd_ < 0) {
-      errorString_ << "InetWvIn::listen(): Error accepting TCP connection request!";
+      oStream_ << "InetWvIn::listen(): Error accepting TCP connection request!";
       handleError( StkError::PROCESS_SOCKET );
     }
-    errorString_ << "InetWvIn::listen(): TCP socket connection made!";
+    oStream_ << "InetWvIn::listen(): TCP socket connection made!";
     handleError( StkError::STATUS );
     soket_ = (Socket *) socket;
   }
@@ -146,7 +147,7 @@ void InetWvIn :: receive( void )
       int i = soket_->readBuffer( fd_, (void *)&buffer_[writePoint_], unfilled, 0 );
       //int i = Socket::readBuffer( fd_, (void *)&buffer_[writePoint_], unfilled, 0 );
       if ( i <= 0 ) {
-        errorString_ << "InetWvIn::receive(): the remote InetWvIn socket has closed.";
+        oStream_ << "InetWvIn::receive(): the remote InetWvIn socket has closed.";
         handleError( StkError::STATUS );
         connected_ = false;
         mutex_.unlock();
@@ -261,15 +262,15 @@ StkFloat InetWvIn :: tick( unsigned int channel )
   // If no connection and we've output all samples in the queue, return 0.0.
   if ( !connected_ && bytesFilled_ == 0 && bufferCounter_ == 0 ) {
 #if defined(_STK_DEBUG_)
-    errorString_ << "InetWvIn::tick(): a valid socket connection does not exist!";
-    handleError( StkError::DEBUG_WARNING );
+    oStream_ << "InetWvIn::tick(): a valid socket connection does not exist!";
+    handleError( StkError::DEBUG_PRINT );
 #endif
     return 0.0;
   }
 
 #if defined(_STK_DEBUG_)
   if ( channel >= data_.channels() ) {
-    errorString_ << "InetWvIn::tick(): channel argument is incompatible with data stream!";
+    oStream_ << "InetWvIn::tick(): channel argument is incompatible with data stream!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -293,7 +294,7 @@ StkFrames& InetWvIn :: tick( StkFrames& frames )
 {
 #if defined(_STK_DEBUG_)
   if ( data_.channels() != frames.channels() ) {
-    errorString_ << "InetWvIn::tick(): StkFrames argument is incompatible with streamed channels!";
+    oStream_ << "InetWvIn::tick(): StkFrames argument is incompatible with streamed channels!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -301,8 +302,8 @@ StkFrames& InetWvIn :: tick( StkFrames& frames )
   // If no connection and we've output all samples in the queue, return.
   if ( !connected_ && bytesFilled_ == 0 && bufferCounter_ == 0 ) {
 #if defined(_STK_DEBUG_)
-    errorString_ << "InetWvIn::tick(): a valid socket connection does not exist!";
-    handleError( StkError::DEBUG_WARNING );
+    oStream_ << "InetWvIn::tick(): a valid socket connection does not exist!";
+    handleError( StkError::DEBUG_PRINT );
 #endif
     return frames;
   }

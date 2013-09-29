@@ -18,7 +18,7 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -29,16 +29,24 @@ namespace stk {
 
 Clarinet :: Clarinet( StkFloat lowestFrequency )
 {
-  length_ = (long) (Stk::sampleRate() / lowestFrequency + 1);
-  delayLine_.setMaximumDelay( length_ );
-  delayLine_.setDelay( length_ / 2.0 );
-  reedTable_.setOffset((StkFloat) 0.7);
-  reedTable_.setSlope((StkFloat) -0.3);
+  if ( lowestFrequency <= 0.0 ) {
+    oStream_ << "Clarinet::Clarinet: argument is less than or equal to zero!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
 
-  vibrato_.setFrequency((StkFloat) 5.735);
-  outputGain_ = (StkFloat) 1.0;
-  noiseGain_ = (StkFloat) 0.2;
-  vibratoGain_ = (StkFloat) 0.1;
+  unsigned long nDelays = (unsigned long) ( 0.5 * Stk::sampleRate() / lowestFrequency );
+  delayLine_.setMaximumDelay( nDelays + 1 );
+
+  reedTable_.setOffset( 0.7 );
+  reedTable_.setSlope( -0.3 );
+
+  vibrato_.setFrequency( 5.735 );
+  outputGain_ = 1.0;
+  noiseGain_ = 0.2;
+  vibratoGain_ = 0.1;
+
+  this->setFrequency( 220.0 );
+  this->clear();
 }
 
 Clarinet :: ~Clarinet( void )
@@ -53,86 +61,77 @@ void Clarinet :: clear( void )
 
 void Clarinet :: setFrequency( StkFloat frequency )
 {
-  StkFloat freakency = frequency;
+#if defined(_STK_DEBUG_)
   if ( frequency <= 0.0 ) {
-    errorString_ << "Clarinet::setFrequency: parameter is less than or equal to zero!";
-    handleError( StkError::WARNING );
-    freakency = 220.0;
+    oStream_ << "Clarinet::setFrequency: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
   }
+#endif
 
-  // Delay = length - approximate filter delay.
-  StkFloat delay = (Stk::sampleRate() / freakency) * 0.5 - 1.5;
-  if (delay <= 0.0) delay = 0.3;
-  else if (delay > length_) delay = length_;
-  delayLine_.setDelay(delay);
+  // Account for filter delay and one sample "lastOut" delay.
+  StkFloat delay = ( Stk::sampleRate() / frequency ) * 0.5 - filter_.phaseDelay( frequency ) - 1.0;
+  delayLine_.setDelay( delay );
 }
 
 void Clarinet :: startBlowing( StkFloat amplitude, StkFloat rate )
 {
-  envelope_.setRate(rate);
-  envelope_.setTarget(amplitude); 
+  if ( amplitude <= 0.0 || rate <= 0.0 ) {
+    oStream_ << "Clarinet::startBlowing: one or more arguments is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+
+  envelope_.setRate( rate );
+  envelope_.setTarget( amplitude );
 }
 
 void Clarinet :: stopBlowing( StkFloat rate )
 {
-  envelope_.setRate(rate);
-  envelope_.setTarget((StkFloat) 0.0); 
+  if ( rate <= 0.0 ) {
+    oStream_ << "Clarinet::stopBlowing: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+
+  envelope_.setRate( rate );
+  envelope_.setTarget( 0.0 );
 }
 
 void Clarinet :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
-  this->setFrequency(frequency);
-  this->startBlowing((StkFloat) 0.55 + (amplitude * (StkFloat) 0.30), amplitude * (StkFloat) 0.005);
-  outputGain_ = amplitude + (StkFloat) 0.001;
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Clarinet::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
+  this->setFrequency( frequency );
+  this->startBlowing( 0.55 + (amplitude * 0.30), amplitude * 0.005 );
+  outputGain_ = amplitude + 0.001;
 }
 
 void Clarinet :: noteOff( StkFloat amplitude )
 {
   this->stopBlowing( amplitude * 0.01 );
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Clarinet::NoteOff: amplitude = " << amplitude << '.';
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Clarinet :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "Clarinet::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
-  }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "Clarinet::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
-
-  if (number == __SK_ReedStiffness_) // 2
-    reedTable_.setSlope((StkFloat) -0.44 + ( (StkFloat) 0.26 * norm ));
-  else if (number == __SK_NoiseLevel_) // 4
-    noiseGain_ = (norm * (StkFloat) 0.4);
-  else if (number == __SK_ModFrequency_) // 11
-    vibrato_.setFrequency((norm * (StkFloat) 12.0));
-  else if (number == __SK_ModWheel_) // 1
-    vibratoGain_ = (norm * (StkFloat) 0.5);
-  else if (number == __SK_AfterTouch_Cont_) // 128
-    envelope_.setValue(norm);
-  else {
-    errorString_ << "Clarinet::controlChange: undefined control number (" << number << ")!";
-    handleError( StkError::WARNING );
-  }
-
 #if defined(_STK_DEBUG_)
-    errorString_ << "Clarinet::controlChange: number = " << number << ", value = " << value << '.';
-    handleError( StkError::DEBUG_WARNING );
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "Clarinet::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
+  StkFloat normalizedValue = value * ONE_OVER_128;
+  if ( number == __SK_ReedStiffness_ ) // 2
+    reedTable_.setSlope( -0.44 + ( 0.26 * normalizedValue ) );
+  else if ( number == __SK_NoiseLevel_ ) // 4
+    noiseGain_ = ( normalizedValue * 0.4 );
+  else if ( number == __SK_ModFrequency_ ) // 11
+    vibrato_.setFrequency( normalizedValue * 12.0 );
+  else if ( number == __SK_ModWheel_ ) // 1
+    vibratoGain_ = ( normalizedValue * 0.5 );
+  else if ( number == __SK_AfterTouch_Cont_ ) // 128
+    envelope_.setValue( normalizedValue );
+#if defined(_STK_DEBUG_)
+  else {
+    oStream_ << "Clarinet::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 #endif
 }
 

@@ -1,19 +1,18 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2010.
+By Perry R. Cook and Gary P. Scavone, 1995-2011.
 
 Please read the file README for more general STK information.
 
-DirectX and WindowsNT Issues:
------------------------------
+The configure script supports MinGW.  As well, STK is distributed with Visual C++ .NET project and workspace files.  It no longer compiles with Visual C++ 6.0.
 
-STK is currently distributed with Visual C++ .NET project and workspace files.  It no longer compiles with Visual C++ 6.0.  I gave up attempting to fix all the problems created by such a bad compiler.  This version of STK has been tested using Visual C++ .NET.  As well, the configure script now supports MinGW.
+With Windows XP/7, piping works as under unix.  Simply fire up the script files (ex. StkDemo.bat) by either double-clicking on them or from within a shell.
 
 IMPORTANT VC++ NOTE: When compiling "release" versions of STK programs, link to the release multithreaded library.  When compiling "debug" versions, link to the debug multithreaded library.  Compiler errors will result otherwise.
 
 Both the DirectSound and Steinberg ASIO audio APIs are supported for realtime audio input/output.  The Visual C++ project files included with this distribution are configured to use the DirectSound API.  In order to use the ASIO API, it is necessary to change the preprocessor definition from __WINDOWS_DS__ to __WINDOWS_ASIO__, as well as include all the files in the /src/include/ directory (i.e. asio.h, asio.cpp, ...).  If you have a good quality soundcard and a native ASIO driver (not emulated), you are likely to get much better input/output response using that.
 
-When using the DirectSound API for audio input, latency is typically pretty horrendous (should we be surprised?).  Also, there is a slight chance you don't have DirectSoundCapture support on your computer.  If not, you should download the DirectX 6.0 (or higher) runtime libraries from Microsoft's WWW site (http://www.microsoft.com/directx/download.asp) in order to run the pre-compiled STK executables for Windoze.  The last time I checked, there was no DirectSoundCapture support for WindowsNT ... you'll have to switch to Windows 2000 or XP or use an ASIO driver.  I stopped supporting the WinMM audio output code with release 3.2.
+When using the DirectSound API for audio input, latency can be high.  If you experience realtime audio "stuttering", you should experiment with different "buffer size" and "number of buffers" values.
 
 Realtime MIDI input/output is supported by RtMidi using the winmm.lib API and requires the __WINDOWS_MM__ preprocessor definition.
 
@@ -33,22 +32,4 @@ Visual C++ workspaces have been created for the various STK projects.  Everythin
 
 Remember that items 1-5 above need to be done for each project and for each configuration.  There might be an easy way to make global changes, but I couldn't figure it out.
 
-To use the Tcl/Tk GUIs, you will have to install Tcl/Tk.  I got version 8.0 and it works very well (and installed easily).  The distribution is available on the WWW and is free.
-
-In order for socketing to work, it is necessary to have the TCP protocol installed on your computer.  This can be done from the "Network" control panel.
-
-Finally, to use it all -
-
-
-WINDOWS XP/2000:
-
-There is a big advantage in using Windows XP/2000 over 95/98 with STK in that piping works, just as under unix.  Also, the scheduler in 2000/XP seems to be much better, so socketed messages don't get clumped together like they do in Windows 95/98.  Simply fire up a script file (ex. StkDemo.bat) by either double-clicking on it or typing it within a shell.
-
-
-USE REALTIME MIDI INPUT FOR CONTROL:
-
-1. Open a DOS console window and start syntmono with MIDI input (eg. demo Clarinet -or -im).
-
-   This assumes you already have MIDI setup correctly for your computer.
-
-
+To use the Tcl/Tk GUIs, you will have to install Tcl/Tk.

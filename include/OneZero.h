@@ -13,7 +13,7 @@ namespace stk {
   provided for setting the zero position along the real axis of the
   z-plane while maintaining a constant filter gain.
 
-  by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+  by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -89,7 +89,7 @@ inline StkFrames& OneZero :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
   if ( channel >= frames.channels() ) {
-    errorString_ << "OneZero::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "OneZero::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -110,7 +110,7 @@ inline StkFrames& OneZero :: tick( StkFrames& iFrames, StkFrames& oFrames, unsig
 {
 #if defined(_STK_DEBUG_)
   if ( iChannel >= iFrames.channels() || oChannel >= oFrames.channels() ) {
-    errorString_ << "OneZero::tick(): channel and StkFrames arguments are incompatible!";
+    oStream_ << "OneZero::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

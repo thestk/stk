@@ -14,7 +14,7 @@
     that takes a reference to an StkFrames object for multi-channel
     and/or multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -82,7 +82,7 @@ int RtWvOut :: readBuffer( void *buffer, unsigned int frameCount )
   if ( framesFilled_ < 0 ) {
     framesFilled_ = 0;
     //    writeIndex_ = readIndex_;
-    errorString_ << "RtWvOut: audio buffer underrun!";
+    oStream_ << "RtWvOut: audio buffer underrun!";
     handleError( StkError::WARNING );
   }
 
@@ -169,7 +169,7 @@ void RtWvOut :: tick( const StkFrames& frames )
 {
 #if defined(_STK_DEBUG_)
   if ( data_.channels() != frames.channels() ) {
-    errorString_ << "RtWvOut::tick(): incompatible channel value in StkFrames argument!";
+    oStream_ << "RtWvOut::tick(): incompatible channel value in StkFrames argument!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif

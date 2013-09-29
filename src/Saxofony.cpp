@@ -31,7 +31,7 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
+    by Perry R. Cook and Gary P. Scavone, 1995-2011.
 */
 /***************************************************/
 
@@ -42,22 +42,29 @@ namespace stk {
 
 Saxofony :: Saxofony( StkFloat lowestFrequency )
 {
-  length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
-  // Initialize blowing position to 0.2 of length / 2.
+  if ( lowestFrequency <= 0.0 ) {
+    oStream_ << "Saxofony::Saxofony: argument is less than or equal to zero!";
+    handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
+  unsigned long nDelays = (unsigned long) ( Stk::sampleRate() / lowestFrequency );
+  delays_[0].setMaximumDelay( nDelays + 1 );
+  delays_[1].setMaximumDelay( nDelays + 1 );
+
+  // Initialize blowing position to 0.2 of length.
   position_ = 0.2;
-  delays_[0].setMaximumDelay( length_ );
-  delays_[0].setDelay( (1.0-position_) * (length_ >> 1) );
-  delays_[1].setMaximumDelay( length_ );
-  delays_[1].setDelay( (1.0-position_) * (length_ >> 1) );
 
   reedTable_.setOffset( 0.7 );
   reedTable_.setSlope( 0.3 );
 
-  vibrato_.setFrequency((StkFloat) 5.735);
+  vibrato_.setFrequency( 5.735 );
 
   outputGain_ = 0.3;
   noiseGain_ = 0.2;
   vibratoGain_ = 0.1;
+
+  this->setFrequency( 220.0 );
+  this->clear();
 }
 
 Saxofony :: ~Saxofony( void )
@@ -73,17 +80,15 @@ void Saxofony :: clear( void )
 
 void Saxofony :: setFrequency( StkFloat frequency )
 {
-  StkFloat freakency = frequency;
+#if defined(_STK_DEBUG_)
   if ( frequency <= 0.0 ) {
-    errorString_ << "Saxofony::setFrequency: parameter is less than or equal to zero!";
-    handleError( StkError::WARNING );
-    freakency = 220.0;
+    oStream_ << "Saxofony::setFrequency: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
   }
+#endif
 
-  StkFloat delay = (Stk::sampleRate() / freakency) - (StkFloat) 3.0;
-  if (delay <= 0.0) delay = 0.3;
-  else if (delay > length_) delay = length_;
-
+  // Account for filter delay and one sample "lastOut" delay.
+  StkFloat delay = ( Stk::sampleRate() / frequency ) - filter_.phaseDelay( frequency ) - 1.0;
   delays_[0].setDelay( (1.0-position_) * delay );
   delays_[1].setDelay( position_ * delay );
 }
@@ -105,12 +110,22 @@ void Saxofony :: setBlowPosition( StkFloat position )
 
 void Saxofony :: startBlowing( StkFloat amplitude, StkFloat rate )
 {
+  if ( amplitude <= 0.0 || rate <= 0.0 ) {
+    oStream_ << "Saxofony::startBlowing: one or more arguments is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+
   envelope_.setRate( rate );
   envelope_.setTarget( amplitude );
 }
 
 void Saxofony :: stopBlowing( StkFloat rate )
 {
+  if ( rate <= 0.0 ) {
+    oStream_ << "Saxofony::stopBlowing: argument is less than or equal to zero!";
+    handleError( StkError::WARNING ); return;
+  }
+
   envelope_.setRate( rate );
   envelope_.setTarget( 0.0 );
 }
@@ -120,59 +135,42 @@ void Saxofony :: noteOn( StkFloat frequency, StkFloat amplitude )
   this->setFrequency( frequency );
   this->startBlowing( 0.55 + (amplitude * 0.30), amplitude * 0.005 );
   outputGain_ = amplitude + 0.001;
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Saxofony::NoteOn: frequency = " << frequency << ", amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Saxofony :: noteOff( StkFloat amplitude )
 {
   this->stopBlowing( amplitude * 0.01 );
-
-#if defined(_STK_DEBUG_)
-  errorString_ << "Saxofony::NoteOff: amplitude = " << amplitude << ".";
-  handleError( StkError::DEBUG_WARNING );
-#endif
 }
 
 void Saxofony :: controlChange( int number, StkFloat value )
 {
-  StkFloat norm = value * ONE_OVER_128;
-  if ( norm < 0 ) {
-    norm = 0.0;
-    errorString_ << "Saxofony::controlChange: control value less than zero ... setting to zero!";
-    handleError( StkError::WARNING );
-  }
-  else if ( norm > 1.0 ) {
-    norm = 1.0;
-    errorString_ << "Saxofony::controlChange: control value greater than 128.0 ... setting to 128.0!";
-    handleError( StkError::WARNING );
-  }
-
-  if (number == __SK_ReedStiffness_) // 2
-    reedTable_.setSlope( 0.1 + (0.4 * norm) );
-  else if (number == __SK_NoiseLevel_) // 4
-    noiseGain_ = ( norm * 0.4 );
-  else if (number == 29) // 29
-    vibrato_.setFrequency( norm * 12.0 );
-  else if (number == __SK_ModWheel_) // 1
-    vibratoGain_ = ( norm * 0.5 );
-  else if (number == __SK_AfterTouch_Cont_) // 128
-    envelope_.setValue( norm );
-  else if (number == 11) // 11
-    this->setBlowPosition( norm );
-  else if (number == 26) // reed table offset
-    reedTable_.setOffset(0.4 + ( norm * 0.6));
-  else {
-    errorString_ << "Saxofony::controlChange: undefined control number (" << number << ")!";
-    handleError( StkError::WARNING );
-  }
-
 #if defined(_STK_DEBUG_)
-    errorString_ << "Saxofony::controlChange: number = " << number << ", value = " << value << ".";
-    handleError( StkError::DEBUG_WARNING );
+  if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
+    oStream_ << "Saxofony::controlChange: value (" << value << ") is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+#endif
+
+  StkFloat normalizedValue = value * ONE_OVER_128;
+  if (number == __SK_ReedStiffness_) // 2
+    reedTable_.setSlope( 0.1 + (0.4 * normalizedValue) );
+  else if (number == __SK_NoiseLevel_) // 4
+    noiseGain_ = ( normalizedValue * 0.4 );
+  else if (number == 29) // 29
+    vibrato_.setFrequency( normalizedValue * 12.0 );
+  else if (number == __SK_ModWheel_) // 1
+    vibratoGain_ = ( normalizedValue * 0.5 );
+  else if (number == __SK_AfterTouch_Cont_) // 128
+    envelope_.setValue( normalizedValue );
+  else if (number == 11) // 11
+    this->setBlowPosition( normalizedValue );
+  else if (number == 26) // reed table offset
+    reedTable_.setOffset(0.4 + ( normalizedValue * 0.6));
+#if defined(_STK_DEBUG_)
+  else {
+    oStream_ << "Saxofony::controlChange: undefined control number (" << number << ")!";
+    handleError( StkError::WARNING );
+  }
 #endif
 }
 

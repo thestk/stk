@@ -13,17 +13,19 @@
     FileRead currently supports uncompressed WAV,
     AIFF/AIFC, SND (AU), MAT-file (Matlab), and
     STK RAW file formats.  Signed integer (8-,
-    16-, and 32-bit) and floating-point (32- and
+    16-, 24- and 32-bit) and floating-point (32- and
     64-bit) data types are supported.  Compressed
     data types are not supported.
 
-    STK RAW files have no header and are assumed
-    to contain a monophonic stream of 16-bit
-    signed integers in big-endian byte order at a
-    sample rate of 22050 Hz.  MAT-file data should
-    be saved in an array with each data channel
-    filling a matrix row.  The sample rate for
-    MAT-files is assumed to be 44100 Hz.
+    STK RAW files have no header and are assumed to
+    contain a monophonic stream of 16-bit signed
+    integers in big-endian byte order at a sample
+    rate of 22050 Hz.  MAT-file data should be saved
+    in an array with each data channel filling a
+    matrix row.  The sample rate for MAT-files should
+    be specified in a variable named "fs".  If no
+    such variable is found, the sample rate is
+    assumed to be 44100 Hz.
 
     by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
@@ -39,7 +41,7 @@
 namespace stk {
 
 FileRead :: FileRead()
-  : fd_(0)
+  : fd_(0), fileSize_(0), channels_(0), dataType_(0), fileRate_(0.0)
 {
 }
 
@@ -61,6 +63,10 @@ void FileRead :: close( void )
   if ( fd_ ) fclose( fd_ );
   fd_ = 0;
   wavFile_ = false;
+  fileSize_ = 0;
+  channels_ = 0;
+  dataType_ = 0;
+  fileRate_ = 0.0;
 }
 
 bool FileRead :: isOpen( void )
@@ -78,7 +84,7 @@ void FileRead :: open( std::string fileName, bool typeRaw, unsigned int nChannel
   // Try to open the file.
   fd_ = fopen( fileName.c_str(), "rb" );
   if ( !fd_ ) {
-    errorString_ << "FileRead::open: could not open or find file (" << fileName << ")!";
+    oStream_ << "FileRead::open: could not open or find file (" << fileName << ")!";
     handleError( StkError::FILE_NOT_FOUND );
   }
 
@@ -104,7 +110,7 @@ void FileRead :: open( std::string fileName, bool typeRaw, unsigned int nChannel
            !strncmp( header, "IM", 2 ) )
         result = getMatInfo( fileName.c_str() );
       else {
-        errorString_ << "FileRead::open: file (" << fileName << ") format unknown.";
+        oStream_ << "FileRead::open: file (" << fileName << ") format unknown.";
         handleError( StkError::FILE_UNKNOWN_FORMAT );
       }
     }
@@ -116,14 +122,14 @@ void FileRead :: open( std::string fileName, bool typeRaw, unsigned int nChannel
 
   // Check for empty files.
   if ( fileSize_ == 0 ) {
-    errorString_ << "FileRead::open: file (" << fileName << ") data size is zero!";
+    oStream_ << "FileRead::open: file (" << fileName << ") data size is zero!";
     handleError( StkError::FILE_ERROR );
   }
 
   return;
 
  error:
-  errorString_ << "FileRead::open: error reading file (" << fileName << ")!";
+  oStream_ << "FileRead::open: error reading file (" << fileName << ")!";
   handleError( StkError::FILE_ERROR );
 }
 
@@ -132,7 +138,7 @@ bool FileRead :: getRawInfo( const char *fileName, unsigned int nChannels, StkFo
   // Use the system call "stat" to determine the file length.
   struct stat filestat;
   if ( stat(fileName, &filestat) == -1 ) {
-    errorString_ << "FileRead: Could not stat RAW file (" << fileName << ").";
+    oStream_ << "FileRead: Could not stat RAW file (" << fileName << ").";
     return false;
   }
 
@@ -199,8 +205,8 @@ bool FileRead :: getWavInfo( const char *fileName )
 #endif
     if ( fseek(fd_, dataOffset_, SEEK_SET) == -1 ) goto error;
   }
-  if (format_tag != 1 && format_tag != 3 ) { // PCM = 1, FLOAT = 3
-    errorString_ << "FileRead: "<< fileName << " contains an unsupported data format type (" << format_tag << ").";
+  if ( format_tag != 1 && format_tag != 3 ) { // PCM = 1, FLOAT = 3
+    oStream_ << "FileRead: "<< fileName << " contains an unsupported data format type (" << format_tag << ").";
     return false;
   }
 
@@ -228,21 +234,23 @@ bool FileRead :: getWavInfo( const char *fileName )
   swap16((unsigned char *)&temp);
 #endif
   if ( format_tag == 1 ) {
-    if (temp == 8)
+    if ( temp == 8 )
       dataType_ = STK_SINT8;
-    else if (temp == 16)
+    else if ( temp == 16 )
       dataType_ = STK_SINT16;
-    else if (temp == 32)
+    else if ( temp == 24 )
+      dataType_ = STK_SINT24;
+    else if ( temp == 32 )
       dataType_ = STK_SINT32;
   }
   else if ( format_tag == 3 ) {
-    if (temp == 32)
+    if ( temp == 32 )
       dataType_ = STK_FLOAT32;
-    else if (temp == 64)
+    else if ( temp == 64 )
       dataType_ = STK_FLOAT64;
   }
   if ( dataType_ == 0 ) {
-    errorString_ << "FileRead: " << temp << " bits per sample with data format " << format_tag << " are not supported (" << fileName << ").";
+    oStream_ << "FileRead: " << temp << " bits per sample with data format " << format_tag << " are not supported (" << fileName << ").";
     return false;
   }
 
@@ -268,7 +276,8 @@ bool FileRead :: getWavInfo( const char *fileName )
 #ifndef __LITTLE_ENDIAN__
   swap32((unsigned char *)&bytes);
 #endif
-  fileSize_ = 8 * bytes / temp / channels_;  // sample frames
+  fileSize_ = bytes / temp / channels_;  // sample frames
+  fileSize_ *= 8;  // sample frames
 
   dataOffset_ = ftell(fd_);
   byteswap_ = false;
@@ -280,7 +289,7 @@ bool FileRead :: getWavInfo( const char *fileName )
   return true;
 
  error:
-  errorString_ << "FileRead: error reading WAV file (" << fileName << ").";
+  oStream_ << "FileRead: error reading WAV file (" << fileName << ").";
   return false;
 }
 
@@ -293,6 +302,7 @@ bool FileRead :: getSndInfo( const char *fileName )
 #ifdef __LITTLE_ENDIAN__
     swap32((unsigned char *)&format);
 #endif
+
   if (format == 2) dataType_ = STK_SINT8;
   else if (format == 3) dataType_ = STK_SINT16;
   else if (format == 4) dataType_ = STK_SINT24;
@@ -300,7 +310,7 @@ bool FileRead :: getSndInfo( const char *fileName )
   else if (format == 6) dataType_ = STK_FLOAT32;
   else if (format == 7) dataType_ = STK_FLOAT64;
   else {
-    errorString_ << "FileRead: data format in file " << fileName << " is not supported.";
+    oStream_ << "FileRead: data format in file " << fileName << " is not supported.";
     return false;
   }
 
@@ -320,11 +330,13 @@ bool FileRead :: getSndInfo( const char *fileName )
 #endif
   channels_ = chans;
 
+  UINT32 offset;
   if ( fseek(fd_, 4, SEEK_SET) == -1 ) goto error;
-  if ( fread(&dataOffset_, 4, 1, fd_) != 1 ) goto error;
+  if ( fread(&offset, 4, 1, fd_) != 1 ) goto error;
 #ifdef __LITTLE_ENDIAN__
-  swap32((unsigned char *)&dataOffset_);
+  swap32((unsigned char *)&offset);
 #endif
+  dataOffset_ = offset;
 
   // Get length of data from the header.
   if ( fread(&fileSize_, 4, 1, fd_) != 1 ) goto error;
@@ -351,7 +363,7 @@ bool FileRead :: getSndInfo( const char *fileName )
   return true;
 
  error:
-  errorString_ << "FileRead: Error reading SND file (" << fileName << ").";
+  oStream_ << "FileRead: Error reading SND file (" << fileName << ").";
   return false;
 }
 
@@ -442,7 +454,7 @@ bool FileRead :: getAifInfo( const char *fileName )
     else if ( (!strncmp(id, "fl64", 4) || !strncmp(id, "FL64", 4)) && temp == 64 ) dataType_ = STK_FLOAT64;
   }
   if ( dataType_ == 0 ) {
-    errorString_ << "FileRead: AIFF/AIFC file (" << fileName << ") has unsupported data type (" << id << ").";
+    oStream_ << "FileRead: AIFF/AIFC file (" << fileName << ") has unsupported data type (" << id << ").";
     return false;
   }
 
@@ -473,8 +485,42 @@ bool FileRead :: getAifInfo( const char *fileName )
   return true;
 
  error:
-  errorString_ << "FileRead: Error reading AIFF file (" << fileName << ").";
+  oStream_ << "FileRead: Error reading AIFF file (" << fileName << ").";
   return false;
+}
+
+bool FileRead :: findNextMatArray( SINT32 *chunkSize, SINT32 *rows, SINT32 *columns, SINT32 *nametype )
+{
+  // Look for the next data array element. The file pointer should be
+  // at the data element type when this function is called.
+  SINT32 datatype;
+  *chunkSize = 0;
+  do {
+    if ( fseek(fd_, *chunkSize, SEEK_CUR) == -1 ) return false;
+    if ( fread(&datatype, 4, 1, fd_) != 1 ) return false;
+    if ( byteswap_ ) swap32((unsigned char *)&datatype);
+    if ( fread(chunkSize, 4, 1, fd_) != 1 ) return false;
+    if ( byteswap_ ) swap32((unsigned char *)chunkSize);
+  } while ( datatype != 14 );
+
+  // Check dimension subelement size to make sure 2D
+  if ( fseek(fd_, 20, SEEK_CUR) == -1 ) return false;
+  SINT32 size;
+  if ( fread(&size, 4, 1, fd_) != 1 ) return false;
+  if ( byteswap_ ) swap32((unsigned char *)&size);
+  if ( size != 8 ) return false;
+
+  // Read dimensions data
+  if ( fread(rows, 4, 1, fd_) != 1 ) return false;
+  if ( byteswap_ ) swap32((unsigned char *)rows);
+  if ( fread(columns, 4, 1, fd_) != 1 ) return false;
+  if ( byteswap_ ) swap32((unsigned char *)columns);
+
+  // Read array name subelement type
+  if ( fread(nametype, 4, 1, fd_) != 1 ) return false;
+  if ( byteswap_ ) swap32((unsigned char *)nametype);
+
+  return true;
 }
 
 bool FileRead :: getMatInfo( const char *fileName )
@@ -490,7 +536,7 @@ bool FileRead :: getMatInfo( const char *fileName )
   // a Version 4 MAT-file.
   head[4] = '\0';
   if ( strstr(head, "0") ) {
-    errorString_ << "FileRead: " << fileName << " appears to be a Version 4 MAT-file, which is not currently supported.";
+    oStream_ << "FileRead: " << fileName << " appears to be a Version 4 MAT-file, which is not currently supported.";
     return false;
   }
 
@@ -510,79 +556,164 @@ bool FileRead :: getMatInfo( const char *fileName )
   else if ( strncmp(mi, "MI", 2) ) goto error;
 #endif
 
-  // Check the data element type
-  SINT32 datatype;
-  if ( fread(&datatype, 4, 1, fd_) != 1 ) goto error;
-  if ( byteswap_ ) swap32((unsigned char *)&datatype);
-  if (datatype != 14) {
-    errorString_ << "FileRead: The file does not contain a single Matlab array (or matrix) data element.";
-    return false;
-  }
+  // We are expecting a data element containing the audio data and an
+  // optional data element containing the sample rate (with an array
+  // name of "fs").  Both elements should be stored as a Matlab array
+  // type (14).
 
-  // Determine the array data type.
-  SINT32 tmp;
-  SINT32 size;
-  if ( fseek(fd_, 168, SEEK_SET) == -1 ) goto error;
-  if ( fread(&tmp, 4, 1, fd_) != 1 ) goto error;
-  if (byteswap_) swap32((unsigned char *)&tmp);
-  if (tmp == 1) {  // array name > 4 characters
-    if ( fread(&tmp, 4, 1, fd_) != 1 ) goto error;  // get array name length
-    if (byteswap_) swap32((unsigned char *)&tmp);
-    size = (SINT32) ceil((float)tmp / 8);
-    if ( fseek(fd_, size*8, SEEK_CUR) == -1 ) goto error;  // jump over array name
-  }
-  else { // array name <= 4 characters, compressed data element
-    if ( fseek(fd_, 4, SEEK_CUR) == -1 ) goto error;
-  }
-  if ( fread(&tmp, 4, 1, fd_) != 1 ) goto error;
-  if (byteswap_) swap32((unsigned char *)&tmp);
-  if ( tmp == 1 ) dataType_ = STK_SINT8;
-  else if ( tmp == 3 ) dataType_ = STK_SINT16;
-  else if ( tmp == 5 ) dataType_ = STK_SINT32;
-  else if ( tmp == 7 ) dataType_ = STK_FLOAT32;
-  else if ( tmp == 9 ) dataType_ = STK_FLOAT64;
-  else {
-    errorString_ << "FileRead: The MAT-file array data format (" << tmp << ") is not supported.";
-    return false;
-  }
+  bool doneParsing, haveData, haveSampleRate;
+  SINT32 chunkSize, rows, columns, nametype;
+  int dataoffset;
+  doneParsing = false;
+  haveData = false;
+  haveSampleRate = false;
+  while ( !doneParsing ) {
 
-  // Get number of rows from the header.
-  SINT32 rows;
-  if ( fseek(fd_, 160, SEEK_SET) == -1 ) goto error;
-  if ( fread(&rows, 4, 1, fd_) != 1 ) goto error;
-  if (byteswap_) swap32((unsigned char *)&rows);
+    dataoffset = ftell( fd_ ); // save location in file
+    if ( findNextMatArray( &chunkSize, &rows, &columns, &nametype ) == false ) {
+      // No more Matlab array type chunks found.
+      if ( !haveData ) {
+        oStream_ << "FileRead: No audio data found in MAT-file (" << fileName << ").";
+        return false;
+      }
+      else if ( !haveSampleRate ) {
+        fileRate_ = 44100.0;
+        oStream_ << "FileRead: No sample rate found ... assuming 44100.0";
+        handleError( StkError::WARNING );
+        return true;
+      }
+      else return true;
+    }
 
-  // Get number of columns from the header.
-  SINT32 columns;
-  if ( fread(&columns, 4, 1, fd_) != 1 ) goto error;
-  if (byteswap_) swap32((unsigned char *)&columns);
+    if ( !haveSampleRate && rows == 1 && columns == 1 ) { // Parse for sample rate.
 
-  // Assume channels = smaller of rows or columns.
-  if (rows < columns) {
-    channels_ = rows;
-    fileSize_ = columns;
+      SINT32 namesize = 4;
+      if ( nametype == 1 ) { // array name > 4 characters
+        if ( fread(&namesize, 4, 1, fd_) != 1 ) goto error;
+        if ( byteswap_ ) swap32((unsigned char *)namesize);
+        if ( namesize != 2 ) goto tryagain; // expecting name = "fs"
+        namesize = 8; // field must be padded to multiple of 8 bytes
+      }
+      char name[3]; name[2] = '\0';
+      if ( fread(&name, 2, 1, fd_) != 1) goto error;
+      if ( strncmp(name, "fs", 2) ) goto tryagain;
+
+      // Jump to real part data subelement, which is likely to be in a
+      // small data format.
+      if ( fseek(fd_, namesize-2, SEEK_CUR) == -1 ) goto error;
+      UINT32 type;
+      StkFloat srate;
+      if ( fread(&type, 4, 1, fd_) != 1 ) goto error;
+      if ( byteswap_ ) swap32((unsigned char *)&type);
+      if ( (type & 0xffff0000) != 0 ) // small data format
+        type = (type & 0x0000ffff);
+      else
+        if ( fseek(fd_, 4, SEEK_CUR) == -1 ) goto error;
+      if ( type == 1 ) { // SINT8
+        signed char rate;
+        if ( fread(&rate, 1, 1, fd_) != 1 ) goto error;
+        srate = (StkFloat) rate;
+      }
+      if ( type == 2 ) { // UINT8
+        unsigned char rate;
+        if ( fread(&rate, 1, 1, fd_) != 1 ) goto error;
+        srate = (StkFloat) rate;
+      }
+      else if ( type == 3 ) { // SINT16
+        SINT16 rate;
+        if ( fread(&rate, 2, 1, fd_) != 1 ) goto error;
+        if ( byteswap_ ) swap16((unsigned char *)&rate);
+        srate = (StkFloat) rate;
+      }
+      else if ( type == 4 ) { // UINT16
+        UINT16 rate;
+        if ( fread(&rate, 2, 1, fd_) != 1 ) goto error;
+        if ( byteswap_ ) swap16((unsigned char *)&rate);
+        srate = (StkFloat) rate;
+      }
+      else if ( type == 5 ) { // SINT32
+        SINT32 rate;
+        if ( fread(&rate, 4, 1, fd_) != 1 ) goto error;
+        if ( byteswap_ ) swap32((unsigned char *)&rate);
+        srate = (StkFloat) rate;
+      }
+      else if ( type == 6 ) { // UINT32
+        UINT32 rate;
+        if ( fread(&rate, 4, 1, fd_) != 1 ) goto error;
+        if ( byteswap_ ) swap32((unsigned char *)&rate);
+        srate = (StkFloat) rate;
+      }
+      else if ( type == 7 ) { // FLOAT32
+        FLOAT32 rate;
+        if ( fread(&rate, 4, 1, fd_) != 1 ) goto error;
+        if ( byteswap_ ) swap32((unsigned char *)&rate);
+        srate = (StkFloat) rate;
+      }
+      else if ( type == 9 ) { // FLOAT64
+        FLOAT64 rate;
+        if ( fread(&rate, 8, 1, fd_) != 1 ) goto error;
+        if ( byteswap_ ) swap64((unsigned char *)&rate);
+        srate = (StkFloat) rate;
+      }
+      else
+        goto tryagain;
+
+      if ( srate > 0 ) fileRate_ = srate;
+      haveSampleRate = true;
+    }
+    else if ( !haveData ) { // Parse for data.
+
+      // Assume channels = smaller of rows or columns.
+      if ( rows < columns ) {
+        channels_ = rows;
+        fileSize_ = columns;
+      }
+      else {
+        oStream_ << "FileRead: Transpose the MAT-file array so that audio channels fill matrix rows (not columns).";
+        return false;
+      }
+
+      SINT32 namesize = 4;
+      if ( nametype == 1 ) { // array name > 4 characters
+        if ( fread(&namesize, 4, 1, fd_) != 1 ) goto error;
+        if ( byteswap_ ) swap32((unsigned char *)namesize);
+        namesize = (SINT32) ceil((float)namesize / 8);
+        if ( fseek( fd_, namesize*8, SEEK_CUR) == -1 ) goto error;  // jump over array name
+      }
+      else {
+        if ( fseek( fd_, 4, SEEK_CUR ) == -1 ) goto error;
+      }
+
+      // Now at real part data subelement
+      SINT32 type;
+      if ( fread(&type, 4, 1, fd_) != 1 ) goto error;
+      if ( byteswap_ ) swap32((unsigned char *)&type);
+      if ( type == 1 )  dataType_ = STK_SINT8;
+      else if ( type == 3 ) dataType_ = STK_SINT16;
+      else if ( type == 5 ) dataType_ = STK_SINT32;
+      else if ( type == 7 ) dataType_ = STK_FLOAT32;
+      else if ( type == 9 ) dataType_ = STK_FLOAT64;
+      else {
+        oStream_ << "FileRead: The MAT-file array data format (" << type << ") is not supported.";
+        return false;
+      }
+
+      // Jump to the data.
+      if ( fseek(fd_, 4, SEEK_CUR) == -1 ) goto error;
+      dataOffset_ = ftell(fd_);
+      haveData = true;
+    }
+
+  tryagain:
+    if ( haveData && haveSampleRate ) doneParsing = true;
+    else // jump to end of data element and keep trying
+      if ( fseek( fd_, dataoffset+chunkSize+8, SEEK_SET) == -1 ) goto error;
   }
-  else {
-    errorString_ << "FileRead: Transpose the MAT-file array so that audio channels fill matrix rows (not columns).";
-    return false;
-  }
-
-  // Move read pointer to the data in the file.
-  SINT32 headsize;
-  if ( fseek(fd_, 132, SEEK_SET) == -1 ) goto error;
-  if ( fread(&headsize, 4, 1, fd_) != 1 ) goto error; // file size from 132nd byte
-  if (byteswap_) swap32((unsigned char *)&headsize);
-  headsize -= fileSize_ * 8 * channels_;
-  if ( fseek(fd_, headsize, SEEK_CUR) == -1 ) goto error;
-  dataOffset_ = ftell(fd_);
-
-  // Assume MAT-files have 44100 Hz sample rate.
-  fileRate_ = 44100.0;
 
   return true;
 
  error:
-  errorString_ << "FileRead: Error reading MAT-file (" << fileName << ").";
+  oStream_ << "FileRead: Error reading MAT-file (" << fileName << ") header.";
   return false;
 }
 
@@ -590,21 +721,19 @@ void FileRead :: read( StkFrames& buffer, unsigned long startFrame, bool doNorma
 {
   // Make sure we have an open file.
   if ( fd_ == 0 ) {
-    errorString_ << "FileRead::read: a file is not open!";
-    Stk::handleError( StkError::WARNING );
-    return;
+    oStream_ << "FileRead::read: a file is not open!";
+    Stk::handleError( StkError::WARNING ); return;
   }
 
   // Check the buffer size.
   unsigned int nFrames = buffer.frames();
   if ( nFrames == 0 ) {
-    errorString_ << "FileRead::read: StkFrames buffer size is zero ... no data read!";
-    Stk::handleError( StkError::WARNING );
-    return;
+    oStream_ << "FileRead::read: StkFrames buffer size is zero ... no data read!";
+    Stk::handleError( StkError::WARNING ); return;
   }
 
   if ( buffer.channels() != channels_ ) {
-    errorString_ << "FileRead::read: StkFrames argument has incompatible number of channels!";
+    oStream_ << "FileRead::read: StkFrames argument has incompatible number of channels!";
     Stk::handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -709,19 +838,39 @@ void FileRead :: read( StkFrames& buffer, unsigned long startFrame, bool doNorma
   else if ( dataType_ == STK_SINT24 ) {
     // 24-bit values are harder to import efficiently since there is
     // no native 24-bit type.  The following routine works but is much
-    // less efficient that that used for the other data types.
-    SINT32 buf;
-    StkFloat gain = 1.0 / 8388608.0;
+    // less efficient than that used for the other data types.
+    SINT32 temp;
+    unsigned char *ptr = (unsigned char *) &temp;
+    StkFloat gain = 1.0 / 2147483648.0;
     if ( fseek(fd_, dataOffset_+(offset*3), SEEK_SET ) == -1 ) goto error;
     for ( i=0; i<nSamples; i++ ) {
-      if ( fread( &buf, 3, 1, fd_ ) != 1 ) goto error;
-      buf >>= 8;
-      if ( byteswap_ )
-        swap32( (unsigned char *) &buf );
-      if ( doNormalize )
-        buffer[i] = buf * gain;
+#ifdef __LITTLE_ENDIAN__
+      if ( byteswap_ ) {
+        if ( fread( ptr, 3, 1, fd_ ) != 1 ) goto error;
+        temp &= 0x00ffffff;
+        swap32( (unsigned char *) ptr );
+      }
+      else {
+        if ( fread( ptr+1, 3, 1, fd_ ) != 1 ) goto error;
+        temp &= 0xffffff00;
+      }
+#else
+      if ( byteswap_ ) {
+        if ( fread( ptr+1, 3, 1, fd_ ) != 1 ) goto error;
+        temp &= 0xffffff00;
+        swap32( (unsigned char *) ptr );
+      }
+      else {
+        if ( fread( ptr, 3, 1, fd_ ) != 1 ) goto error;
+        temp &= 0x00ffffff;
+      }
+#endif
+
+      if ( doNormalize ) {
+        buffer[i] = (StkFloat) temp * gain; // "gain" also  includes 1 / 256 factor.
+      }
       else
-        buffer[i] = buf;
+        buffer[i] = (StkFloat) temp / 256;  // right shift without affecting the sign bit
     }
   }
 
@@ -730,7 +879,7 @@ void FileRead :: read( StkFrames& buffer, unsigned long startFrame, bool doNorma
   return;
 
  error:
-  errorString_ << "FileRead: Error reading file data.";
+  oStream_ << "FileRead: Error reading file data.";
   handleError( StkError::FILE_ERROR);
 }
 

@@ -1,13 +1,27 @@
 /*! \page download Download, Release Notes, and Bug Fixes
 
-\section down Download Version 4.4.2 (4 February 2010):
+\section down Download Version 4.4.3 (30 August 2011):
 
 <UL>
-<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.4.2.tar.gz">Source distribution</A></LI>
+<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.4.3.tar.gz">Source distribution</A></LI>
 </UL>
 
 
 \section notes Release Notes:
+
+\subsection v4dot4dot3 Version 4.4.3
+
+<ul>
+<li>Changed SINT24 to be lower 3 bytes of 32-bit word.</li>
+<li>Bug fixes to vectorized tick functions in Effects classes.</li>
+<li>Updated versions of RtAudio and RtMidi.</li>
+<li>Bug fixes in ADSR and Envelope classes.</li>
+<li>Updates to the internal argument checking and reporting scheme.</li>
+<li>Updates to Bowed class (thanks to Esteban Maestre!).</li>
+<li>Fixes for 24-bit support in FileRead and FileWrite.</li>
+<li>Added WAVE_FORMAT_EXTENSIBLE support in FileWrite.</li>
+<li>Added sample rate variable reading and writing for MAT-files in FileRead and FileWrite.</li>
+</ul>
 
 \subsection v4dot4dot2 Version 4.4.2
 

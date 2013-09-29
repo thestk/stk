@@ -1,6 +1,6 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
 
-By Perry R. Cook and Gary P. Scavone, 1995-2010.
+By Perry R. Cook and Gary P. Scavone, 1995-2011.
 
 STK Classes - See the HTML documentation in the html directory for complete information.
 
@@ -19,11 +19,11 @@ STK Classes - See the HTML documentation in the html directory for complete info
      |
      |- Filter - (OnePole, OneZero, TwoPole, TwoZero, PoleZero, Biquad, FormSwep, Delay, DelayL, DelayA, TapDelay)
      |
-     |- RtAudio, RtMidi, RtDuplex, Socket, Thread, Mutex
-     |                               |
-Stk -|                           UdpSocket
-     |                           TcpServer
-     |                           TcpClient
+     |- RtAudio, RtMidi, Socket, Thread, Mutex
+     |                      |
+Stk -|                  UdpSocket
+     |                  TcpServer
+     |                  TcpClient
      |
      |- StkFrames
      |
@@ -85,8 +85,6 @@ Sinks:         FileWrite.cpp   Audio file output class (no internal data storage
                FileWvOut.cpp   Audio file output interface class to FileWrite
                RtWvOut.cpp     Realtime audio output class (subclass of WvOut)
                InetWvOut.cpp   Audio streaming (socket client) output class (subclass of WvOut)
-
-Duplex:        RtDuplex.cpp    Synchronous realtime audio input/output class (blocking)
 
 Filters:       Filter.h        Filter master class
                Iir.h           General infinite-impulse response filter
