@@ -1,0 +1,8 @@
+base referer
+rect $classInstrmnt.html 7,134 63,155
+rect $classStk.html 88,16 125,38
+rect $classGenerator.html 72,88 141,110
+rect $classFilter.html 165,88 205,110
+rect $classADSR.html 80,270 128,291
+rect $classEnvelope.html 75,179 139,200
+rect $classOnePole.html 155,224 216,246

@@ -1,0 +1,6 @@
+base referer
+rect $classWvIn.html 8,88 48,109
+rect $classStk.html 121,16 159,37
+rect $classSocket.html 76,88 129,109
+rect $classMutex.html 156,88 201,109
+rect $classThread.html 241,88 295,109

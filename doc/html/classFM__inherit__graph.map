@@ -1,0 +1,10 @@
+base referer
+rect $classBeeThree.html 7,224 73,246
+rect $classFMVoices.html 97,224 167,246
+rect $classHevyMetl.html 191,224 255,246
+rect $classPercFlut.html 279,224 340,246
+rect $classRhodey.html 364,224 420,246
+rect $classTubeBell.html 444,224 508,246
+rect $classWurley.html 532,224 585,246
+rect $classInstrmnt.html 281,86 337,107
+rect $classStk.html 291,16 328,38

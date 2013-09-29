@@ -1,0 +1,4 @@
+base referer
+rect $classFM.html 20,155 57,176
+rect $classInstrmnt.html 11,86 67,107
+rect $classStk.html 20,16 57,38

@@ -1,0 +1,5 @@
+base referer
+rect $classRtWvIn.html 7,154 60,176
+rect $classTcpWvIn.html 84,154 148,176
+rect $classWaveLoop.html 172,154 247,176
+rect $classStk.html 97,16 135,37

@@ -1,0 +1,5 @@
+base referer
+rect $classADSR.html 7,224 55,246
+rect $classAsymp.html 79,224 132,246
+rect $classGenerator.html 33,86 103,107
+rect $classStk.html 49,16 87,38

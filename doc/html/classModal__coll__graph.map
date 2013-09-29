@@ -1,0 +1,10 @@
+base referer
+rect $classInstrmnt.html 7,133 63,155
+rect $classStk.html 240,16 277,37
+rect $classWvIn.html 193,88 233,109
+rect $classFilter.html 285,88 325,109
+rect $classGenerator.html 381,88 451,109
+rect $classWaveLoop.html 176,179 251,200
+rect $classOnePole.html 275,179 336,200
+rect $classBiQuad.html 360,179 413,200
+rect $classEnvelope.html 445,179 509,200

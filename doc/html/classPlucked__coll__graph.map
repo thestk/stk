@@ -1,0 +1,10 @@
+base referer
+rect $classInstrmnt.html 9,134 65,155
+rect $classStk.html 167,16 204,38
+rect $classFilter.html 165,88 205,110
+rect $classGenerator.html 295,88 364,110
+rect $classDelayA.html 75,270 128,291
+rect $classDelay.html 97,179 140,200
+rect $classOnePole.html 155,224 216,246
+rect $classOneZero.html 259,224 323,246
+rect $classNoise.html 408,270 451,291

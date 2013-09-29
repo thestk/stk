@@ -1,0 +1,4 @@
+base referer
+rect $classWvOut.html 7,88 60,109
+rect $classStk.html 56,16 93,37
+rect $classSocket.html 84,88 137,109

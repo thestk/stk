@@ -1,0 +1,6 @@
+base referer
+rect $classEffect.html 7,133 52,155
+rect $classStk.html 39,16 76,37
+rect $classFilter.html 68,88 108,109
+rect $classDelayL.html 67,251 117,272
+rect $classDelay.html 68,179 111,200

@@ -1,0 +1,4 @@
+base referer
+rect $classRtMidi.html 19,28 67,50
+rect $classRtMidiIn.html 123,6 181,27
+rect $classRtMidiOut.html 117,51 187,72

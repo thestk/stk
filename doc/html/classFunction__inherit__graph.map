@@ -1,0 +1,6 @@
+base referer
+rect $classBowTable.html 7,154 76,176
+rect $classJetTable.html 100,154 161,176
+rect $classReedTable.html 185,154 260,176
+rect $classTable.html 284,154 329,176
+rect $classStk.html 157,16 195,37
