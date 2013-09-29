@@ -105,8 +105,8 @@ void TcpWvIn :: listen(unsigned int nChannels, Stk::STK_FORMAT format)
   channels = nChannels;
 
   if ( format == STK_SINT16 ) dataSize = 2;
-  else if ( format == STK_SINT32 || format == STK_FLOAT32 ) dataSize = 4;
-  else if ( format == STK_FLOAT64 ) dataSize = 8;
+  else if ( format == STK_SINT32 || format == MY_FLOAT32 ) dataSize = 4;
+  else if ( format == MY_FLOAT64 ) dataSize = 8;
   else if ( format == STK_SINT8 ) dataSize = 1;
   else {
     sprintf( msg, "TcpWvIn: Unknown data type specified (%ld).", format );
@@ -234,7 +234,7 @@ int TcpWvIn :: readData( void )
       data[i] *= gain;
     }
   }
-  else if ( dataType == STK_FLOAT32 ) {
+  else if ( dataType == MY_FLOAT32 ) {
     FLOAT32 *buf = (FLOAT32 *) (buffer+readPoint);
     for (int i=0; i<samples; i++ ) {
 #ifdef __LITTLE_ENDIAN__
@@ -243,7 +243,7 @@ int TcpWvIn :: readData( void )
       data[i] = (MY_FLOAT) *buf++;
     }
   }
-  else if ( dataType == STK_FLOAT64 ) {
+  else if ( dataType == MY_FLOAT64 ) {
     FLOAT64 *buf = (FLOAT64 *) (buffer+readPoint);
     for (int i=0; i<samples; i++ ) {
 #ifdef __LITTLE_ENDIAN__

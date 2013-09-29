@@ -21,20 +21,12 @@
 #include "Moog.h"
 #include "SKINI.msg"
 
-#include <string.h>
-
 Moog :: Moog()
 {
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char temp[128];
-  char file[128];
-  strcpy(temp, RAWWAVE_PATH);
-  strcpy(file,temp);
-  attacks[0] = new WvIn( strcat(file,"mandpluk.raw"), TRUE );
-  strcpy(file,temp);
-  loops[0] = new WaveLoop( strcat(file,"impuls20.raw"), TRUE );
-  strcpy(file,temp);
-  loops[1] = new WaveLoop( strcat(file,"sinewave.raw"), TRUE ); // vibrato
+  // Concatenate the STK rawwave path to the rawwave file
+  attacks[0] = new WvIn( (Stk::rawwavePath() + "mandpluk.raw").c_str(), TRUE );
+  loops[0] = new WaveLoop( (Stk::rawwavePath() + "impuls20.raw").c_str(), TRUE );
+  loops[1] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE ); // vibrato
   loops[1]->setFrequency((MY_FLOAT) 6.122);
 
   filters[0] = new FormSwep();
@@ -62,7 +54,7 @@ void Moog :: setFrequency(MY_FLOAT frequency)
 {
   baseFrequency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "Moog: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "Moog: setFrequency parameter is less than or equal to zero!" << std::endl;
     baseFrequency = 220.0;
   }
 
@@ -92,7 +84,7 @@ void Moog :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   filters[1]->setSweepRate( filterRate * 22050.0 / Stk::sampleRate() );
 
 #if defined(_STK_DEBUG_)
-  cerr << "Moog: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Moog: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -126,11 +118,11 @@ void Moog :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Moog: Control value less than zero!" << endl;
+    std::cerr << "Moog: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Moog: Control value greater than 128.0!" << endl;
+    std::cerr << "Moog: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_FilterQ_) // 2
@@ -144,10 +136,10 @@ void Moog :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_AfterTouch_Cont_) // 128
     adsr->setTarget( norm );
   else
-    cerr << "Moog: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Moog: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Moog: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Moog: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }
 

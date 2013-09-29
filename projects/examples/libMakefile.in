@@ -1,0 +1,77 @@
+### STK examples Makefile - for various flavors of unix
+
+PROGRAMS = sine play record io tcpIn tcpOut sineosc rtsine bethree controlbee foursine threebees
+RM = /bin/rm
+
+INCLUDE = @include@
+ifeq ($(strip $(INCLUDE)), )
+	INCLUDE = ../../include
+endif
+vpath %.h $(INCLUDE)
+
+CC       = @CXX@
+DEFS     = @byte_order@
+DEFS    += @debug@
+CFLAGS   = @cflags@
+CFLAGS  += @warn@ -I$(INCLUDE)
+LIBRARY = @LIBS@
+LIBRARY += @frameworks@
+
+REALTIME = @realtime@
+ifeq ($(REALTIME),yes)
+	DEFS    += @audio_apis@
+	DEFS    += @midiator@
+endif
+
+RAWWAVES = @rawwaves@
+ifeq ($(strip $(RAWWAVES)), )
+	RAWWAVES = ../../rawwaves/
+endif
+DEFS    += -DRAWWAVE_PATH=\"$(RAWWAVES)\"
+
+all : $(PROGRAMS)
+
+$(OBJECTS) : Stk.h
+
+clean : 
+	-rm $(PROGRAMS)
+
+strip : 
+	strip $(PROGRAMS)
+
+#play: play.cpp Stk.o WvIn.o WvOut.o RtWvOut.o RtAudio.o
+play: play.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o play play.cpp -L../../src $(LIBRARY) -lstk
+
+record: record.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o record record.cpp -L../../src $(LIBRARY) -lstk
+
+sine: sine.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o sine sine.cpp -L../../src $(LIBRARY) -lstk
+
+io: io.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o io io.cpp -L../../src $(LIBRARY) -lstk
+
+tcpIn: tcpIn.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o tcpIn tcpIn.cpp -L../../src $(LIBRARY) -lstk
+
+tcpOut: tcpOut.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o tcpOut tcpOut.cpp -L../../src $(LIBRARY) -lstk
+
+sineosc: sineosc.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o sineosc sineosc.cpp -L../../src $(LIBRARY) -lstk
+
+rtsine: rtsine.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o rtsine rtsine.cpp -L../../src $(LIBRARY) -lstk
+
+bethree: bethree.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o bethree bethree.cpp -L../../src $(LIBRARY) -lstk
+
+controlbee: controlbee.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o controlbee controlbee.cpp -L../../src $(LIBRARY) -lstk
+
+foursine: foursine.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o foursine foursine.cpp -L../../src $(LIBRARY) -lstk
+
+threebees: threebees.cpp
+	$(CC) $(CFLAGS) $(DEFS) -o threebees threebees.cpp -L../../src $(LIBRARY) -lstk

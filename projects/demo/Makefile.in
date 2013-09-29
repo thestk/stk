@@ -40,7 +40,7 @@ LIBRARY += @frameworks@
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
 	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o Thread.o Socket.o
-	DEFS    += @sound_api@
+	DEFS    += @audio_apis@
 	DEFS    += @midiator@
 endif
 

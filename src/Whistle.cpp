@@ -19,7 +19,6 @@
 #include "Whistle.h"
 #include "SKINI.msg"
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
 
 #define CAN_RADIUS 100
@@ -43,10 +42,8 @@ Whistle :: Whistle()
   pea = new Sphere(PEA_RADIUS);
   bumper = new Sphere(BUMP_RADIUS);
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char path[128];
-  strcpy(path, RAWWAVE_PATH);
-  sine = new WaveLoop( strcat(path,"sinewave.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  sine = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
   sine->setFrequency(2800.0);
 
   can->setPosition(0, 0, 0); // set can location
@@ -93,7 +90,7 @@ void Whistle :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency * 4;  // the whistle is a transposing instrument
   if ( frequency <= 0.0 ) {
-    cerr << "Whistle: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "Whistle: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -117,7 +114,7 @@ void Whistle :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   setFrequency(frequency);
   startBlowing(amplitude*2.0 ,amplitude * 0.2);
 #if defined(_STK_DEBUG_)
-  cerr << "Whistle: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Whistle: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -126,7 +123,7 @@ void Whistle :: noteOff(MY_FLOAT amplitude)
   this->stopBlowing(amplitude * 0.02);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Whistle: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Whistle: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -230,11 +227,11 @@ void Whistle :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Whistle: Control value less than zero!" << endl;
+    std::cerr << "Whistle: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Whistle: Control value greater than 128.0!" << endl;
+    std::cerr << "Whistle: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_NoiseLevel_) // 4
@@ -250,10 +247,10 @@ void Whistle :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_Sustain_)	 // 64
 	  if (value < 1.0) subSample = 1;
   else
-    cerr << "Whistle: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Whistle: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Whistle: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Whistle: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }
 

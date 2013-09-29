@@ -105,9 +105,9 @@ void ADSR :: setReleaseTime(MY_FLOAT aTime)
 {
   if (aTime < 0.0) {
     printf("ADSR: negative times not allowed ... correcting!\n");
-    releaseRate = 1.0 / ( -aTime * Stk::sampleRate() );
+    releaseRate = sustainLevel / ( -aTime * Stk::sampleRate() );
   }
-  else releaseRate = 1.0 / ( aTime * Stk::sampleRate() );
+  else releaseRate = sustainLevel / ( aTime * Stk::sampleRate() );
 }
 
 void ADSR :: setAllTimes(MY_FLOAT aTime, MY_FLOAT dTime, MY_FLOAT sLevel, MY_FLOAT rTime)

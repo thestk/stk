@@ -19,17 +19,14 @@
 
 #include "Simple.h"
 #include "SKINI.msg"
-#include <string.h>
 
 Simple :: Simple()
 {
   adsr = new ADSR;
   baseFrequency = (MY_FLOAT) 440.0;
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-  loop = new WaveLoop( strcat(file,"impuls10.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  loop = new WaveLoop( (Stk::rawwavePath() + "impuls10.raw").c_str(), TRUE );
 
   filter = new OnePole(0.5);
   noise = new Noise;
@@ -64,7 +61,7 @@ void Simple :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   filter->setGain(amplitude); 
 
 #if defined(_STK_DEBUG_)
-  cerr << "Simple: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Simple: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 void Simple :: noteOff(MY_FLOAT amplitude)
@@ -72,7 +69,7 @@ void Simple :: noteOff(MY_FLOAT amplitude)
   keyOff();
 
 #if defined(_STK_DEBUG_)
-  cerr << "Simple: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Simple: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -97,11 +94,11 @@ void Simple :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Clarinet: Control value less than zero!" << endl;
+    std::cerr << "Clarinet: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Clarinet: Control value greater than 128.0!" << endl;
+    std::cerr << "Clarinet: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_Breath_) // 2
@@ -117,9 +114,9 @@ void Simple :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_AfterTouch_Cont_) // 128
     adsr->setTarget( norm );
   else
-    cerr << "Simple: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Simple: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Simple: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Simple: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

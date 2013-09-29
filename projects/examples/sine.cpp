@@ -15,7 +15,6 @@
 #include "WaveLoop.h"
 #include "WvOut.h"
 #include <stdlib.h>
-#include <iostream.h>
 
 void usage(void) {
   // Error function in case of incorrect command-line
@@ -68,7 +67,7 @@ main(int argc, char *argv[])
   // Define and open the soundfile for output.  Other file
   // format options include: WVOUT_SND, WVOUT_AIF, WVOUT_MAT,
   // and WVOUT_RAW.  Other data type options include:
-  // STK_SINT8, STK_SINT32, STK_FLOAT32, and STK_FLOAT64.
+  // STK_SINT8, STK_SINT32, MY_FLOAT32, and MY_FLOAT64.
   try {
     output = new WvOut( argv[2], channels, WvOut::WVOUT_WAV, Stk::STK_SINT16 );
   }

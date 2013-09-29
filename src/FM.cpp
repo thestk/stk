@@ -25,7 +25,6 @@
 
 #include "FM.h"
 #include "SKINI.msg"
-#include <string.h>
 #include <stdlib.h>
 
 FM :: FM(int operators)
@@ -41,10 +40,8 @@ FM :: FM(int operators)
   twozero->setB2( -1.0 );
   twozero->setGain( 0.0 );
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file.
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
   vibrato->setFrequency(6.0);
 
   int i;
@@ -115,11 +112,11 @@ void FM :: setFrequency(MY_FLOAT frequency)
 void FM :: setRatio(int waveIndex, MY_FLOAT ratio)
 {
   if ( waveIndex < 0 ) {
-    cerr << "FM: setRatio waveIndex parameter is less than zero!" << endl;
+    std::cerr << "FM: setRatio waveIndex parameter is less than zero!" << std::endl;
     return;
   }
   else if ( waveIndex >= nOperators ) {
-    cerr << "FM: setRatio waveIndex parameter is greater than the number of operators!" << endl;
+    std::cerr << "FM: setRatio waveIndex parameter is greater than the number of operators!" << std::endl;
     return;
   }
 
@@ -133,11 +130,11 @@ void FM :: setRatio(int waveIndex, MY_FLOAT ratio)
 void FM :: setGain(int waveIndex, MY_FLOAT gain)
 {
   if ( waveIndex < 0 ) {
-    cerr << "FM: setGain waveIndex parameter is less than zero!" << endl;
+    std::cerr << "FM: setGain waveIndex parameter is less than zero!" << std::endl;
     return;
   }
   else if ( waveIndex >= nOperators ) {
-    cerr << "FM: setGain waveIndex parameter is greater than the number of operators!" << endl;
+    std::cerr << "FM: setGain waveIndex parameter is greater than the number of operators!" << std::endl;
     return;
   }
 
@@ -181,7 +178,7 @@ void FM :: noteOff(MY_FLOAT amplitude)
   keyOff();
 
 #if defined(_STK_DEBUG_)
-  cerr << "FM: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "FM: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -190,11 +187,11 @@ void FM :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "FM: Control value less than zero!" << endl;
+    std::cerr << "FM: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "FM: Control value greater than 128.0!" << endl;
+    std::cerr << "FM: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_Breath_) // 2
@@ -212,10 +209,10 @@ void FM :: controlChange(int number, MY_FLOAT value)
     adsr[3]->setTarget( norm );
   }
   else
-    cerr << "FM: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "FM: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "FM: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "FM: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }
 

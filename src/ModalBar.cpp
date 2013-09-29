@@ -30,16 +30,13 @@
 
 #include "ModalBar.h"
 #include "SKINI.msg"
-#include <string.h>
 #include <math.h>
 
 ModalBar :: ModalBar()
   : Modal()
 {
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-  wave = new WvIn( strcat(file,"marmstk1.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  wave = new WvIn( (Stk::rawwavePath() + "marmstk1.raw").c_str(), TRUE );
   wave->setRate((MY_FLOAT) 0.5 * 22050.0 / Stk::sampleRate() );
 
   // Set the resonances for preset 0 (marimba).
@@ -55,11 +52,11 @@ void ModalBar :: setStickHardness(MY_FLOAT hardness)
 {
   stickHardness = hardness;
   if ( hardness < 0.0 ) {
-    cerr << "ModalBar: setStickHardness parameter is less than zero!" << endl;
+    std::cerr << "ModalBar: setStickHardness parameter is less than zero!" << std::endl;
     stickHardness = 0.0;
   }
   else if ( hardness > 1.0 ) {
-    cerr << "ModalBar: setStickHarness parameter is greater than 1.0!" << endl;
+    std::cerr << "ModalBar: setStickHarness parameter is greater than 1.0!" << std::endl;
     stickHardness = 1.0;
   }
 
@@ -71,11 +68,11 @@ void ModalBar :: setStrikePosition(MY_FLOAT position)
 {
   strikePosition = position;
   if ( position < 0.0 ) {
-    cerr << "ModalBar: setStrikePositions parameter is less than zero!" << endl;
+    std::cerr << "ModalBar: setStrikePositions parameter is less than zero!" << std::endl;
     strikePosition = 0.0;
   }
   else if ( position > 1.0 ) {
-    cerr << "ModalBar: setStrikePosition parameter is greater than 1.0!" << endl;
+    std::cerr << "ModalBar: setStrikePosition parameter is greater than 1.0!" << std::endl;
     strikePosition = 1.0;
   }
 
@@ -160,11 +157,11 @@ void ModalBar :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "ModalBar: Control value less than zero!" << endl;
+    std::cerr << "ModalBar: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "ModalBar: Control value greater than 128.0!" << endl;
+    std::cerr << "ModalBar: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_StickHardness_) // 2
@@ -182,9 +179,9 @@ void ModalBar :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_AfterTouch_Cont_)	// 128
     envelope->setTarget( norm );
   else
-    cerr << "ModalBar: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "ModalBar: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "ModalBar: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "ModalBar: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

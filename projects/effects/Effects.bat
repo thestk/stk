@@ -1,1 +1,1 @@
-wish < tcl/Effects.tcl | effects -ip
+wish < tcl/Effects.tcl | ./effects -ip

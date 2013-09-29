@@ -60,7 +60,7 @@ public:
     An StkError will be thrown if the file is not found, its format is
     unknown, or a read error occurs.
   */
-  WvIn( const char *fileName, bool raw = FALSE );
+  WvIn( const char *fileName, bool raw = FALSE, bool doNormalize = TRUE );
 
   //! Class destructor.
   virtual ~WvIn();
@@ -70,7 +70,7 @@ public:
     An StkError will be thrown if the file is not found, its format is
     unknown, or a read error occurs.
   */
-  void openFile( const char *fileName, bool raw = FALSE );
+  void openFile( const char *fileName, bool raw = FALSE, bool doNormalize = TRUE );
 
   //! If a file is open, close it.
   void closeFile(void);

@@ -18,7 +18,6 @@
 
 #include "BlowBotl.h"
 #include "SKINI.msg"
-#include <string.h>
 
 #define __BOTTLE_RADIUS_ 0.999
 
@@ -29,10 +28,8 @@ BlowBotl :: BlowBotl()
   dcBlock = new PoleZero();
   dcBlock->setBlockZero();
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
   vibrato->setFrequency( 5.925 );
   vibratoGain = 0.0;
 
@@ -67,7 +64,7 @@ void BlowBotl :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "BlowBotl: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "BlowBotl: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -94,7 +91,7 @@ void BlowBotl :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   outputGain = amplitude + 0.001;
 
 #if defined(_STK_DEBUG_)
-  cerr << "BlowBotl: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "BlowBotl: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -103,7 +100,7 @@ void BlowBotl :: noteOff(MY_FLOAT amplitude)
   this->stopBlowing(amplitude * 0.02);
 
 #if defined(_STK_DEBUG_)
-  cerr << "BlowBotl: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "BlowBotl: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -134,11 +131,11 @@ void BlowBotl :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "BlowBotl: Control value less than zero!" << endl;
+    std::cerr << "BlowBotl: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "BlowBotl: Control value greater than 128.0!" << endl;
+    std::cerr << "BlowBotl: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_NoiseLevel_) // 4
@@ -150,9 +147,9 @@ void BlowBotl :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_AfterTouch_Cont_) // 128
     adsr->setTarget( norm );
   else
-    cerr << "BlowBotl: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "BlowBotl: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "BlowBotl: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "BlowBotl: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

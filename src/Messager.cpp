@@ -35,7 +35,7 @@
 
 #include "Messager.h"
 #include <string.h>
-#include <iostream.h>
+#include <iostream>
 
 int socket_port = 2001;
 
@@ -76,7 +76,7 @@ Messager :: Messager(int inputMask, int port)
     // If STK_PIPE is not specified, let the users know they can exit
     // the program via the console if necessary.
     if ( !(sources & STK_PIPE) && sources )
-      cout << "\nType `Exit<cr>' to quit.\n" << endl;
+      std::cout << "\nType `Exit<cr>' to quit.\n" << std::endl;
 
     sources |= STK_SOCKET;
     socket_port = port;
@@ -148,7 +148,7 @@ void Messager :: setRtDelta(long nSamples)
   if ( nSamples > 0 )
     rtDelta = nSamples;
   else
-    cerr << "Messager: setRtDelta(" << nSamples << ") less than or equal to zero!" << endl;
+    std::cerr << "Messager: setRtDelta(" << nSamples << ") less than or equal to zero!" << std::endl;
 }
 
 long Messager :: getDelta() const
@@ -245,7 +245,7 @@ bool Messager :: socketMessage()
       if (nSockets == 0)
         pipefd = newfd;
       else
-        cout << "New socket connection made.\n" << endl;
+        std::cout << "New socket connection made.\n" << std::endl;
 
       // Set the socket to non-blocking mode.
       Socket::setBlocking( newfd, false );
@@ -274,7 +274,7 @@ bool Messager :: socketMessage()
           if ( nSockets == 1 && FD_ISSET(pipefd, &mask) ) {
             // The "piping" socket is still running.
             if (sources & STK_MIDI) {
-              cout << "MIDI input still running ... type 'Exit<cr>' to quit.\n" << endl;
+              std::cout << "MIDI input still running ... type 'Exit<cr>' to quit.\n" << std::endl;
             }
             else if (!(sources & STK_PIPE) ) {
               // The user didn't specify this connection, so quit now.

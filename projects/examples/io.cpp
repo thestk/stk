@@ -16,7 +16,8 @@
 #include "RtDuplex.h"
 #include <stdio.h>
 
-#if defined(__OS_LINUX_) || defined(__OS_IRIX__)
+#if defined(__OS_LINUX__) || defined(__OS_IRIX__)
+  #include <unistd.h>
   #include <sched.h>
 #endif
 

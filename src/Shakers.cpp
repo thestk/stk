@@ -344,7 +344,7 @@ int Shakers :: setupName(char* instr)
   }
 
 #if defined(_STK_DEBUG_)
-  cerr << "Shakers: Setting instrument to " << instrs[which] << endl;
+  std::cerr << "Shakers: Setting instrument to " << instrs[which] << std::endl;
 #endif
 
   return this->setupNum(which);
@@ -795,14 +795,14 @@ int Shakers :: setupNum(int inst)
 void Shakers :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
 {
   // Yep ... pretty kludgey, but it works!
-  int noteNum = (int) ((12*log(frequency/220)/log(2)) + 57.01) % 32;
+  int noteNum = (int) ((12*log(frequency/220.0)/log(2.0)) + 57.01) % 32;
   if (instType !=  noteNum) instType = this->setupNum(noteNum);
   shakeEnergy += amplitude * MAX_SHAKE * 0.1;
   if (shakeEnergy > MAX_SHAKE) shakeEnergy = MAX_SHAKE;
   if (instType==10 || instType==3) ratchetPos += 1;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Shakers: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Shakers: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -891,11 +891,11 @@ void Shakers :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Shakers: Control value less than zero!" << endl;
+    std::cerr << "Shakers: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Shakers: Control value greater than 128.0!" << endl;
+    std::cerr << "Shakers: Control value greater than 128.0!" << std::endl;
   }
 
   MY_FLOAT temp;
@@ -982,10 +982,10 @@ void Shakers :: controlChange(int number, MY_FLOAT value)
     this->setupNum(instType);
   }                                       
   else
-    cerr << "Shakers: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Shakers: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Shakers: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Shakers: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }
 

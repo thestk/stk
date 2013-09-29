@@ -12,14 +12,32 @@
 
 #include "Noise.h"
 #include <stdlib.h>
+#include <time.h>
 
 Noise :: Noise() : Stk()
-{    
+{
+  // Seed the random number generator with system time.
+  this->setSeed( 0 );
+  lastOutput = (MY_FLOAT) 0.0;
+}
+
+Noise :: Noise( unsigned int seed ) : Stk()
+{
+  // Seed the random number generator
+  this->setSeed( seed );
   lastOutput = (MY_FLOAT) 0.0;
 }
 
 Noise :: ~Noise()
 {
+}
+
+void Noise :: setSeed( unsigned int seed )
+{
+  if ( seed == 0 )
+    srand( (unsigned int) time(NULL) );
+  else
+    srand( seed );
 }
 
 MY_FLOAT Noise :: tick()

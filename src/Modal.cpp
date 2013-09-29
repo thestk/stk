@@ -12,7 +12,6 @@
 /***************************************************/
 
 #include "Modal.h"
-#include <string.h>
 #include <stdlib.h>
 
 Modal :: Modal(int modes)
@@ -38,10 +37,8 @@ Modal :: Modal(int modes)
   envelope = new Envelope;
   onepole = new OnePole;
 
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE);
+  // Concatenate the STK rawwave path to the rawwave file
+  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
 
   // Set some default values.
   vibrato->setFrequency( 6.0 );
@@ -87,11 +84,11 @@ void Modal :: setFrequency(MY_FLOAT frequency)
 void Modal :: setRatioAndRadius(int modeIndex, MY_FLOAT ratio, MY_FLOAT radius)
 {
   if ( modeIndex < 0 ) {
-    cerr << "Modal: setRatioAndRadius modeIndex parameter is less than zero!" << endl;
+    std::cerr << "Modal: setRatioAndRadius modeIndex parameter is less than zero!" << std::endl;
     return;
   }
   else if ( modeIndex >= nModes ) {
-    cerr << "Modal: setRatioAndRadius modeIndex parameter is greater than the number of operators!" << endl;
+    std::cerr << "Modal: setRatioAndRadius modeIndex parameter is greater than the number of operators!" << std::endl;
     return;
   }
 
@@ -106,7 +103,7 @@ void Modal :: setRatioAndRadius(int modeIndex, MY_FLOAT ratio, MY_FLOAT radius)
     while (temp * baseFrequency > nyquist) temp *= (MY_FLOAT) 0.5;
     ratios[modeIndex] = temp;
 #if defined(_STK_DEBUG_)
-    cerr << "Modal : Aliasing would occur here ... correcting." << endl;
+    std::cerr << "Modal : Aliasing would occur here ... correcting." << std::endl;
 #endif
   }
   radii[modeIndex] = radius;
@@ -131,11 +128,11 @@ void Modal :: setDirectGain(MY_FLOAT aGain)
 void Modal :: setModeGain(int modeIndex, MY_FLOAT gain)
 {
   if ( modeIndex < 0 ) {
-    cerr << "Modal: setModeGain modeIndex parameter is less than zero!" << endl;
+    std::cerr << "Modal: setModeGain modeIndex parameter is less than zero!" << std::endl;
     return;
   }
   else if ( modeIndex >= nModes ) {
-    cerr << "Modal: setModeGain modeIndex parameter is greater than the number of operators!" << endl;
+    std::cerr << "Modal: setModeGain modeIndex parameter is greater than the number of operators!" << std::endl;
     return;
   }
 
@@ -146,11 +143,11 @@ void Modal :: strike(MY_FLOAT amplitude)
 {
   MY_FLOAT gain = amplitude;
   if ( amplitude < 0.0 ) {
-    cerr << "Modal: strike amplitude is less than zero!" << endl;
+    std::cerr << "Modal: strike amplitude is less than zero!" << std::endl;
     gain = 0.0;
   }
   else if ( amplitude > 1.0 ) {
-    cerr << "Modal: strike amplitude is greater than 1.0!" << endl;
+    std::cerr << "Modal: strike amplitude is greater than 1.0!" << std::endl;
     gain = 1.0;
   }
 
@@ -176,7 +173,7 @@ void Modal :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   this->setFrequency(frequency);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Modal: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Modal: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -187,7 +184,7 @@ void Modal :: noteOff(MY_FLOAT amplitude)
   this->damp(1.0 - (amplitude * 0.03));
 
 #if defined(_STK_DEBUG_)
-  cerr << "Modal: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Modal: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 

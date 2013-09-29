@@ -11,7 +11,7 @@
 /***************************************************/
 
 #include "Phonemes.h"
-#include <iostream.h>
+#include <iostream>
 
 const char Phonemes :: phonemeNames[32][4] = 
   {"eee", "ihh", "ehh", "aaa",
@@ -215,7 +215,7 @@ Phonemes :: ~Phonemes(void)
 const char *Phonemes :: name( unsigned int index )
 {
   if ( index > 31 ) {
-    cerr << "Phonemes: name index is greater than 31!" << endl;
+    std::cerr << "Phonemes: name index is greater than 31!" << std::endl;
     return 0;
   }
   return phonemeNames[index];
@@ -224,7 +224,7 @@ const char *Phonemes :: name( unsigned int index )
 MY_FLOAT Phonemes :: voiceGain( unsigned int index )
 {
   if ( index > 31 ) {
-    cerr << "Phonemes: voiceGain index is greater than 31!" << endl;
+    std::cerr << "Phonemes: voiceGain index is greater than 31!" << std::endl;
     return 0.0;
   }
   return phonemeGains[index][0];
@@ -233,7 +233,7 @@ MY_FLOAT Phonemes :: voiceGain( unsigned int index )
 MY_FLOAT Phonemes :: noiseGain( unsigned int index )
 {
   if ( index > 31 ) {
-    cerr << "Phonemes: noiseGain index is greater than 31!" << endl;
+    std::cerr << "Phonemes: noiseGain index is greater than 31!" << std::endl;
     return 0.0;
   }
   return phonemeGains[index][1];
@@ -242,11 +242,11 @@ MY_FLOAT Phonemes :: noiseGain( unsigned int index )
 MY_FLOAT Phonemes :: formantFrequency( unsigned int index, unsigned int partial )
 {
   if ( index > 31 ) {
-    cerr << "Phonemes: formantFrequency index is greater than 31!" << endl;
+    std::cerr << "Phonemes: formantFrequency index is greater than 31!" << std::endl;
     return 0.0;
   }
   if ( partial > 3 ) {
-    cerr << "Phonemes: formantFrequency partial is greater than 3!" << endl;
+    std::cerr << "Phonemes: formantFrequency partial is greater than 3!" << std::endl;
     return 0.0;
   }
   return phonemeParameters[index][partial][0];
@@ -255,11 +255,11 @@ MY_FLOAT Phonemes :: formantFrequency( unsigned int index, unsigned int partial 
 MY_FLOAT Phonemes :: formantRadius( unsigned int index, unsigned int partial )
 {
   if ( index > 31 ) {
-    cerr << "Phonemes: formantRadius index is greater than 31!" << endl;
+    std::cerr << "Phonemes: formantRadius index is greater than 31!" << std::endl;
     return 0.0;
   }
   if ( partial > 3 ) {
-    cerr << "Phonemes: formantRadius partial is greater than 3!" << endl;
+    std::cerr << "Phonemes: formantRadius partial is greater than 3!" << std::endl;
     return 0.0;
   }
   return phonemeParameters[index][partial][1];
@@ -268,11 +268,11 @@ MY_FLOAT Phonemes :: formantRadius( unsigned int index, unsigned int partial )
 MY_FLOAT Phonemes :: formantGain( unsigned int index, unsigned int partial )
 {
   if ( index > 31 ) {
-    cerr << "Phonemes: formantGain index is greater than 31!" << endl;
+    std::cerr << "Phonemes: formantGain index is greater than 31!" << std::endl;
     return 0.0;
   }
   if ( partial > 3 ) {
-    cerr << "Phonemes: formantGain partial is greater than 3!" << endl;
+    std::cerr << "Phonemes: formantGain partial is greater than 3!" << std::endl;
     return 0.0;
   }
   return phonemeParameters[index][partial][2];

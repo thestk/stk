@@ -45,14 +45,13 @@ Voicer :: Voicer( int maxInstruments, MY_FLOAT decayTime )
 Voicer :: ~Voicer()
 {
   delete [] voices;
-  //free( voices );
 }
 
 void Voicer :: addInstrument( Instrmnt *instrument, int channel )
 {
   //voices = (Voice *) realloc( (void *) voices, nVoices+1 * sizeof( Voice ) );
   if ( nVoices == maxVoices ) {
-    cerr << "Voicer: Maximum number of voices already added!!" << endl;
+    std::cerr << "Voicer: Maximum number of voices already added!!" << std::endl;
     return;
   }
 
@@ -226,10 +225,13 @@ void Voicer :: silence( void )
 
 MY_FLOAT Voicer :: tick()
 {
-  lastOutput = 0.0;
+  lastOutput = lastOutputLeft = lastOutputRight = 0.0;
   for ( int i=0; i<nVoices; i++ ) {
-    if ( voices[i].sounding != 0 )
+    if ( voices[i].sounding != 0 ) {
       lastOutput += voices[i].instrument->tick();
+      lastOutputLeft += voices[i].instrument->lastOutLeft();
+      lastOutputRight += voices[i].instrument->lastOutRight();
+    }
     if ( voices[i].sounding < 0 ) {
       voices[i].sounding++;
       if ( voices[i].sounding == 0 )
@@ -250,5 +252,15 @@ MY_FLOAT *Voicer :: tick(MY_FLOAT *vector, unsigned int vectorSize)
 MY_FLOAT Voicer :: lastOut() const
 {
   return lastOutput;
+}
+
+MY_FLOAT Voicer :: lastOutLeft() const
+{
+  return lastOutputLeft;
+}
+
+MY_FLOAT Voicer :: lastOutRight() const
+{
+  return lastOutputRight;
 }
 

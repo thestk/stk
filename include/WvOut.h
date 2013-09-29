@@ -83,19 +83,19 @@ class WvOut : public Stk
 
   //! Output a single sample to all channels in a sample frame.
   /*!
-    An StkError is thrown if a file read error occurs.
+    An StkError is thrown if a file write error occurs.
   */
   virtual void tick(const MY_FLOAT sample);
 
   //! Output each sample in \e vector to all channels in \e vectorSize sample frames.
   /*!
-    An StkError is thrown if a file read error occurs.
+    An StkError is thrown if a file write error occurs.
   */
   virtual void tick(const MY_FLOAT *vector, unsigned int vectorSize);
 
   //! Output the \e frameVector of sample frames of the given length.
   /*!
-    An StkError is thrown if a file read error occurs.
+    An StkError is thrown if a file write error occurs.
   */
   virtual void tickFrame(const MY_FLOAT *frameVector, unsigned int frames = 1);
 

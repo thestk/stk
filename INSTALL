@@ -1,6 +1,6 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2002.
+By Perry R. Cook and Gary P. Scavone, 1995-2004.
 
 The Synthesis ToolKit in C++ can be used in a variety of ways, depending on your particular needs.  Some people just choose the classes they need for a particular project and copy those to their project directory.  Others like to compile and link to a library of object files.  STK was not designed with one particular style of use in mind.
 
@@ -19,14 +19,15 @@ Several options can be passed to configure, including:
   --disable-realtime = only compile generic non-realtime classes
   --enable-debug = enable various debug output
   --with-alsa = choose native ALSA API support (linux only)
+  --with-jack = choose native JACK server API support (linux only)
   --enable-midiator = enable native MS-124W MIDI support (linux only)
 
-Typing "./configure --help" will display all the available options.  In addition, it is possible to specify the RAWWAVES and INCLUDE paths to configure as (ex. to set to /home/gary/rawwaves and /home/gary/include):
+At the moment, it is not possible to specify more than one Linux audio API, though this will change in the next release.  Typing "./configure --help" will display all the available options.  In addition, it is possible to specify the RAWWAVES and INCLUDE paths to configure as (ex. to set to /home/gary/rawwaves and /home/gary/include):
 
   ./configure RAWWAVE_PATH="/home/gary/rawwaves/"
   ./configure INCLUDE_PATH="/home/gary/include/"
 
-The ending "/" is required for the RAWWAVES path.  The default behavior will set a relative path that works for the project files included with the distribution (assuming they are not moved).
+The ending "/" is required for the RAWWAVES path.  The default behavior will set a relative path that works for the project files included with the distribution (assuming they are not moved).  You can also change the RAWWAVE_PATH dynamically via the static Stk::setRawwavePath() function.
 
 If you wish to use a different compiler than that selected by configure, specify that compiler in the command line (ex. to use CC):
 

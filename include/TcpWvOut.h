@@ -82,7 +82,7 @@ class TcpWvOut : protected WvOut
  protected:
 
   // Write a buffer of length \e frames via the socket connection.
-  void writeData( long frames );
+  void writeData( unsigned long frames );
 
   char msg[256];
   char *buffer;

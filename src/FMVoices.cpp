@@ -33,25 +33,14 @@
 #include "FMVoices.h"
 #include "SKINI.msg"
 #include "Phonemes.h"
-#include <string.h>
 
 FMVoices :: FMVoices()
   : FM()
 {
-  int i;
-  char files[4][128];
-
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  for ( i=0; i<4; i++ )
-    strcpy( files[i], RAWWAVE_PATH);
-
-  strcat(files[0], "sinewave.raw");
-  strcat(files[1], "sinewave.raw");
-  strcat(files[2], "sinewave.raw");
-  strcat(files[3], "fwavblnk.raw");
-
-  for ( i=0; i<4; i++ )
-    waves[i] = new WaveLoop( files[i], TRUE );
+  // Concatenate the STK rawwave path to the rawwave files
+  for ( int i=0; i<3; i++ )
+    waves[i] = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
+  waves[3] = new WaveLoop( (Stk::rawwavePath() + "fwavblnk.raw").c_str(), TRUE );
 
   this->setRatio(0, 2.00);
   this->setRatio(1, 4.00);
@@ -129,7 +118,7 @@ void FMVoices :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   this->keyOn();
 
 #if defined(_STK_DEBUG_)
-  cerr << "FMVoices: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "FMVoices: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -162,11 +151,11 @@ void FMVoices :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "FMVoices: Control value less than zero!" << endl;
+    std::cerr << "FMVoices: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "FMVoices: Control value greater than 128.0!" << endl;
+    std::cerr << "FMVoices: Control value greater than 128.0!" << std::endl;
   }
 
 
@@ -186,9 +175,9 @@ void FMVoices :: controlChange(int number, MY_FLOAT value)
     tilt[2] = tilt[1] * norm;
   }
   else
-    cerr << "FMVoices: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "FMVoices: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "FMVoices: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "FMVoices: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

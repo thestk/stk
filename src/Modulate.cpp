@@ -11,14 +11,11 @@
 /***************************************************/
 
 #include "Modulate.h"
-#include <string.h>
 
 Modulate :: Modulate()
 {
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char file[128];
-  strcpy(file, RAWWAVE_PATH);
-  vibrato = new WaveLoop( strcat(file,"sinewave.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave file
+  vibrato = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), TRUE );
   vibrato->setFrequency( 6.0 );
   vibratoGain = 0.04;
 

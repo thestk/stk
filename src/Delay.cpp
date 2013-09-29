@@ -19,7 +19,7 @@
 /***************************************************/
 
 #include "Delay.h"
-#include <iostream.h>
+#include <iostream>
 
 Delay :: Delay()
 {
@@ -64,13 +64,13 @@ void Delay :: clear(void)
 void Delay :: setDelay(long theDelay)
 {
   if (theDelay > length-1) { // The value is too big.
-    cerr << "Delay: setDelay(" << theDelay << ") too big!" << endl;
+    std::cerr << "Delay: setDelay(" << theDelay << ") too big!" << std::endl;
     // Force delay to maxLength.
     outPoint = inPoint + 1;
     delay = length - 1;
   }
   else if (theDelay < 0 ) {
-    cerr << "Delay: setDelay(" << theDelay << ") less than zero!" << endl;
+    std::cerr << "Delay: setDelay(" << theDelay << ") less than zero!" << std::endl;
     outPoint = inPoint;
     delay = 0;
   }
@@ -109,15 +109,15 @@ MY_FLOAT Delay :: energy(void) const
   return e;
 }
 
-MY_FLOAT Delay :: contentsAt(long tapDelay) const
+MY_FLOAT Delay :: contentsAt(unsigned long tapDelay) const
 {
   long i = tapDelay;
-  if (i < 0) {
-    cerr << "Delay: contentsAt(" << tapDelay << ") too small!" << endl;
-    i = 0;
+  if (i < 1) {
+    std::cerr << "Delay: contentsAt(" << tapDelay << ") too small!" << std::endl;
+    i = 1;
   }
   else if (i > delay) {
-    cerr << "Delay: contentsAt(" << tapDelay << ") too big!" << endl;
+    std::cerr << "Delay: contentsAt(" << tapDelay << ") too big!" << std::endl;
     i = (long) delay;
   }
 

@@ -23,10 +23,12 @@
 
 #include "WvOut.h"
 #include "RtAudio.h"
+#include "Thread.h"
 
 class RtWvOut : protected WvOut
 {
  public:
+
   //! Default constructor.
   /*!
     The \e device argument is passed to RtAudio during
@@ -82,10 +84,9 @@ class RtWvOut : protected WvOut
 
  protected:
 
-	RtAudio *audio;
-  bool stopped;
-  int stream;
-  int bufferSize;
+	RtAudio *audio_;
+  bool stopped_;
+  int bufferSize_;
 
 };
 

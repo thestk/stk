@@ -30,37 +30,23 @@
 #include "Mandolin.h"
 #include "SKINI.msg"
 
-#include <string.h>
-
 Mandolin :: Mandolin(MY_FLOAT lowestFrequency)
   : PluckTwo(lowestFrequency)
 {
-  // Concatenate the STK RAWWAVE_PATH to the rawwave file
-  char temp[128];
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[0] = new WvIn( strcat(temp,"mand1.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[1] = new WvIn( strcat(temp,"mand2.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[2] = new WvIn( strcat(temp,"mand3.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[3] = new WvIn( strcat(temp,"mand4.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[4] = new WvIn( strcat(temp,"mand5.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[5] = new WvIn( strcat(temp,"mand6.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[6] = new WvIn( strcat(temp,"mand7.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[7] = new WvIn( strcat(temp,"mand8.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[8] = new WvIn( strcat(temp,"mand9.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[9] = new WvIn( strcat(temp,"mand10.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[10] = new WvIn( strcat(temp,"mand11.raw"), TRUE );
-  strcpy(temp, RAWWAVE_PATH);
-  soundfile[11] = new WvIn( strcat(temp,"mand12.raw"), TRUE );
+  // Concatenate the STK rawwave path to the rawwave files
+  soundfile[0] = new WvIn( (Stk::rawwavePath() + "mand1.raw").c_str(), TRUE );
+  soundfile[1] = new WvIn( (Stk::rawwavePath() + "mand2.raw").c_str(), TRUE );
+  soundfile[2] = new WvIn( (Stk::rawwavePath() + "mand3.raw").c_str(), TRUE );
+  soundfile[3] = new WvIn( (Stk::rawwavePath() + "mand4.raw").c_str(), TRUE );
+  soundfile[4] = new WvIn( (Stk::rawwavePath() + "mand5.raw").c_str(), TRUE );
+  soundfile[5] = new WvIn( (Stk::rawwavePath() + "mand6.raw").c_str(), TRUE );
+  soundfile[6] = new WvIn( (Stk::rawwavePath() + "mand7.raw").c_str(), TRUE );
+  soundfile[7] = new WvIn( (Stk::rawwavePath() + "mand8.raw").c_str(), TRUE );
+  soundfile[8] = new WvIn( (Stk::rawwavePath() + "mand9.raw").c_str(), TRUE );
+  soundfile[9] = new WvIn( (Stk::rawwavePath() + "mand10.raw").c_str(), TRUE );
+  soundfile[10] = new WvIn( (Stk::rawwavePath() + "mand11.raw").c_str(), TRUE );
+  soundfile[11] = new WvIn( (Stk::rawwavePath() + "mand12.raw").c_str(), TRUE );
+
   directBody = 1.0;
   mic = 0;
   dampTime = 0;
@@ -83,11 +69,11 @@ void Mandolin :: pluck(MY_FLOAT amplitude)
   waveDone = false;
   pluckAmplitude = amplitude;
   if ( amplitude < 0.0 ) {
-    cerr << "Mandolin: pluck amplitude parameter less than zero!" << endl;
+    std::cerr << "Mandolin: pluck amplitude parameter less than zero!" << std::endl;
     pluckAmplitude = 0.0;
   }
   else if ( amplitude > 1.0 ) {
-    cerr << "Mandolin: pluck amplitude parameter greater than 1.0!" << endl;
+    std::cerr << "Mandolin: pluck amplitude parameter greater than 1.0!" << std::endl;
     pluckAmplitude = 1.0;
   }
 
@@ -101,11 +87,11 @@ void Mandolin :: pluck(MY_FLOAT amplitude, MY_FLOAT position)
   // Pluck position puts zeroes at position * length.
   pluckPosition = position;
   if ( position < 0.0 ) {
-    cerr << "Mandolin: pluck position parameter less than zero!" << endl;
+    std::cerr << "Mandolin: pluck position parameter less than zero!" << std::endl;
     pluckPosition = 0.0;
   }
   else if ( position > 1.0 ) {
-    cerr << "Mandolin: pluck position parameter greater than 1.0!" << endl;
+    std::cerr << "Mandolin: pluck position parameter greater than 1.0!" << std::endl;
     pluckPosition = 1.0;
   }
 
@@ -118,7 +104,7 @@ void Mandolin :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   this->pluck(amplitude);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Mandolin: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Mandolin: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -165,11 +151,11 @@ void Mandolin :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "Mandolin: Control value less than zero!" << endl;
+    std::cerr << "Mandolin: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "Mandolin: Control value greater than 128.0!" << endl;
+    std::cerr << "Mandolin: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_BodySize_) // 2
@@ -183,9 +169,9 @@ void Mandolin :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_AfterTouch_Cont_) // 128
     mic = (int) (norm * 11.0);
   else
-    cerr << "Mandolin: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "Mandolin: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "Mandolin: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "Mandolin: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }

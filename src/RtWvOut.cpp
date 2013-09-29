@@ -19,46 +19,57 @@
 /***************************************************/
 
 #include "RtWvOut.h"
-#include <stdio.h>
+#include <iostream>
 
-RtWvOut :: RtWvOut(unsigned int nChannels, MY_FLOAT sampleRate, int device, int bufferFrames, int nBuffers )
+RtWvOut :: RtWvOut( unsigned int nChannels, MY_FLOAT sampleRate, int device, int bufferFrames, int nBuffers )
 {
   // We'll let RtAudio deal with channel and srate limitations.
   channels = nChannels;
-  bufferSize = bufferFrames;
-  RtAudio::RTAUDIO_FORMAT format = ( sizeof(MY_FLOAT) == 8 ) ? RtAudio::RTAUDIO_FLOAT64 : RtAudio::RTAUDIO_FLOAT32;
+  bufferSize_ = bufferFrames;
+  RtAudioFormat format = ( sizeof(MY_FLOAT) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
+
+  audio_ = 0;
   try {
-    audio = new RtAudio(&stream, device, (int)channels, 0, 0, format,
-                        (int)sampleRate, &bufferSize, nBuffers);
-    data = (MY_FLOAT *) audio->getStreamBuffer(stream);
+    audio_ = new RtAudio();
   }
   catch (RtError &error) {
-    handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+    handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
   }
-  stopped = true;
+
+  // Now open a stream and set the callback function.
+  try {
+    audio_->openStream(device, (int)channels, 0, 0, format,
+                       (int)sampleRate, &bufferSize_, nBuffers);
+    data = (MY_FLOAT *) audio_->getStreamBuffer();
+  }
+  catch (RtError &error) {
+    handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
+  }
+
+  stopped_ = true;
 }
 
 RtWvOut :: ~RtWvOut()
 {
-  if ( !stopped )
-    audio->stopStream(stream);
-  delete audio;
-  data = 0; // RtAudio deletes the buffer itself.
+  if ( !stopped_ )
+    audio_->stopStream();
+  delete audio_;
+  data = 0;
 }
 
 void RtWvOut :: start()
 {
-  if ( stopped ) {
-    audio->startStream(stream);
-    stopped = false;
+  if ( stopped_ ) {
+    audio_->startStream();
+    stopped_ = false;
   }
 }
 
 void RtWvOut :: stop()
 {
-  if ( !stopped ) {
-    audio->stopStream(stream);
-    stopped = true;
+  if ( !stopped_ ) {
+    audio_->stopStream();
+    stopped_ = true;
   }
 }
 
@@ -74,21 +85,21 @@ MY_FLOAT RtWvOut :: getTime( void ) const
 
 void RtWvOut :: tick(const MY_FLOAT sample)
 {
-  if ( stopped )
+  if ( stopped_ )
     start();
-  
+
   for ( unsigned int j=0; j<channels; j++ )
     data[counter*channels+j] = sample;
 
   counter++;
   totalCount++;
 
-  if ( counter >= (unsigned int )bufferSize ) {
+  if ( counter >= (unsigned int )bufferSize_ ) {
     try {
-      audio->tickStream(stream);
+      audio_->tickStream();
     }
     catch (RtError &error) {
-      handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+      handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
     }
     counter = 0;
   }
@@ -102,7 +113,7 @@ void RtWvOut :: tick(const MY_FLOAT *vector, unsigned int vectorSize)
 
 void RtWvOut :: tickFrame(const MY_FLOAT *frameVector, unsigned int frames)
 {
-  if ( stopped )
+  if ( stopped_ )
     start();
 
   for ( unsigned int i=0; i<frames; i++ ) {
@@ -111,12 +122,12 @@ void RtWvOut :: tickFrame(const MY_FLOAT *frameVector, unsigned int frames)
     }
     counter++;
 
-    if ( counter >= (unsigned int)bufferSize ) {
+    if ( counter >= (unsigned int)bufferSize_ ) {
       try {
-        audio->tickStream(stream);
+        audio_->tickStream();
       }
       catch (RtError &error) {
-        handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+        handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
       }
       counter = 0;
     }

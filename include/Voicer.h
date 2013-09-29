@@ -112,11 +112,17 @@ public:
   //! Mix the output for all sounding voices.
   MY_FLOAT tick();
 
-  //! Computer \e vectorSize output mixes and return them in \e vector.
+  //! Compute \e vectorSize output mixes and return them in \e vector.
   MY_FLOAT *tick(MY_FLOAT *vector, unsigned int vectorSize);
 
   //! Return the last output value.
   MY_FLOAT lastOut() const;
+
+  //! Return the last left output value.
+  MY_FLOAT lastOutLeft() const;
+
+  //! Return the last right output value.
+  MY_FLOAT lastOutRight() const;
 
 protected:
 
@@ -135,7 +141,8 @@ protected:
   long tags;
   int muteTime;
   MY_FLOAT lastOutput;
-
+  MY_FLOAT lastOutputLeft;
+  MY_FLOAT lastOutputRight;
 };
 
 #endif

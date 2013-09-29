@@ -10,7 +10,7 @@
 /***************************************************/
 
 #include "PitShift.h"
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
 
 PitShift :: PitShift()
@@ -40,11 +40,11 @@ void PitShift :: setEffectMix(MY_FLOAT mix)
 {
   effectMix = mix;
   if ( mix < 0.0 ) {
-    cerr << "PitShift: setEffectMix parameter is less than zero!" << endl;
+    std::cerr << "PitShift: setEffectMix parameter is less than zero!" << std::endl;
     effectMix = 0.0;
   }
   else if ( mix > 1.0 ) {
-    cerr << "PitShift: setEffectMix parameter is greater than 1.0!" << endl;
+    std::cerr << "PitShift: setEffectMix parameter is greater than 1.0!" << std::endl;
     effectMix = 1.0;
   }
 }

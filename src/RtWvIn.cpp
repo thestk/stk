@@ -25,44 +25,54 @@ RtWvIn :: RtWvIn(int nChannels, MY_FLOAT sampleRate, int device, int bufferFrame
 {
   channels = nChannels;
   int size = bufferFrames;
-  RtAudio::RTAUDIO_FORMAT format = ( sizeof(MY_FLOAT) == 8 ) ? RtAudio::RTAUDIO_FLOAT64 : RtAudio::RTAUDIO_FLOAT32;
+  RtAudioFormat format = ( sizeof(MY_FLOAT) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
+
+  audio_ = 0;
   try {
-    audio = new RtAudio(&stream, 0, 0, device, channels, format,
-                        (int)sampleRate, &size, nBuffers);
-    data = (MY_FLOAT *) audio->getStreamBuffer(stream);
+    audio_ = new RtAudio();
   }
   catch (RtError &error) {
-    handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+    handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
+  }
+
+  // Now open a stream and get the buffer pointer.
+  try {
+    audio_->openStream(0, 0, device, channels, format,
+                      (int)sampleRate, &size, nBuffers);
+    data = (MY_FLOAT *) audio_->getStreamBuffer();
+  }
+  catch (RtError &error) {
+    handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
   }
 
   bufferSize = size;
   lastOutput = (MY_FLOAT *) new MY_FLOAT[channels];
   for (unsigned int i=0; i<channels; i++) lastOutput[i] = 0.0;
-  counter = 0;
-  stopped = true;
+  counter_ = 0;
+  stopped_ = true;
 }
 
 RtWvIn :: ~RtWvIn()
 {
-  if ( !stopped )
-    audio->stopStream(stream);
-  delete audio;
+  if ( !stopped_ )
+    audio_->stopStream();
+  delete audio_;
   data = 0; // RtAudio deletes the buffer itself.
 }
 
 void RtWvIn :: start()
 {
-  if ( stopped ) {
-    audio->startStream(stream);
-    stopped = false;
+  if ( stopped_ ) {
+    audio_->startStream();
+    stopped_ = false;
   }
 }
 
 void RtWvIn :: stop()
 {
-  if ( !stopped ) {
-    audio->stopStream(stream);
-    stopped = true;
+  if ( !stopped_ ) {
+    audio_->stopStream();
+    stopped_ = true;
   }
 }
 
@@ -92,25 +102,25 @@ const MY_FLOAT *RtWvIn :: lastFrame() const
 
 const MY_FLOAT *RtWvIn :: tickFrame(void)
 {
-  if ( stopped )
+  if ( stopped_ )
     start();
 
-  if (counter == 0) {
+  if (counter_ == 0) {
     try {
-      audio->tickStream(stream);
+      audio_->tickStream();
     }
     catch (RtError &error) {
-      handleError( error.getMessage(), StkError::AUDIO_SYSTEM );
+      handleError( error.getMessageString(), StkError::AUDIO_SYSTEM );
     }
   }
 
-  long temp = counter * channels;
+  long temp = counter_ * channels;
   for (unsigned int i=0; i<channels; i++)
     lastOutput[i] = data[temp++];
 
-  counter++;
-  if (counter >= (long) bufferSize)
-    counter = 0;
+  counter_++;
+  if (counter_ >= (long) bufferSize)
+    counter_ = 0;
 
   return lastOutput;
 }

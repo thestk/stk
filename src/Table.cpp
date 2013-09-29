@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <iostream.h>
+#include <iostream>
 
 Table :: Table(char *fileName)
 {
@@ -77,11 +77,11 @@ MY_FLOAT Table :: tick(MY_FLOAT index)
   long temp;
 
   if (index > length-1) {
-    cerr << "Table: Index (" << index << ") exceeds table length ... sticking at end!" << endl;
+    std::cerr << "Table: Index (" << index << ") exceeds table length ... sticking at end!" << std::endl;
     index = length-1;
   }
   else if (index < 0.0) {
-    cerr << "Table: Index (" << index << ") is less than zero ... setting to zero!" << endl;
+    std::cerr << "Table: Index (" << index << ") is less than zero ... setting to zero!" << std::endl;
     index = 0.0;
   }
 

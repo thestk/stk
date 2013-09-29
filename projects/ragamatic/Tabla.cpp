@@ -40,16 +40,16 @@ Tabla :: ~Tabla()
 void Tabla :: noteOn(MY_FLOAT instrument, MY_FLOAT amplitude)
 {
 #if defined(_STK_DEBUG_)
-  cerr << "Tabla: NoteOn instrument = " << instrument << ", amplitude = " << amplitude << endl;
+  std::cerr << "Tabla: NoteOn instrument = " << instrument << ", amplitude = " << amplitude << std::endl;
 #endif
 
   MY_FLOAT gain = amplitude;
   if ( amplitude > 1.0 ) {
-    cerr << "Tabla: noteOn amplitude parameter is greater than 1.0!" << endl;
+    std::cerr << "Tabla: noteOn amplitude parameter is greater than 1.0!" << std::endl;
     gain = 1.0;
   }
   else if ( amplitude < 0.0 ) {
-    cerr << "Tabla: noteOn amplitude parameter is less than 0.0!" << endl;
+    std::cerr << "Tabla: noteOn amplitude parameter is less than 0.0!" << std::endl;
     return;
   }
 
@@ -115,9 +115,9 @@ void Tabla :: noteOn(MY_FLOAT instrument, MY_FLOAT amplitude)
   }
 
 #if defined(_STK_DEBUG_)
-  cerr << "Number Sounding = " << nSounding << endl;
-  for (i=0; i<nSounding; i++) cerr << sounding[i] << "  ";
-  cerr << "\n";
+  std::cerr << "Number Sounding = " << nSounding << std::endl;
+  for (i=0; i<nSounding; i++) std::cerr << sounding[i] << "  ";
+  std::cerr << "\n";
 #endif
 }
 

@@ -1,6 +1,6 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
 
-By Perry R. Cook and Gary P. Scavone, 1995-2002.
+By Perry R. Cook and Gary P. Scavone, 1995-2004.
 
 STK Classes - See the HTML documentation in the html directory for complete information.
 
@@ -77,7 +77,7 @@ Sources:       Envelope.cpp    Linearly Goes to Target by Rate
                TcpWvIn.cpp     Audio Streaming (socket server) Input Class (subclass of WvIn)
 
 Sinks:         WvOut.cpp       Output Master Class for RAW, WAV, SND (AU), AIFF, MAT-file files
-               RtWvOut.cpp     Realtime Output Class (subclass of WvOut)
+               RtWvOut.cpp     Realtime Audio Output Class (subclass of WvOut)
                TcpWvOut.cpp    Audio Streaming (socket client) Output Class (subclass of WvOut)
 
 Duplex:        RtDuplex.cpp    Synchronous Realtime Audio Input/Output Class
@@ -98,14 +98,14 @@ Non-Linear:    JetTabl.cpp     Cubic Jet Non-Linearity
                BowTabl.cpp     x^(-3) Bow Non-Linearity
                ReedTabl.cpp    One Breakpoint Saturating Reed Non-Linearity
                                 
-Derived:       Modulate.cpp    Periodic and Random Vibrato: RawWvIn, SubNoise, OnePole
+Derived:       Modulate.cpp    Periodic and Random Vibrato: WvIn, SubNoise, OnePole
                SingWave.cpp    Looping wave table with randomness: Modulate, WaveLoop, Envelope
 
 
 ********** INSTRUMENTS AND ALGORITHMS **************
 
-Each Class will be listed either with all the unit generators it uses, 
-or the <<Algorithm>> of which it is a flavor.  All inherit from Instrmnt,
+Each class is listed either with some of the unit generators it uses, 
+or in terms of the algorithm it implements.  All inherit from Instrmnt,
 which inherits from Stk.
 
 Simple.cpp      Simple Instrument              Pulse oscillator + resonant filtered noise

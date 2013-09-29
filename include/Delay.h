@@ -53,9 +53,11 @@ public:
 
   //! Return the value at \e tapDelay samples from the delay-line input.
   /*!
-    The valid range for \e tapDelay is 1 to the delay-line length.
+    The tap point is determined modulo the delay-line length and is
+    relative to the last input value (i.e., a tapDelay of zero returns
+    the last input value).
   */
-  MY_FLOAT contentsAt(long tapDelay) const;
+  MY_FLOAT contentsAt(unsigned long tapDelay) const;
 
   //! Return the last computed output value.
   MY_FLOAT lastOut(void) const;

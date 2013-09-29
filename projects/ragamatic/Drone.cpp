@@ -49,7 +49,7 @@ void Drone :: setFrequency(MY_FLOAT frequency)
 {
   MY_FLOAT freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "Drone: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "Drone: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
 
@@ -73,7 +73,7 @@ void Drone :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   this->pluck(amplitude);
 
 #if defined(_STK_DEBUG_)
-  cerr << "Drone: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "Drone: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -81,16 +81,16 @@ void Drone :: noteOff(MY_FLOAT amplitude)
 {
   loopGain = (MY_FLOAT) 1.0 - amplitude;
   if ( loopGain < 0.0 ) {
-    cerr << "Drone: noteOff amplitude greater than 1.0!" << endl;
+    std::cerr << "Drone: noteOff amplitude greater than 1.0!" << std::endl;
     loopGain = 0.0;
   }
   else if ( loopGain > 1.0 ) {
-    cerr << "Drone: noteOff amplitude less than or zero!" << endl;
+    std::cerr << "Drone: noteOff amplitude less than or zero!" << std::endl;
     loopGain = (MY_FLOAT) 0.99999;
   }
 
 #if defined(_STK_DEBUG_)
-  cerr << "Drone: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "Drone: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 

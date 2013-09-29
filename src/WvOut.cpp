@@ -168,8 +168,8 @@ void WvOut :: openFile( const char *fileName, unsigned int nChannels, WvOut::FIL
   fileType = type;
 
   if ( format != STK_SINT8 && format != STK_SINT16 &&
-       format != STK_SINT32 && format != STK_FLOAT32 && 
-       format != STK_FLOAT64 ) {
+       format != STK_SINT32 && format != MY_FLOAT32 && 
+       format != MY_FLOAT64 ) {
     sprintf( msg, "WvOut: Unknown data type specified (%ld).", format );
     handleError(msg, StkError::FUNCTION_ARGUMENT);
   } 
@@ -259,11 +259,11 @@ bool WvOut :: setWavFile( const char *fileName )
     hdr.bits_per_samp = 16;
   else if ( dataType == STK_SINT32 )
     hdr.bits_per_samp = 32;
-  else if ( dataType == STK_FLOAT32 ) {
+  else if ( dataType == MY_FLOAT32 ) {
     hdr.format_tag = 3;
     hdr.bits_per_samp = 32;
   }
-  else if ( dataType == STK_FLOAT64 ) {
+  else if ( dataType == MY_FLOAT64 ) {
     hdr.format_tag = 3;
     hdr.bits_per_samp = 64;
   }
@@ -297,9 +297,9 @@ void WvOut :: closeWavFile( void )
   int bytes_per_sample = 1;
   if ( dataType == STK_SINT16 )
     bytes_per_sample = 2;
-  else if ( dataType == STK_SINT32 || dataType == STK_FLOAT32 )
+  else if ( dataType == STK_SINT32 || dataType == MY_FLOAT32 )
     bytes_per_sample = 4;
-  else if ( dataType == STK_FLOAT64 )
+  else if ( dataType == MY_FLOAT64 )
     bytes_per_sample = 8;
 
   SINT32 bytes = totalCount * channels * bytes_per_sample;
@@ -338,9 +338,9 @@ bool WvOut :: setSndFile( const char *fileName )
     hdr.format = 3;
   else if ( dataType == STK_SINT32 )
     hdr.format = 5;
-  else if ( dataType == STK_FLOAT32 )
+  else if ( dataType == MY_FLOAT32 )
     hdr.format = 6;
-  else if ( dataType == STK_FLOAT64 )
+  else if ( dataType == MY_FLOAT64 )
     hdr.format = 7;
 
   byteswap = false;
@@ -368,9 +368,9 @@ void WvOut :: closeSndFile( void )
     bytes_per_sample = 2;
   else if ( dataType == STK_SINT32 )
     bytes_per_sample = 4;
-  else if ( dataType == STK_FLOAT32 )
+  else if ( dataType == MY_FLOAT32 )
     bytes_per_sample = 4;
-  else if ( dataType == STK_FLOAT64 )
+  else if ( dataType == MY_FLOAT64 )
     bytes_per_sample = 8;
 
   SINT32 bytes = totalCount * bytes_per_sample * channels;
@@ -407,12 +407,12 @@ bool WvOut :: setAifFile( const char *fileName )
     hdr.sample_size = 16;
   else if ( dataType == STK_SINT32 )
     hdr.sample_size = 32;
-  else if ( dataType == STK_FLOAT32 ) {
+  else if ( dataType == MY_FLOAT32 ) {
     hdr.aiff[3] = 'C';
     hdr.sample_size = 32;
     hdr.comm_size = 24;
   }
-  else if ( dataType == STK_FLOAT64 ) {
+  else if ( dataType == MY_FLOAT64 ) {
     hdr.aiff[3] = 'C';
     hdr.sample_size = 64;
     hdr.comm_size = 24;
@@ -465,13 +465,13 @@ bool WvOut :: setAifFile( const char *fileName )
   if ( fwrite(&hdr.sample_size, 2, 1, fd) != 1 ) goto error;
   if ( fwrite(&hdr.srate, 10, 1, fd) != 1 ) goto error;
 
-  if ( dataType == STK_FLOAT32 ) {
+  if ( dataType == MY_FLOAT32 ) {
     char type[4] = {'f','l','3','2'};
     char zeroes[2] = { 0, 0 };
     if ( fwrite(&type, 4, 1, fd) != 1 ) goto error;
     if ( fwrite(&zeroes, 2, 1, fd) != 1 ) goto error;
   }
-  else if ( dataType == STK_FLOAT64 ) {
+  else if ( dataType == MY_FLOAT64 ) {
     char type[4] = {'f','l','6','4'};
     char zeroes[2] = { 0, 0 };
     if ( fwrite(&type, 4, 1, fd) != 1 ) goto error;
@@ -500,13 +500,13 @@ void WvOut :: closeAifFile( void )
   int bytes_per_sample = 1;
   if ( dataType == STK_SINT16 )
     bytes_per_sample = 2;
-  else if ( dataType == STK_SINT32 || dataType == STK_FLOAT32 )
+  else if ( dataType == STK_SINT32 || dataType == MY_FLOAT32 )
     bytes_per_sample = 4;
-  else if ( dataType == STK_FLOAT64 )
+  else if ( dataType == MY_FLOAT64 )
     bytes_per_sample = 8;
 
   unsigned long bytes = totalCount * bytes_per_sample * channels + 46;
-  if ( dataType == STK_FLOAT32 || dataType == STK_FLOAT64 ) bytes += 6;
+  if ( dataType == MY_FLOAT32 || dataType == MY_FLOAT64 ) bytes += 6;
 #ifdef __LITTLE_ENDIAN__
   swap32((unsigned char *)&bytes);
 #endif
@@ -514,11 +514,11 @@ void WvOut :: closeAifFile( void )
   fwrite(&bytes, 4, 1, fd);
 
   bytes = totalCount * bytes_per_sample * channels + 8;
-  if ( dataType == STK_FLOAT32 || dataType == STK_FLOAT64 ) bytes += 6;
+  if ( dataType == MY_FLOAT32 || dataType == MY_FLOAT64 ) bytes += 6;
 #ifdef __LITTLE_ENDIAN__
   swap32((unsigned char *)&bytes);
 #endif
-  if ( dataType == STK_FLOAT32 || dataType == STK_FLOAT64 )
+  if ( dataType == MY_FLOAT32 || dataType == MY_FLOAT64 )
     fseek(fd, 48, SEEK_SET); // jump to "SSND" chunk size
   else
     fseek(fd, 42, SEEK_SET); // jump to "SSND" chunk size
@@ -538,8 +538,8 @@ bool WvOut :: setMatFile( const char *fileName )
     return false;
   }
 
-  if ( dataType != STK_FLOAT64 ) {
-    dataType = STK_FLOAT64;
+  if ( dataType != MY_FLOAT64 ) {
+    dataType = MY_FLOAT64;
     sprintf(msg, "WvOut: Using 64-bit floating-point data format for file %s", name);
     handleError(msg, StkError::WARNING);
   }
@@ -665,11 +665,20 @@ MY_FLOAT WvOut :: getTime( void ) const
 void WvOut :: writeData( unsigned long frames )
 {
   if ( dataType == STK_SINT8 ) {
-    signed char sample;
-    for ( unsigned long k=0; k<frames*channels; k++ ) {
-      sample = (signed char) (data[k] * 127.0 );
-      //sample = ((signed char) (( data[k] + 1.0 ) * 127.5 + 0.5)) - 128;
-      if ( fwrite(&sample, 1, 1, fd) != 1 ) goto error;
+    if ( fileType == WVOUT_WAV ) { // 8-bit WAV data is unsigned!
+      unsigned char sample;
+      for ( unsigned long k=0; k<frames*channels; k++ ) {
+        sample = (unsigned char) (data[k] * 127.0 + 128.0);
+        if ( fwrite(&sample, 1, 1, fd) != 1 ) goto error;
+      }
+    }
+    else {
+      signed char sample;
+      for ( unsigned long k=0; k<frames*channels; k++ ) {
+        sample = (signed char) (data[k] * 127.0);
+        //sample = ((signed char) (( data[k] + 1.0 ) * 127.5 + 0.5)) - 128;
+        if ( fwrite(&sample, 1, 1, fd) != 1 ) goto error;
+      }
     }
   }
   else if ( dataType == STK_SINT16 ) {
@@ -690,7 +699,7 @@ void WvOut :: writeData( unsigned long frames )
       if ( fwrite(&sample, 4, 1, fd) != 1 ) goto error;
     }
   }
-  else if ( dataType == STK_FLOAT32 ) {
+  else if ( dataType == MY_FLOAT32 ) {
     FLOAT32 sample;
     for ( unsigned long k=0; k<frames*channels; k++ ) {
       sample = (FLOAT32) (data[k]);
@@ -698,7 +707,7 @@ void WvOut :: writeData( unsigned long frames )
       if ( fwrite(&sample, 4, 1, fd) != 1 ) goto error;
     }
   }
-  else if ( dataType == STK_FLOAT64 ) {
+  else if ( dataType == MY_FLOAT64 ) {
     FLOAT64 sample;
     for ( unsigned long k=0; k<frames*channels; k++ ) {
       sample = (FLOAT64) (data[k]);

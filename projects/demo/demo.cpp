@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <math.h>
-#include <iostream.h>
+#include <iostream>
 
 bool done;
 static void finish(int ignore){ done = true; }
@@ -28,12 +28,13 @@ int main(int argc, char *argv[])
   Reverb *reverb = 0;
   Voicer *voicer = 0;
   int i, nVoices = 1;
+  MY_FLOAT volume = 1.0;
   MY_FLOAT t60 = 1.0;  // in seconds
 
   // If you want to change the default sample rate (set in Stk.h), do
   // it before instantiating any objects!  If the sample rate is
   // specified in the command line, it will override this setting.
-  Stk::setSampleRate( 22050.0 );
+  Stk::setSampleRate( 44100.0 );
 
   // Check the command-line arguments for errors and to determine
   // the number of WvOut objects to be instantiated (in utilities.cpp).
@@ -67,6 +68,11 @@ int main(int argc, char *argv[])
     goto cleanup;
   }
 
+  // Set the number of ticks between realtime messages (default =
+  // RT_BUFFER_SIZE).
+  messager->setRtDelta( 64 );
+
+  // Set the reverb parameters.
   reverb = new PRCRev( t60 );
   reverb->setEffectMix(0.2);
 
@@ -86,7 +92,7 @@ int main(int argc, char *argv[])
 
     nTicks = messager->getDelta();
     for ( i=0; i<nTicks; i++ ) {
-      sample = reverb->tick( voicer->tick() );
+      sample = volume * reverb->tick( voicer->tick() );
       for ( j=0; j<nOutputs; j++ ) output[j]->tick(sample);
     }
 
@@ -111,6 +117,10 @@ int main(int argc, char *argv[])
       case __SK_ControlChange_:
         if (byte2 == 44.0)
           reverb->setEffectMix(byte3  * ONE_OVER_128);
+        else if (byte2 == 7.0)
+          volume = byte3 * ONE_OVER_128;
+        else if (byte2 == 49.0)
+          voicer->setFrequency( byte3 );
         else
           voicer->controlChange( (int) byte2, byte3 );
         break;
@@ -125,6 +135,10 @@ int main(int argc, char *argv[])
 
       case __SK_PitchBend_:
         voicer->pitchBend( byte2 );
+        break;
+
+      case __SK_Volume_:
+        volume = byte2 * ONE_OVER_128;
         break;
 
       case __SK_ProgramChange_:
@@ -167,7 +181,7 @@ int main(int argc, char *argv[])
   for ( i=0; i<nVoices; i++ ) delete instrument[i];
   free(instrument);
 
-	cout << "\nStk demo finished ... goodbye.\n" << endl;
+	std::cout << "\nStk demo finished ... goodbye.\n" << std::endl;
   return 0;
 }
 

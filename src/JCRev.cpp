@@ -38,7 +38,7 @@ JCRev :: JCRev(MY_FLOAT T60)
 
   for (i=0; i<4; i++)	{
     combDelays[i] = new Delay(lengths[i], lengths[i]);
-    combCoefficient[i] = pow(10,(-3 * lengths[i] / (T60 * Stk::sampleRate())));
+    combCoefficient[i] = pow(10.0,(-3 * lengths[i] / (T60 * Stk::sampleRate())));
   }
 
   outLeftDelay = new Delay(lengths[7], lengths[7]);

@@ -23,7 +23,7 @@
 /***************************************************/
 
 #include "DelayA.h"
-#include <iostream.h>
+#include <iostream>
 
 DelayA :: DelayA()
 {
@@ -46,6 +46,7 @@ DelayA :: DelayA(MY_FLOAT theDelay, long maxDelay)
 
   inPoint = 0;
   this->setDelay(theDelay);
+  apInput = 0.0;
   doNextOut = true;
 }
 
@@ -64,13 +65,13 @@ void DelayA :: setDelay(MY_FLOAT theDelay)
   MY_FLOAT outPointer;
 
   if (theDelay > length-1) {
-    cerr << "DelayA: setDelay(" << theDelay << ") too big!" << endl;
+    std::cerr << "DelayA: setDelay(" << theDelay << ") too big!" << std::endl;
     // Force delay to maxLength
     outPointer = inPoint + 1.0;
     delay = length - 1;
   }
   else if (theDelay < 0.5) {
-    cerr << "DelayA: setDelay(" << theDelay << ") less than 0.5 not possible!" << endl;
+    std::cerr << "DelayA: setDelay(" << theDelay << ") less than 0.5 not possible!" << std::endl;
     outPointer = inPoint + 0.4999999999;
     delay = 0.5;
   }

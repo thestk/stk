@@ -35,10 +35,10 @@ PRCRev :: PRCRev(MY_FLOAT T60)
   }
 
   for (i=0; i<2; i++)	{
-	  allpassDelays[i] = new Delay( lengths[i], lengths[i] );
-	  combDelays[i] = new Delay( lengths[i+2], lengths[i+2] );
-	  combCoefficient[i] = pow(10,(-3 * lengths[i+2] / (T60 * Stk::sampleRate())));
-	}
+    allpassDelays[i] = new Delay( lengths[i], lengths[i] );
+    combDelays[i] = new Delay( lengths[i+2], lengths[i+2] );
+    combCoefficient[i] = pow(10.0,(-3 * lengths[i+2] / (T60 * Stk::sampleRate())));
+  }
 
   allpassCoefficient = 0.7;
   effectMix = 0.5;

@@ -29,7 +29,7 @@
 #define __SK_ChannelPressure_        __SK_AfterTouch_
 #define __SK_PitchWheel_             224
 #define __SK_PitchBend_              __SK_PitchWheel_
-#define __SK_PitchChange_            249
+#define __SK_PitchChange_            49
 
 #define __SK_Clock_                  248
 #define __SK_SongStart_              250

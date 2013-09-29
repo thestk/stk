@@ -85,14 +85,13 @@ public:
 
 protected:
 
-	RtAudio *audio;
-  MY_FLOAT *data;
-  MY_FLOAT *lastOutput;
-  int bufferSize;
-  bool stopped;
-  int stream;
-  long counter;
-  unsigned int channels;
+	RtAudio *audio_;
+  MY_FLOAT *data_;
+  MY_FLOAT *lastOutput_;
+  int bufferSize_;
+  bool stopped_;
+  long counter_;
+  unsigned int channels_;
 
 };
 

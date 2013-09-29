@@ -13,7 +13,7 @@
 #define __INSTRMNT_H
 
 #include "Stk.h"
-#include <iostream.h>
+#include <iostream>
 
 class Instrmnt : public Stk
 {
@@ -35,6 +35,12 @@ class Instrmnt : public Stk
 
   //! Return the last output value.
   MY_FLOAT lastOut() const;
+
+  //! Return the last left output value.
+  MY_FLOAT lastOutLeft() const;
+
+  //! Return the last right output value.
+  MY_FLOAT lastOutRight() const;
 
   //! Compute one output sample.
   virtual MY_FLOAT tick() = 0;

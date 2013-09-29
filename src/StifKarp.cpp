@@ -73,7 +73,7 @@ void StifKarp :: setFrequency(MY_FLOAT frequency)
 {
   lastFrequency = frequency; 
   if ( frequency <= 0.0 ) {
-    cerr << "StifKarp: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "StifKarp: setFrequency parameter is less than or equal to zero!" << std::endl;
     lastFrequency = 220.0;
   }
 
@@ -116,11 +116,11 @@ void StifKarp :: setStretch(MY_FLOAT stretch)
 void StifKarp :: setPickupPosition(MY_FLOAT position) {
   pickupPosition = position;
   if ( position < 0.0 ) {
-    cerr << "StifKarp: setPickupPosition parameter is less than zero!" << endl;
+    std::cerr << "StifKarp: setPickupPosition parameter is less than zero!" << std::endl;
     pickupPosition = 0.0;
   }
   else if ( position > 1.0 ) {
-    cerr << "StifKarp: setPickupPosition parameter is greater than 1.0!" << endl;
+    std::cerr << "StifKarp: setPickupPosition parameter is greater than 1.0!" << std::endl;
     pickupPosition = 1.0;
   }
 
@@ -139,11 +139,11 @@ void StifKarp :: pluck(MY_FLOAT amplitude)
 {
   MY_FLOAT gain = amplitude;
   if ( gain > 1.0 ) {
-    cerr << "StifKarp: pluck amplitude greater than 1.0!" << endl;
+    std::cerr << "StifKarp: pluck amplitude greater than 1.0!" << std::endl;
     gain = 1.0;
   }
   else if ( gain < 0.0 ) {
-    cerr << "StifKarp: pluck amplitude less than zero!" << endl;
+    std::cerr << "StifKarp: pluck amplitude less than zero!" << std::endl;
     gain = 0.0;
   }
 
@@ -161,7 +161,7 @@ void StifKarp :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
   this->pluck(amplitude);
 
 #if defined(_STK_DEBUG_)
-  cerr << "StifKarp: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "StifKarp: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -169,17 +169,17 @@ void StifKarp :: noteOff(MY_FLOAT amplitude)
 {
   MY_FLOAT gain = amplitude;
   if ( gain > 1.0 ) {
-    cerr << "StifKarp: noteOff amplitude greater than 1.0!" << endl;
+    std::cerr << "StifKarp: noteOff amplitude greater than 1.0!" << std::endl;
     gain = 1.0;
   }
   else if ( gain < 0.0 ) {
-    cerr << "StifKarp: noteOff amplitude less than zero!" << endl;
+    std::cerr << "StifKarp: noteOff amplitude less than zero!" << std::endl;
     gain = 0.0;
   }
   loopGain =  (1.0 - gain) * 0.5;
 
 #if defined(_STK_DEBUG_)
-  cerr << "StifPluck: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "StifPluck: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -204,11 +204,11 @@ void StifKarp :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "StifKarp: Control value less than zero!" << endl;
+    std::cerr << "StifKarp: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "StifKarp: Control value greater than 128.0!" << endl;
+    std::cerr << "StifKarp: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_PickPosition_) // 4
@@ -218,10 +218,10 @@ void StifKarp :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_StringDetune_) // 1
     setStretch( 0.9 + (0.1 * (1.0 - norm)) );
   else
-    cerr << "StifKarp: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "StifKarp: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "StifKarp: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "StifKarp: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }
 

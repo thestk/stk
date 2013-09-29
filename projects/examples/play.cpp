@@ -44,12 +44,10 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  // Set the global STK sample rate to the file rate.
-  Stk::setSampleRate( input->getFileRate() );
-
-  // Set input read rate.
+  // Set input read rate based on the default STK sample rate.
   float rate = 1.0;
-  if ( argc == 3 ) rate = atof(argv[2]);
+  rate = input->getFileRate() / Stk::sampleRate();
+  if ( argc == 3 ) rate *= atof(argv[2]);
   input->setRate( rate );
 
   // Find out how many channels we have.
@@ -57,7 +55,7 @@ int main(int argc, char *argv[])
 
   // Define and open the realtime output device
   try {
-    output = new RtWvOut( channels, Stk::sampleRate(), 0, 512, 4 );
+    output = new RtWvOut( channels, Stk::sampleRate(), 0, RT_BUFFER_SIZE, 4 );
   }
   catch (StkError &) {
     goto cleanup;

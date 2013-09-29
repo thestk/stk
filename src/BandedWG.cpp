@@ -182,7 +182,7 @@ void BandedWG :: setFrequency(MY_FLOAT frequency)
 {
   freakency = frequency;
   if ( frequency <= 0.0 ) {
-    cerr << "BandedWG: setFrequency parameter is less than or equal to zero!" << endl;
+    std::cerr << "BandedWG: setFrequency parameter is less than or equal to zero!" << std::endl;
     freakency = 220.0;
   }
   if (freakency > 1568.0) freakency = 1568.0;
@@ -197,13 +197,13 @@ void BandedWG :: setFrequency(MY_FLOAT frequency)
       delay[i].setDelay( length );
       gains[i]=basegains[i];
       //	  gains[i]=(MY_FLOAT) pow(basegains[i], 1/((MY_FLOAT)delay[i].getDelay()));
-      //	  cerr << gains[i];
+      //	  std::cerr << gains[i];
     }
     else	{
       nModes = i;
       break;
     }
-    //	cerr << endl;
+    //	std::cerr << std::endl;
 
     // Set the bandpass filter resonances
     radius = 1.0 - PI * 32 / Stk::sampleRate(); //freakency * modes[i] / Stk::sampleRate()/32;
@@ -257,7 +257,7 @@ void BandedWG :: noteOn(MY_FLOAT frequency, MY_FLOAT amplitude)
     this->startBowing(amplitude, amplitude * 0.001);
 
 #if defined(_STK_DEBUG_)
-  cerr << "BandedWG: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << endl;
+  std::cerr << "BandedWG: NoteOn frequency = " << frequency << ", amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -267,7 +267,7 @@ void BandedWG :: noteOff(MY_FLOAT amplitude)
     this->stopBowing((1.0 - amplitude) * 0.005);
 
 #if defined(_STK_DEBUG_)
-  cerr << "BandedWG: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "BandedWG: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
@@ -320,11 +320,11 @@ void BandedWG :: controlChange(int number, MY_FLOAT value)
   MY_FLOAT norm = value * ONE_OVER_128;
   if ( norm < 0 ) {
     norm = 0.0;
-    cerr << "BandedWG: Control value less than zero!" << endl;
+    std::cerr << "BandedWG: Control value less than zero!" << std::endl;
   }
   else if ( norm > 1.0 ) {
     norm = 1.0;
-    cerr << "BandedWG: Control value greater than 128.0!" << endl;
+    std::cerr << "BandedWG: Control value greater than 128.0!" << std::endl;
   }
 
   if (number == __SK_BowPressure_) { // 2
@@ -353,7 +353,7 @@ void BandedWG :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_ModWheel_) { // 1
     //    baseGain = 0.9989999999 + (0.001 * norm );
 	  baseGain = 0.8999999999999999 + (0.1 * norm);
-    //	cerr << "Yuck!" << endl;
+    //	std::cerr << "Yuck!" << std::endl;
     for (int i=0; i<nModes; i++)
       gains[i]=(MY_FLOAT) basegains[i]*baseGain;
     //      gains[i]=(MY_FLOAT) pow(baseGain, (int)((MY_FLOAT)delay[i].getDelay()+i));
@@ -371,10 +371,10 @@ void BandedWG :: controlChange(int number, MY_FLOAT value)
   else if (number == __SK_ProphesyRibbon_) // 16
     this->setPreset((int) value);  
   else
-    cerr << "BandedWG: Undefined Control Number (" << number << ")!!" << endl;
+    std::cerr << "BandedWG: Undefined Control Number (" << number << ")!!" << std::endl;
 
 #if defined(_STK_DEBUG_)
-  cerr << "BandedWG: controlChange number = " << number << ", value = " << value << endl;
+  std::cerr << "BandedWG: controlChange number = " << number << ", value = " << value << std::endl;
 #endif
 }
 

@@ -24,6 +24,11 @@
 WaveLoop :: WaveLoop( const char *fileName, bool raw )
   : WvIn( fileName, raw ), phaseOffset(0.0)
 {
+  // If at end of file, redo extra sample frame for looping.
+  if (chunkPointer+bufferSize == fileSize) {
+    for (unsigned int j=0; j<channels; j++)
+      data[bufferSize*channels+j] = data[j];
+  }
 }
 
 WaveLoop :: ~WaveLoop()

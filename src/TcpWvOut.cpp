@@ -63,8 +63,8 @@ void TcpWvOut :: connect(int port, const char *hostname, unsigned int nChannels,
 
   if ( format == STK_SINT8 ) dataSize = 1;
   else if ( format == STK_SINT16 ) dataSize = 2;
-  else if ( format == STK_SINT32 || format == STK_FLOAT32 ) dataSize = 4;
-  else if ( format == STK_FLOAT64 ) dataSize = 8;
+  else if ( format == STK_SINT32 || format == MY_FLOAT32 ) dataSize = 4;
+  else if ( format == MY_FLOAT64 ) dataSize = 8;
   else {
     sprintf( msg, "TcpWvOut: Unknown data type specified (%ld).", format );
     handleError(msg, StkError::FUNCTION_ARGUMENT);
@@ -95,7 +95,7 @@ void TcpWvOut :: disconnect(void)
   }
 }
 
-void TcpWvOut :: writeData( long frames )
+void TcpWvOut :: writeData( unsigned long frames )
 {
   if ( dataType == STK_SINT8 ) {
     signed char *ptr = (signed char *) buffer;
@@ -122,7 +122,7 @@ void TcpWvOut :: writeData( long frames )
       ptr++;
     }
   }
-  else if ( dataType == STK_FLOAT32 ) {
+  else if ( dataType == MY_FLOAT32 ) {
     FLOAT32 *ptr = (FLOAT32 *) buffer;
     for ( unsigned long k=0; k<frames*channels; k++ ) {
       *ptr = (FLOAT32) data[k];
@@ -132,7 +132,7 @@ void TcpWvOut :: writeData( long frames )
       ptr++;
     }
   }
-  else if ( dataType == STK_FLOAT64 ) {
+  else if ( dataType == MY_FLOAT64 ) {
     FLOAT64 *ptr = (FLOAT64 *) buffer;
     for ( unsigned long k=0; k<frames*channels; k++ ) {
       *ptr = (FLOAT64) data[k];

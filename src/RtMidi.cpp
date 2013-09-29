@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <iostream.h>
 
 #define MIDI_BUFFER_SIZE 256
 int writeIndex;
@@ -328,7 +327,7 @@ int RtMidi ::  nextMessage()
 }
 
 
-#elif ( defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) )
+#elif ( defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) || defined(__LINUX_JACK__) )
 
 #include <pthread.h>
 #include <sys/time.h>
@@ -341,6 +340,11 @@ int RtMidi ::  nextMessage()
 #include <errno.h>
 int midi_in;
 
+#elif ( defined(__LINUX_ALSA__) || defined(__LINUX_JACK__) )
+
+#include <alsa/asoundlib.h>
+snd_rawmidi_t *midi_in = 0;
+
 #elif defined(__LINUX_OSS__)
 
 #include <fcntl.h>
@@ -349,11 +353,6 @@ int midi_in;
 #include <sys/soundcard.h>
 #include <errno.h>
 int midi_in;
-
-#else // __LINUX_ALSA__
-
-#include <alsa/asoundlib.h>
-snd_rawmidi_t *midi_in = 0;
 
 #endif
 
@@ -389,18 +388,18 @@ void *midiInputThread(void *)
 
   for (;;) {
 
-#if defined(__LINUX_OSS__) || defined(__MIDIATOR__)
+#if ( defined(__LINUX_ALSA__) || defined(__LINUX_JACK__) )
+
+    if ((n = snd_rawmidi_read(midi_in, &newByte, 1)) == -1)
+      fprintf(stderr, "RtMidi: Error reading ALSA raw MIDI data from device!\n");
+
+#elif defined(__LINUX_OSS__) || defined(__MIDIATOR__)
 
     // Normally, you should check the return value of this read() call.
     // A return of -1 usually indicates an error.  However, for OSS
     // compatability in ALSA, we need to ignore such values.
 
     n = read(midi_in, &newByte, 1);
-
-#else // ALSA_API
-
-    if ((n = snd_rawmidi_read(midi_in, &newByte, 1)) == -1)
-      fprintf(stderr, "RtMidi: Error reading ALSA raw MIDI data from device!\n");
 
 #endif
 
@@ -556,85 +555,7 @@ RtMidi :: RtMidi(int device)
   }
 }
 
-#elif defined(__LINUX_OSS__) // normal OSS setup
-
-#define MAX_DEVICES 8
-#define MIDI_NAME "/dev/midi"
-
-RtMidi :: RtMidi(int device)
-{
-  char msg[256];
-  char name[16];
-  char deviceNames[MAX_DEVICES][16];
-  midi_in = 0;
-
-  // /dev/midi should be a link to the default midi device under OSS
-  strcpy(name, MIDI_NAME);
-
-  // The OSS API doesn't really give us a means for probing the
-  // capabilities of devices.  Thus, we'll just pursue a brute
-  // force method of opening devices until we either find something
-  // that doesn't complain or we have to give up.  We'll start with
-  // the default device, then try /dev/midi00, /dev/midi01, etc...
-  int i, nDevices = 0;
-  for ( i=0; i<MAX_DEVICES; i++ ) {
-    if (i > 0) sprintf(name, "%s%d%d", MIDI_NAME, 0, i-1);
-    midi_in = open(name, O_RDONLY | O_NONBLOCK, 0);
-    if ( midi_in != -1 ) {
-      strncpy( deviceNames[nDevices++], name, 16 );
-      close( midi_in );
-    }
-    else if ( errno == EBUSY )
-      fprintf(stderr,"RtMidi: MIDI device (%s) is busy and cannot be opened.\n", name);
-  }
-
-  if (nDevices == 0) {
-    sprintf(msg, "RtMidi: no OSS MIDI cards reported available.");
-    handleError(msg, StkError::MIDI_SYSTEM);
-  }
-
-  // Check device argument and print list if necessary.
-  int deveyes;
-  if ( device >= 0 && device < nDevices )
-    deveyes = device;
-  else if ( nDevices == 1 )
-    deveyes = 0;
-  else {
-    // Invalid device argument ... print list.
-    printf("\n");
-    for ( i=0; i<nDevices; i++ )
-      printf("MIDI Device %d: %s\n", i, deviceNames[i]);
-
-    char choice[16];
-    deveyes = -1;
-    while ( deveyes < 0 || deveyes >= nDevices ) {
-      printf("\nType a MIDI device number from above: ");
-      fgets(choice, 16, stdin);
-      deveyes = atoi(choice);
-    }
-    printf("\n");
-  }
-
-  midi_in = open(deviceNames[deveyes], O_RDONLY, 0);
-  if ( midi_in == -1)  {
-    sprintf(msg, "RtMidi: Unable to open OSS device (%s) for MIDI input!",
-            deviceNames[deveyes]);
-    handleError(msg, StkError::MIDI_SYSTEM);
-  }
-
-  // Set up the circular buffer for the MIDI input messages
-  midiBuffer = new MIDIMESSAGE[MIDI_BUFFER_SIZE];
-  readIndex = 0;
-  writeIndex = 0;
-
-  int result = pthread_create(&midi_input_thread, NULL, midiInputThread, NULL);
-  if (result) {
-    sprintf(msg, "RtMidi: unable to create MIDI input thread.");
-    handleError(msg, StkError::PROCESS_THREAD);
-  }
-}
-
-#else // ALSA_API
+#elif ( defined(__LINUX_ALSA__) || defined(__LINUX_JACK__) )
 
 #define MAX_DEVICES 8
 
@@ -730,6 +651,84 @@ RtMidi :: RtMidi(int device)
   }
 }
 
+#elif defined(__LINUX_OSS__) // normal OSS setup
+
+#define MAX_DEVICES 8
+#define MIDI_NAME "/dev/midi"
+
+RtMidi :: RtMidi(int device)
+{
+  char msg[256];
+  char name[16];
+  char deviceNames[MAX_DEVICES][16];
+  midi_in = 0;
+
+  // /dev/midi should be a link to the default midi device under OSS
+  strcpy(name, MIDI_NAME);
+
+  // The OSS API doesn't really give us a means for probing the
+  // capabilities of devices.  Thus, we'll just pursue a brute
+  // force method of opening devices until we either find something
+  // that doesn't complain or we have to give up.  We'll start with
+  // the default device, then try /dev/midi00, /dev/midi01, etc...
+  int i, nDevices = 0;
+  for ( i=0; i<MAX_DEVICES; i++ ) {
+    if (i > 0) sprintf(name, "%s%d%d", MIDI_NAME, 0, i-1);
+    midi_in = open(name, O_RDONLY | O_NONBLOCK, 0);
+    if ( midi_in != -1 ) {
+      strncpy( deviceNames[nDevices++], name, 16 );
+      close( midi_in );
+    }
+    else if ( errno == EBUSY )
+      fprintf(stderr,"RtMidi: MIDI device (%s) is busy and cannot be opened.\n", name);
+  }
+
+  if (nDevices == 0) {
+    sprintf(msg, "RtMidi: no OSS MIDI cards reported available.");
+    handleError(msg, StkError::MIDI_SYSTEM);
+  }
+
+  // Check device argument and print list if necessary.
+  int deveyes;
+  if ( device >= 0 && device < nDevices )
+    deveyes = device;
+  else if ( nDevices == 1 )
+    deveyes = 0;
+  else {
+    // Invalid device argument ... print list.
+    printf("\n");
+    for ( i=0; i<nDevices; i++ )
+      printf("MIDI Device %d: %s\n", i, deviceNames[i]);
+
+    char choice[16];
+    deveyes = -1;
+    while ( deveyes < 0 || deveyes >= nDevices ) {
+      printf("\nType a MIDI device number from above: ");
+      fgets(choice, 16, stdin);
+      deveyes = atoi(choice);
+    }
+    printf("\n");
+  }
+
+  midi_in = open(deviceNames[deveyes], O_RDONLY, 0);
+  if ( midi_in == -1)  {
+    sprintf(msg, "RtMidi: Unable to open OSS device (%s) for MIDI input!",
+            deviceNames[deveyes]);
+    handleError(msg, StkError::MIDI_SYSTEM);
+  }
+
+  // Set up the circular buffer for the MIDI input messages
+  midiBuffer = new MIDIMESSAGE[MIDI_BUFFER_SIZE];
+  readIndex = 0;
+  writeIndex = 0;
+
+  int result = pthread_create(&midi_input_thread, NULL, midiInputThread, NULL);
+  if (result) {
+    sprintf(msg, "RtMidi: unable to create MIDI input thread.");
+    handleError(msg, StkError::PROCESS_THREAD);
+  }
+}
+
 #endif
 
 RtMidi :: ~RtMidi()
@@ -740,11 +739,11 @@ RtMidi :: ~RtMidi()
 #if defined(__MIDIATOR__)
   tcdrain(midi_in);
   if (midi_in != 0) close(midi_in);
-#elif defined(__LINUX_OSS__)
-  if (midi_in != 0) close(midi_in);
-#else // ALSA_API
+#elif ( defined(__LINUX_ALSA__) || defined(__LINUX_JACK__) )
   if (midi_in != 0)
     snd_rawmidi_close(midi_in);
+#elif defined(__LINUX_OSS__)
+  if (midi_in != 0) close(midi_in);
 #endif
 }
 

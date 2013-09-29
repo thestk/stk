@@ -6,6 +6,7 @@ set press 64.0
 set cont1 0.0
 set cont2 20.0
 set cont4 64.0
+set cont7 128.0
 set cont11 64.0
 set cont44 24.0
 set outID "stdout"
@@ -93,21 +94,15 @@ pack .noteOn.exit -side left -padx 5 -pady 10
 
 pack .noteOn
 
-# Configure reverb slider
-frame .reverb -bg black
-
-scale .reverb.mix -from 0 -to 128 -length 200 \
--command {printWhatz "ControlChange    0.0  1 " 44} \
--orient horizontal -label "Reverb Mix" \
--tickinterval 32 -showvalue true -bg grey66  \
--variable cont44
-
-pack .reverb.mix -padx 10 -pady 10
-pack .reverb
-
 # Configure sliders
 frame .left -bg black
 frame .right -bg black
+
+scale .left.volume -from 0 -to 128 -length 200 \
+-command {printWhatz "ControlChange    0.0  1 " 7} \
+-orient horizontal -label "Volume" \
+-tickinterval 32 -showvalue true -bg grey66  \
+-variable cont7
 
 scale .left.bPressure -from 0 -to 128 -length 200 \
 -command {changePress } -variable press \
@@ -124,6 +119,12 @@ scale .left.cont2 -from 0 -to 128 -length 200 \
 -orient horizontal -label "Reed Stiffness" \
 -tickinterval 32 -showvalue true -bg grey66  \
 -variable cont2
+
+scale .right.reverb -from 0 -to 128 -length 200 \
+-command {printWhatz "ControlChange    0.0  1 " 44} \
+-orient horizontal -label "Reverb Mix" \
+-tickinterval 32 -showvalue true -bg grey66  \
+-variable cont44
 
 scale .right.cont4 -from 0 -to 128 -length 200 \
 -command {printWhatz "ControlChange    0.0 1 " 4} \
@@ -143,9 +144,11 @@ scale .right.cont1 -from 0 -to 128 -length 200 \
 -tickinterval 32 -showvalue true -bg grey66  \
 -variable cont1
 
+pack .left.volume -padx 10 -pady 10
 pack .left.bPressure -padx 10 -pady 10
 pack .left.pitch -padx 10 -pady 10
 pack .left.cont2 -padx 10 -pady 10
+pack .right.reverb -padx 10 -pady 10
 pack .right.cont4 -padx 10 -pady 10
 pack .right.cont11 -padx 10 -pady 10
 pack .right.cont1 -padx 10 -pady 10

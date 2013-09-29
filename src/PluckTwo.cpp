@@ -59,7 +59,7 @@ void PluckTwo :: setFrequency(MY_FLOAT frequency)
 {
   lastFrequency = frequency;
   if ( lastFrequency <= 0.0 ) {
-    cerr << "PluckTwo: setFrequency parameter less than or equal to zero!" << endl;
+    std::cerr << "PluckTwo: setFrequency parameter less than or equal to zero!" << std::endl;
     lastFrequency = 220.0;
   }
 
@@ -83,7 +83,7 @@ void PluckTwo :: setDetune(MY_FLOAT detune)
 {
   detuning = detune;
   if ( detuning <= 0.0 ) {
-    cerr << "PluckTwo: setDetune parameter less than or equal to zero!" << endl;
+    std::cerr << "PluckTwo: setDetune parameter less than or equal to zero!" << std::endl;
     detuning = 0.1;
   }
   delayLine->setDelay(( lastLength / detuning) - (MY_FLOAT) 0.5);
@@ -100,11 +100,11 @@ void PluckTwo :: setPluckPosition(MY_FLOAT position)
 {
   pluckPosition = position;
   if ( position < 0.0 ) {
-    cerr << "PluckTwo: setPluckPosition parameter is less than zero!" << endl;
+    std::cerr << "PluckTwo: setPluckPosition parameter is less than zero!" << std::endl;
     pluckPosition = 0.0;
   }
   else if ( position > 1.0 ) {
-    cerr << "PluckTwo: setPluckPosition parameter is greater than 1.0!" << endl;
+    std::cerr << "PluckTwo: setPluckPosition parameter is greater than 1.0!" << std::endl;
     pluckPosition = 1.0;
   }
 }
@@ -121,7 +121,7 @@ void PluckTwo :: noteOff(MY_FLOAT amplitude)
   loopGain =  ((MY_FLOAT) 1.0 - amplitude) * (MY_FLOAT) 0.5;
 
 #if defined(_STK_DEBUG_)
-  cerr << "PluckTwo: NoteOff amplitude = " << amplitude << endl;
+  std::cerr << "PluckTwo: NoteOff amplitude = " << amplitude << std::endl;
 #endif
 }
 
