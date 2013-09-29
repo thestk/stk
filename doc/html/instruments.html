@@ -75,7 +75,7 @@
     dac.<a class="code" href="classRtAudio.html#afacc99740fa4c5606fb35467cdea6da8" title="A public function for opening a stream with the specified parameters.">openStream</a>( &amp;parameters, NULL, format, (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)Stk::sampleRate(), &amp;bufferFrames, &amp;tick, (<span class="keywordtype">void</span> *)&amp;data );
   }
   <span class="keywordflow">catch</span> ( <a class="code" href="classRtError.html" title="Exception handling class for RtAudio &amp;amp; RtMidi.">RtError</a>&amp; error ) {
-    error.<a class="code" href="classRtError.html#ada41f7472122f45bc5b4677f066e0943" title="Prints thrown error message to stderr.">printMessage</a>();
+    error.<a class="code" href="classRtError.html#a251dcdac396c998c91706dd2dd3b8bfc" title="Prints thrown error message to stderr.">printMessage</a>();
     <span class="keywordflow">goto</span> cleanup;
   }
 
@@ -94,7 +94,7 @@
     dac.<a class="code" href="classRtAudio.html#aec017a89629ccef66a90b60be22a2f80" title="A function that starts a stream.">startStream</a>();
   }
   <span class="keywordflow">catch</span> ( <a class="code" href="classRtError.html" title="Exception handling class for RtAudio &amp;amp; RtMidi.">RtError</a> &amp;error ) {
-    error.<a class="code" href="classRtError.html#ada41f7472122f45bc5b4677f066e0943" title="Prints thrown error message to stderr.">printMessage</a>();
+    error.<a class="code" href="classRtError.html#a251dcdac396c998c91706dd2dd3b8bfc" title="Prints thrown error message to stderr.">printMessage</a>();
     <span class="keywordflow">goto</span> cleanup;
   }
 
@@ -107,7 +107,7 @@
     dac.<a class="code" href="classRtAudio.html#a90d599002ad32cf250a4cb866f2cc93a" title="A function that closes a stream and frees any associated stream memory.">closeStream</a>();
   }
   <span class="keywordflow">catch</span> ( <a class="code" href="classRtError.html" title="Exception handling class for RtAudio &amp;amp; RtMidi.">RtError</a> &amp;error ) {
-    error.<a class="code" href="classRtError.html#ada41f7472122f45bc5b4677f066e0943" title="Prints thrown error message to stderr.">printMessage</a>();
+    error.<a class="code" href="classRtError.html#a251dcdac396c998c91706dd2dd3b8bfc" title="Prints thrown error message to stderr.">printMessage</a>();
   }
 
  cleanup:
@@ -116,7 +116,7 @@
   <span class="keywordflow">return</span> 0;
 }
 </pre></div><p>We have used an Instrmnt pointer when referencing the BeeThree instance above, so it would be simple to replace the BeeThree class with any other STK instrument class. It should be noted, however, that a few classes do not respond to the setFrequency() function (e.g., Shakers, Drummer).</p>
-<p>The noteOn() function initiates an instrument attack. Instruments that are continuously excited (e.g., <a class="el" href="classstk_1_1Clarinet.html" title="STK clarinet physical model class.">stk::Clarinet</a>, <a class="el" href="classstk_1_1BeeThree.html" title="STK Hammond-oid organ FM synthesis instrument.">stk::BeeThree</a>) will continue to sound until stopped with a noteOff(). Impulsively excited instrument sounds (e.g., <a class="el" href="classstk_1_1Plucked.html" title="STK plucked string model class.">stk::Plucked</a>, <a class="el" href="classstk_1_1Wurley.html" title="STK Wurlitzer electric piano FM synthesis instrument.">stk::Wurley</a>) typically decay within a few seconds time, requiring subsequent noteOn() messages for re-attack.</p>
+<p>The noteOn() function initiates an instrument attack. Instruments that are continuously excited (e.g., <a class="el" href="classstk_1_1Clarinet.html" title="STK clarinet physical model class.">stk::Clarinet</a>, <a class="el" href="classstk_1_1BeeThree.html" title="STK Hammond-oid organ FM synthesis instrument.">stk::BeeThree</a>) will continue to sound until stopped with a noteOff(). Impulsively excited instrument sounds (e.g., <a class="el" href="classstk_1_1Plucked.html" title="STK basic plucked string class.">stk::Plucked</a>, <a class="el" href="classstk_1_1Wurley.html" title="STK Wurlitzer electric piano FM synthesis instrument.">stk::Wurley</a>) typically decay within a few seconds time, requiring subsequent noteOn() messages for re-attack.</p>
 <p>Instrument parameters can be precisely controlled as demonstrated above. A more flexible approach to instrument control, allowing arbitrary scorefile or realtime updates, is described in the next tutorial chapter.</p>
 <p>[<a href="tutorial.html">Main tutorial page</a>] &nbsp; [<a href="controlin.html">Next tutorial</a>] </p>
 </div>
@@ -124,7 +124,7 @@
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

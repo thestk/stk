@@ -71,6 +71,8 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a44f37146d33354afb085806bd8340497"></a><!-- doxytag: member="stk::BandedWG::tick" ref="a44f37146d33354afb085806bd8340497" args="(unsigned int channel=0)" -->
 StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1BandedWG.html#a44f37146d33354afb085806bd8340497">tick</a> (unsigned int channel=0)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute and return one output sample. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1BandedWG.html#a6c2ebb66862b173c4835add6847801c9">tick</a> (<a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;frames, unsigned int channel=0)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs.  <a href="#a6c2ebb66862b173c4835add6847801c9"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>Banded waveguide modeling class. </p>
@@ -93,6 +95,66 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </li>
 </ul>
 <p>by Georg Essl, 1999 - 2004. Modified for STK 4.0 by Gary Scavone. </p>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a6c2ebb66862b173c4835add6847801c9"></a><!-- doxytag: member="stk::BandedWG::tick" ref="a6c2ebb66862b173c4835add6847801c9" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp; stk::BandedWG::tick </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>frames</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&nbsp;</td>
+          <td class="paramname"> <em>channel</em> = <code>0</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [inline, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs. </p>
+<p>The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p>Implements <a class="el" href="classstk_1_1Instrmnt.html#a34c6733ca145763462d9e44ae3c772b6">stk::Instrmnt</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00125"></a>00125 {
+<a name="l00126"></a>00126   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = lastFrame_.channels();
+<a name="l00127"></a>00127 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00128"></a>00128 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; frames.channels() - nChannels ) {
+<a name="l00129"></a>00129     oStream_ &lt;&lt; <span class="stringliteral">&quot;BandedWG::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00130"></a>00130     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00131"></a>00131   }
+<a name="l00132"></a>00132 <span class="preprocessor">#endif</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span>
+<a name="l00134"></a>00134   StkFloat *samples = &amp;frames[channel];
+<a name="l00135"></a>00135   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, hop = frames.channels() - nChannels;
+<a name="l00136"></a>00136   <span class="keywordflow">if</span> ( nChannels == 1 ) {
+<a name="l00137"></a>00137     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00138"></a>00138       *samples++ = <a class="code" href="classstk_1_1BandedWG.html#a44f37146d33354afb085806bd8340497" title="Compute and return one output sample.">tick</a>();
+<a name="l00139"></a>00139   }
+<a name="l00140"></a>00140   <span class="keywordflow">else</span> {
+<a name="l00141"></a>00141     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00142"></a>00142       *samples++ = <a class="code" href="classstk_1_1BandedWG.html#a44f37146d33354afb085806bd8340497" title="Compute and return one output sample.">tick</a>();
+<a name="l00143"></a>00143       <span class="keywordflow">for</span> ( j=1; j&lt;nChannels; j++ )
+<a name="l00144"></a>00144         *samples++ = lastFrame_[j];
+<a name="l00145"></a>00145     }
+<a name="l00146"></a>00146   }
+<a name="l00147"></a>00147 
+<a name="l00148"></a>00148   <span class="keywordflow">return</span> frames;
+<a name="l00149"></a>00149 }
+</pre></div></p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="BandedWG_8h_source.html">BandedWG.h</a></li>
 </ul>
@@ -101,7 +163,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

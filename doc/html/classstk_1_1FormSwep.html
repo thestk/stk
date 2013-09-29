@@ -67,7 +67,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK sweepable formant filter class. </p>
 <p>This class implements a formant (resonance) which can be "swept" over time from one frequency setting to another. It provides methods for controlling the sweep rate and target frequency.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="aa6fe339cc937260c46e8c169a58d8529"></a><!-- doxytag: member="stk::FormSwep::setResonance" ref="aa6fe339cc937260c46e8c169a58d8529" args="(StkFloat frequency, StkFloat radius)" -->
 <div class="memitem">
@@ -95,7 +95,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div class="memdoc">
 
 <p>Sets the filter coefficients for a resonance at <em>frequency</em> (in Hz). </p>
-<p>This method determines the filter coefficients corresponding to two complex-conjugate poles with the given <em>frequency</em> (in Hz) and <em>radius</em> from the z-plane origin. The filter zeros are placed at z = 1, z = -1, and the coefficients are then normalized to produce a constant unity gain (independent of the filter <em>gain</em> parameter). The resulting filter frequency response has a resonance at the given <em>frequency</em>. The closer the poles are to the unit-circle (<em>radius</em> close to one), the narrower the resulting resonance width. </p>
+<p>This method determines the filter coefficients corresponding to two complex-conjugate poles with the given <em>frequency</em> (in Hz) and <em>radius</em> from the z-plane origin. The filter zeros are placed at z = 1, z = -1, and the coefficients are then normalized to produce a constant unity gain (independent of the filter <em>gain</em> parameter). The resulting filter frequency response has a resonance at the given <em>frequency</em>. The closer the poles are to the unit-circle (<em>radius</em> close to one), the narrower the resulting resonance width. An unstable filter will result for <em>radius</em> &gt;= 1.0. The <em>frequency</em> value should be between zero and half the sample rate. </p>
 
 </div>
 </div>
@@ -171,6 +171,23 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Filter.html#a3260a238824c4a748ac057b84b7d3f21">stk::Filter</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00154"></a>00154 {
+<a name="l00155"></a>00155 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00156"></a>00156 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00157"></a>00157     oStream_ &lt;&lt; <span class="stringliteral">&quot;FormSwep::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00158"></a>00158     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00159"></a>00159   }
+<a name="l00160"></a>00160 <span class="preprocessor">#endif</span>
+<a name="l00161"></a>00161 <span class="preprocessor"></span>
+<a name="l00162"></a>00162   StkFloat *samples = &amp;frames[channel];
+<a name="l00163"></a>00163   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00164"></a>00164   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00165"></a>00165     *samples = <a class="code" href="classstk_1_1FormSwep.html#aba0d15e1d102cb0fee0806e1bb05c774" title="Input one sample to the filter and return a reference to one output.">tick</a>( *samples );
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167   <span class="keywordflow">return</span> frames;
+<a name="l00168"></a>00168 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a8a16af2b4e169946cedb8fec2bb1417a"></a><!-- doxytag: member="stk::FormSwep::tick" ref="a8a16af2b4e169946cedb8fec2bb1417a" args="(StkFrames &amp;iFrames, StkFrames &amp;oFrames, unsigned int iChannel=0, unsigned int oChannel=0)" -->
@@ -213,6 +230,24 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <code>iFrames</code> object as inputs to the filter and write outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. Each channel argument must be less than the number of channels in the corresponding <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00171"></a>00171 {
+<a name="l00172"></a>00172 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00173"></a>00173 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() ) {
+<a name="l00174"></a>00174     oStream_ &lt;&lt; <span class="stringliteral">&quot;FormSwep::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00175"></a>00175     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00176"></a>00176   }
+<a name="l00177"></a>00177 <span class="preprocessor">#endif</span>
+<a name="l00178"></a>00178 <span class="preprocessor"></span>
+<a name="l00179"></a>00179   StkFloat *iSamples = &amp;iFrames[iChannel];
+<a name="l00180"></a>00180   StkFloat *oSamples = &amp;oFrames[oChannel];
+<a name="l00181"></a>00181   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iHop = iFrames.channels(), oHop = oFrames.channels();
+<a name="l00182"></a>00182   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop )
+<a name="l00183"></a>00183     *oSamples = <a class="code" href="classstk_1_1FormSwep.html#aba0d15e1d102cb0fee0806e1bb05c774" title="Input one sample to the filter and return a reference to one output.">tick</a>( *iSamples );
+<a name="l00184"></a>00184 
+<a name="l00185"></a>00185   <span class="keywordflow">return</span> iFrames;
+<a name="l00186"></a>00186 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -223,7 +258,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

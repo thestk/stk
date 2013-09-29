@@ -38,7 +38,7 @@ Inheritance diagram for stk::ADSR:</div>
 <a class="el" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa139dc35648a28ddc99a7a606e185f6ad">SUSTAIN</a>, 
 <a class="el" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa7efc189b0b53e581201fd64f357a1756">RELEASE</a>, 
 <br/>
-&nbsp;&nbsp;<a class="el" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baac9fd188b8e5ad469e002f7ba3498028b">DONE</a>
+&nbsp;&nbsp;<a class="el" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa1ed3238253daecbdba14da71759392d8">IDLE</a>
 <br/>
  }</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><p><a class="el" href="classstk_1_1ADSR.html" title="STK ADSR envelope class.">ADSR</a> envelope states. </p>
@@ -59,6 +59,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aff18347235fd52ce307c4b5de18a9c62"></a><!-- doxytag: member="stk::ADSR::setAttackRate" ref="aff18347235fd52ce307c4b5de18a9c62" args="(StkFloat rate)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1ADSR.html#aff18347235fd52ce307c4b5de18a9c62">setAttackRate</a> (StkFloat rate)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the attack rate. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae0af300e39f83f79776c04a3e83a85b1"></a><!-- doxytag: member="stk::ADSR::setAttackTarget" ref="ae0af300e39f83f79776c04a3e83a85b1" args="(StkFloat target)" -->
+void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1ADSR.html#ae0af300e39f83f79776c04a3e83a85b1">setAttackTarget</a> (StkFloat target)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the target value for the attack (default = 1.0). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a285f500b1e149aed48dba2a155b95cdd"></a><!-- doxytag: member="stk::ADSR::setDecayRate" ref="a285f500b1e149aed48dba2a155b95cdd" args="(StkFloat rate)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1ADSR.html#a285f500b1e149aed48dba2a155b95cdd">setDecayRate</a> (StkFloat rate)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the decay rate. <br/></td></tr>
@@ -73,19 +76,19 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the attack rate based on a time duration. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a450703c45384ae27eb766551843ce82d"></a><!-- doxytag: member="stk::ADSR::setDecayTime" ref="a450703c45384ae27eb766551843ce82d" args="(StkFloat time)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1ADSR.html#a450703c45384ae27eb766551843ce82d">setDecayTime</a> (StkFloat time)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the decay rate based on a time duration. <br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the decay rate based on a time duration (seconds). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a91c14442557cb65286a327f8b297237a"></a><!-- doxytag: member="stk::ADSR::setReleaseTime" ref="a91c14442557cb65286a327f8b297237a" args="(StkFloat time)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1ADSR.html#a91c14442557cb65286a327f8b297237a">setReleaseTime</a> (StkFloat time)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the release rate based on a time duration. <br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the release rate based on a time duration (seconds). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3567b02a0e8ab82d18eb949d362f9708"></a><!-- doxytag: member="stk::ADSR::setAllTimes" ref="a3567b02a0e8ab82d18eb949d362f9708" args="(StkFloat aTime, StkFloat dTime, StkFloat sLevel, StkFloat rTime)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1ADSR.html#a3567b02a0e8ab82d18eb949d362f9708">setAllTimes</a> (StkFloat aTime, StkFloat dTime, StkFloat sLevel, StkFloat rTime)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set sustain level and attack, decay, and release time durations. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a428eebd510e464ccd7bb4e5728f80d63"></a><!-- doxytag: member="stk::ADSR::setTarget" ref="a428eebd510e464ccd7bb4e5728f80d63" args="(StkFloat target)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1ADSR.html#a428eebd510e464ccd7bb4e5728f80d63">setTarget</a> (StkFloat target)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the target value. <br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set a sustain target value and attack or decay from current value to target. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a87f9918cfa4104a841dc5b44f26f8904"></a><!-- doxytag: member="stk::ADSR::getState" ref="a87f9918cfa4104a841dc5b44f26f8904" args="(void) const " -->
 int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1ADSR.html#a87f9918cfa4104a841dc5b44f26f8904">getState</a> (void) const </td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the current envelope <em>state</em> (ATTACK, DECAY, SUSTAIN, RELEASE, DONE). <br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the current envelope <em>state</em> (ATTACK, DECAY, SUSTAIN, RELEASE, IDLE). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa99bf5fca3885bf8d99a3edc4072a4b5"></a><!-- doxytag: member="stk::ADSR::setValue" ref="aa99bf5fca3885bf8d99a3edc4072a4b5" args="(StkFloat value)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1ADSR.html#aa99bf5fca3885bf8d99a3edc4072a4b5">setValue</a> (StkFloat value)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set to state = <a class="el" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa139dc35648a28ddc99a7a606e185f6ad">ADSR::SUSTAIN</a> with current and target values of <em>value</em>. <br/></td></tr>
@@ -100,8 +103,8 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK <a class="el" href="classstk_1_1ADSR.html" title="STK ADSR envelope class.">ADSR</a> envelope class. </p>
-<p>This class implements a traditional <a class="el" href="classstk_1_1ADSR.html" title="STK ADSR envelope class.">ADSR</a> (Attack, Decay, Sustain, Release) envelope. It responds to simple keyOn and keyOff messages, keeping track of its state. The <em>state</em> = <a class="el" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baac9fd188b8e5ad469e002f7ba3498028b">ADSR::DONE</a> after the envelope value reaches 0.0 in the <a class="el" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa7efc189b0b53e581201fd64f357a1756">ADSR::RELEASE</a> state.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>This class implements a traditional <a class="el" href="classstk_1_1ADSR.html" title="STK ADSR envelope class.">ADSR</a> (Attack, Decay, Sustain, Release) envelope. It responds to simple keyOn and keyOff messages, keeping track of its state. The <em>state</em> = <a class="el" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa1ed3238253daecbdba14da71759392d8">ADSR::IDLE</a> before being triggered and after the envelope value reaches 0.0 in the <a class="el" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa7efc189b0b53e581201fd64f357a1756">ADSR::RELEASE</a> state. All rate, target and level settings must be non-negative. All time settings must be positive.</p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Enumeration Documentation</h2>
 <a class="anchor" id="ae1cdd1f2886d69a76fcd5b1e0e9154ba"></a><!-- doxytag: member="stk::ADSR::@0" ref="ae1cdd1f2886d69a76fcd5b1e0e9154ba" args="" -->
 <div class="memitem">
@@ -128,12 +131,21 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr><td valign="top"><em><a class="anchor" id="ae1cdd1f2886d69a76fcd5b1e0e9154baa7efc189b0b53e581201fd64f357a1756"></a><!-- doxytag: member="RELEASE" ref="ae1cdd1f2886d69a76fcd5b1e0e9154baa7efc189b0b53e581201fd64f357a1756" args="" -->RELEASE</em>&nbsp;</td><td>
 <p>Release </p>
 </td></tr>
-<tr><td valign="top"><em><a class="anchor" id="ae1cdd1f2886d69a76fcd5b1e0e9154baac9fd188b8e5ad469e002f7ba3498028b"></a><!-- doxytag: member="DONE" ref="ae1cdd1f2886d69a76fcd5b1e0e9154baac9fd188b8e5ad469e002f7ba3498028b" args="" -->DONE</em>&nbsp;</td><td>
-<p>End of release </p>
+<tr><td valign="top"><em><a class="anchor" id="ae1cdd1f2886d69a76fcd5b1e0e9154baa1ed3238253daecbdba14da71759392d8"></a><!-- doxytag: member="IDLE" ref="ae1cdd1f2886d69a76fcd5b1e0e9154baa1ed3238253daecbdba14da71759392d8" args="" -->IDLE</em>&nbsp;</td><td>
+<p>Before attack / after release </p>
 </td></tr>
 </table>
 </dd>
 </dl>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00028"></a>00028        {
+<a name="l00029"></a>00029     <a class="code" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa9518c737b76795fa49f997c09e074c8e">ATTACK</a>,   
+<a name="l00030"></a>00030     <a class="code" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa75e1deeb861fe2989250b1977018cacf">DECAY</a>,    
+<a name="l00031"></a>00031     <a class="code" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa139dc35648a28ddc99a7a606e185f6ad">SUSTAIN</a>,  
+<a name="l00032"></a>00032     <a class="code" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa7efc189b0b53e581201fd64f357a1756">RELEASE</a>,  
+<a name="l00033"></a>00033     <a class="code" href="classstk_1_1ADSR.html#ae1cdd1f2886d69a76fcd5b1e0e9154baa1ed3238253daecbdba14da71759392d8">IDLE</a>      
+<a name="l00034"></a>00034   };
+</pre></div></p>
 
 </div>
 </div>
@@ -168,6 +180,23 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Generator.html#a86bb0421223cf27e25704d5f27b97425">stk::Generator</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00160"></a>00160 {
+<a name="l00161"></a>00161 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00162"></a>00162 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00163"></a>00163     oStream_ &lt;&lt; <span class="stringliteral">&quot;ADSR::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00164"></a>00164     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00165"></a>00165   }
+<a name="l00166"></a>00166 <span class="preprocessor">#endif</span>
+<a name="l00167"></a>00167 <span class="preprocessor"></span>
+<a name="l00168"></a>00168   StkFloat *samples = &amp;frames[channel];
+<a name="l00169"></a>00169   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00170"></a>00170   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00171"></a>00171     *samples = <a class="code" href="classstk_1_1ADSR.html#af2c0869f86210a55f4f668172373c975" title="Compute and return one output sample.">ADSR::tick</a>();
+<a name="l00172"></a>00172 
+<a name="l00173"></a>00173   <span class="keywordflow">return</span> frames;
+<a name="l00174"></a>00174 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -178,7 +207,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

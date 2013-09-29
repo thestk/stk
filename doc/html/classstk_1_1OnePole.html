@@ -63,7 +63,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK one-pole filter class. </p>
 <p>This class implements a one-pole digital filter. A method is provided for setting the pole position along the real axis of the z-plane while maintaining a constant peak filter gain.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="acc1aaa35c6d5ffbbebfe0c4bfa7d1132"></a><!-- doxytag: member="stk::OnePole::setPole" ref="acc1aaa35c6d5ffbbebfe0c4bfa7d1132" args="(StkFloat thePole)" -->
 <div class="memitem">
@@ -82,7 +82,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div class="memdoc">
 
 <p>Set the pole position in the z-plane. </p>
-<p>This method sets the pole position along the real-axis of the z-plane and normalizes the coefficients for a maximum gain of one. A positive pole value produces a low-pass filter, while a negative pole value produces a high-pass filter. This method does not affect the filter <em>gain</em> value. </p>
+<p>This method sets the pole position along the real-axis of the z-plane and normalizes the coefficients for a maximum gain of one. A positive pole value produces a low-pass filter, while a negative pole value produces a high-pass filter. This method does not affect the filter <em>gain</em> value. The argument magnitude should be less than one to maintain filter stability. </p>
 
 </div>
 </div>
@@ -115,6 +115,27 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>The <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument reference is returned. The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
 <p>Implements <a class="el" href="classstk_1_1Filter.html#a3260a238824c4a748ac057b84b7d3f21">stk::Filter</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00090"></a>00090 {
+<a name="l00091"></a>00091 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00092"></a>00092 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00093"></a>00093     oStream_ &lt;&lt; <span class="stringliteral">&quot;OnePole::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00094"></a>00094     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00095"></a>00095   }
+<a name="l00096"></a>00096 <span class="preprocessor">#endif</span>
+<a name="l00097"></a>00097 <span class="preprocessor"></span>
+<a name="l00098"></a>00098   StkFloat *samples = &amp;frames[channel];
+<a name="l00099"></a>00099   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00100"></a>00100   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00101"></a>00101     inputs_[0] = gain_ * *samples;
+<a name="l00102"></a>00102     *samples = b_[0] * inputs_[0] - a_[1] * outputs_[1];
+<a name="l00103"></a>00103     outputs_[1] = *samples;
+<a name="l00104"></a>00104   }
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106   lastFrame_[0] = outputs_[1];
+<a name="l00107"></a>00107   <span class="keywordflow">return</span> frames;
+<a name="l00108"></a>00108 }
+</pre></div></p>
 
 </div>
 </div>
@@ -158,6 +179,28 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <code>iFrames</code> object as inputs to the filter and write outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. Each channel argument must be less than the number of channels in the corresponding <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00111"></a>00111 {
+<a name="l00112"></a>00112 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00113"></a>00113 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() ) {
+<a name="l00114"></a>00114     oStream_ &lt;&lt; <span class="stringliteral">&quot;OnePole::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00115"></a>00115     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00116"></a>00116   }
+<a name="l00117"></a>00117 <span class="preprocessor">#endif</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span>
+<a name="l00119"></a>00119   StkFloat *iSamples = &amp;iFrames[iChannel];
+<a name="l00120"></a>00120   StkFloat *oSamples = &amp;oFrames[oChannel];
+<a name="l00121"></a>00121   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iHop = iFrames.channels(), oHop = oFrames.channels();
+<a name="l00122"></a>00122   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
+<a name="l00123"></a>00123     inputs_[0] = gain_ * *iSamples;
+<a name="l00124"></a>00124     *oSamples = b_[0] * inputs_[0] - a_[1] * outputs_[1];
+<a name="l00125"></a>00125     outputs_[1] = *oSamples;
+<a name="l00126"></a>00126   }
+<a name="l00127"></a>00127 
+<a name="l00128"></a>00128   lastFrame_[0] = outputs_[1];
+<a name="l00129"></a>00129   <span class="keywordflow">return</span> iFrames;
+<a name="l00130"></a>00130 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -168,7 +211,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

@@ -59,7 +59,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>In particular, this class implements the standard difference equation:</p>
 <p>y[n] = b[0]*x[n] + ... + b[nb]*x[n-nb]</p>
 <p>The <em>gain</em> parameter is applied at the filter input and does not affect the coefficient values. The default gain value is 1.0. This structure results in one extra multiply per computed sample, but allows easy control of the overall filter gain.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a6f47a21d9fa7641aad2872df70432265"></a><!-- doxytag: member="stk::Fir::Fir" ref="a6f47a21d9fa7641aad2872df70432265" args="(std::vector&lt; StkFloat &gt; &amp;coefficients)" -->
 <div class="memitem">
@@ -143,6 +143,32 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Filter.html#a3260a238824c4a748ac057b84b7d3f21">stk::Filter</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00101"></a>00101 {
+<a name="l00102"></a>00102 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00103"></a>00103 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00104"></a>00104     oStream_ &lt;&lt; <span class="stringliteral">&quot;Fir::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00105"></a>00105     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00106"></a>00106   }
+<a name="l00107"></a>00107 <span class="preprocessor">#endif</span>
+<a name="l00108"></a>00108 <span class="preprocessor"></span>
+<a name="l00109"></a>00109   StkFloat *samples = &amp;frames[channel];
+<a name="l00110"></a>00110   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i, hop = frames.channels();
+<a name="l00111"></a>00111   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j=0; j&lt;frames.frames(); j++, samples += hop ) {
+<a name="l00112"></a>00112     inputs_[0] = gain_ * *samples;
+<a name="l00113"></a>00113     *samples = 0.0;
+<a name="l00114"></a>00114 
+<a name="l00115"></a>00115     <span class="keywordflow">for</span> ( i=b_.size()-1; i&gt;0; i-- ) {
+<a name="l00116"></a>00116       *samples += b_[i] * inputs_[i];
+<a name="l00117"></a>00117       inputs_[i] = inputs_[i-1];
+<a name="l00118"></a>00118     }
+<a name="l00119"></a>00119     *samples += b_[0] * inputs_[0];
+<a name="l00120"></a>00120   }
+<a name="l00121"></a>00121 
+<a name="l00122"></a>00122   lastFrame_[0] = *(samples-hop);
+<a name="l00123"></a>00123   <span class="keywordflow">return</span> frames;
+<a name="l00124"></a>00124 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a53bcdfc2e9ad757d2ec549529b7a9738"></a><!-- doxytag: member="stk::Fir::tick" ref="a53bcdfc2e9ad757d2ec549529b7a9738" args="(StkFrames &amp;iFrames, StkFrames &amp;oFrames, unsigned int iChannel=0, unsigned int oChannel=0)" -->
@@ -185,6 +211,33 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <code>iFrames</code> object as inputs to the filter and write outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. Each channel argument must be less than the number of channels in the corresponding <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00127"></a>00127 {
+<a name="l00128"></a>00128 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00129"></a>00129 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() ) {
+<a name="l00130"></a>00130     oStream_ &lt;&lt; <span class="stringliteral">&quot;Fir::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00131"></a>00131     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00132"></a>00132   }
+<a name="l00133"></a>00133 <span class="preprocessor">#endif</span>
+<a name="l00134"></a>00134 <span class="preprocessor"></span>
+<a name="l00135"></a>00135   StkFloat *iSamples = &amp;iFrames[iChannel];
+<a name="l00136"></a>00136   StkFloat *oSamples = &amp;oFrames[oChannel];
+<a name="l00137"></a>00137   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i, iHop = iFrames.channels(), oHop = oFrames.channels();
+<a name="l00138"></a>00138   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j=0; j&lt;iFrames.frames(); j++, iSamples += iHop, oSamples += oHop ) {
+<a name="l00139"></a>00139     inputs_[0] = gain_ * *iSamples;
+<a name="l00140"></a>00140     *oSamples = 0.0;
+<a name="l00141"></a>00141 
+<a name="l00142"></a>00142     <span class="keywordflow">for</span> ( i=b_.size()-1; i&gt;0; i-- ) {
+<a name="l00143"></a>00143       *oSamples += b_[i] * inputs_[i];
+<a name="l00144"></a>00144       inputs_[i] = inputs_[i-1];
+<a name="l00145"></a>00145     }
+<a name="l00146"></a>00146     *oSamples += b_[0] * inputs_[0];
+<a name="l00147"></a>00147   }
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149   lastFrame_[0] = *(oSamples-oHop);
+<a name="l00150"></a>00150   <span class="keywordflow">return</span> iFrames;
+<a name="l00151"></a>00151 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -195,7 +248,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

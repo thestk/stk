@@ -151,7 +151,7 @@
     dac.<a class="code" href="classRtAudio.html#afacc99740fa4c5606fb35467cdea6da8" title="A public function for opening a stream with the specified parameters.">openStream</a>( &amp;parameters, NULL, format, (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)Stk::sampleRate(), &amp;bufferFrames, &amp;tick, (<span class="keywordtype">void</span> *)&amp;data );
   }
   <span class="keywordflow">catch</span> ( <a class="code" href="classRtError.html" title="Exception handling class for RtAudio &amp;amp; RtMidi.">RtError</a> &amp;error ) {
-    error.<a class="code" href="classRtError.html#ada41f7472122f45bc5b4677f066e0943" title="Prints thrown error message to stderr.">printMessage</a>();
+    error.<a class="code" href="classRtError.html#a251dcdac396c998c91706dd2dd3b8bfc" title="Prints thrown error message to stderr.">printMessage</a>();
     <span class="keywordflow">goto</span> cleanup;
   }
 
@@ -175,7 +175,7 @@
     dac.<a class="code" href="classRtAudio.html#aec017a89629ccef66a90b60be22a2f80" title="A function that starts a stream.">startStream</a>();
   }
   <span class="keywordflow">catch</span> ( <a class="code" href="classRtError.html" title="Exception handling class for RtAudio &amp;amp; RtMidi.">RtError</a> &amp;error ) {
-    error.<a class="code" href="classRtError.html#ada41f7472122f45bc5b4677f066e0943" title="Prints thrown error message to stderr.">printMessage</a>();
+    error.<a class="code" href="classRtError.html#a251dcdac396c998c91706dd2dd3b8bfc" title="Prints thrown error message to stderr.">printMessage</a>();
     <span class="keywordflow">goto</span> cleanup;
   }
 
@@ -188,7 +188,7 @@
     dac.<a class="code" href="classRtAudio.html#a90d599002ad32cf250a4cb866f2cc93a" title="A function that closes a stream and frees any associated stream memory.">closeStream</a>();
   }
   <span class="keywordflow">catch</span> ( <a class="code" href="classRtError.html" title="Exception handling class for RtAudio &amp;amp; RtMidi.">RtError</a> &amp;error ) {
-    error.<a class="code" href="classRtError.html#ada41f7472122f45bc5b4677f066e0943" title="Prints thrown error message to stderr.">printMessage</a>();
+    error.<a class="code" href="classRtError.html#a251dcdac396c998c91706dd2dd3b8bfc" title="Prints thrown error message to stderr.">printMessage</a>();
   }
 
  cleanup:
@@ -206,7 +206,7 @@
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

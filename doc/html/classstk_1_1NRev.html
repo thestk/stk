@@ -53,7 +53,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>CCRMA's <a class="el" href="classstk_1_1NRev.html" title="CCRMA&#39;s NRev reverberator class.">NRev</a> reverberator class. </p>
 <p>This class takes a monophonic input signal and produces a stereo output signal. It is derived from the CLM <a class="el" href="classstk_1_1NRev.html" title="CCRMA&#39;s NRev reverberator class.">NRev</a> function, which is based on the use of networks of simple allpass and comb delay filters. This particular arrangement consists of 6 comb filters in parallel, followed by 3 allpass filters, a lowpass filter, and another allpass in series, followed by two allpass filters in parallel with corresponding right and left outputs.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a9f9faa6542271163680c1925309ed788"></a><!-- doxytag: member="stk::NRev::lastOut" ref="a9f9faa6542271163680c1925309ed788" args="(unsigned int channel=0)" -->
 <div class="memitem">
@@ -73,6 +73,18 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Return the specified channel value of the last computed stereo frame. </p>
 <p>Use the <a class="el" href="classstk_1_1Effect.html#a3d7e2b8942bf7adcc71dfc6dccbb7aa0" title="Return an StkFrames reference to the last output sample frame.">lastFrame()</a> function to get both values of the last computed stereo frame. The <code>channel</code> argument must be 0 or 1 (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00093"></a>00093 {
+<a name="l00094"></a>00094 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00095"></a>00095 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; 1 ) {
+<a name="l00096"></a>00096     oStream_ &lt;&lt; <span class="stringliteral">&quot;NRev::lastOut(): channel argument must be less than 2!&quot;</span>;
+<a name="l00097"></a>00097     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00098"></a>00098   }
+<a name="l00099"></a>00099 <span class="preprocessor">#endif</span>
+<a name="l00100"></a>00100 <span class="preprocessor"></span>
+<a name="l00101"></a>00101   <span class="keywordflow">return</span> lastFrame_[channel];
+<a name="l00102"></a>00102 }
+</pre></div></p>
 
 </div>
 </div>
@@ -103,6 +115,59 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Input one sample to the effect and return the specified <code>channel</code> value of the computed stereo frame. </p>
 <p>Use the <a class="el" href="classstk_1_1Effect.html#a3d7e2b8942bf7adcc71dfc6dccbb7aa0" title="Return an StkFrames reference to the last output sample frame.">lastFrame()</a> function to get both values of the computed stereo output frame. The <code>channel</code> argument must be 0 or 1 (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00105"></a>00105 {
+<a name="l00106"></a>00106 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00107"></a>00107 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; 1 ) {
+<a name="l00108"></a>00108     oStream_ &lt;&lt; <span class="stringliteral">&quot;NRev::tick(): channel argument must be less than 2!&quot;</span>;
+<a name="l00109"></a>00109     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00110"></a>00110   }
+<a name="l00111"></a>00111 <span class="preprocessor">#endif</span>
+<a name="l00112"></a>00112 <span class="preprocessor"></span>
+<a name="l00113"></a>00113   StkFloat temp, temp0, temp1, temp2, temp3;
+<a name="l00114"></a>00114   <span class="keywordtype">int</span> i;
+<a name="l00115"></a>00115 
+<a name="l00116"></a>00116   temp0 = 0.0;
+<a name="l00117"></a>00117   <span class="keywordflow">for</span> ( i=0; i&lt;6; i++ ) {
+<a name="l00118"></a>00118     temp = input + (combCoefficient_[i] * combDelays_[i].lastOut());
+<a name="l00119"></a>00119     temp0 += combDelays_[i].tick(temp);
+<a name="l00120"></a>00120   }
+<a name="l00121"></a>00121 
+<a name="l00122"></a>00122   <span class="keywordflow">for</span> ( i=0; i&lt;3; i++ )    {
+<a name="l00123"></a>00123     temp = allpassDelays_[i].lastOut();
+<a name="l00124"></a>00124     temp1 = allpassCoefficient_ * temp;
+<a name="l00125"></a>00125     temp1 += temp0;
+<a name="l00126"></a>00126     allpassDelays_[i].tick(temp1);
+<a name="l00127"></a>00127     temp0 = -(allpassCoefficient_ * temp1) + temp;
+<a name="l00128"></a>00128   }
+<a name="l00129"></a>00129 
+<a name="l00130"></a>00130          <span class="comment">// One-pole lowpass filter.</span>
+<a name="l00131"></a>00131   lowpassState_ = 0.7 * lowpassState_ + 0.3 * temp0;
+<a name="l00132"></a>00132   temp = allpassDelays_[3].lastOut();
+<a name="l00133"></a>00133   temp1 = allpassCoefficient_ * temp;
+<a name="l00134"></a>00134   temp1 += lowpassState_;
+<a name="l00135"></a>00135   allpassDelays_[3].tick( temp1 );
+<a name="l00136"></a>00136   temp1 = -( allpassCoefficient_ * temp1 ) + temp;
+<a name="l00137"></a>00137     
+<a name="l00138"></a>00138   temp = allpassDelays_[4].lastOut();
+<a name="l00139"></a>00139   temp2 = allpassCoefficient_ * temp;
+<a name="l00140"></a>00140   temp2 += temp1;
+<a name="l00141"></a>00141   allpassDelays_[4].tick( temp2 );
+<a name="l00142"></a>00142   lastFrame_[0] = effectMix_*( -( allpassCoefficient_ * temp2 ) + temp );
+<a name="l00143"></a>00143     
+<a name="l00144"></a>00144   temp = allpassDelays_[5].lastOut();
+<a name="l00145"></a>00145   temp3 = allpassCoefficient_ * temp;
+<a name="l00146"></a>00146   temp3 += temp1;
+<a name="l00147"></a>00147   allpassDelays_[5].tick( temp3 );
+<a name="l00148"></a>00148   lastFrame_[1] = effectMix_*( - ( allpassCoefficient_ * temp3 ) + temp );
+<a name="l00149"></a>00149 
+<a name="l00150"></a>00150   temp = ( 1.0 - effectMix_ ) * input;
+<a name="l00151"></a>00151   lastFrame_[0] += temp;
+<a name="l00152"></a>00152   lastFrame_[1] += temp;
+<a name="l00153"></a>00153     
+<a name="l00154"></a>00154   <span class="keywordflow">return</span> lastFrame_[channel];
+<a name="l00155"></a>00155 }
+</pre></div></p>
 
 </div>
 </div>
@@ -186,7 +251,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

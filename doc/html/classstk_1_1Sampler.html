@@ -60,11 +60,48 @@ virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a08502c96fa3e5f4c853c781354ed1965"></a><!-- doxytag: member="stk::Sampler::tick" ref="a08502c96fa3e5f4c853c781354ed1965" args="(unsigned int channel=0)=0" -->
 virtual StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Sampler.html#a08502c96fa3e5f4c853c781354ed1965">tick</a> (unsigned int channel=0)=0</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute and return one output sample. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Sampler.html#a30ef51142f99faf0586e2da78bc6daf6">tick</a> (<a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;frames, unsigned int channel=0)=0</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs.  <a href="#a30ef51142f99faf0586e2da78bc6daf6"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK sampling synthesis abstract base class. </p>
 <p>This instrument provides an <a class="el" href="classstk_1_1ADSR.html" title="STK ADSR envelope class.">ADSR</a> envelope, a one-pole filter, and structures for an arbitrary number of attack and looped files.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a30ef51142f99faf0586e2da78bc6daf6"></a><!-- doxytag: member="stk::Sampler::tick" ref="a30ef51142f99faf0586e2da78bc6daf6" args="(StkFrames &amp;frames, unsigned int channel=0)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a>&amp; stk::Sampler::tick </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>frames</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&nbsp;</td>
+          <td class="paramname"> <em>channel</em> = <code>0</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs. </p>
+<p>The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p>Implements <a class="el" href="classstk_1_1Instrmnt.html#a34c6733ca145763462d9e44ae3c772b6">stk::Instrmnt</a>.</p>
+
+<p>Implemented in <a class="el" href="classstk_1_1Moog.html#aee6aa6373c424e941f963b2709310f4e">stk::Moog</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="Sampler_8h_source.html">Sampler.h</a></li>
 </ul>
@@ -73,7 +110,7 @@ virtual StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

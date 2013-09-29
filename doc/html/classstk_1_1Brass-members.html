@@ -12,7 +12,7 @@
 <div class="contents">
 <h1>stk::Brass Member List</h1>This is the complete list of members for <a class="el" href="classstk_1_1Brass.html">stk::Brass</a>, including all inherited members.<table>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#a5ab0e88856708f65887295ad4ad90340">addSampleRateAlert</a>(Stk *ptr)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [protected]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classstk_1_1Brass.html#a96b223221f536efdaad4e724db01f11b">Brass</a>(StkFloat lowestFrequency)</td><td><a class="el" href="classstk_1_1Brass.html">stk::Brass</a></td><td></td></tr>
+  <tr class="memlist"><td><a class="el" href="classstk_1_1Brass.html#a5bf59263a54250be84c027198c7d2d1d">Brass</a>(StkFloat lowestFrequency=8.0)</td><td><a class="el" href="classstk_1_1Brass.html">stk::Brass</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Instrmnt.html#a32564b611598653fce5e708821b3fcb4">channelsOut</a>(void) const </td><td><a class="el" href="classstk_1_1Instrmnt.html">stk::Instrmnt</a></td><td><code> [inline]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Brass.html#a64e48334efdc8f2508c29c5ea4281f2d">clear</a>()</td><td><a class="el" href="classstk_1_1Brass.html">stk::Brass</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Brass.html#a4d75ac361d11fcc870a330d393dbad80">controlChange</a>(int number, StkFloat value)</td><td><a class="el" href="classstk_1_1Brass.html">stk::Brass</a></td><td><code> [virtual]</code></td></tr>
@@ -20,6 +20,7 @@
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#abc18b8fc8ed5b992bd2efef162a40777">handleError</a>(std::string message, StkError::Type type)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#a577656590baea0d65057b221f050f83d">handleError</a>(StkError::Type type)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#ab8a52e4897bea5c0f5e66adf37a8e39b">ignoreSampleRateChange</a>(bool ignore=true)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [inline]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#a7dd617f6bf20e55d3ab97b86d8200b2e">inRange</a>(StkFloat value, StkFloat min, StkFloat max)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [inline, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Instrmnt.html#a6f3c4dc01e0484f0ca4a3b14f1b7caf0">Instrmnt</a>(void)</td><td><a class="el" href="classstk_1_1Instrmnt.html">stk::Instrmnt</a></td><td><code> [inline]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Instrmnt.html#a277ac5149ec22c33d794dfd462a82d2b">lastFrame</a>(void) const </td><td><a class="el" href="classstk_1_1Instrmnt.html">stk::Instrmnt</a></td><td><code> [inline]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Instrmnt.html#aaa6bd5e4a5be7f9b0be967daf012872e">lastOut</a>(unsigned int channel=0)</td><td><a class="el" href="classstk_1_1Instrmnt.html">stk::Instrmnt</a></td><td><code> [inline]</code></td></tr>
@@ -49,7 +50,7 @@
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#a820631139e6f7e23d328d387c0f530fd">swap32</a>(unsigned char *ptr)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#a5f744eadf29ecbfbeddfdf7ceb5853c9">swap64</a>(unsigned char *ptr)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Brass.html#a4af1b7c4c1b374b65e04ccaa90886321">tick</a>(unsigned int channel=0)</td><td><a class="el" href="classstk_1_1Brass.html">stk::Brass</a></td><td><code> [inline, virtual]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classstk_1_1Instrmnt.html#a4abfe94b5fc8d87b47729fe317222eb9">stk::Instrmnt::tick</a>(StkFrames &amp;frames, unsigned int channel=0)</td><td><a class="el" href="classstk_1_1Instrmnt.html">stk::Instrmnt</a></td><td><code> [inline]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classstk_1_1Brass.html#a10334fc5573b68f2b5c2819bdba786b8">tick</a>(StkFrames &amp;frames, unsigned int channel=0)</td><td><a class="el" href="classstk_1_1Brass.html">stk::Brass</a></td><td><code> [inline, virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Brass.html#a474528a75bd4fb88cdb9c783d73df8f6">~Brass</a>()</td><td><a class="el" href="classstk_1_1Brass.html">stk::Brass</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#ad0d5c6ab745ad2841a59032addae3905">~Stk</a>(void)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [protected, virtual]</code></td></tr>
 </table></div>
@@ -57,7 +58,7 @@
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

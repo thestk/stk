@@ -113,6 +113,24 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Generator.html#a86bb0421223cf27e25704d5f27b97425">stk::Generator</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00129"></a>00129 {
+<a name="l00130"></a>00130 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00131"></a>00131 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00132"></a>00132     oStream_ &lt;&lt; <span class="stringliteral">&quot;BlitSaw::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00133"></a>00133     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00134"></a>00134   }
+<a name="l00135"></a>00135 <span class="preprocessor">#endif</span>
+<a name="l00136"></a>00136 <span class="preprocessor"></span>
+<a name="l00137"></a>00137 
+<a name="l00138"></a>00138   StkFloat *samples = &amp;frames[channel];
+<a name="l00139"></a>00139   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00140"></a>00140   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00141"></a>00141     *samples = <a class="code" href="classstk_1_1BlitSaw.html#a03536a1f1823ea41649b4a62ba98007c" title="Compute and return one output sample.">BlitSaw::tick</a>();
+<a name="l00142"></a>00142 
+<a name="l00143"></a>00143   <span class="keywordflow">return</span> frames;
+<a name="l00144"></a>00144 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -123,7 +141,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

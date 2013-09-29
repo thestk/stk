@@ -89,7 +89,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td>(</td>
           <td class="paramname"></td>
           <td>&nbsp;)&nbsp;</td>
-          <td> const</td>
+          <td> const<code> [inline]</code></td>
         </tr>
       </table>
 </div>
@@ -97,6 +97,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Return the MIDI file division value from the file header. </p>
 <p>Note that this value must be "parsed" in accordance with the MIDI File Specification. In particular, if the MSB is set, the file uses time-code representations for delta-time values. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00054"></a>00054 { <span class="keywordflow">return</span> division_; };
+</pre></div></p>
 
 </div>
 </div>
@@ -210,7 +213,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

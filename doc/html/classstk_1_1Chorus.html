@@ -39,7 +39,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reset and clear all internal state. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acb3a55518c919dafa6c19698c1ab3389"></a><!-- doxytag: member="stk::Chorus::setModDepth" ref="acb3a55518c919dafa6c19698c1ab3389" args="(StkFloat depth)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Chorus.html#acb3a55518c919dafa6c19698c1ab3389">setModDepth</a> (StkFloat depth)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set modulation depth. <br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set modulation depth in range 0.0 - 1.0. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa4372095b8526d62ff9cfbdb03f21c4d"></a><!-- doxytag: member="stk::Chorus::setModFrequency" ref="aa4372095b8526d62ff9cfbdb03f21c4d" args="(StkFloat frequency)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Chorus.html#aa4372095b8526d62ff9cfbdb03f21c4d">setModFrequency</a> (StkFloat frequency)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set modulation frequency. <br/></td></tr>
@@ -55,7 +55,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK chorus effect class. </p>
 <p>This class implements a chorus effect. It takes a monophonic input signal and produces a stereo output signal.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a529f668e66188ae5a42e4cc30779059f"></a><!-- doxytag: member="stk::Chorus::Chorus" ref="a529f668e66188ae5a42e4cc30779059f" args="(StkFloat baseDelay=6000)" -->
 <div class="memitem">
@@ -98,6 +98,18 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Return the specified channel value of the last computed stereo frame. </p>
 <p>Use the <a class="el" href="classstk_1_1Effect.html#a3d7e2b8942bf7adcc71dfc6dccbb7aa0" title="Return an StkFrames reference to the last output sample frame.">lastFrame()</a> function to get both values of the last computed stereo frame. The <code>channel</code> argument must be 0 or 1 (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00094"></a>00094 {
+<a name="l00095"></a>00095 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00096"></a>00096 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; 1 ) {
+<a name="l00097"></a>00097     oStream_ &lt;&lt; <span class="stringliteral">&quot;Chorus::lastOut(): channel argument must be less than 2!&quot;</span>;
+<a name="l00098"></a>00098     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00099"></a>00099   }
+<a name="l00100"></a>00100 <span class="preprocessor">#endif</span>
+<a name="l00101"></a>00101 <span class="preprocessor"></span>
+<a name="l00102"></a>00102   <span class="keywordflow">return</span> lastFrame_[channel];
+<a name="l00103"></a>00103 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a31d5c48d5b4a030040f6bb6b5e2c99cf"></a><!-- doxytag: member="stk::Chorus::tick" ref="a31d5c48d5b4a030040f6bb6b5e2c99cf" args="(StkFloat input, unsigned int channel=0)" -->
@@ -128,6 +140,22 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Input one sample to the effect and return the specified <code>channel</code> value of the computed stereo frame. </p>
 <p>Use the <a class="el" href="classstk_1_1Effect.html#a3d7e2b8942bf7adcc71dfc6dccbb7aa0" title="Return an StkFrames reference to the last output sample frame.">lastFrame()</a> function to get both values of the computed stereo output frame. The <code>channel</code> argument must be 0 or 1 (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00106"></a>00106 {
+<a name="l00107"></a>00107 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00108"></a>00108 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; 1 ) {
+<a name="l00109"></a>00109     oStream_ &lt;&lt; <span class="stringliteral">&quot;Chorus::tick(): channel argument must be less than 2!&quot;</span>;
+<a name="l00110"></a>00110     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00111"></a>00111   }
+<a name="l00112"></a>00112 <span class="preprocessor">#endif</span>
+<a name="l00113"></a>00113 <span class="preprocessor"></span>
+<a name="l00114"></a>00114   delayLine_[0].setDelay( baseLength_ * 0.707 * ( 1.0 + modDepth_ * mods_[0].<a class="code" href="classstk_1_1Chorus.html#a31d5c48d5b4a030040f6bb6b5e2c99cf" title="Input one sample to the effect and return the specified channel value of the computed...">tick</a>() ) );
+<a name="l00115"></a>00115   delayLine_[1].setDelay( baseLength_  * 0.5 *  ( 1.0 - modDepth_ * mods_[1].<a class="code" href="classstk_1_1Chorus.html#a31d5c48d5b4a030040f6bb6b5e2c99cf" title="Input one sample to the effect and return the specified channel value of the computed...">tick</a>() ) );
+<a name="l00116"></a>00116   lastFrame_[0] = effectMix_ * ( delayLine_[0].tick( input ) - input ) + input;
+<a name="l00117"></a>00117   lastFrame_[1] = effectMix_ * ( delayLine_[1].tick( input ) - input ) + input;
+<a name="l00118"></a>00118   <span class="keywordflow">return</span> lastFrame_[channel];
+<a name="l00119"></a>00119 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="aef55c6fb93a1d00498ae436868f84501"></a><!-- doxytag: member="stk::Chorus::tick" ref="aef55c6fb93a1d00498ae436868f84501" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
@@ -157,6 +185,30 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Take a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object as inputs to the effect and replace with stereo outputs. </p>
 <p>The <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument reference is returned. The stereo outputs are written to the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument starting at the specified <code>channel</code>. Therefore, the <code>channel</code> argument must be less than ( channels() - 1 ) of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00122"></a>00122 {
+<a name="l00123"></a>00123 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00124"></a>00124 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() - 1 ) {
+<a name="l00125"></a>00125     oStream_ &lt;&lt; <span class="stringliteral">&quot;Chorus::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00126"></a>00126     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00127"></a>00127   }
+<a name="l00128"></a>00128 <span class="preprocessor">#endif</span>
+<a name="l00129"></a>00129 <span class="preprocessor"></span>
+<a name="l00130"></a>00130   StkFloat *samples = &amp;frames[channel];
+<a name="l00131"></a>00131   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels() - 1;
+<a name="l00132"></a>00132   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00133"></a>00133     delayLine_[0].setDelay( baseLength_ * 0.707 * ( 1.0 + modDepth_ * mods_[0].<a class="code" href="classstk_1_1Chorus.html#a31d5c48d5b4a030040f6bb6b5e2c99cf" title="Input one sample to the effect and return the specified channel value of the computed...">tick</a>() ) );
+<a name="l00134"></a>00134     delayLine_[1].setDelay( baseLength_  * 0.5 *  ( 1.0 - modDepth_ * mods_[1].<a class="code" href="classstk_1_1Chorus.html#a31d5c48d5b4a030040f6bb6b5e2c99cf" title="Input one sample to the effect and return the specified channel value of the computed...">tick</a>() ) );
+<a name="l00135"></a>00135     *samples = effectMix_ * ( delayLine_[0].tick( *samples ) - *samples ) + *samples;
+<a name="l00136"></a>00136     samples++;
+<a name="l00137"></a>00137     *samples = effectMix_ * ( delayLine_[1].tick( *samples ) - *samples ) + *samples;
+<a name="l00138"></a>00138   }
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140   lastFrame_[0] = *(samples-hop);
+<a name="l00141"></a>00141   lastFrame_[1] = *(samples-hop+1);
+<a name="l00142"></a>00142   <span class="keywordflow">return</span> frames;
+<a name="l00143"></a>00143 }
+</pre></div></p>
 
 </div>
 </div>
@@ -200,6 +252,30 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Take a channel of the <code>iFrames</code> object as inputs to the effect and write stereo outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. The <code>iChannel</code> argument must be less than the number of channels in the <code>iFrames</code> argument (the first channel is specified by 0). The <code>oChannel</code> argument must be less than ( channels() - 1 ) of the <code>oFrames</code> argument. However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00146"></a>00146 {
+<a name="l00147"></a>00147 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00148"></a>00148 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() - 1 ) {
+<a name="l00149"></a>00149     oStream_ &lt;&lt; <span class="stringliteral">&quot;Chorus::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00150"></a>00150     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00151"></a>00151   }
+<a name="l00152"></a>00152 <span class="preprocessor">#endif</span>
+<a name="l00153"></a>00153 <span class="preprocessor"></span>
+<a name="l00154"></a>00154   StkFloat *iSamples = &amp;iFrames[iChannel];
+<a name="l00155"></a>00155   StkFloat *oSamples = &amp;oFrames[oChannel];
+<a name="l00156"></a>00156   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iHop = iFrames.channels(), oHop = oFrames.channels();
+<a name="l00157"></a>00157   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
+<a name="l00158"></a>00158     delayLine_[0].setDelay( baseLength_ * 0.707 * ( 1.0 + modDepth_ * mods_[0].<a class="code" href="classstk_1_1Chorus.html#a31d5c48d5b4a030040f6bb6b5e2c99cf" title="Input one sample to the effect and return the specified channel value of the computed...">tick</a>() ) );
+<a name="l00159"></a>00159     delayLine_[1].setDelay( baseLength_  * 0.5 *  ( 1.0 - modDepth_ * mods_[1].<a class="code" href="classstk_1_1Chorus.html#a31d5c48d5b4a030040f6bb6b5e2c99cf" title="Input one sample to the effect and return the specified channel value of the computed...">tick</a>() ) );
+<a name="l00160"></a>00160     *oSamples = effectMix_ * ( delayLine_[0].tick( *iSamples ) - *iSamples ) + *iSamples;
+<a name="l00161"></a>00161     *(oSamples+1) = effectMix_ * ( delayLine_[1].<a class="code" href="classstk_1_1Chorus.html#a31d5c48d5b4a030040f6bb6b5e2c99cf" title="Input one sample to the effect and return the specified channel value of the computed...">tick</a>( *iSamples ) - *iSamples ) + *iSamples;
+<a name="l00162"></a>00162   }
+<a name="l00163"></a>00163 
+<a name="l00164"></a>00164   lastFrame_[0] = *(oSamples-oHop);
+<a name="l00165"></a>00165   lastFrame_[1] = *(oSamples-oHop+1);
+<a name="l00166"></a>00166   <span class="keywordflow">return</span> iFrames;
+<a name="l00167"></a>00167 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -210,7 +286,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

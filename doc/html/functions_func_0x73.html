@@ -67,14 +67,19 @@
 : <a class="el" href="classRtMidiOut.html#a0bd8972ef8ac4e8d37ccc4b5d51c2eb3">RtMidiOut</a>
 </li>
 <li>setA1()
-: <a class="el" href="classstk_1_1PoleZero.html#ae3f0fc1182eb06730f09b8137c01779f">stk::PoleZero</a>
+: <a class="el" href="classstk_1_1OnePole.html#a1f99beebd9c4fbdfce6478e40d7625d8">stk::OnePole</a>
+, <a class="el" href="classstk_1_1PoleZero.html#ae3f0fc1182eb06730f09b8137c01779f">stk::PoleZero</a>
 , <a class="el" href="classstk_1_1TwoPole.html#ad0c2f8ddc09ca1eb864515d816ebacdd">stk::TwoPole</a>
 , <a class="el" href="classstk_1_1BiQuad.html#a1c9799e47163fe8a59fd85196c089cb3">stk::BiQuad</a>
-, <a class="el" href="classstk_1_1OnePole.html#a1f99beebd9c4fbdfce6478e40d7625d8">stk::OnePole</a>
+, <a class="el" href="classstk_1_1Cubic.html#af4604c69f138415f9b9ee6944d2b54ef">stk::Cubic</a>
 </li>
 <li>setA2()
 : <a class="el" href="classstk_1_1BiQuad.html#ae28afd560df11435ea54f128d23b9383">stk::BiQuad</a>
+, <a class="el" href="classstk_1_1Cubic.html#afa16d53e6a720936543d0e0ea778f0eb">stk::Cubic</a>
 , <a class="el" href="classstk_1_1TwoPole.html#a309960a8b2cf6858f43f43dc739146ea">stk::TwoPole</a>
+</li>
+<li>setA3()
+: <a class="el" href="classstk_1_1Cubic.html#add4a05676471c4c09b76f5fe430b80fa">stk::Cubic</a>
 </li>
 <li>setAddress()
 : <a class="el" href="classstk_1_1UdpSocket.html#a785594fd882b76d4c280b72a016f026d">stk::UdpSocket</a>
@@ -87,6 +92,9 @@
 </li>
 <li>setAttackRate()
 : <a class="el" href="classstk_1_1ADSR.html#aff18347235fd52ce307c4b5de18a9c62">stk::ADSR</a>
+</li>
+<li>setAttackTarget()
+: <a class="el" href="classstk_1_1ADSR.html#ae0af300e39f83f79776c04a3e83a85b1">stk::ADSR</a>
 </li>
 <li>setAttackTime()
 : <a class="el" href="classstk_1_1ADSR.html#a48885319b8175cd4d6312fdf7980f116">stk::ADSR</a>
@@ -106,12 +114,11 @@
 , <a class="el" href="classstk_1_1TwoZero.html#a1f090992845b9c85f3de15dfba583891">stk::TwoZero</a>
 </li>
 <li>setB2()
-: <a class="el" href="classstk_1_1BiQuad.html#a208a654dd3393ed0b2b86ad56d9cf3e1">stk::BiQuad</a>
-, <a class="el" href="classstk_1_1TwoZero.html#a98a7d6d1615753f338f75409d850a9b4">stk::TwoZero</a>
+: <a class="el" href="classstk_1_1TwoZero.html#a98a7d6d1615753f338f75409d850a9b4">stk::TwoZero</a>
+, <a class="el" href="classstk_1_1BiQuad.html#a208a654dd3393ed0b2b86ad56d9cf3e1">stk::BiQuad</a>
 </li>
 <li>setBaseLoopGain()
-: <a class="el" href="classstk_1_1PluckTwo.html#a168f563174e22b221744ef66b35a5277">stk::PluckTwo</a>
-, <a class="el" href="classstk_1_1StifKarp.html#ad1b5de5acf487271d99903cd43e891ce">stk::StifKarp</a>
+: <a class="el" href="classstk_1_1StifKarp.html#ad1b5de5acf487271d99903cd43e891ce">stk::StifKarp</a>
 </li>
 <li>setBlocking()
 : <a class="el" href="classstk_1_1Socket.html#a12f0abb799fbf7d5d2ee6364627cb6ac">stk::Socket</a>
@@ -169,7 +176,7 @@
 : <a class="el" href="classstk_1_1UdpSocket.html#a4267442661257aae2a0f6b48d367fea1">stk::UdpSocket</a>
 </li>
 <li>setDetune()
-: <a class="el" href="classstk_1_1PluckTwo.html#a6b355a495d9122273fb8c88009bf79d6">stk::PluckTwo</a>
+: <a class="el" href="classstk_1_1Mandolin.html#af46367787cd0a21a04655be82d18df08">stk::Mandolin</a>
 </li>
 <li>setDirectGain()
 : <a class="el" href="classstk_1_1Modal.html#a70006135da2ecdc46eff4156504d94e1">stk::Modal</a>
@@ -181,17 +188,14 @@
 : <a class="el" href="classstk_1_1Flute.html#a7c0ef95a3170dafde08b65ee47102969">stk::Flute</a>
 </li>
 <li>setEqualGainZeroes()
-: <a class="el" href="classstk_1_1BiQuad.html#a28881f5876ce5bdcc846367cca9363f7">stk::BiQuad</a>
-, <a class="el" href="classstk_1_1Resonate.html#ad8000ad734634ac7334f4fab09a13a7e">stk::Resonate</a>
+: <a class="el" href="classstk_1_1Resonate.html#ad8000ad734634ac7334f4fab09a13a7e">stk::Resonate</a>
+, <a class="el" href="classstk_1_1BiQuad.html#a28881f5876ce5bdcc846367cca9363f7">stk::BiQuad</a>
 </li>
 <li>setFile()
 : <a class="el" href="classstk_1_1Skini.html#a30eb5f5238c552d042b8eb510aa8d241">stk::Skini</a>
 </li>
 <li>setFilterSweepRate()
 : <a class="el" href="classstk_1_1VoicForm.html#a14d8323edda6e8c82ab39d633b8064a8">stk::VoicForm</a>
-</li>
-<li>setFreqAndDetune()
-: <a class="el" href="classstk_1_1PluckTwo.html#a3cd8e9135b1d8a97b87f9486dd3cd671">stk::PluckTwo</a>
 </li>
 <li>setFrequency()
 : <a class="el" href="classstk_1_1BandedWG.html#acf104d4ed663b5f0cd034c8025f4d420">stk::BandedWG</a>
@@ -208,11 +212,11 @@
 , <a class="el" href="classstk_1_1FM.html#a8182c605d51ec623f90f4e07c2b90891">stk::FM</a>
 , <a class="el" href="classstk_1_1FMVoices.html#af47a92f6892f3a5bef5226d4772fc8cb">stk::FMVoices</a>
 , <a class="el" href="classstk_1_1Instrmnt.html#a597efc508ad367a308fa11b8cbdc96a7">stk::Instrmnt</a>
+, <a class="el" href="classstk_1_1Mandolin.html#af5beeafcdfef7b71a5dda14e0c30c7fb">stk::Mandolin</a>
 , <a class="el" href="classstk_1_1Modal.html#a503092926e66667227bb46312a82a264">stk::Modal</a>
 , <a class="el" href="classstk_1_1Moog.html#ab0d66174dd734d55ef7224d6d8f2cb06">stk::Moog</a>
 , <a class="el" href="classstk_1_1PercFlut.html#a24197fb4ae0bf806d8e3f6fe4eb5598c">stk::PercFlut</a>
 , <a class="el" href="classstk_1_1Plucked.html#a1864c705b85633542621ba3ba4491331">stk::Plucked</a>
-, <a class="el" href="classstk_1_1PluckTwo.html#a9f0618a28243b235f6c0f424a236709c">stk::PluckTwo</a>
 , <a class="el" href="classstk_1_1Rhodey.html#a216ff771d88e7e03c46bc477d7ed5e86">stk::Rhodey</a>
 , <a class="el" href="classstk_1_1Sampler.html#a746eaab88793e3e8cdac9f6e59e00ca3">stk::Sampler</a>
 , <a class="el" href="classstk_1_1Saxofony.html#a5844455497f50e4b64beb23f275ac8d1">stk::Saxofony</a>
@@ -221,13 +225,15 @@
 , <a class="el" href="classstk_1_1SingWave.html#ae1ac4a84551f89570ff0842d032a3cba">stk::SingWave</a>
 , <a class="el" href="classstk_1_1Sitar.html#a02acfe592d8d601a37fadb94aaedb074">stk::Sitar</a>
 , <a class="el" href="classstk_1_1StifKarp.html#a51371b8592fc01aba1993ac304962f6e">stk::StifKarp</a>
+, <a class="el" href="classstk_1_1Twang.html#a0043b9d374b73b6660ec2d79475d602c">stk::Twang</a>
 , <a class="el" href="classstk_1_1Voicer.html#a5ee3f8a17e031430486e030520709acf">stk::Voicer</a>
 , <a class="el" href="classstk_1_1VoicForm.html#aeb2b7ffe130e016c847cd7aebfd628ee">stk::VoicForm</a>
 , <a class="el" href="classstk_1_1Whistle.html#a6fd2ded34c6bfda618d80d7068e829d4">stk::Whistle</a>
 , <a class="el" href="classstk_1_1Wurley.html#af00b42ac4011cacc724bf4c9cf16fba4">stk::Wurley</a>
 </li>
 <li>setGain()
-: <a class="el" href="classstk_1_1Filter.html#a827b1bd3a99fa9af408cbd4eb559d212">stk::Filter</a>
+: <a class="el" href="classstk_1_1Cubic.html#a3eca8ac3f81301592476aad7a2e1ec50">stk::Cubic</a>
+, <a class="el" href="classstk_1_1Filter.html#a827b1bd3a99fa9af408cbd4eb559d212">stk::Filter</a>
 , <a class="el" href="classstk_1_1FM.html#a65a8c54556f0c288871876ffad4d9eef">stk::FM</a>
 </li>
 <li>setGainRate()
@@ -259,6 +265,15 @@
 <li>setLip()
 : <a class="el" href="classstk_1_1Brass.html#a2e1a150328504050499c5cb9fa0e536f">stk::Brass</a>
 </li>
+<li>setLoopFilter()
+: <a class="el" href="classstk_1_1Twang.html#a7076c25dd3a06262b3bf927bc64bf89e">stk::Twang</a>
+</li>
+<li>setLoopGain()
+: <a class="el" href="classstk_1_1Twang.html#ad7921c51f38b4e6e32d7db48cc101068">stk::Twang</a>
+</li>
+<li>setLowestFrequency()
+: <a class="el" href="classstk_1_1Twang.html#ae27aa429cbf49f0dd60f0cc6ef41c832">stk::Twang</a>
+</li>
 <li>setMass()
 : <a class="el" href="classstk_1_1Sphere.html#a0db842c9f06b377bcd803391b7126d2f">stk::Sphere</a>
 </li>
@@ -271,6 +286,12 @@
 , <a class="el" href="classstk_1_1DelayL.html#a18b40806591654a9c9c32603990fce40">stk::DelayL</a>
 , <a class="el" href="classstk_1_1Echo.html#a421a6f5f06f8e7df09edd179d397da7d">stk::Echo</a>
 , <a class="el" href="classstk_1_1TapDelay.html#a104b7bd81435a38191e1e43a24cb471d">stk::TapDelay</a>
+</li>
+<li>setMaxOutput()
+: <a class="el" href="classstk_1_1BowTable.html#a634d5063eba886445f4057c823b00ff7">stk::BowTable</a>
+</li>
+<li>setMinOutput()
+: <a class="el" href="classstk_1_1BowTable.html#a9540d5c56cfd4556ab25c25f0612b25d">stk::BowTable</a>
 </li>
 <li>setModDepth()
 : <a class="el" href="classstk_1_1Chorus.html#acb3a55518c919dafa6c19698c1ab3389">stk::Chorus</a>
@@ -299,18 +320,18 @@
 : <a class="el" href="classstk_1_1Iir.html#a7a1473446857a14cdbb33cb5afde076c">stk::Iir</a>
 </li>
 <li>setNX()
-: <a class="el" href="classstk_1_1Mesh2D.html#accbad29fd6364f7c2d439bcf837590ec">stk::Mesh2D</a>
+: <a class="el" href="classstk_1_1Mesh2D.html#a6834a52f03b072e18387b799f804527b">stk::Mesh2D</a>
 </li>
 <li>setNY()
-: <a class="el" href="classstk_1_1Mesh2D.html#a4c4c54ad29fcee5654bd2ebaed29d916">stk::Mesh2D</a>
+: <a class="el" href="classstk_1_1Mesh2D.html#a2be2badaccfeb57e52e548f1b7515fbe">stk::Mesh2D</a>
 </li>
 <li>setOffset()
 : <a class="el" href="classstk_1_1BowTable.html#a9adcc3c36085b73d3b877828071a3b2c">stk::BowTable</a>
 , <a class="el" href="classstk_1_1ReedTable.html#ab40ffd675bd7242a210e8630f8919556">stk::ReedTable</a>
 </li>
 <li>setPhase()
-: <a class="el" href="classstk_1_1Blit.html#a58e2197cedfc366145b729256bf365cb">stk::Blit</a>
-, <a class="el" href="classstk_1_1BlitSquare.html#aeface58980a3ec865131f3cad59bbbef">stk::BlitSquare</a>
+: <a class="el" href="classstk_1_1BlitSquare.html#aeface58980a3ec865131f3cad59bbbef">stk::BlitSquare</a>
+, <a class="el" href="classstk_1_1Blit.html#a58e2197cedfc366145b729256bf365cb">stk::Blit</a>
 </li>
 <li>setPhoneme()
 : <a class="el" href="classstk_1_1VoicForm.html#a6ee860f09b9598c1251a9653b50139bb">stk::VoicForm</a>
@@ -322,7 +343,8 @@
 : <a class="el" href="classstk_1_1VoicForm.html#a2e4adfe6542f6103a8ac85c7ea2f2ce5">stk::VoicForm</a>
 </li>
 <li>setPluckPosition()
-: <a class="el" href="classstk_1_1PluckTwo.html#afffb424a2957fc691363ba1227809695">stk::PluckTwo</a>
+: <a class="el" href="classstk_1_1Mandolin.html#a8a0df47cccec5225e26d3b0e702a7c02">stk::Mandolin</a>
+, <a class="el" href="classstk_1_1Twang.html#a48008e3cd55dad6ee846b47ab32f993f">stk::Twang</a>
 </li>
 <li>setPole()
 : <a class="el" href="classstk_1_1OnePole.html#acc1aaa35c6d5ffbbebfe0c4bfa7d1132">stk::OnePole</a>
@@ -331,11 +353,8 @@
 : <a class="el" href="classstk_1_1Sphere.html#acfa3d4475f9c5ab655276473b1816f39">stk::Sphere</a>
 </li>
 <li>setPreset()
-: <a class="el" href="classstk_1_1BandedWG.html#ab1e3a367eef86e6cb372b4ee232e1804">stk::BandedWG</a>
-, <a class="el" href="classstk_1_1ModalBar.html#a3a09a114ccd420ab549b8565eb4928af">stk::ModalBar</a>
-</li>
-<li>setQueueSizeLimit()
-: <a class="el" href="classRtMidiIn.html#a2e15868916737039e0a34d47bffdf188">RtMidiIn</a>
+: <a class="el" href="classstk_1_1ModalBar.html#a3a09a114ccd420ab549b8565eb4928af">stk::ModalBar</a>
+, <a class="el" href="classstk_1_1BandedWG.html#ab1e3a367eef86e6cb372b4ee232e1804">stk::BandedWG</a>
 </li>
 <li>setRadius()
 : <a class="el" href="classstk_1_1Sphere.html#ac3f4f85642307bebe0733662620f0ee2">stk::Sphere</a>
@@ -344,14 +363,14 @@
 : <a class="el" href="classstk_1_1Granulate.html#a02b7b85f21999d4b350beff6a925bd25">stk::Granulate</a>
 </li>
 <li>setRandomGain()
-: <a class="el" href="classstk_1_1Modulate.html#ac6e7a02378facf59916f2460ed5c2fa5">stk::Modulate</a>
-, <a class="el" href="classstk_1_1SingWave.html#a287cf0feecb7eda88328fb2bc0edff92">stk::SingWave</a>
+: <a class="el" href="classstk_1_1SingWave.html#a287cf0feecb7eda88328fb2bc0edff92">stk::SingWave</a>
+, <a class="el" href="classstk_1_1Modulate.html#ac6e7a02378facf59916f2460ed5c2fa5">stk::Modulate</a>
 </li>
 <li>setRate()
 : <a class="el" href="classstk_1_1Envelope.html#ade99b5c7cb974f71f1d2919868d774a0">stk::Envelope</a>
 , <a class="el" href="classstk_1_1FileLoop.html#a13e1f693bc8a29d9051a400087347a3c">stk::FileLoop</a>
-, <a class="el" href="classstk_1_1FileWvIn.html#aacd97ad5f30f9cdc8201b4244aa69901">stk::FileWvIn</a>
 , <a class="el" href="classstk_1_1SineWave.html#ae69b232dd3a33963d25cf6215692d9d5">stk::SineWave</a>
+, <a class="el" href="classstk_1_1FileWvIn.html#aacd97ad5f30f9cdc8201b4244aa69901">stk::FileWvIn</a>
 </li>
 <li>setRatio()
 : <a class="el" href="classstk_1_1FM.html#a58f0898b677750a259036f628ec1a91b">stk::FM</a>
@@ -370,9 +389,9 @@
 </li>
 <li>setResonance()
 : <a class="el" href="classstk_1_1BiQuad.html#a55aaa01fd4156f1fac1168f526e3d969">stk::BiQuad</a>
-, <a class="el" href="classstk_1_1FormSwep.html#aa6fe339cc937260c46e8c169a58d8529">stk::FormSwep</a>
-, <a class="el" href="classstk_1_1TwoPole.html#a00997b12a1cf0a04888124eaf85c565d">stk::TwoPole</a>
 , <a class="el" href="classstk_1_1Resonate.html#a8767e6c05862c183483776ac4cf354f9">stk::Resonate</a>
+, <a class="el" href="classstk_1_1TwoPole.html#a00997b12a1cf0a04888124eaf85c565d">stk::TwoPole</a>
+, <a class="el" href="classstk_1_1FormSwep.html#aa6fe339cc937260c46e8c169a58d8529">stk::FormSwep</a>
 </li>
 <li>setSampleRate()
 : <a class="el" href="classstk_1_1Stk.html#a46e2f55e5a92c717c3893fe23dde88a5">stk::Stk</a>
@@ -409,14 +428,15 @@
 : <a class="el" href="classstk_1_1ADSR.html#a85138fb6bbcc7b7cd85ec8449d68f7d8">stk::ADSR</a>
 </li>
 <li>setSweepRate()
-: <a class="el" href="classstk_1_1SingWave.html#ab80c50b3c8fc05f056221452504aa150">stk::SingWave</a>
-, <a class="el" href="classstk_1_1FormSwep.html#a27ba31acdbe8334da1830e14872fd226">stk::FormSwep</a>
+: <a class="el" href="classstk_1_1FormSwep.html#a27ba31acdbe8334da1830e14872fd226">stk::FormSwep</a>
+, <a class="el" href="classstk_1_1SingWave.html#ab80c50b3c8fc05f056221452504aa150">stk::SingWave</a>
 </li>
 <li>setSweepTime()
 : <a class="el" href="classstk_1_1FormSwep.html#a242edcbe2a6f88393357b5a5ccec43e8">stk::FormSwep</a>
 </li>
 <li>setT60()
-: <a class="el" href="classstk_1_1JCRev.html#a8f4caa6de1e662c76b853ebab814a2eb">stk::JCRev</a>
+: <a class="el" href="classstk_1_1Asymp.html#afa6fcf4bf3060c0c6092701e409d5fbf">stk::Asymp</a>
+, <a class="el" href="classstk_1_1JCRev.html#a8f4caa6de1e662c76b853ebab814a2eb">stk::JCRev</a>
 , <a class="el" href="classstk_1_1NRev.html#a9c0d41a2b9ce7fb9edb2d620ba005e3c">stk::NRev</a>
 , <a class="el" href="classstk_1_1PRCRev.html#a9478ed84e76d12cc66d11716ebfa8b3b">stk::PRCRev</a>
 </li>
@@ -424,15 +444,18 @@
 : <a class="el" href="classstk_1_1TapDelay.html#aa2bbab19ae277dc3689471d4250f00ad">stk::TapDelay</a>
 </li>
 <li>setTarget()
-: <a class="el" href="classstk_1_1Asymp.html#a7b0f7025ba5f268f1e5ce097b209f0ec">stk::Asymp</a>
-, <a class="el" href="classstk_1_1Envelope.html#a5269bc5dc1d56161ab82b677b5462a3e">stk::Envelope</a>
+: <a class="el" href="classstk_1_1Envelope.html#a5269bc5dc1d56161ab82b677b5462a3e">stk::Envelope</a>
 , <a class="el" href="classstk_1_1ADSR.html#a428eebd510e464ccd7bb4e5728f80d63">stk::ADSR</a>
+, <a class="el" href="classstk_1_1Asymp.html#a7b0f7025ba5f268f1e5ce097b209f0ec">stk::Asymp</a>
 </li>
 <li>setTargets()
 : <a class="el" href="classstk_1_1FormSwep.html#a2f00d2edf80fbf8f74a284c68caf07d6">stk::FormSwep</a>
 </li>
 <li>setTau()
 : <a class="el" href="classstk_1_1Asymp.html#aebd8ebaf6f6c9570d3ee78e1bcbbcbd2">stk::Asymp</a>
+</li>
+<li>setThreshold()
+: <a class="el" href="classstk_1_1Cubic.html#a10ba2b5c858fc2d656d49c676d5561b4">stk::Cubic</a>
 </li>
 <li>setTime()
 : <a class="el" href="classstk_1_1Envelope.html#adeeb1676f9111980a0c1a48a6780c8f7">stk::Envelope</a>
@@ -446,8 +469,8 @@
 </li>
 <li>setValue()
 : <a class="el" href="classstk_1_1Asymp.html#a81881bb8aca615f69bbbfd56267f971c">stk::Asymp</a>
-, <a class="el" href="classstk_1_1Envelope.html#ab8164a90c57616dc8bd55a6e5ba02fb6">stk::Envelope</a>
 , <a class="el" href="classstk_1_1ADSR.html#aa99bf5fca3885bf8d99a3edc4072a4b5">stk::ADSR</a>
+, <a class="el" href="classstk_1_1Envelope.html#ab8164a90c57616dc8bd55a6e5ba02fb6">stk::Envelope</a>
 </li>
 <li>setVelocity()
 : <a class="el" href="classstk_1_1Sphere.html#ac76725a19fe806e9af9841d30faacb11">stk::Sphere</a>
@@ -459,12 +482,12 @@
 : <a class="el" href="classstk_1_1Bowed.html#a7cf229e206a61259d381cf153a1c5096">stk::Bowed</a>
 </li>
 <li>setVibratoGain()
-: <a class="el" href="classstk_1_1SingWave.html#a5276e1e244551d1ca1dcc70ed42e9228">stk::SingWave</a>
-, <a class="el" href="classstk_1_1Modulate.html#a08f2d489a3fba3a10d1f301aed869ed4">stk::Modulate</a>
+: <a class="el" href="classstk_1_1Modulate.html#a08f2d489a3fba3a10d1f301aed869ed4">stk::Modulate</a>
+, <a class="el" href="classstk_1_1SingWave.html#a5276e1e244551d1ca1dcc70ed42e9228">stk::SingWave</a>
 </li>
 <li>setVibratoRate()
-: <a class="el" href="classstk_1_1SingWave.html#a9143162e223ad86682c099d2a6c79ea0">stk::SingWave</a>
-, <a class="el" href="classstk_1_1Modulate.html#a298b25f4b7cc56f2dffae5474a05999d">stk::Modulate</a>
+: <a class="el" href="classstk_1_1Modulate.html#a298b25f4b7cc56f2dffae5474a05999d">stk::Modulate</a>
+, <a class="el" href="classstk_1_1SingWave.html#a9143162e223ad86682c099d2a6c79ea0">stk::SingWave</a>
 </li>
 <li>setVoiced()
 : <a class="el" href="classstk_1_1VoicForm.html#acd504d4d29134a778b08b2229dd0c0c9">stk::VoicForm</a>
@@ -510,7 +533,7 @@
 : <a class="el" href="classstk_1_1SingWave.html#a7a38283d4e42d5f9b96d3ce8c401183a">stk::SingWave</a>
 </li>
 <li>Sitar()
-: <a class="el" href="classstk_1_1Sitar.html#aa645039b4c1609f979775f5ec7e8bd4b">stk::Sitar</a>
+: <a class="el" href="classstk_1_1Sitar.html#a8a2c996ad8b32f98f2bca14aa742bc29">stk::Sitar</a>
 </li>
 <li>size()
 : <a class="el" href="classstk_1_1StkFrames.html#a5c41aae98f77487c004085912d1f8f79">stk::StkFrames</a>
@@ -531,18 +554,18 @@
 : <a class="el" href="classstk_1_1Sphere.html#a73d4fac54fba9aa11a56a34e4198656c">stk::Sphere</a>
 </li>
 <li>start()
-: <a class="el" href="classstk_1_1Thread.html#abcafe21595d9c6ac52b1ae872b34a531">stk::Thread</a>
+: <a class="el" href="classstk_1_1RtWvIn.html#a0ae4012cb269fb70536611b9116142fa">stk::RtWvIn</a>
 , <a class="el" href="classstk_1_1RtWvOut.html#a2e34c9ff845155230e0336ea3729dc45">stk::RtWvOut</a>
-, <a class="el" href="classstk_1_1RtWvIn.html#a0ae4012cb269fb70536611b9116142fa">stk::RtWvIn</a>
+, <a class="el" href="classstk_1_1Thread.html#abcafe21595d9c6ac52b1ae872b34a531">stk::Thread</a>
 </li>
 <li>startBlowing()
-: <a class="el" href="classstk_1_1Clarinet.html#a0e4d016135c3ee291f4d74e9b030caee">stk::Clarinet</a>
+: <a class="el" href="classstk_1_1Brass.html#a02533e02818e2848fb6480106a54ce94">stk::Brass</a>
 , <a class="el" href="classstk_1_1Flute.html#a33b58e80c6ebbd5bd45f90a7a1c6a025">stk::Flute</a>
 , <a class="el" href="classstk_1_1BlowHole.html#a1be64a601f2fbc8e9efaec5a53c55866">stk::BlowHole</a>
-, <a class="el" href="classstk_1_1BlowBotl.html#a926d428669edf9c87a1f88faf01550c4">stk::BlowBotl</a>
-, <a class="el" href="classstk_1_1Saxofony.html#a6e46b18ad2f992dfc3d948f966ec1bf2">stk::Saxofony</a>
-, <a class="el" href="classstk_1_1Brass.html#a02533e02818e2848fb6480106a54ce94">stk::Brass</a>
 , <a class="el" href="classstk_1_1Whistle.html#ade1532d8b10e8b3ce7dfecba86514eaa">stk::Whistle</a>
+, <a class="el" href="classstk_1_1Clarinet.html#a0e4d016135c3ee291f4d74e9b030caee">stk::Clarinet</a>
+, <a class="el" href="classstk_1_1Saxofony.html#a6e46b18ad2f992dfc3d948f966ec1bf2">stk::Saxofony</a>
+, <a class="el" href="classstk_1_1BlowBotl.html#a926d428669edf9c87a1f88faf01550c4">stk::BlowBotl</a>
 </li>
 <li>startBowing()
 : <a class="el" href="classstk_1_1Bowed.html#a519d511ddcc1cf23e897aeacdfe45020">stk::Bowed</a>
@@ -561,7 +584,7 @@
 : <a class="el" href="classRtAudio.html#aec017a89629ccef66a90b60be22a2f80">RtAudio</a>
 </li>
 <li>StifKarp()
-: <a class="el" href="classstk_1_1StifKarp.html#a946fb588b5b18b12ea2dca221150da66">stk::StifKarp</a>
+: <a class="el" href="classstk_1_1StifKarp.html#a2ac1b3641559e787cf78a017797e9a70">stk::StifKarp</a>
 </li>
 <li>Stk()
 : <a class="el" href="classstk_1_1Stk.html#a9bff83b5a318ff171f94a218ad52226b">stk::Stk</a>
@@ -570,24 +593,24 @@
 : <a class="el" href="classstk_1_1StkError.html#ab6cbc80df11b385b20d244327fb74abb">stk::StkError</a>
 </li>
 <li>StkFrames()
-: <a class="el" href="classstk_1_1StkFrames.html#ac48aabe6cf029c06d2aa8a5fedf3621e">stk::StkFrames</a>
+: <a class="el" href="classstk_1_1StkFrames.html#aa9ad14889de633ba4269f1330be8bedf">stk::StkFrames</a>
 </li>
 <li>stop()
-: <a class="el" href="classstk_1_1RtWvIn.html#a39d0d9702569ee3afa769309e8b2e152">stk::RtWvIn</a>
-, <a class="el" href="classstk_1_1RtWvOut.html#a7368c42b81670c0335b25f14faa08918">stk::RtWvOut</a>
+: <a class="el" href="classstk_1_1RtWvOut.html#a7368c42b81670c0335b25f14faa08918">stk::RtWvOut</a>
+, <a class="el" href="classstk_1_1RtWvIn.html#a39d0d9702569ee3afa769309e8b2e152">stk::RtWvIn</a>
 </li>
 <li>stopBlowing()
-: <a class="el" href="classstk_1_1BlowBotl.html#a91a174c3501aafbbfe6841f6915fe4f3">stk::BlowBotl</a>
-, <a class="el" href="classstk_1_1Brass.html#a8bf1624aca6283fafb830a3f22546199">stk::Brass</a>
-, <a class="el" href="classstk_1_1Flute.html#a65b8e74b1a99bc8bada4e80ebd512058">stk::Flute</a>
-, <a class="el" href="classstk_1_1Whistle.html#a6f529770c888caca50fc35f454c98898">stk::Whistle</a>
-, <a class="el" href="classstk_1_1BlowHole.html#aeb4dfd7d75b1996e15833c0928ed39c4">stk::BlowHole</a>
-, <a class="el" href="classstk_1_1Clarinet.html#ae33627365f66f30c3685dc72cd7fadce">stk::Clarinet</a>
+: <a class="el" href="classstk_1_1Clarinet.html#ae33627365f66f30c3685dc72cd7fadce">stk::Clarinet</a>
 , <a class="el" href="classstk_1_1Saxofony.html#ae792c62c3bcf2fe756387c1f5cd61794">stk::Saxofony</a>
+, <a class="el" href="classstk_1_1Whistle.html#a6f529770c888caca50fc35f454c98898">stk::Whistle</a>
+, <a class="el" href="classstk_1_1Brass.html#a8bf1624aca6283fafb830a3f22546199">stk::Brass</a>
+, <a class="el" href="classstk_1_1BlowHole.html#aeb4dfd7d75b1996e15833c0928ed39c4">stk::BlowHole</a>
+, <a class="el" href="classstk_1_1BlowBotl.html#a91a174c3501aafbbfe6841f6915fe4f3">stk::BlowBotl</a>
+, <a class="el" href="classstk_1_1Flute.html#a65b8e74b1a99bc8bada4e80ebd512058">stk::Flute</a>
 </li>
 <li>stopBowing()
-: <a class="el" href="classstk_1_1BandedWG.html#aa14786c32af030311e2118db3b68a892">stk::BandedWG</a>
-, <a class="el" href="classstk_1_1Bowed.html#aae2a57d8e23536fd37a00af1fe07f21c">stk::Bowed</a>
+: <a class="el" href="classstk_1_1Bowed.html#aae2a57d8e23536fd37a00af1fe07f21c">stk::Bowed</a>
+, <a class="el" href="classstk_1_1BandedWG.html#aa14786c32af030311e2118db3b68a892">stk::BandedWG</a>
 </li>
 <li>stopStream()
 : <a class="el" href="classRtAudio.html#af4c241ff86936ecc8108f0d9dfe3efdd">RtAudio</a>
@@ -610,7 +633,7 @@
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

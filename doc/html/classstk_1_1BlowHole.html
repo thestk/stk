@@ -67,6 +67,8 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3438c72b975481dae7d51f33f6f6fd94"></a><!-- doxytag: member="stk::BlowHole::tick" ref="a3438c72b975481dae7d51f33f6f6fd94" args="(unsigned int channel=0)" -->
 StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1BlowHole.html#a3438c72b975481dae7d51f33f6f6fd94">tick</a> (unsigned int channel=0)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute and return one output sample. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1BlowHole.html#ad220cd597fa5f6edd043c0783bdc2ec7">tick</a> (<a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;frames, unsigned int channel=0)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs.  <a href="#ad220cd597fa5f6edd043c0783bdc2ec7"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK clarinet physical model with one register hole and one tonehole. </p>
@@ -81,7 +83,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <li>Register State = 1</li>
 <li>Breath Pressure = 128</li>
 </ul>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a7f0aed9f79544d930c7f91dfa3e0efd9"></a><!-- doxytag: member="stk::BlowHole::BlowHole" ref="a7f0aed9f79544d930c7f91dfa3e0efd9" args="(StkFloat lowestFrequency)" -->
 <div class="memitem">
@@ -104,6 +106,66 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 </div>
 </div>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="ad220cd597fa5f6edd043c0783bdc2ec7"></a><!-- doxytag: member="stk::BlowHole::tick" ref="ad220cd597fa5f6edd043c0783bdc2ec7" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp; stk::BlowHole::tick </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>frames</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&nbsp;</td>
+          <td class="paramname"> <em>channel</em> = <code>0</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [inline, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs. </p>
+<p>The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p>Implements <a class="el" href="classstk_1_1Instrmnt.html#a34c6733ca145763462d9e44ae3c772b6">stk::Instrmnt</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00157"></a>00157 {
+<a name="l00158"></a>00158   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = lastFrame_.channels();
+<a name="l00159"></a>00159 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00160"></a>00160 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; frames.channels() - nChannels ) {
+<a name="l00161"></a>00161     oStream_ &lt;&lt; <span class="stringliteral">&quot;BlowHole::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00162"></a>00162     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00163"></a>00163   }
+<a name="l00164"></a>00164 <span class="preprocessor">#endif</span>
+<a name="l00165"></a>00165 <span class="preprocessor"></span>
+<a name="l00166"></a>00166   StkFloat *samples = &amp;frames[channel];
+<a name="l00167"></a>00167   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, hop = frames.channels() - nChannels;
+<a name="l00168"></a>00168   <span class="keywordflow">if</span> ( nChannels == 1 ) {
+<a name="l00169"></a>00169     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00170"></a>00170       *samples++ = <a class="code" href="classstk_1_1BlowHole.html#a3438c72b975481dae7d51f33f6f6fd94" title="Compute and return one output sample.">tick</a>();
+<a name="l00171"></a>00171   }
+<a name="l00172"></a>00172   <span class="keywordflow">else</span> {
+<a name="l00173"></a>00173     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00174"></a>00174       *samples++ = <a class="code" href="classstk_1_1BlowHole.html#a3438c72b975481dae7d51f33f6f6fd94" title="Compute and return one output sample.">tick</a>();
+<a name="l00175"></a>00175       <span class="keywordflow">for</span> ( j=1; j&lt;nChannels; j++ )
+<a name="l00176"></a>00176         *samples++ = lastFrame_[j];
+<a name="l00177"></a>00177     }
+<a name="l00178"></a>00178   }
+<a name="l00179"></a>00179 
+<a name="l00180"></a>00180   <span class="keywordflow">return</span> frames;
+<a name="l00181"></a>00181 }
+</pre></div></p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="BlowHole_8h_source.html">BlowHole.h</a></li>
 </ul>
@@ -112,7 +174,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

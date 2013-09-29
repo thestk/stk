@@ -32,8 +32,8 @@ Inheritance diagram for stk::Brass:</div>
 <p><a href="classstk_1_1Brass-members.html">List of all members.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Brass.html#a96b223221f536efdaad4e724db01f11b">Brass</a> (StkFloat lowestFrequency)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class constructor, taking the lowest desired playing frequency.  <a href="#a96b223221f536efdaad4e724db01f11b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Brass.html#a5bf59263a54250be84c027198c7d2d1d">Brass</a> (StkFloat lowestFrequency=8.0)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class constructor, taking the lowest desired playing frequency.  <a href="#a5bf59263a54250be84c027198c7d2d1d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a474528a75bd4fb88cdb9c783d73df8f6"></a><!-- doxytag: member="stk::Brass::~Brass" ref="a474528a75bd4fb88cdb9c783d73df8f6" args="()" -->
 &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Brass.html#a474528a75bd4fb88cdb9c783d73df8f6">~Brass</a> ()</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class destructor. <br/></td></tr>
@@ -64,6 +64,8 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4af1b7c4c1b374b65e04ccaa90886321"></a><!-- doxytag: member="stk::Brass::tick" ref="a4af1b7c4c1b374b65e04ccaa90886321" args="(unsigned int channel=0)" -->
 StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Brass.html#a4af1b7c4c1b374b65e04ccaa90886321">tick</a> (unsigned int channel=0)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute and return one output sample. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Brass.html#a10334fc5573b68f2b5c2819bdba786b8">tick</a> (<a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;frames, unsigned int channel=0)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs.  <a href="#a10334fc5573b68f2b5c2819bdba786b8"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK simple brass instrument class. </p>
@@ -77,9 +79,9 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <li>Vibrato Gain = 1</li>
 <li>Volume = 128</li>
 </ul>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a96b223221f536efdaad4e724db01f11b"></a><!-- doxytag: member="stk::Brass::Brass" ref="a96b223221f536efdaad4e724db01f11b" args="(StkFloat lowestFrequency)" -->
+<a class="anchor" id="a5bf59263a54250be84c027198c7d2d1d"></a><!-- doxytag: member="stk::Brass::Brass" ref="a5bf59263a54250be84c027198c7d2d1d" args="(StkFloat lowestFrequency=8.0)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -87,7 +89,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
           <td class="memname">stk::Brass::Brass </td>
           <td>(</td>
           <td class="paramtype">StkFloat&nbsp;</td>
-          <td class="paramname"> <em>lowestFrequency</em></td>
+          <td class="paramname"> <em>lowestFrequency</em> = <code>8.0</code></td>
           <td>&nbsp;)&nbsp;</td>
           <td></td>
         </tr>
@@ -100,6 +102,66 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 </div>
 </div>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a10334fc5573b68f2b5c2819bdba786b8"></a><!-- doxytag: member="stk::Brass::tick" ref="a10334fc5573b68f2b5c2819bdba786b8" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp; stk::Brass::tick </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>frames</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&nbsp;</td>
+          <td class="paramname"> <em>channel</em> = <code>0</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [inline, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs. </p>
+<p>The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p>Implements <a class="el" href="classstk_1_1Instrmnt.html#a34c6733ca145763462d9e44ae3c772b6">stk::Instrmnt</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00119"></a>00119 {
+<a name="l00120"></a>00120   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = lastFrame_.channels();
+<a name="l00121"></a>00121 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00122"></a>00122 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; frames.channels() - nChannels ) {
+<a name="l00123"></a>00123     oStream_ &lt;&lt; <span class="stringliteral">&quot;Brass::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00124"></a>00124     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00125"></a>00125   }
+<a name="l00126"></a>00126 <span class="preprocessor">#endif</span>
+<a name="l00127"></a>00127 <span class="preprocessor"></span>
+<a name="l00128"></a>00128   StkFloat *samples = &amp;frames[channel];
+<a name="l00129"></a>00129   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, hop = frames.channels() - nChannels;
+<a name="l00130"></a>00130   <span class="keywordflow">if</span> ( nChannels == 1 ) {
+<a name="l00131"></a>00131     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00132"></a>00132       *samples++ = <a class="code" href="classstk_1_1Brass.html#a4af1b7c4c1b374b65e04ccaa90886321" title="Compute and return one output sample.">tick</a>();
+<a name="l00133"></a>00133   }
+<a name="l00134"></a>00134   <span class="keywordflow">else</span> {
+<a name="l00135"></a>00135     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00136"></a>00136       *samples++ = <a class="code" href="classstk_1_1Brass.html#a4af1b7c4c1b374b65e04ccaa90886321" title="Compute and return one output sample.">tick</a>();
+<a name="l00137"></a>00137       <span class="keywordflow">for</span> ( j=1; j&lt;nChannels; j++ )
+<a name="l00138"></a>00138         *samples++ = lastFrame_[j];
+<a name="l00139"></a>00139     }
+<a name="l00140"></a>00140   }
+<a name="l00141"></a>00141 
+<a name="l00142"></a>00142   <span class="keywordflow">return</span> frames;
+<a name="l00143"></a>00143 }
+</pre></div></p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="Brass_8h_source.html">Brass.h</a></li>
 </ul>
@@ -108,7 +170,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

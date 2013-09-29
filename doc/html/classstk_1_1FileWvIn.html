@@ -58,6 +58,9 @@ virtual unsigned long&nbsp;</td><td class="memItemRight" valign="bottom"><a clas
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the file size in sample frames. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1FileWvIn.html#a867b7b7fdb60e5194e25d7a85a26ec0b">getFileRate</a> (void) const </td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the input file sample rate in Hz (not the data read rate).  <a href="#a867b7b7fdb60e5194e25d7a85a26ec0b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa45344366bca49f71c7153ac5b296e91"></a><!-- doxytag: member="stk::FileWvIn::isOpen" ref="aa45344366bca49f71c7153ac5b296e91" args="(void)" -->
+bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1FileWvIn.html#aa45344366bca49f71c7153ac5b296e91">isOpen</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Query whether a file is open. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca9ad0c12af3323e7bbf877513b0d10b"></a><!-- doxytag: member="stk::FileWvIn::isFinished" ref="aca9ad0c12af3323e7bbf877513b0d10b" args="(void) const " -->
 bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1FileWvIn.html#aca9ad0c12af3323e7bbf877513b0d10b">isFinished</a> (void) const </td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Query whether reading is complete. <br/></td></tr>
@@ -81,7 +84,7 @@ bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p><a class="el" href="classstk_1_1FileWvIn.html" title="STK audio file input class.">FileWvIn</a> will either load the entire content of an audio file into local memory or incrementally read file data from disk in chunks. This behavior is controlled by the optional constructor arguments <em>chunkThreshold</em> and <em>chunkSize</em>. File sizes greater than <em>chunkThreshold</em> (in sample frames) will be read incrementally in chunks of <em>chunkSize</em> each (also in sample frames).</p>
 <p>When the file end is reached, subsequent calls to the <a class="el" href="classstk_1_1FileWvIn.html#ada668a0bc0bf89e155ef341de00babc2" title="Compute a sample frame and return the specified channel value.">tick()</a> functions return zeros and <a class="el" href="classstk_1_1FileWvIn.html#aca9ad0c12af3323e7bbf877513b0d10b" title="Query whether reading is complete.">isFinished()</a> returns <em>true</em>.</p>
 <p>See the <a class="el" href="classstk_1_1FileRead.html" title="STK audio file input class.">FileRead</a> class for a description of the supported audio file formats.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a01f985173b4d012fe5e9234134a71433"></a><!-- doxytag: member="stk::FileWvIn::FileWvIn" ref="a01f985173b4d012fe5e9234134a71433" args="(std::string fileName, bool raw=false, bool doNormalize=true, unsigned long chunkThreshold=1000000, unsigned long chunkSize=1024)" -->
 <div class="memitem">
@@ -237,6 +240,9 @@ bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Reimplemented in <a class="el" href="classstk_1_1FileLoop.html#aa18006c800c7dac1ddd277c987fe0003">stk::FileLoop</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00100"></a>00100 { <span class="keywordflow">return</span> data_.dataRate(); };
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="aacd97ad5f30f9cdc8201b4244aa69901"></a><!-- doxytag: member="stk::FileWvIn::setRate" ref="aacd97ad5f30f9cdc8201b4244aa69901" args="(StkFloat rate)" -->
@@ -304,6 +310,9 @@ bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Turn linear interpolation on/off. </p>
 <p>Interpolation is automatically off when the read rate is an integer value. If interpolation is turned off for a fractional rate, the time index is truncated to an integer value. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00127"></a>00127 { interpolate_ = doInterpolate; };
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="ad17c12e8d51f90f59f0d0c9f6d626608"></a><!-- doxytag: member="stk::FileWvIn::lastOut" ref="ad17c12e8d51f90f59f0d0c9f6d626608" args="(unsigned int channel=0)" -->
@@ -327,6 +336,19 @@ bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classstk_1_1WvIn.html#a3ab86e33eff9f962c9ef7b41e3ccb77e" title="Return an StkFrames reference to the last computed sample frame.">lastFrame()</a> </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classstk_1_1FileLoop.html#a826b6dd0968c5abd1020a9fe629a4ffd">stk::FileLoop</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00182"></a>00182 {
+<a name="l00183"></a>00183 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00184"></a>00184 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= data_.channels() ) {
+<a name="l00185"></a>00185     oStream_ &lt;&lt; <span class="stringliteral">&quot;FileWvIn::lastOut(): channel argument and soundfile data are incompatible!&quot;</span>;
+<a name="l00186"></a>00186     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00187"></a>00187   }
+<a name="l00188"></a>00188 <span class="preprocessor">#endif</span>
+<a name="l00189"></a>00189 <span class="preprocessor"></span>
+<a name="l00190"></a>00190   <span class="keywordflow">if</span> ( finished_ ) <span class="keywordflow">return</span> 0.0;
+<a name="l00191"></a>00191   <span class="keywordflow">return</span> lastFrame_[channel];
+<a name="l00192"></a>00192 }
+</pre></div></p>
 
 </div>
 </div>
@@ -388,7 +410,7 @@ bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

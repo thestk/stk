@@ -37,6 +37,9 @@ Inheritance diagram for stk::Delay:</div>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a24b6ed6c7c5fc6d15935ec2a118b6b4f"></a><!-- doxytag: member="stk::Delay::~Delay" ref="a24b6ed6c7c5fc6d15935ec2a118b6b4f" args="()" -->
 &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#a24b6ed6c7c5fc6d15935ec2a118b6b4f">~Delay</a> ()</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class destructor. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a31d348fd15e5b6e23f2984b75968a3ec"></a><!-- doxytag: member="stk::Delay::getMaximumDelay" ref="a31d348fd15e5b6e23f2984b75968a3ec" args="(void)" -->
+unsigned long&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#a31d348fd15e5b6e23f2984b75968a3ec">getMaximumDelay</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get the maximum delay-line length. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#a0cf4c8da14bd4105eef06e35caaf1532">setMaximumDelay</a> (unsigned long delay)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the maximum delay-line length.  <a href="#a0cf4c8da14bd4105eef06e35caaf1532"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#a5eaeed55ea0c7b30ed66fedd6ef52fc2">setDelay</a> (unsigned long delay)</td></tr>
@@ -44,10 +47,13 @@ Inheritance diagram for stk::Delay:</div>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7ae307dc997ff07ff986ca5c4d287441"></a><!-- doxytag: member="stk::Delay::getDelay" ref="a7ae307dc997ff07ff986ca5c4d287441" args="(void) const " -->
 unsigned long&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#a7ae307dc997ff07ff986ca5c4d287441">getDelay</a> (void) const </td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the current delay-line length. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#a7d4c9c21e752f860ba683e9849d14665">contentsAt</a> (unsigned long tapDelay)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the value at <em>tapDelay</em> samples from the delay-line input.  <a href="#a7d4c9c21e752f860ba683e9849d14665"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#aea5580dd84ea6982d1f7b92b53314118">addTo</a> (unsigned long tapDelay, StkFloat value)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sum the provided value into the delay line at <em>tapDelay</em> samples from the input.  <a href="#aea5580dd84ea6982d1f7b92b53314118"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#a4d5e5bab50e4fa062bd3f0e9e2fd19db">tapOut</a> (unsigned long tapDelay)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the value at <em>tapDelay</em> samples from the delay-line input.  <a href="#a4d5e5bab50e4fa062bd3f0e9e2fd19db"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd0b93da7a12eca94c1e68ec3b3774f1"></a><!-- doxytag: member="stk::Delay::tapIn" ref="abd0b93da7a12eca94c1e68ec3b3774f1" args="(StkFloat value, unsigned long tapDelay)" -->
+void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#abd0b93da7a12eca94c1e68ec3b3774f1">tapIn</a> (StkFloat value, unsigned long tapDelay)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the <em>value</em> at <em>tapDelay</em> samples from the delay-line input. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#a80f143ab956c9d3b1721958ece6da65e">addTo</a> (StkFloat value, unsigned long tapDelay)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sum the provided <em>value</em> into the delay line at <em>tapDelay</em> samples from the input.  <a href="#a80f143ab956c9d3b1721958ece6da65e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b563a37eec1773e8e82f9e328aed9b2"></a><!-- doxytag: member="stk::Delay::lastOut" ref="a7b563a37eec1773e8e82f9e328aed9b2" args="(void) const " -->
 StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Delay.html#a7b563a37eec1773e8e82f9e328aed9b2">lastOut</a> (void) const </td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the last computed output value. <br/></td></tr>
@@ -68,7 +74,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>STK non-interpolating delay line class. </p>
 <p>This class implements a non-interpolating digital delay-line. If the delay and maximum length are not specified during instantiation, a fixed maximum length of 4095 and a delay of zero is set.</p>
 <p>A non-interpolating delay line is typically used in fixed delay-length applications, such as for reverberation.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a9644532bfea44fae046e54f2509cf1ef"></a><!-- doxytag: member="stk::Delay::Delay" ref="a9644532bfea44fae046e54f2509cf1ef" args="(unsigned long delay=0, unsigned long maxDelay=4095)" -->
 <div class="memitem">
@@ -118,7 +124,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div class="memdoc">
 
 <p>Set the maximum delay-line length. </p>
-<p>This method should generally only be used during initial setup of the delay line. If it is used between calls to the <a class="el" href="classstk_1_1Delay.html#aa1a929e0e324417b8a55cbf8770532e9" title="Input one sample to the filter and return one output.">tick()</a> function, without a call to <a class="el" href="classstk_1_1Filter.html#a670b9cc23ac798d3239cb819e801363c" title="Clears all internal states of the filter.">clear()</a>, a signal discontinuity will likely occur. If the current maximum length is greater than the new length, no change will be made. </p>
+<p>This method should generally only be used during initial setup of the delay line. If it is used between calls to the <a class="el" href="classstk_1_1Delay.html#aa1a929e0e324417b8a55cbf8770532e9" title="Input one sample to the filter and return one output.">tick()</a> function, without a call to <a class="el" href="classstk_1_1Filter.html#a670b9cc23ac798d3239cb819e801363c" title="Clears all internal states of the filter.">clear()</a>, a signal discontinuity will likely occur. If the current maximum length is greater than the new length, no memory allocation change is made. </p>
 
 </div>
 </div>
@@ -143,12 +149,12 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 </div>
 </div>
-<a class="anchor" id="a7d4c9c21e752f860ba683e9849d14665"></a><!-- doxytag: member="stk::Delay::contentsAt" ref="a7d4c9c21e752f860ba683e9849d14665" args="(unsigned long tapDelay)" -->
+<a class="anchor" id="a4d5e5bab50e4fa062bd3f0e9e2fd19db"></a><!-- doxytag: member="stk::Delay::tapOut" ref="a4d5e5bab50e4fa062bd3f0e9e2fd19db" args="(unsigned long tapDelay)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">StkFloat stk::Delay::contentsAt </td>
+          <td class="memname">StkFloat stk::Delay::tapOut </td>
           <td>(</td>
           <td class="paramtype">unsigned long&nbsp;</td>
           <td class="paramname"> <em>tapDelay</em></td>
@@ -164,21 +170,21 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 </div>
 </div>
-<a class="anchor" id="aea5580dd84ea6982d1f7b92b53314118"></a><!-- doxytag: member="stk::Delay::addTo" ref="aea5580dd84ea6982d1f7b92b53314118" args="(unsigned long tapDelay, StkFloat value)" -->
+<a class="anchor" id="a80f143ab956c9d3b1721958ece6da65e"></a><!-- doxytag: member="stk::Delay::addTo" ref="a80f143ab956c9d3b1721958ece6da65e" args="(StkFloat value, unsigned long tapDelay)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">StkFloat stk::Delay::addTo </td>
           <td>(</td>
-          <td class="paramtype">unsigned long&nbsp;</td>
-          <td class="paramname"> <em>tapDelay</em>, </td>
+          <td class="paramtype">StkFloat&nbsp;</td>
+          <td class="paramname"> <em>value</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">StkFloat&nbsp;</td>
-          <td class="paramname"> <em>value</em></td><td>&nbsp;</td>
+          <td class="paramtype">unsigned long&nbsp;</td>
+          <td class="paramname"> <em>tapDelay</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -189,7 +195,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </div>
 <div class="memdoc">
 
-<p>Sum the provided value into the delay line at <em>tapDelay</em> samples from the input. </p>
+<p>Sum the provided <em>value</em> into the delay line at <em>tapDelay</em> samples from the input. </p>
 <p>The new value is returned. The tap point is determined modulo the delay-line length and is relative to the last input value (i.e., a tapDelay of zero sums into the last input value). </p>
 
 </div>
@@ -212,6 +218,9 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Return the value that will be output by the next call to <a class="el" href="classstk_1_1Delay.html#aa1a929e0e324417b8a55cbf8770532e9" title="Input one sample to the filter and return one output.">tick()</a>. </p>
 <p>This method is valid only for delay settings greater than zero! </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00087"></a>00087 { <span class="keywordflow">return</span> inputs_[outPoint_]; };
+</pre></div></p>
 
 </div>
 </div>
@@ -244,6 +253,28 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>The <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument reference is returned. The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
 <p>Implements <a class="el" href="classstk_1_1Filter.html#a3260a238824c4a748ac057b84b7d3f21">stk::Filter</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00142"></a>00142 {
+<a name="l00143"></a>00143 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00144"></a>00144 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00145"></a>00145     oStream_ &lt;&lt; <span class="stringliteral">&quot;Delay::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00146"></a>00146     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00147"></a>00147   }
+<a name="l00148"></a>00148 <span class="preprocessor">#endif</span>
+<a name="l00149"></a>00149 <span class="preprocessor"></span>
+<a name="l00150"></a>00150   StkFloat *samples = &amp;frames[channel];
+<a name="l00151"></a>00151   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00152"></a>00152   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00153"></a>00153     inputs_[inPoint_++] = *samples * gain_;
+<a name="l00154"></a>00154     <span class="keywordflow">if</span> ( inPoint_ == inputs_.size() ) inPoint_ = 0;
+<a name="l00155"></a>00155     *samples = inputs_[outPoint_++];
+<a name="l00156"></a>00156     <span class="keywordflow">if</span> ( outPoint_ == inputs_.size() ) outPoint_ = 0;
+<a name="l00157"></a>00157   }
+<a name="l00158"></a>00158 
+<a name="l00159"></a>00159   lastFrame_[0] = *(samples-hop);
+<a name="l00160"></a>00160   <span class="keywordflow">return</span> frames;
+<a name="l00161"></a>00161 }
+</pre></div></p>
 
 </div>
 </div>
@@ -287,6 +318,29 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <code>iFrames</code> object as inputs to the filter and write outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. Each channel argument must be less than the number of channels in the corresponding <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00164"></a>00164 {
+<a name="l00165"></a>00165 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00166"></a>00166 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() ) {
+<a name="l00167"></a>00167     oStream_ &lt;&lt; <span class="stringliteral">&quot;Delay::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00168"></a>00168     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00169"></a>00169   }
+<a name="l00170"></a>00170 <span class="preprocessor">#endif</span>
+<a name="l00171"></a>00171 <span class="preprocessor"></span>
+<a name="l00172"></a>00172   StkFloat *iSamples = &amp;iFrames[iChannel];
+<a name="l00173"></a>00173   StkFloat *oSamples = &amp;oFrames[oChannel];
+<a name="l00174"></a>00174   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iHop = iFrames.channels(), oHop = oFrames.channels();
+<a name="l00175"></a>00175   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
+<a name="l00176"></a>00176     inputs_[inPoint_++] = *iSamples * gain_;
+<a name="l00177"></a>00177     <span class="keywordflow">if</span> ( inPoint_ == inputs_.size() ) inPoint_ = 0;
+<a name="l00178"></a>00178     *oSamples = inputs_[outPoint_++];
+<a name="l00179"></a>00179     <span class="keywordflow">if</span> ( outPoint_ == inputs_.size() ) outPoint_ = 0;
+<a name="l00180"></a>00180   }
+<a name="l00181"></a>00181 
+<a name="l00182"></a>00182   lastFrame_[0] = *(oSamples-oHop);
+<a name="l00183"></a>00183   <span class="keywordflow">return</span> iFrames;
+<a name="l00184"></a>00184 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -297,7 +351,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

@@ -53,6 +53,9 @@ unsigned long&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4c0c35f1817a4984b325967f1e7bcd81"></a><!-- doxytag: member="stk::FileRead::channels" ref="a4c0c35f1817a4984b325967f1e7bcd81" args="(void) const " -->
 unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1FileRead.html#a4c0c35f1817a4984b325967f1e7bcd81">channels</a> (void) const </td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the number of audio channels in the file. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6852b303c34f01967be2a7a69221ef0b"></a><!-- doxytag: member="stk::FileRead::format" ref="a6852b303c34f01967be2a7a69221ef0b" args="(void) const " -->
+StkFormat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1FileRead.html#a6852b303c34f01967be2a7a69221ef0b">format</a> (void) const </td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the data format of the file. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1FileRead.html#a7d6ba525b2f8ae693d953cb7f4b7c199">fileRate</a> (void) const </td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the file sample rate in Hz.  <a href="#a7d6ba525b2f8ae693d953cb7f4b7c199"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1FileRead.html#a8eefe5d1479789c02ac2dfa76ba143f8">read</a> (<a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;buffer, unsigned long startFrame=0, bool doNormalize=true)</td></tr>
@@ -61,9 +64,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK audio file input class. </p>
 <p>This class provides input support for various audio file formats. Multi-channel (&gt;2) soundfiles are supported. The file data is returned via an external <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object passed to the <a class="el" href="classstk_1_1FileRead.html#a8eefe5d1479789c02ac2dfa76ba143f8" title="Read sample frames from the file into an StkFrames object.">read()</a> function. This class does not store its own copy of the file data, rather the data is read directly from disk.</p>
-<p><a class="el" href="classstk_1_1FileRead.html" title="STK audio file input class.">FileRead</a> currently supports uncompressed WAV, AIFF/AIFC, SND (AU), MAT-file (Matlab), and STK RAW file formats. Signed integer (8-, 16-, and 32-bit) and floating-point (32- and 64-bit) data types are supported. Compressed data types are not supported.</p>
-<p>STK RAW files have no header and are assumed to contain a monophonic stream of 16-bit signed integers in big-endian byte order at a sample rate of 22050 Hz. MAT-file data should be saved in an array with each data channel filling a matrix row. The sample rate for MAT-files is assumed to be 44100 Hz.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p><a class="el" href="classstk_1_1FileRead.html" title="STK audio file input class.">FileRead</a> currently supports uncompressed WAV, AIFF/AIFC, SND (AU), MAT-file (Matlab), and STK RAW file formats. Signed integer (8-, 16-, 24-, and 32-bit) and floating-point (32- and 64-bit) data types are supported. Compressed data types are not supported.</p>
+<p>STK RAW files have no header and are assumed to contain a monophonic stream of 16-bit signed integers in big-endian byte order at a sample rate of 22050 Hz. MAT-file data should be saved in an array with each data channel filling a matrix row. The sample rate for MAT-files should be specified in a variable named "fs". If no such variable is found, the sample rate is assumed to be 44100 Hz.</p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="aef47f180e2d7ef77a118b993541b372d"></a><!-- doxytag: member="stk::FileRead::FileRead" ref="aef47f180e2d7ef77a118b993541b372d" args="(std::string fileName, bool typeRaw=false, unsigned int nChannels=1, StkFormat format=STK_SINT16, StkFloat rate=22050.0)" -->
 <div class="memitem">
@@ -181,6 +184,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Return the file sample rate in Hz. </p>
 <p>WAV, SND, and AIF formatted files specify a sample rate in their headers. By definition, STK RAW files have a sample rate of 22050 Hz. MAT-files are assumed to have a rate of 44100 Hz. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00091"></a>00091 { <span class="keywordflow">return</span> fileRate_; };
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a8eefe5d1479789c02ac2dfa76ba143f8"></a><!-- doxytag: member="stk::FileRead::read" ref="a8eefe5d1479789c02ac2dfa76ba143f8" args="(StkFrames &amp;buffer, unsigned long startFrame=0, bool doNormalize=true)" -->
@@ -227,7 +233,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

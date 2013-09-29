@@ -32,8 +32,8 @@ Inheritance diagram for stk::StifKarp:</div>
 <p><a href="classstk_1_1StifKarp-members.html">List of all members.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a946fb588b5b18b12ea2dca221150da66"></a><!-- doxytag: member="stk::StifKarp::StifKarp" ref="a946fb588b5b18b12ea2dca221150da66" args="(StkFloat lowestFrequency)" -->
-&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1StifKarp.html#a946fb588b5b18b12ea2dca221150da66">StifKarp</a> (StkFloat lowestFrequency)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ac1b3641559e787cf78a017797e9a70"></a><!-- doxytag: member="stk::StifKarp::StifKarp" ref="a2ac1b3641559e787cf78a017797e9a70" args="(StkFloat lowestFrequency=8.0)" -->
+&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1StifKarp.html#a2ac1b3641559e787cf78a017797e9a70">StifKarp</a> (StkFloat lowestFrequency=8.0)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class constructor, taking the lowest desired playing frequency. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a37bc5b0bb4fe385eda862622f675bee1"></a><!-- doxytag: member="stk::StifKarp::~StifKarp" ref="a37bc5b0bb4fe385eda862622f675bee1" args="(void)" -->
 &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1StifKarp.html#a37bc5b0bb4fe385eda862622f675bee1">~StifKarp</a> (void)</td></tr>
@@ -67,6 +67,8 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5cd896c59ee01fa8e21346ebe54365fc"></a><!-- doxytag: member="stk::StifKarp::tick" ref="a5cd896c59ee01fa8e21346ebe54365fc" args="(unsigned int channel=0)" -->
 StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1StifKarp.html#a5cd896c59ee01fa8e21346ebe54365fc">tick</a> (unsigned int channel=0)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute and return one output sample. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1StifKarp.html#a7d4afff257faa7ad9ef630f1db1ed93f">tick</a> (<a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;frames, unsigned int channel=0)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs.  <a href="#a7d4afff257faa7ad9ef630f1db1ed93f"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK plucked stiff string instrument. </p>
@@ -78,7 +80,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <li>String Sustain = 11</li>
 <li>String Stretch = 1</li>
 </ul>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="ad1b5de5acf487271d99903cd43e891ce"></a><!-- doxytag: member="stk::StifKarp::setBaseLoopGain" ref="ad1b5de5acf487271d99903cd43e891ce" args="(StkFloat aGain)" -->
 <div class="memitem">
@@ -101,6 +103,65 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 </div>
 </div>
+<a class="anchor" id="a7d4afff257faa7ad9ef630f1db1ed93f"></a><!-- doxytag: member="stk::StifKarp::tick" ref="a7d4afff257faa7ad9ef630f1db1ed93f" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp; stk::StifKarp::tick </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>frames</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&nbsp;</td>
+          <td class="paramname"> <em>channel</em> = <code>0</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [inline, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs. </p>
+<p>The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p>Implements <a class="el" href="classstk_1_1Instrmnt.html#a34c6733ca145763462d9e44ae3c772b6">stk::Instrmnt</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00126"></a>00126 {
+<a name="l00127"></a>00127   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = lastFrame_.channels();
+<a name="l00128"></a>00128 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00129"></a>00129 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; frames.channels() - nChannels ) {
+<a name="l00130"></a>00130     oStream_ &lt;&lt; <span class="stringliteral">&quot;StifKarp::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00131"></a>00131     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00132"></a>00132   }
+<a name="l00133"></a>00133 <span class="preprocessor">#endif</span>
+<a name="l00134"></a>00134 <span class="preprocessor"></span>
+<a name="l00135"></a>00135   StkFloat *samples = &amp;frames[channel];
+<a name="l00136"></a>00136   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, hop = frames.channels() - nChannels;
+<a name="l00137"></a>00137   <span class="keywordflow">if</span> ( nChannels == 1 ) {
+<a name="l00138"></a>00138     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00139"></a>00139       *samples++ = <a class="code" href="classstk_1_1StifKarp.html#a5cd896c59ee01fa8e21346ebe54365fc" title="Compute and return one output sample.">tick</a>();
+<a name="l00140"></a>00140   }
+<a name="l00141"></a>00141   <span class="keywordflow">else</span> {
+<a name="l00142"></a>00142     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00143"></a>00143       *samples++ = <a class="code" href="classstk_1_1StifKarp.html#a5cd896c59ee01fa8e21346ebe54365fc" title="Compute and return one output sample.">tick</a>();
+<a name="l00144"></a>00144       <span class="keywordflow">for</span> ( j=1; j&lt;nChannels; j++ )
+<a name="l00145"></a>00145         *samples++ = lastFrame_[j];
+<a name="l00146"></a>00146     }
+<a name="l00147"></a>00147   }
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149   <span class="keywordflow">return</span> frames;
+<a name="l00150"></a>00150 }
+</pre></div></p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="StifKarp_8h_source.html">StifKarp.h</a></li>
 </ul>
@@ -109,7 +170,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

@@ -85,6 +85,9 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Set the phase of the signal. </p>
 <p>Set the phase of the signal, in the range 0 to 1. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00058"></a>00058 { phase_ = PI * phase; };
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="abbda8cb84bcd36fc6d96130e9832a6af"></a><!-- doxytag: member="stk::BlitSquare::getPhase" ref="abbda8cb84bcd36fc6d96130e9832a6af" args="() const " -->
@@ -104,6 +107,9 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Get the current phase of the signal. </p>
 <p>Get the phase of the signal, in the range [0 to 1.0). </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00064"></a>00064 { <span class="keywordflow">return</span> phase_ / PI; };
+</pre></div></p>
 
 </div>
 </div>
@@ -158,6 +164,23 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Generator.html#a86bb0421223cf27e25704d5f27b97425">stk::Generator</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00152"></a>00152 {
+<a name="l00153"></a>00153 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00154"></a>00154 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00155"></a>00155     oStream_ &lt;&lt; <span class="stringliteral">&quot;BlitSquare::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00156"></a>00156     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00157"></a>00157   }
+<a name="l00158"></a>00158 <span class="preprocessor">#endif</span>
+<a name="l00159"></a>00159 <span class="preprocessor"></span>
+<a name="l00160"></a>00160   StkFloat *samples = &amp;frames[channel];
+<a name="l00161"></a>00161   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00162"></a>00162   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00163"></a>00163     *samples = <a class="code" href="classstk_1_1BlitSquare.html#a04366d55cecb4c8a726ea0519683d817" title="Compute and return one output sample.">BlitSquare::tick</a>();
+<a name="l00164"></a>00164 
+<a name="l00165"></a>00165   <span class="keywordflow">return</span> frames;
+<a name="l00166"></a>00166 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -168,7 +191,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

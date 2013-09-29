@@ -66,7 +66,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK one-pole, one-zero filter class. </p>
 <p>This class implements a one-pole, one-zero digital filter. A method is provided for creating an allpass filter with a given coefficient. Another method is provided to create a DC blocking filter.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a51264d601b635aa0274c75ba1aa5a048"></a><!-- doxytag: member="stk::PoleZero::setAllpass" ref="a51264d601b635aa0274c75ba1aa5a048" args="(StkFloat coefficient)" -->
 <div class="memitem">
@@ -85,7 +85,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div class="memdoc">
 
 <p>Set the filter for allpass behavior using <em>coefficient</em>. </p>
-<p>This method uses <em>coefficient</em> to create an allpass filter, which has unity gain at all frequencies. Note that the <em>coefficient</em> magnitude must be less than one to maintain stability. </p>
+<p>This method uses <em>coefficient</em> to create an allpass filter, which has unity gain at all frequencies. Note that the <em>coefficient</em> magnitude must be less than one to maintain filter stability. </p>
 
 </div>
 </div>
@@ -106,7 +106,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div class="memdoc">
 
 <p>Create a DC blocking filter with the given pole position in the z-plane. </p>
-<p>This method sets the given pole position, together with a zero at z=1, to create a DC blocking filter. <em>thePole</em> should be close to one to minimize low-frequency attenuation. </p>
+<p>This method sets the given pole position, together with a zero at z=1, to create a DC blocking filter. The argument magnitude should be close to (but less than) one to minimize low-frequency attenuation. </p>
 
 </div>
 </div>
@@ -140,6 +140,28 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Filter.html#a3260a238824c4a748ac057b84b7d3f21">stk::Filter</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00090"></a>00090 {
+<a name="l00091"></a>00091 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00092"></a>00092 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00093"></a>00093     oStream_ &lt;&lt; <span class="stringliteral">&quot;PoleZero::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00094"></a>00094     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00095"></a>00095   }
+<a name="l00096"></a>00096 <span class="preprocessor">#endif</span>
+<a name="l00097"></a>00097 <span class="preprocessor"></span>
+<a name="l00098"></a>00098   StkFloat *samples = &amp;frames[channel];
+<a name="l00099"></a>00099   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00100"></a>00100   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00101"></a>00101     inputs_[0] = gain_ * *samples;
+<a name="l00102"></a>00102     *samples = b_[0] * inputs_[0] + b_[1] * inputs_[1] - a_[1] * outputs_[1];
+<a name="l00103"></a>00103     inputs_[1] = inputs_[0];
+<a name="l00104"></a>00104     outputs_[1] = *samples;
+<a name="l00105"></a>00105   }
+<a name="l00106"></a>00106 
+<a name="l00107"></a>00107   lastFrame_[0] = outputs_[1];
+<a name="l00108"></a>00108   <span class="keywordflow">return</span> frames;
+<a name="l00109"></a>00109 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -150,7 +172,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

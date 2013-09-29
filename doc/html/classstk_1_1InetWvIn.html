@@ -53,7 +53,7 @@ Inheritance diagram for stk::InetWvIn:</div>
 <p>This Wvin subclass reads streamed audio data over a network via a TCP or UDP socket connection. The data is assumed in big-endian, or network, byte order. Only a single socket connection is supported.</p>
 <p><a class="el" href="classstk_1_1InetWvIn.html" title="STK internet streaming input class.">InetWvIn</a> supports multi-channel data. It is important to distinguish the <a class="el" href="classstk_1_1InetWvIn.html#a2109090620c80013ef3ae68cb975fb17" title="Compute a sample frame and return the specified channel value.">tick()</a> method that computes a single frame (and returns only the specified sample of a multi-channel frame) from the overloaded one that takes an <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object for multi-channel and/or multi-frame data.</p>
 <p>This class implements a socket server. When using the TCP protocol, the server "listens" for a single remote connection within the InetWvIn::start() function. For the UDP protocol, no attempt is made to verify packet delivery or order. The default data type for the incoming stream is signed 16-bit integers, though any of the defined StkFormats are permissible.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ad97edafdfb9db2aee77b11d3086113a4"></a><!-- doxytag: member="stk::InetWvIn::InetWvIn" ref="ad97edafdfb9db2aee77b11d3086113a4" args="(unsigned long bufferFrames=1024, unsigned int nBuffers=8)" -->
 <div class="memitem">
@@ -168,6 +168,21 @@ Inheritance diagram for stk::InetWvIn:</div>
 <p>Return the specified channel value of the last computed frame. </p>
 <p>For multi-channel files, use the <a class="el" href="classstk_1_1WvIn.html#a3ab86e33eff9f962c9ef7b41e3ccb77e" title="Return an StkFrames reference to the last computed sample frame.">lastFrame()</a> function to get all values from the last computed frame. If no connection exists, the returned value is 0.0. The <code>channel</code> argument must be less than the number of channels in the data stream (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00141"></a>00141 {
+<a name="l00142"></a>00142 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00143"></a>00143 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= data_.channels() ) {
+<a name="l00144"></a>00144     oStream_ &lt;&lt; <span class="stringliteral">&quot;InetWvIn::lastOut(): channel argument and data stream are incompatible!&quot;</span>;
+<a name="l00145"></a>00145     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00146"></a>00146   }
+<a name="l00147"></a>00147 <span class="preprocessor">#endif</span>
+<a name="l00148"></a>00148 <span class="preprocessor"></span>
+<a name="l00149"></a>00149   <span class="comment">// If no connection and we&#39;ve output all samples in the queue, return.</span>
+<a name="l00150"></a>00150   <span class="keywordflow">if</span> ( !connected_ &amp;&amp; bytesFilled_ == 0 &amp;&amp; bufferCounter_ == 0 ) <span class="keywordflow">return</span> 0.0;
+<a name="l00151"></a>00151 
+<a name="l00152"></a>00152   <span class="keywordflow">return</span> lastFrame_[channel];
+<a name="l00153"></a>00153 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a2109090620c80013ef3ae68cb975fb17"></a><!-- doxytag: member="stk::InetWvIn::tick" ref="a2109090620c80013ef3ae68cb975fb17" args="(unsigned int channel=0)" -->
@@ -224,7 +239,7 @@ Inheritance diagram for stk::InetWvIn:</div>
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

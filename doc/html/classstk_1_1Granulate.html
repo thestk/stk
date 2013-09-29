@@ -243,6 +243,18 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>The <code>channel</code> argument must be less than the number of output channels, which can be determined with the <a class="el" href="classstk_1_1Generator.html#a9f9de4c495217ef8490a9d2d1fdabe11" title="Return the number of output channels for the class.">channelsOut()</a> function (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classstk_1_1Generator.html#a499ad65aa6d939983863ffb922008654" title="Return an StkFrames reference to the last output sample frame.">lastFrame()</a> </dd></dl>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00175"></a>00175 {
+<a name="l00176"></a>00176 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00177"></a>00177 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= lastFrame_.channels() ) {
+<a name="l00178"></a>00178     oStream_ &lt;&lt; <span class="stringliteral">&quot;Granulate::lastOut(): channel argument is invalid!&quot;</span>;
+<a name="l00179"></a>00179     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00180"></a>00180   }
+<a name="l00181"></a>00181 <span class="preprocessor">#endif</span>
+<a name="l00182"></a>00182 <span class="preprocessor"></span>
+<a name="l00183"></a>00183   <span class="keywordflow">return</span> lastFrame_[channel];
+<a name="l00184"></a>00184 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="aa9cc119b1515c5596a95d72f4b65b0c0"></a><!-- doxytag: member="stk::Granulate::tick" ref="aa9cc119b1515c5596a95d72f4b65b0c0" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
@@ -275,6 +287,27 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Generator.html#a86bb0421223cf27e25704d5f27b97425">stk::Generator</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00187"></a>00187 {
+<a name="l00188"></a>00188   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = lastFrame_.channels();
+<a name="l00189"></a>00189 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00190"></a>00190 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; frames.channels() - nChannels ) {
+<a name="l00191"></a>00191     oStream_ &lt;&lt; <span class="stringliteral">&quot;Granulate::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00192"></a>00192     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00193"></a>00193   }
+<a name="l00194"></a>00194 <span class="preprocessor">#endif</span>
+<a name="l00195"></a>00195 <span class="preprocessor"></span>
+<a name="l00196"></a>00196   StkFloat *samples = &amp;frames[channel];
+<a name="l00197"></a>00197   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, hop = frames.channels() - nChannels;
+<a name="l00198"></a>00198   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00199"></a>00199     *samples++ = <a class="code" href="classstk_1_1Granulate.html#a0f8b162c9c309b3cbec3802138a53c24" title="Compute one sample frame and return the specified channel value.">tick</a>();
+<a name="l00200"></a>00200     <span class="keywordflow">for</span> ( j=1; j&lt;nChannels; j++ )
+<a name="l00201"></a>00201       *samples++ = lastFrame_[j];
+<a name="l00202"></a>00202   }
+<a name="l00203"></a>00203 
+<a name="l00204"></a>00204   <span class="keywordflow">return</span> frames;
+<a name="l00205"></a>00205 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -285,7 +318,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

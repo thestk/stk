@@ -15,7 +15,7 @@
   <tr class="memlist"><td><a class="el" href="classstk_1_1FileLoop.html#afe462794ba202dd879d29c39e76ae111">addPhaseOffset</a>(StkFloat angle)</td><td><a class="el" href="classstk_1_1FileLoop.html">stk::FileLoop</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#a5ab0e88856708f65887295ad4ad90340">addSampleRateAlert</a>(Stk *ptr)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1FileLoop.html#a1986db79fd04b93f4d10b8cdf75bca34">addTime</a>(StkFloat time)</td><td><a class="el" href="classstk_1_1FileLoop.html">stk::FileLoop</a></td><td><code> [virtual]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classstk_1_1WvIn.html#a2ce05e5c8087e483236961335e8abf04">channelsOut</a>(void) const </td><td><a class="el" href="classstk_1_1WvIn.html">stk::WvIn</a></td><td><code> [inline, protected]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classstk_1_1FileLoop.html#a9f3c514ce166068197684a21d31c3a76">channelsOut</a>(void) const </td><td><a class="el" href="classstk_1_1FileLoop.html">stk::FileLoop</a></td><td><code> [inline]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1FileLoop.html#a51688a9e84b2f9e5a9c4e62588b65c52">closeFile</a>(void)</td><td><a class="el" href="classstk_1_1FileLoop.html">stk::FileLoop</a></td><td><code> [inline, virtual]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1FileLoop.html#a0d977aae11d75d0327057add00fa7f84">FileLoop</a>(unsigned long chunkThreshold=1000000, unsigned long chunkSize=1024)</td><td><a class="el" href="classstk_1_1FileLoop.html">stk::FileLoop</a></td><td></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1FileLoop.html#a268bfb1efe8e35bab81949b70e43b82c">FileLoop</a>(std::string fileName, bool raw=false, bool doNormalize=true, unsigned long chunkThreshold=1000000, unsigned long chunkSize=1024)</td><td><a class="el" href="classstk_1_1FileLoop.html">stk::FileLoop</a></td><td></td></tr>
@@ -27,7 +27,9 @@
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#abc18b8fc8ed5b992bd2efef162a40777">handleError</a>(std::string message, StkError::Type type)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [protected, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#a577656590baea0d65057b221f050f83d">handleError</a>(StkError::Type type)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#ab8a52e4897bea5c0f5e66adf37a8e39b">ignoreSampleRateChange</a>(bool ignore=true)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [inline, protected]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classstk_1_1Stk.html#a7dd617f6bf20e55d3ab97b86d8200b2e">inRange</a>(StkFloat value, StkFloat min, StkFloat max)</td><td><a class="el" href="classstk_1_1Stk.html">stk::Stk</a></td><td><code> [inline, protected, static]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1FileWvIn.html#aca9ad0c12af3323e7bbf877513b0d10b">isFinished</a>(void) const </td><td><a class="el" href="classstk_1_1FileWvIn.html">stk::FileWvIn</a></td><td><code> [inline, protected]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classstk_1_1FileWvIn.html#aa45344366bca49f71c7153ac5b296e91">isOpen</a>(void)</td><td><a class="el" href="classstk_1_1FileWvIn.html">stk::FileWvIn</a></td><td><code> [inline, protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1WvIn.html#a3ab86e33eff9f962c9ef7b41e3ccb77e">lastFrame</a>(void) const </td><td><a class="el" href="classstk_1_1WvIn.html">stk::WvIn</a></td><td><code> [inline, protected]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1FileLoop.html#a826b6dd0968c5abd1020a9fe629a4ffd">lastOut</a>(unsigned int channel=0)</td><td><a class="el" href="classstk_1_1FileLoop.html">stk::FileLoop</a></td><td><code> [inline]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classstk_1_1FileLoop.html#a7c4a3d5c427154bf653f86a53e900b8b">normalize</a>(void)</td><td><a class="el" href="classstk_1_1FileLoop.html">stk::FileLoop</a></td><td><code> [inline, virtual]</code></td></tr>
@@ -65,7 +67,7 @@
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

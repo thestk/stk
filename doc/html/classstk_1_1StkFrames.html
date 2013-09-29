@@ -70,8 +70,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>This class can hold single- or multi-channel audio data. The data type is always StkFloat and the channel format is always interleaved. In an effort to maintain efficiency, no out-of-bounds checks are performed in this class unless _STK_DEBUG_ is defined.</p>
 <p>Internally, the data is stored in a one-dimensional C array. An indexing operator is available to set and retrieve data values. Alternately, one can use pointers to access the data, using the index operator to get an address for a particular location in the data:</p>
 <p>StkFloat* ptr = &amp;myStkFrames[0];</p>
+<p>Note that this class can also be used as a table with interpolating lookup.</p>
 <p>Possible future improvements in this class could include functions to convert to and return other data types.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a8ed9cc0a4309f786cfe36da9e901fde9"></a><!-- doxytag: member="stk::StkFrames::operator[]" ref="a8ed9cc0a4309f786cfe36da9e901fde9" args="(size_t n)" -->
 <div class="memitem">
@@ -91,6 +92,19 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Subscript operator that returns a reference to element <code>n</code> of self. </p>
 <p>The result can be used as an lvalue. This reference is valid until the resize function is called or the array is destroyed. The index <code>n</code> must be between 0 and size less one. No range checking is performed unless _STK_DEBUG_ is defined. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00413"></a>00413 {
+<a name="l00414"></a>00414 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00415"></a>00415 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( n &gt;= size_ ) {
+<a name="l00416"></a>00416     std::ostringstream error;
+<a name="l00417"></a>00417     error &lt;&lt; <span class="stringliteral">&quot;StkFrames::operator[]: invalid index (&quot;</span> &lt;&lt; n &lt;&lt; <span class="stringliteral">&quot;) value!&quot;</span>;
+<a name="l00418"></a>00418     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">Stk::handleError</a>( error.str(), StkError::MEMORY_ACCESS );
+<a name="l00419"></a>00419   }
+<a name="l00420"></a>00420 <span class="preprocessor">#endif</span>
+<a name="l00421"></a>00421 <span class="preprocessor"></span>
+<a name="l00422"></a>00422   <span class="keywordflow">return</span> data_[n];
+<a name="l00423"></a>00423 }
+</pre></div></p>
 
 </div>
 </div>
@@ -113,6 +127,19 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Subscript operator that returns the value at element <code>n</code> of self. </p>
 <p>The index <code>n</code> must be between 0 and size less one. No range checking is performed unless _STK_DEBUG_ is defined. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00426"></a>00426 {
+<a name="l00427"></a>00427 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00428"></a>00428 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( n &gt;= size_ ) {
+<a name="l00429"></a>00429     std::ostringstream error;
+<a name="l00430"></a>00430     error &lt;&lt; <span class="stringliteral">&quot;StkFrames::operator[]: invalid index (&quot;</span> &lt;&lt; n &lt;&lt; <span class="stringliteral">&quot;) value!&quot;</span>;
+<a name="l00431"></a>00431     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">Stk::handleError</a>( error.str(), StkError::MEMORY_ACCESS );
+<a name="l00432"></a>00432   }
+<a name="l00433"></a>00433 <span class="preprocessor">#endif</span>
+<a name="l00434"></a>00434 <span class="preprocessor"></span>
+<a name="l00435"></a>00435   <span class="keywordflow">return</span> data_[n];
+<a name="l00436"></a>00436 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a0f6a81d36a8905d782b283b9a05893e6"></a><!-- doxytag: member="stk::StkFrames::operator+=" ref="a0f6a81d36a8905d782b283b9a05893e6" args="(StkFrames &amp;f)" -->
@@ -134,6 +161,22 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Assignment by sum operator into self. </p>
 <p>The dimensions of the argument are expected to be the same as self. No range checking is performed unless _STK_DEBUG_ is defined. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00465"></a>00465 {
+<a name="l00466"></a>00466 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00467"></a>00467 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( f.frames() != nFrames_ || f.channels() != nChannels_ ) {
+<a name="l00468"></a>00468     std::ostringstream error;
+<a name="l00469"></a>00469     error &lt;&lt; <span class="stringliteral">&quot;StkFrames::operator+=: frames argument must be of equal dimensions!&quot;</span>;
+<a name="l00470"></a>00470     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">Stk::handleError</a>( error.str(), StkError::MEMORY_ACCESS );
+<a name="l00471"></a>00471   }
+<a name="l00472"></a>00472 <span class="preprocessor">#endif</span>
+<a name="l00473"></a>00473 <span class="preprocessor"></span>
+<a name="l00474"></a>00474   StkFloat *fptr = &amp;f[0];
+<a name="l00475"></a>00475   StkFloat *dptr = data_;
+<a name="l00476"></a>00476   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;size_; i++ )
+<a name="l00477"></a>00477     *dptr++ += *fptr++;
+<a name="l00478"></a>00478 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a049cbfd10908f754a7c48c1dd0da21e0"></a><!-- doxytag: member="stk::StkFrames::operator*=" ref="a049cbfd10908f754a7c48c1dd0da21e0" args="(StkFrames &amp;f)" -->
@@ -154,6 +197,22 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Assignment by product operator into self. </p>
 <p>The dimensions of the argument are expected to be the same as self. No range checking is performed unless _STK_DEBUG_ is defined. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00481"></a>00481 {
+<a name="l00482"></a>00482 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00483"></a>00483 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( f.frames() != nFrames_ || f.channels() != nChannels_ ) {
+<a name="l00484"></a>00484     std::ostringstream error;
+<a name="l00485"></a>00485     error &lt;&lt; <span class="stringliteral">&quot;StkFrames::operator*=: frames argument must be of equal dimensions!&quot;</span>;
+<a name="l00486"></a>00486     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">Stk::handleError</a>( error.str(), StkError::MEMORY_ACCESS );
+<a name="l00487"></a>00487   }
+<a name="l00488"></a>00488 <span class="preprocessor">#endif</span>
+<a name="l00489"></a>00489 <span class="preprocessor"></span>
+<a name="l00490"></a>00490   StkFloat *fptr = &amp;f[0];
+<a name="l00491"></a>00491   StkFloat *dptr = data_;
+<a name="l00492"></a>00492   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;size_; i++ )
+<a name="l00493"></a>00493     *dptr++ *= *fptr++;
+<a name="l00494"></a>00494 }
+</pre></div></p>
 
 </div>
 </div>
@@ -185,6 +244,19 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Channel / frame subscript operator that returns a reference. </p>
 <p>The result can be used as an lvalue. This reference is valid until the resize function is called or the array is destroyed. The <code>frame</code> index must be between 0 and <a class="el" href="classstk_1_1StkFrames.html#a05b1ab6fa750a8221a7d65c30e0cdab9" title="Return the number of sample frames represented by the data.">frames()</a> - 1. The <code>channel</code> index must be between 0 and <a class="el" href="classstk_1_1StkFrames.html#aec7ef9c46675a24111aa6e2fda3ba870" title="Return the number of channels represented by the data.">channels()</a> - 1. No range checking is performed unless _STK_DEBUG_ is defined. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00439"></a>00439 {
+<a name="l00440"></a>00440 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00441"></a>00441 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( frame &gt;= nFrames_ || channel &gt;= nChannels_ ) {
+<a name="l00442"></a>00442     std::ostringstream error;
+<a name="l00443"></a>00443     error &lt;&lt; <span class="stringliteral">&quot;StkFrames::operator(): invalid frame (&quot;</span> &lt;&lt; frame &lt;&lt; <span class="stringliteral">&quot;) or channel (&quot;</span> &lt;&lt; channel &lt;&lt; <span class="stringliteral">&quot;) value!&quot;</span>;
+<a name="l00444"></a>00444     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">Stk::handleError</a>( error.str(), StkError::MEMORY_ACCESS );
+<a name="l00445"></a>00445   }
+<a name="l00446"></a>00446 <span class="preprocessor">#endif</span>
+<a name="l00447"></a>00447 <span class="preprocessor"></span>
+<a name="l00448"></a>00448   <span class="keywordflow">return</span> data_[ frame * nChannels_ + channel ];
+<a name="l00449"></a>00449 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a93e7e4c30affc29d0cdc98e7514188de"></a><!-- doxytag: member="stk::StkFrames::operator()" ref="a93e7e4c30affc29d0cdc98e7514188de" args="(size_t frame, unsigned int channel) const " -->
@@ -214,6 +286,19 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <p>Channel / frame subscript operator that returns a value. </p>
 <p>The <code>frame</code> index must be between 0 and <a class="el" href="classstk_1_1StkFrames.html#a05b1ab6fa750a8221a7d65c30e0cdab9" title="Return the number of sample frames represented by the data.">frames()</a> - 1. The <code>channel</code> index must be between 0 and <a class="el" href="classstk_1_1StkFrames.html#aec7ef9c46675a24111aa6e2fda3ba870" title="Return the number of channels represented by the data.">channels()</a> - 1. No range checking is performed unless _STK_DEBUG_ is defined. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00452"></a>00452 {
+<a name="l00453"></a>00453 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00454"></a>00454 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( frame &gt;= nFrames_ || channel &gt;= nChannels_ ) {
+<a name="l00455"></a>00455     std::ostringstream error;
+<a name="l00456"></a>00456     error &lt;&lt; <span class="stringliteral">&quot;StkFrames::operator(): invalid frame (&quot;</span> &lt;&lt; frame &lt;&lt; <span class="stringliteral">&quot;) or channel (&quot;</span> &lt;&lt; channel &lt;&lt; <span class="stringliteral">&quot;) value!&quot;</span>;
+<a name="l00457"></a>00457     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">Stk::handleError</a>( error.str(), StkError::MEMORY_ACCESS );
+<a name="l00458"></a>00458   }
+<a name="l00459"></a>00459 <span class="preprocessor">#endif</span>
+<a name="l00460"></a>00460 <span class="preprocessor"></span>
+<a name="l00461"></a>00461   <span class="keywordflow">return</span> data_[ frame * nChannels_ + channel ];
+<a name="l00462"></a>00462 }
+</pre></div></p>
 
 </div>
 </div>
@@ -332,6 +417,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Set the sample rate associated with the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> data. </p>
 <p>By default, this value is set equal to the current STK sample rate at the time of instantiation. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00386"></a>00386 { dataRate_ = rate; };
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a4dbbcbdc8db39a803e0861976f7f3522"></a><!-- doxytag: member="stk::StkFrames::dataRate" ref="a4dbbcbdc8db39a803e0861976f7f3522" args="(void) const " -->
@@ -353,6 +441,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Return the sample rate associated with the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> data. </p>
 <p>By default, this value is set equal to the current STK sample rate at the time of instantiation. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00393"></a>00393 { <span class="keywordflow">return</span> dataRate_; };
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -363,7 +454,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

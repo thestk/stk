@@ -38,10 +38,11 @@ Inheritance diagram for stk::Stk:</div>
 <area href="classstk_1_1Socket.html" alt="stk::Socket" shape="rect" coords="101,728,192,752"/>
 <area href="classstk_1_1Sphere.html" alt="stk::Sphere" shape="rect" coords="101,784,192,808"/>
 <area href="classstk_1_1Thread.html" alt="stk::Thread" shape="rect" coords="101,840,192,864"/>
-<area href="classstk_1_1Vector3D.html" alt="stk::Vector3D" shape="rect" coords="101,896,192,920"/>
-<area href="classstk_1_1Voicer.html" alt="stk::Voicer" shape="rect" coords="101,952,192,976"/>
-<area href="classstk_1_1WvIn.html" alt="stk::WvIn" shape="rect" coords="101,1008,192,1032"/>
-<area href="classstk_1_1WvOut.html" alt="stk::WvOut" shape="rect" coords="101,1064,192,1088"/>
+<area href="classstk_1_1Twang.html" alt="stk::Twang" shape="rect" coords="101,896,192,920"/>
+<area href="classstk_1_1Vector3D.html" alt="stk::Vector3D" shape="rect" coords="101,952,192,976"/>
+<area href="classstk_1_1Voicer.html" alt="stk::Voicer" shape="rect" coords="101,1008,192,1032"/>
+<area href="classstk_1_1WvIn.html" alt="stk::WvIn" shape="rect" coords="101,1064,192,1088"/>
+<area href="classstk_1_1WvOut.html" alt="stk::WvOut" shape="rect" coords="101,1120,192,1144"/>
 </map>
  </div>
 </div>
@@ -75,6 +76,9 @@ static void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad75619ab92a0c19b5a52cb68884511e3"></a><!-- doxytag: member="stk::Stk::sleep" ref="ad75619ab92a0c19b5a52cb68884511e3" args="(unsigned long milliseconds)" -->
 static void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Stk.html#ad75619ab92a0c19b5a52cb68884511e3">sleep</a> (unsigned long milliseconds)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Static cross-platform method to sleep for a number of milliseconds. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7dd617f6bf20e55d3ab97b86d8200b2e"></a><!-- doxytag: member="stk::Stk::inRange" ref="a7dd617f6bf20e55d3ab97b86d8200b2e" args="(StkFloat value, StkFloat min, StkFloat max)" -->
+static bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Stk.html#a7dd617f6bf20e55d3ab97b86d8200b2e">inRange</a> (StkFloat value, StkFloat min, StkFloat max)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Static method to check whether a value is within a specified range. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a48ac73a0d8ca28445ba1a054e1f061ff"></a><!-- doxytag: member="stk::Stk::handleError" ref="a48ac73a0d8ca28445ba1a054e1f061ff" args="(const char *message, StkError::Type type)" -->
 static void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff">handleError</a> (const char *message, StkError::Type type)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Static function for error reporting and handling using c-strings. <br/></td></tr>
@@ -112,14 +116,14 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Remove class pointer from list for sample rate change notification. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a577656590baea0d65057b221f050f83d"></a><!-- doxytag: member="stk::Stk::handleError" ref="a577656590baea0d65057b221f050f83d" args="(StkError::Type type)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Stk.html#a577656590baea0d65057b221f050f83d">handleError</a> (StkError::Type type)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Internal function for error reporting that assumes message in <code>errorString_</code> variable. <br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Internal function for error reporting that assumes message in <code>oStream_</code> variable. <br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK base class. </p>
 <p>Nearly all STK classes inherit from this class. The global sample rate and rawwave path variables can be queried and modified via <a class="el" href="classstk_1_1Stk.html" title="STK base class.">Stk</a>. In addition, this class provides error handling and byte-swapping functions.</p>
 <p>The Synthesis ToolKit in C++ (STK) is a set of open source audio signal processing and algorithmic synthesis classes written in the C++ programming language. STK was designed to facilitate rapid development of music synthesis and audio processing software, with an emphasis on cross-platform functionality, realtime control, ease of use, and educational example code. STK currently runs with realtime support (audio and MIDI) on Linux, Macintosh OS X, and Windows computer platforms. Generic, non-realtime support has been tested under NeXTStep, Sun, and other platforms and should work with any standard C++ compiler.</p>
 <p>STK WWW site: <a href="http://ccrma.stanford.edu/software/stk/">http://ccrma.stanford.edu/software/stk/</a></p>
-<p>The Synthesis ToolKit in C++ (STK) Copyright (c) 1995-2010 Perry R. Cook and Gary P. Scavone</p>
+<p>The Synthesis ToolKit in C++ (STK) Copyright (c) 1995-2011 Perry R. Cook and Gary P. Scavone</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
 <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
 <p>Any person wishing to distribute modifications to the Software is asked to send the modifications to the original developer so that they can be incorporated into the canonical version. This is, however, not a binding provision of this license.</p>
@@ -167,6 +171,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Reimplemented in <a class="el" href="classstk_1_1BiQuad.html#aab468cd1aa79b95442b15bb04d8bb211">stk::BiQuad</a>, <a class="el" href="classstk_1_1FormSwep.html#a91096ebd684df25fc36a759f642b2200">stk::FormSwep</a>, <a class="el" href="classstk_1_1TwoPole.html#ad0a3ac1b5d4e651a7ff1efb1d5362c0b">stk::TwoPole</a>, and <a class="el" href="classstk_1_1TwoZero.html#aa1a1568aae3cd3d53011b3fc344cb086">stk::TwoZero</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00172"></a>00172 { ignoreSampleRateChange_ = ignore; };
+</pre></div></p>
+
 </div>
 </div>
 <hr/><h2>Member Data Documentation</h2>
@@ -208,7 +215,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div>
 <div class="memdoc">
-<p>Upper 3 bytes of 32-bit signed integer. </p>
+<p>Lower 3 bytes of 32-bit signed integer. </p>
 
 </div>
 </div>
@@ -262,7 +269,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

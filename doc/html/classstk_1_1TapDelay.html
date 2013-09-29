@@ -57,7 +57,7 @@ std::vector&lt; unsigned long &gt;&nbsp;</td><td class="memItemRight" valign="bo
 <p>STK non-interpolating tapped delay line class. </p>
 <p>This class implements a non-interpolating digital delay-line with an arbitrary number of output "taps". If the maximum length and tap delays are not specified during instantiation, a fixed maximum length of 4095 and a single tap delay of zero is set.</p>
 <p>A non-interpolating delay line is typically used in fixed delay-length applications, such as for reverberation.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a24913411dff23e05995979e42cc51ecc"></a><!-- doxytag: member="stk::TapDelay::TapDelay" ref="a24913411dff23e05995979e42cc51ecc" args="(std::vector&lt; unsigned long &gt; taps=std::vector&lt; unsigned long &gt;(1, 0), unsigned long maxDelay=4095)" -->
 <div class="memitem">
@@ -151,6 +151,18 @@ std::vector&lt; unsigned long &gt;&nbsp;</td><td class="memItemRight" valign="bo
 <p>Return the specified tap value of the last computed frame. </p>
 <p>Use the <a class="el" href="classstk_1_1Filter.html#ab2d944f649693511dced1df249f0abe6" title="Return an StkFrames reference to the last output sample frame.">lastFrame()</a> function to get all tap values from the last computed frame. The <code>tap</code> argument must be less than the number of delayline taps (the first tap is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00116"></a>00116 {
+<a name="l00117"></a>00117 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( tap &gt;= lastFrame_.size() ) ) {
+<a name="l00119"></a>00119     oStream_ &lt;&lt; <span class="stringliteral">&quot;TapDelay::lastOut(): tap argument and number of taps are incompatible!&quot;</span>;
+<a name="l00120"></a>00120     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00121"></a>00121   }
+<a name="l00122"></a>00122 <span class="preprocessor">#endif</span>
+<a name="l00123"></a>00123 <span class="preprocessor"></span>
+<a name="l00124"></a>00124   <span class="keywordflow">return</span> lastFrame_[tap];
+<a name="l00125"></a>00125 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="aadd431e206dd1e4133e2ff0d49aa639b"></a><!-- doxytag: member="stk::TapDelay::tick" ref="aadd431e206dd1e4133e2ff0d49aa639b" args="(StkFloat input, StkFrames &amp;outputs)" -->
@@ -180,6 +192,33 @@ std::vector&lt; unsigned long &gt;&nbsp;</td><td class="memItemRight" valign="bo
 
 <p>Input one sample to the delayline and return outputs at all tap positions. </p>
 <p>The <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument reference is returned. The output values are ordered according to the tap positions set using the <a class="el" href="classstk_1_1TapDelay.html#aa2bbab19ae277dc3689471d4250f00ad" title="Set the delay-line tap lengths.">setTapDelays()</a> function (no sorting is performed). The <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument must contain at least as many channels as the number of taps. However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00128"></a>00128 {
+<a name="l00129"></a>00129 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00130"></a>00130 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( outputs.channels() &lt; outPoint_.size() ) {
+<a name="l00131"></a>00131     oStream_ &lt;&lt; <span class="stringliteral">&quot;TapDelay::tick(): number of taps &gt; channels in StkFrames argument!&quot;</span>;
+<a name="l00132"></a>00132     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00133"></a>00133   }
+<a name="l00134"></a>00134 <span class="preprocessor">#endif</span>
+<a name="l00135"></a>00135 <span class="preprocessor"></span>
+<a name="l00136"></a>00136   inputs_[inPoint_++] = input * gain_;
+<a name="l00137"></a>00137 
+<a name="l00138"></a>00138   <span class="comment">// Check for end condition</span>
+<a name="l00139"></a>00139   <span class="keywordflow">if</span> ( inPoint_ == inputs_.size() )
+<a name="l00140"></a>00140     inPoint_ = 0;
+<a name="l00141"></a>00141 
+<a name="l00142"></a>00142   <span class="comment">// Read out next values</span>
+<a name="l00143"></a>00143   StkFloat *outs = &amp;outputs[0];
+<a name="l00144"></a>00144   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;outPoint_.size(); i++ ) {
+<a name="l00145"></a>00145     *outs++ = inputs_[outPoint_[i]];
+<a name="l00146"></a>00146     lastFrame_[i] = *outs;
+<a name="l00147"></a>00147     <span class="keywordflow">if</span> ( ++outPoint_[i] == inputs_.size() )
+<a name="l00148"></a>00148       outPoint_[i] = 0;
+<a name="l00149"></a>00149   }
+<a name="l00150"></a>00150 
+<a name="l00151"></a>00151   <span class="keywordflow">return</span> outputs;
+<a name="l00152"></a>00152 }
+</pre></div></p>
 
 </div>
 </div>
@@ -212,6 +251,36 @@ std::vector&lt; unsigned long &gt;&nbsp;</td><td class="memItemRight" valign="bo
 <p>The <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument reference is returned. The output values are ordered according to the tap positions set using the <a class="el" href="classstk_1_1TapDelay.html#aa2bbab19ae277dc3689471d4250f00ad" title="Set the delay-line tap lengths.">setTapDelays()</a> function (no sorting is performed). The <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument must contain at least as many channels as the number of taps. However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
 <p>Implements <a class="el" href="classstk_1_1Filter.html#a3260a238824c4a748ac057b84b7d3f21">stk::Filter</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00155"></a>00155 {
+<a name="l00156"></a>00156 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00157"></a>00157 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00158"></a>00158     oStream_ &lt;&lt; <span class="stringliteral">&quot;TapDelay::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00159"></a>00159     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00160"></a>00160   }
+<a name="l00161"></a>00161   <span class="keywordflow">if</span> ( frames.channels() &lt; outPoint_.size() ) {
+<a name="l00162"></a>00162     oStream_ &lt;&lt; <span class="stringliteral">&quot;TapDelay::tick(): number of taps &gt; channels in StkFrames argument!&quot;</span>;
+<a name="l00163"></a>00163     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00164"></a>00164   }
+<a name="l00165"></a>00165 <span class="preprocessor">#endif</span>
+<a name="l00166"></a>00166 <span class="preprocessor"></span>
+<a name="l00167"></a>00167   StkFloat *iSamples = &amp;frames[channel];
+<a name="l00168"></a>00168   StkFloat *oSamples = &amp;frames[0];
+<a name="l00169"></a>00169   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, iHop = frames.channels(), oHop = frames.channels() - outPoint_.size();
+<a name="l00170"></a>00170   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
+<a name="l00171"></a>00171     inputs_[inPoint_++] = *iSamples * gain_;
+<a name="l00172"></a>00172     <span class="keywordflow">if</span> ( inPoint_ == inputs_.size() ) inPoint_ = 0;
+<a name="l00173"></a>00173     <span class="keywordflow">for</span> ( j=0; j&lt;outPoint_.size(); j++ ) {
+<a name="l00174"></a>00174       *oSamples++ = inputs_[outPoint_[j]];
+<a name="l00175"></a>00175       <span class="keywordflow">if</span> ( ++outPoint_[j] == inputs_.size() ) outPoint_[j] = 0;
+<a name="l00176"></a>00176     }
+<a name="l00177"></a>00177   }
+<a name="l00178"></a>00178 
+<a name="l00179"></a>00179   oSamples -= frames.channels();
+<a name="l00180"></a>00180   <span class="keywordflow">for</span> ( j=0; j&lt;outPoint_.size(); j++ ) lastFrame_[j] = *oSamples++;
+<a name="l00181"></a>00181   <span class="keywordflow">return</span> frames;
+<a name="l00182"></a>00182 }
+</pre></div></p>
 
 </div>
 </div>
@@ -249,6 +318,36 @@ std::vector&lt; unsigned long &gt;&nbsp;</td><td class="memItemRight" valign="bo
 <p>Take a channel of the <code>iFrames</code> object as inputs to the filter and write outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. The output values are ordered according to the tap positions set using the <a class="el" href="classstk_1_1TapDelay.html#aa2bbab19ae277dc3689471d4250f00ad" title="Set the delay-line tap lengths.">setTapDelays()</a> function (no sorting is performed). The <code>iChannel</code> argument must be less than the number of channels in the <code>iFrames</code> argument (the first channel is specified by 0). The <code>oFrames</code> argument must contain at least as many channels as the number of taps. However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00185"></a>00185 {
+<a name="l00186"></a>00186 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00187"></a>00187 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() ) {
+<a name="l00188"></a>00188     oStream_ &lt;&lt; <span class="stringliteral">&quot;TapDelay::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00189"></a>00189     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00190"></a>00190   }
+<a name="l00191"></a>00191   <span class="keywordflow">if</span> ( oFrames.channels() &lt; outPoint_.size() ) {
+<a name="l00192"></a>00192     oStream_ &lt;&lt; <span class="stringliteral">&quot;TapDelay::tick(): number of taps &gt; channels in output StkFrames argument!&quot;</span>;
+<a name="l00193"></a>00193     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00194"></a>00194   }
+<a name="l00195"></a>00195 <span class="preprocessor">#endif</span>
+<a name="l00196"></a>00196 <span class="preprocessor"></span>
+<a name="l00197"></a>00197   StkFloat *iSamples = &amp;iFrames[iChannel];
+<a name="l00198"></a>00198   StkFloat *oSamples = &amp;oFrames[0];
+<a name="l00199"></a>00199   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, iHop = iFrames.channels(), oHop = oFrames.channels() - outPoint_.size();
+<a name="l00200"></a>00200   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
+<a name="l00201"></a>00201     inputs_[inPoint_++] = *iSamples * gain_;
+<a name="l00202"></a>00202     <span class="keywordflow">if</span> ( inPoint_ == inputs_.size() ) inPoint_ = 0;
+<a name="l00203"></a>00203     <span class="keywordflow">for</span> ( j=0; j&lt;outPoint_.size(); j++ ) {
+<a name="l00204"></a>00204       *oSamples++ = inputs_[outPoint_[j]];
+<a name="l00205"></a>00205       <span class="keywordflow">if</span> ( ++outPoint_[j] == inputs_.size() ) outPoint_[j] = 0;
+<a name="l00206"></a>00206     }
+<a name="l00207"></a>00207   }
+<a name="l00208"></a>00208 
+<a name="l00209"></a>00209   oSamples -= oFrames.channels();
+<a name="l00210"></a>00210   <span class="keywordflow">for</span> ( j=0; j&lt;outPoint_.size(); j++ ) lastFrame_[j] = *oSamples++;
+<a name="l00211"></a>00211   <span class="keywordflow">return</span> iFrames;
+<a name="l00212"></a>00212 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -259,7 +358,7 @@ std::vector&lt; unsigned long &gt;&nbsp;</td><td class="memItemRight" valign="bo
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

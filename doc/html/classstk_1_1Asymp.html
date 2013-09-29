@@ -49,6 +49,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca998e9c4ae86b4958da59fc9433268c"></a><!-- doxytag: member="stk::Asymp::setTime" ref="aca998e9c4ae86b4958da59fc9433268c" args="(StkFloat time)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Asymp.html#aca998e9c4ae86b4958da59fc9433268c">setTime</a> (StkFloat time)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the asymptotic rate based on a time duration (must be &gt; 0). <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afa6fcf4bf3060c0c6092701e409d5fbf"></a><!-- doxytag: member="stk::Asymp::setT60" ref="afa6fcf4bf3060c0c6092701e409d5fbf" args="(StkFloat t60)" -->
+void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Asymp.html#afa6fcf4bf3060c0c6092701e409d5fbf">setT60</a> (StkFloat t60)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the asymptotic rate such that the target value is perceptually reached (to within -60dB of the target) in <em>t60</em> seconds. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b0f7025ba5f268f1e5ce097b209f0ec"></a><!-- doxytag: member="stk::Asymp::setTarget" ref="a7b0f7025ba5f268f1e5ce097b209f0ec" args="(StkFloat target)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Asymp.html#a7b0f7025ba5f268f1e5ce097b209f0ec">setTarget</a> (StkFloat target)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the target value. <br/></td></tr>
@@ -72,7 +75,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>This class implements a simple envelope generator which asymptotically approaches a target value. The algorithm used is of the form:</p>
 <p>y[n] = a y[n-1] + (1-a) target,</p>
 <p>where a = exp(-T/tau), T is the sample period, and tau is a time constant. The user can set the time constant (default value = 0.3) and target value. Theoretically, this recursion never reaches its target, though the calculations in this class are stopped when the current value gets within a small threshold value of the target (at which time the current value is set to the target). It responds to <em>keyOn</em> and <em>keyOff</em> messages by ramping to 1.0 on keyOn and to 0.0 on keyOff.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="aebd8ebaf6f6c9570d3ee78e1bcbbcbd2"></a><!-- doxytag: member="stk::Asymp::setTau" ref="aebd8ebaf6f6c9570d3ee78e1bcbbcbd2" args="(StkFloat tau)" -->
 <div class="memitem">
@@ -125,6 +128,23 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Generator.html#a86bb0421223cf27e25704d5f27b97425">stk::Generator</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00128"></a>00128 {
+<a name="l00129"></a>00129 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00130"></a>00130 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00131"></a>00131     oStream_ &lt;&lt; <span class="stringliteral">&quot;Asymp::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00132"></a>00132     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00133"></a>00133   }
+<a name="l00134"></a>00134 <span class="preprocessor">#endif</span>
+<a name="l00135"></a>00135 <span class="preprocessor"></span>
+<a name="l00136"></a>00136   StkFloat *samples = &amp;frames[channel];
+<a name="l00137"></a>00137   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00138"></a>00138   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00139"></a>00139     *samples = <a class="code" href="classstk_1_1Asymp.html#a64df3b44aa1033b642d7a8a93659580e" title="Compute and return one output sample.">Asymp::tick</a>();
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141   <span class="keywordflow">return</span> frames;
+<a name="l00142"></a>00142 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -135,7 +155,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

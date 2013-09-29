@@ -89,7 +89,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Realtime audio i/o C++ classes. </p>
 <p><a class="el" href="classRtAudio.html" title="Realtime audio i/o C++ classes.">RtAudio</a> provides a common API (Application Programming Interface) for realtime audio input/output across Linux (native ALSA, Jack, and OSS), Macintosh OS X (CoreAudio and Jack), and Windows (DirectSound and ASIO) operating systems.</p>
 <p><a class="el" href="classRtAudio.html" title="Realtime audio i/o C++ classes.">RtAudio</a> WWW site: <a href="http://www.music.mcgill.ca/~gary/rtaudio/">http://www.music.mcgill.ca/~gary/rtaudio/</a></p>
-<p><a class="el" href="classRtAudio.html" title="Realtime audio i/o C++ classes.">RtAudio</a>: realtime audio i/o C++ classes Copyright (c) 2001-2010 Gary P. Scavone</p>
+<p><a class="el" href="classRtAudio.html" title="Realtime audio i/o C++ classes.">RtAudio</a>: realtime audio i/o C++ classes Copyright (c) 2001-2011 Gary P. Scavone</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
 <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
 <p>Any person wishing to distribute modifications to the Software is asked to send the modifications to the original developer so that they can be incorporated into the canonical version. This is, however, not a binding provision of this license.</p>
@@ -135,6 +135,18 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </dd>
 </dl>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00210"></a>00210            {
+<a name="l00211"></a>00211     <a class="code" href="classRtAudio.html#ac9b6f625da88249d08a8409a9db0d849aa49af3ac767106158bc6cad74fb214ae">UNSPECIFIED</a>,    
+<a name="l00212"></a>00212     <a class="code" href="classRtAudio.html#ac9b6f625da88249d08a8409a9db0d849aa7a2ba095c2806caa893b6fb8fc3a1a8">LINUX_ALSA</a>,     
+<a name="l00213"></a>00213     <a class="code" href="classRtAudio.html#ac9b6f625da88249d08a8409a9db0d849a39c84615e61de75e6a4e865596d62c82">LINUX_OSS</a>,      
+<a name="l00214"></a>00214     <a class="code" href="classRtAudio.html#ac9b6f625da88249d08a8409a9db0d849a4767e17c6edfbd827f91763915df4105">UNIX_JACK</a>,      
+<a name="l00215"></a>00215     <a class="code" href="classRtAudio.html#ac9b6f625da88249d08a8409a9db0d849a9fec92b8272244a87a6a11a717bd662d">MACOSX_CORE</a>,    
+<a name="l00216"></a>00216     <a class="code" href="classRtAudio.html#ac9b6f625da88249d08a8409a9db0d849a219517d1df90f94d07758481155bd469">WINDOWS_ASIO</a>,   
+<a name="l00217"></a>00217     <a class="code" href="classRtAudio.html#ac9b6f625da88249d08a8409a9db0d849a28478830f42c2fd61e6c7ad498901931">WINDOWS_DS</a>,     
+<a name="l00218"></a>00218     <a class="code" href="classRtAudio.html#ac9b6f625da88249d08a8409a9db0d849ab06b8fd88bf18c9a2b8271f6961ae2d1">RTAUDIO_DUMMY</a>   
+<a name="l00219"></a>00219   };
+</pre></div></p>
 
 </div>
 </div>
@@ -222,6 +234,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>A public function that queries for the number of audio devices available. </p>
 <p>This function performs a system query of available devices each time it is called, thus supporting devices connected <em>after</em> instantiation. If a system error occurs during processing, a warning will be issued. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00716"></a>00716 { <span class="keywordflow">return</span> rtapi_-&gt;getDeviceCount(); }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a02d7ff44ad1d7eae22283a052f3dfda8"></a><!-- doxytag: member="RtAudio::getDeviceInfo" ref="a02d7ff44ad1d7eae22283a052f3dfda8" args="(unsigned int device)" -->
@@ -242,6 +257,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Return an <a class="el" href="structRtAudio_1_1DeviceInfo.html" title="The public device information structure for returning queried values.">RtAudio::DeviceInfo</a> structure for a specified device number. </p>
 <p>Any device integer between 0 and <a class="el" href="classRtAudio.html#a747ce2d73803641bbb66d6e78092aa1a" title="A public function that queries for the number of audio devices available.">getDeviceCount()</a> - 1 is valid. If an invalid argument is provided, an <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = INVALID_USE) will be thrown. If a device is busy or otherwise unavailable, the structure member "probed" will have a value of "false" and all other members are undefined. If the specified device is the current default input or output device, the corresponding "isDefault" member will have a value of "true". </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00717"></a>00717 { <span class="keywordflow">return</span> rtapi_-&gt;getDeviceInfo( device ); }
+</pre></div></p>
 
 </div>
 </div>
@@ -265,6 +283,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>If the underlying audio API does not provide a "default
     device", or if no devices are available, the return value will be 0. Note that this is a valid device identifier and it is the client's responsibility to verify that a device is available before attempting to open a stream. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00719"></a>00719 { <span class="keywordflow">return</span> rtapi_-&gt;getDefaultOutputDevice(); }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="aad8b94edd3cd379ee300b125750ac6ce"></a><!-- doxytag: member="RtAudio::getDefaultInputDevice" ref="aad8b94edd3cd379ee300b125750ac6ce" args="(void)" -->
@@ -286,6 +307,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>A function that returns the index of the default input device. </p>
 <p>If the underlying audio API does not provide a "default
     device", or if no devices are available, the return value will be 0. Note that this is a valid device identifier and it is the client's responsibility to verify that a device is available before attempting to open a stream. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00718"></a>00718 { <span class="keywordflow">return</span> rtapi_-&gt;getDefaultInputDevice(); }
+</pre></div></p>
 
 </div>
 </div>
@@ -387,6 +411,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>A function that closes a stream and frees any associated stream memory. </p>
 <p>If a stream is not open, this function issues a warning and returns (no exception is thrown). </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00720"></a>00720 { <span class="keywordflow">return</span> rtapi_-&gt;closeStream(); }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="aec017a89629ccef66a90b60be22a2f80"></a><!-- doxytag: member="RtAudio::startStream" ref="aec017a89629ccef66a90b60be22a2f80" args="(void)" -->
@@ -407,6 +434,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>A function that starts a stream. </p>
 <p>An <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = SYSTEM_ERROR) is thrown if an error occurs during processing. An <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = INVALID_USE) is thrown if a stream is not open. A warning is issued if the stream is already running. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00721"></a>00721 { <span class="keywordflow">return</span> rtapi_-&gt;startStream(); }
+</pre></div></p>
 
 </div>
 </div>
@@ -429,6 +459,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Stop a stream, allowing any samples remaining in the output queue to be played. </p>
 <p>An <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = SYSTEM_ERROR) is thrown if an error occurs during processing. An <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = INVALID_USE) is thrown if a stream is not open. A warning is issued if the stream is already stopped. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00722"></a>00722 { <span class="keywordflow">return</span> rtapi_-&gt;stopStream(); }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="ad0586b47cd6bb9591a80b4052815991f"></a><!-- doxytag: member="RtAudio::abortStream" ref="ad0586b47cd6bb9591a80b4052815991f" args="(void)" -->
@@ -449,6 +482,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Stop a stream, discarding any samples remaining in the input/output queue. </p>
 <p>An <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = SYSTEM_ERROR) is thrown if an error occurs during processing. An <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = INVALID_USE) is thrown if a stream is not open. A warning is issued if the stream is already stopped. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00723"></a>00723 { <span class="keywordflow">return</span> rtapi_-&gt;abortStream(); }
+</pre></div></p>
 
 </div>
 </div>
@@ -471,6 +507,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Returns the number of elapsed seconds since the stream was started. </p>
 <p>If a stream is not open, an <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = INVALID_USE) will be thrown. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00728"></a>00728 { <span class="keywordflow">return</span> rtapi_-&gt;getStreamTime(); }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a843c989d9f501c71bc2f2c5ca18df9f3"></a><!-- doxytag: member="RtAudio::getStreamLatency" ref="a843c989d9f501c71bc2f2c5ca18df9f3" args="(void)" -->
@@ -491,6 +530,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Returns the internal stream latency in sample frames. </p>
 <p>The stream latency refers to delay in audio input and/or output caused by internal buffering by the audio system and/or hardware. For duplex streams, the returned value will represent the sum of the input and output latencies. If a stream is not open, an <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = INVALID_USE) will be thrown. If the API does not report latency, the return value will be zero. </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00726"></a>00726 { <span class="keywordflow">return</span> rtapi_-&gt;getStreamLatency(); }
+</pre></div></p>
 
 </div>
 </div>
@@ -513,6 +555,9 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Returns actual sample rate in use by the stream. </p>
 <p>On some systems, the sample rate used may be slightly different than that specified in the stream parameters. If a stream is not open, an <a class="el" href="classRtError.html" title="Exception handling class for RtAudio &amp; RtMidi.">RtError</a> (type = INVALID_USE) will be thrown. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00727"></a>00727 { <span class="keywordflow">return</span> rtapi_-&gt;getStreamSampleRate(); };
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -523,7 +568,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

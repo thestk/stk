@@ -47,12 +47,10 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9dbefb15f8d64aac3969f77d38791774"></a><!-- doxytag: member="stk::Envelope::keyOff" ref="a9dbefb15f8d64aac3969f77d38791774" args="(void)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Envelope.html#a9dbefb15f8d64aac3969f77d38791774">keyOff</a> (void)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set target = 0. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ade99b5c7cb974f71f1d2919868d774a0"></a><!-- doxytag: member="stk::Envelope::setRate" ref="ade99b5c7cb974f71f1d2919868d774a0" args="(StkFloat rate)" -->
-void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Envelope.html#ade99b5c7cb974f71f1d2919868d774a0">setRate</a> (StkFloat rate)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the <em>rate</em>. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adeeb1676f9111980a0c1a48a6780c8f7"></a><!-- doxytag: member="stk::Envelope::setTime" ref="adeeb1676f9111980a0c1a48a6780c8f7" args="(StkFloat time)" -->
-void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Envelope.html#adeeb1676f9111980a0c1a48a6780c8f7">setTime</a> (StkFloat time)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the <em>rate</em> based on a time duration. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Envelope.html#ade99b5c7cb974f71f1d2919868d774a0">setRate</a> (StkFloat rate)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the <em>rate</em>.  <a href="#ade99b5c7cb974f71f1d2919868d774a0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Envelope.html#adeeb1676f9111980a0c1a48a6780c8f7">setTime</a> (StkFloat time)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the <em>rate</em> based on a positive time duration (seconds).  <a href="#adeeb1676f9111980a0c1a48a6780c8f7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5269bc5dc1d56161ab82b677b5462a3e"></a><!-- doxytag: member="stk::Envelope::setTarget" ref="a5269bc5dc1d56161ab82b677b5462a3e" args="(StkFloat target)" -->
 void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Envelope.html#a5269bc5dc1d56161ab82b677b5462a3e">setTarget</a> (StkFloat target)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the target value. <br/></td></tr>
@@ -74,8 +72,50 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK linear line envelope class. </p>
 <p>This class implements a simple linear line envelope generator which is capable of ramping to an arbitrary target value by a specified <em>rate</em>. It also responds to simple <em>keyOn</em> and <em>keyOff</em> messages, ramping to 1.0 on keyOn and to 0.0 on keyOff.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="ade99b5c7cb974f71f1d2919868d774a0"></a><!-- doxytag: member="stk::Envelope::setRate" ref="ade99b5c7cb974f71f1d2919868d774a0" args="(StkFloat rate)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stk::Envelope::setRate </td>
+          <td>(</td>
+          <td class="paramtype">StkFloat&nbsp;</td>
+          <td class="paramname"> <em>rate</em></td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Set the <em>rate</em>. </p>
+<p>The <em>rate</em> must be positive (though a value of 0.0 is allowed). </p>
+
+</div>
+</div>
+<a class="anchor" id="adeeb1676f9111980a0c1a48a6780c8f7"></a><!-- doxytag: member="stk::Envelope::setTime" ref="adeeb1676f9111980a0c1a48a6780c8f7" args="(StkFloat time)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void stk::Envelope::setTime </td>
+          <td>(</td>
+          <td class="paramtype">StkFloat&nbsp;</td>
+          <td class="paramname"> <em>time</em></td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Set the <em>rate</em> based on a positive time duration (seconds). </p>
+<p>The <em>rate</em> is calculated such that the envelope will ramp from a value of 0.0 to 1.0 in the specified time duration. </p>
+
+</div>
+</div>
 <a class="anchor" id="a9341c9dea4fd54c360a4a23254319cf7"></a><!-- doxytag: member="stk::Envelope::tick" ref="a9341c9dea4fd54c360a4a23254319cf7" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
 <div class="memitem">
 <div class="memproto">
@@ -106,6 +146,23 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Generator.html#a86bb0421223cf27e25704d5f27b97425">stk::Generator</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00112"></a>00112 {
+<a name="l00113"></a>00113 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00114"></a>00114 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00115"></a>00115     oStream_ &lt;&lt; <span class="stringliteral">&quot;Envelope::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00116"></a>00116     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00117"></a>00117   }
+<a name="l00118"></a>00118 <span class="preprocessor">#endif</span>
+<a name="l00119"></a>00119 <span class="preprocessor"></span>
+<a name="l00120"></a>00120   StkFloat *samples = &amp;frames[channel];
+<a name="l00121"></a>00121   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00122"></a>00122   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00123"></a>00123     *samples = <a class="code" href="classstk_1_1Envelope.html#a8de91b9caf10a03f52bd2247648c4601" title="Compute and return one output sample.">tick</a>();
+<a name="l00124"></a>00124 
+<a name="l00125"></a>00125   <span class="keywordflow">return</span> frames;
+<a name="l00126"></a>00126 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -116,7 +173,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

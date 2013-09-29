@@ -55,7 +55,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>This <a class="el" href="classstk_1_1WvOut.html" title="STK audio output abstract base class.">WvOut</a> subclass can stream data over a network via a TCP or UDP socket connection. The data is converted to big-endian byte order, if necessary, before being transmitted.</p>
 <p><a class="el" href="classstk_1_1InetWvOut.html" title="STK internet streaming output class.">InetWvOut</a> supports multi-channel data. It is important to distinguish the <a class="el" href="classstk_1_1InetWvOut.html#a800f77228d851a2d276fae6a24bcdc9a" title="Output a single sample to all channels in a sample frame.">tick()</a> method that outputs a single sample to all channels in a sample frame from the overloaded one that takes a reference to an <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object for multi-channel and/or multi-frame data.</p>
 <p>This class connects to a socket server, the port and IP address of which must be specified as constructor arguments. The default data type is signed 16-bit integers but any of the defined StkFormats are permissible.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="af486ade34547956d4ad7c27cf304a085"></a><!-- doxytag: member="stk::InetWvOut::InetWvOut" ref="af486ade34547956d4ad7c27cf304a085" args="(int port, Socket::ProtocolType protocol=Socket::PROTO_TCP, std::string hostname=&quot;localhost&quot;, unsigned int nChannels=1, Stk::StkFormat format=STK_SINT16, unsigned long packetFrames=1024)" -->
 <div class="memitem">
@@ -214,7 +214,7 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

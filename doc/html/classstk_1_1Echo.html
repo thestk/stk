@@ -57,7 +57,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK echo effect class. </p>
 <p>This class implements an echo effect.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a5f3320986d5c9b02ad10663ff11b6505"></a><!-- doxytag: member="stk::Echo::Echo" ref="a5f3320986d5c9b02ad10663ff11b6505" args="(unsigned long maximumDelay=(unsigned long) Stk::sampleRate())" -->
 <div class="memitem">
@@ -109,6 +109,25 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object as inputs to the effect and replace with corresponding outputs. </p>
 <p>The <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument reference is returned. The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00079"></a>00079 {
+<a name="l00080"></a>00080 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00081"></a>00081 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00082"></a>00082     oStream_ &lt;&lt; <span class="stringliteral">&quot;Echo::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00083"></a>00083     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00084"></a>00084   }
+<a name="l00085"></a>00085 <span class="preprocessor">#endif</span>
+<a name="l00086"></a>00086 <span class="preprocessor"></span>
+<a name="l00087"></a>00087   StkFloat *samples = &amp;frames[channel];
+<a name="l00088"></a>00088   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00089"></a>00089   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00090"></a>00090     *samples = effectMix_ * ( delayLine_.tick( *samples ) - *samples ) + *samples;
+<a name="l00091"></a>00091   }
+<a name="l00092"></a>00092 
+<a name="l00093"></a>00093   lastFrame_[0] = *(samples-hop);
+<a name="l00094"></a>00094   <span class="keywordflow">return</span> frames;
+<a name="l00095"></a>00095 }
+</pre></div></p>
+
 </div>
 </div>
 <a class="anchor" id="a1778a7da06b222afbe9281c886f678d8"></a><!-- doxytag: member="stk::Echo::tick" ref="a1778a7da06b222afbe9281c886f678d8" args="(StkFrames &amp;iFrames, StkFrames &amp;oFrames, unsigned int iChannel=0, unsigned int oChannel=0)" -->
@@ -151,6 +170,26 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>Take a channel of the <code>iFrames</code> object as inputs to the effect and write outputs to the <code>oFrames</code> object. </p>
 <p>The <code>iFrames</code> object reference is returned. Each channel argument must be less than the number of channels in the corresponding <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00098"></a>00098 {
+<a name="l00099"></a>00099 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00100"></a>00100 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( iChannel &gt;= iFrames.channels() || oChannel &gt;= oFrames.channels() ) {
+<a name="l00101"></a>00101     oStream_ &lt;&lt; <span class="stringliteral">&quot;Echo::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00102"></a>00102     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00103"></a>00103   }
+<a name="l00104"></a>00104 <span class="preprocessor">#endif</span>
+<a name="l00105"></a>00105 <span class="preprocessor"></span>
+<a name="l00106"></a>00106   StkFloat *iSamples = &amp;iFrames[iChannel];
+<a name="l00107"></a>00107   StkFloat *oSamples = &amp;oFrames[oChannel];
+<a name="l00108"></a>00108   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iHop = iFrames.channels(), oHop = oFrames.channels();
+<a name="l00109"></a>00109   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;iFrames.frames(); i++, iSamples += iHop, oSamples += oHop ) {
+<a name="l00110"></a>00110     *oSamples = effectMix_ * ( delayLine_.tick( *iSamples ) - *iSamples ) + *iSamples;
+<a name="l00111"></a>00111   }
+<a name="l00112"></a>00112 
+<a name="l00113"></a>00113   lastFrame_[0] = *(oSamples-oHop);
+<a name="l00114"></a>00114   <span class="keywordflow">return</span> iFrames;
+<a name="l00115"></a>00115 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -161,7 +200,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

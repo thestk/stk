@@ -15,6 +15,7 @@
 <h1><a class="anchor" id="usage">Usage Documentation </a></h1><ul>
 <li><a class="el" href="usage.html#directory">Directory Structure:</a></li>
 <li><a class="el" href="usage.html#compiling">Compiling:</a></li>
+<li><a class="el" href="usage.html#debug">Debugging:</a></li>
 <li><a class="el" href="usage.html#control">Control Data:</a></li>
 <li><a class="el" href="usage.html#voices">Demo: STK Instruments</a></li>
 <li><a class="el" href="usage.html#nort">Demo: Non-Realtime Use</a></li>
@@ -77,11 +78,11 @@ The <em><b>examples</b></em> project contains several simple programs that demon
 Compiling:</a></h2>
 <ul>
 <li>
-<p class="startli"><b>Windows95/98/2000/XP:</b> Realtime support is available using either DirectSound or ASIO audio drivers. For DirectSound support, use the <code>__WINDOWS_DS__</code> preprocessor definition and link with the <code>dsound.lib</code>, <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. For ASIO support, use the <code>__WINDOWS_ASIO__</code> preprocessor definition, include all the files in the <code>src/asio/</code> directory (i.e. <code>asio.h,cpp</code>, <code>asiodrivers.h,cpp</code>, ...), and link with the <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. In addition, the <code>__LITTLE_ENDIAN__</code> and <code>__WINDOWS_MM__</code> preprocessor definitions are necessary for all Windows systems (<a class="el" href="classRtMidi.html" title="An abstract base class for realtime MIDI input/output.">RtMidi</a> uses the Windows MultiMedia MIDI API). A distribution of the release is available with precompiled binaries (using DirectSound) for all the projects. In order for these binaries to function properly, your system must have the DirectX 5.0 (or higher) runtime libraries installed (available from <a href="http://www.microsoft.com/directx/">Microsoft</a>). Further, the <em><b>effects</b></em> project requires that your soundcard and drivers provide full duplex mode capabilities. Visual C++ .NET project files are provided in each project directory as well should you wish to compile your own binaries. It is important to link with the non-debug libraries when compiling "release" program versions and debug libraries when compiling "debug" program versions.</p>
+<p class="startli"><b>Windows95/98/2000/XP/7:</b> Realtime support is available using either DirectSound or ASIO audio drivers. For DirectSound support, use the <code>__WINDOWS_DS__</code> preprocessor definition and link with the <code>dsound.lib</code>, <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. For ASIO support, use the <code>__WINDOWS_ASIO__</code> preprocessor definition, include all the files in the <code>src/asio/</code> directory (i.e. <code>asio.h,cpp</code>, <code>asiodrivers.h,cpp</code>, ...), and link with the <code>winmm.lib</code>, and <code>Wsock32.lib</code> libraries. In addition, the <code>__LITTLE_ENDIAN__</code> and <code>__WINDOWS_MM__</code> preprocessor definitions are necessary for all Windows systems (<a class="el" href="classRtMidi.html" title="An abstract base class for realtime MIDI input/output.">RtMidi</a> uses the Windows MultiMedia MIDI API). Visual C++ .NET project files are provided in each project directory. As well, the MinGW compiler is supported (see below). It is important to link with the non-debug libraries when compiling "release" program versions and debug libraries when compiling "debug" program versions.</p>
 <p class="endli"></p>
 </li>
 <li>
-<p class="startli"><b>Unix Systems:</b> A GNU <code>configure</code> shell script is included in the distribution for unix-based systems. From the top-level distribution directory, type <code>'./configure'</code> and the script will create <code>Makefiles</code> in each project directory specific to the characteristics of the host computer. Then from within any given project directory (example <code>demo</code>), type <code>'make'</code> to compile the project. In addition, an STK library can be compiled from within the <code>src</code> directory.</p>
+<p class="startli"><b>Unix (and MinGW) Systems:</b> A GNU <code>configure</code> shell script is included in the distribution for unix-based systems. From the top-level distribution directory, type <code>'./configure'</code> and the script will create <code>Makefiles</code> in each project directory specific to the characteristics of the host computer. Then from within any given project directory (example <code>demo</code>), type <code>'make'</code> to compile the project. In addition, an STK library can be compiled from within the <code>src</code> directory.</p>
 <p>Several options can be supplied to the <code>configure</code> script to customize the build behavior: </p>
 <ul>
 <li>
@@ -116,6 +117,9 @@ Compiling:</a></h2>
 <li>
 <b>Generic (non-realtime):</b> Most STK classes are operating system <em>independent</em> and can be compiled using any current C++ compiler. STK assumes big-endian host byte order by default, so if your system is little-endian (i.e. Intel processor), you must provide the <code>__LITTLE_ENDIAN__</code> preprocessor definition to your compiler. The <em><b>demo</b></em> project will compile without realtime support, allowing the use of SKINI scorefiles for input control and output to a variety of soundfile formats. The following classes <em>cannot</em> be used without realtime support: <a class="el" href="classRtAudio.html" title="Realtime audio i/o C++ classes.">RtAudio</a>, RtWvIn, RtWvOut, RtDuplex, <a class="el" href="classRtMidi.html" title="An abstract base class for realtime MIDI input/output.">RtMidi</a>, Socket, Thread, Mutex, TcpWvIn, TcpWvOut. Because of this, it is not possible to compile the <em><b>effects</b></em>, <em><b>ragamatic</b></em>, and most of the <em><b>examples</b></em> projects for non-realtime use. </li>
 </ul>
+<h2><a class="anchor" id="debug">
+Debugging:</a></h2>
+<p>When developing applications with STK, it is recommended that you define the preprocessor definition <code>_STK_DEBUG_</code> when compiling (or specify the <code>--enable-debug</code> option to the <code>configure</code> script). This will enable all levels of function argument and error checking within the STK classes. Without this definition, argument checking does not occur in functions that are expected to be called frequently in an iterative manner.</p>
 <h2><a class="anchor" id="control">
 Control Data:</a></h2>
 <p>All STK programs in this distribution take input control data in the form of <a href="skini.html">SKINI</a> or MIDI messages only. The Messager class unifies the various means of acquiring control data under a single, easy to use set of functions. The way that SKINI messages can be sent to the programs is dependent upon the operating system in use, as well as whether the program is running in realtime or not. In general, it is possible to:</p>
@@ -255,7 +259,7 @@ Polyphony:</a></h2>
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

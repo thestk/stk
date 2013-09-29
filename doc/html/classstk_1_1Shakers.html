@@ -49,6 +49,8 @@ void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae06ebba276cef74cb8c83db4e33f21c2"></a><!-- doxytag: member="stk::Shakers::tick" ref="ae06ebba276cef74cb8c83db4e33f21c2" args="(unsigned int channel=0)" -->
 StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Shakers.html#ae06ebba276cef74cb8c83db4e33f21c2">tick</a> (unsigned int channel=0)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute and return one output sample. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Shakers.html#a655713b658ddeb065d755997cac4b62e">tick</a> (<a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;frames, unsigned int channel=0)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs.  <a href="#a655713b658ddeb065d755997cac4b62e"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>PhISEM and PhOLIES class. </p>
@@ -88,7 +90,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </ul>
 </li>
 </ul>
-<p>by Perry R. Cook, 1996 - 2010. </p>
+<p>by Perry R. Cook, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a81ffb0ad1e350993af10b2795ec01861"></a><!-- doxytag: member="stk::Shakers::noteOn" ref="a81ffb0ad1e350993af10b2795ec01861" args="(StkFloat instrument, StkFloat amplitude)" -->
 <div class="memitem">
@@ -122,6 +124,65 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 </div>
 </div>
+<a class="anchor" id="a655713b658ddeb065d755997cac4b62e"></a><!-- doxytag: member="stk::Shakers::tick" ref="a655713b658ddeb065d755997cac4b62e" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp; stk::Shakers::tick </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>frames</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&nbsp;</td>
+          <td class="paramname"> <em>channel</em> = <code>0</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [inline, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fill a channel of the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed outputs. </p>
+<p>The <code>channel</code> argument must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p>Implements <a class="el" href="classstk_1_1Instrmnt.html#a34c6733ca145763462d9e44ae3c772b6">stk::Instrmnt</a>.</p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00140"></a>00140 {
+<a name="l00141"></a>00141   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nChannels = lastFrame_.channels();
+<a name="l00142"></a>00142 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00143"></a>00143 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt; frames.channels() - nChannels ) {
+<a name="l00144"></a>00144     oStream_ &lt;&lt; <span class="stringliteral">&quot;Shakers::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00145"></a>00145     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00146"></a>00146   }
+<a name="l00147"></a>00147 <span class="preprocessor">#endif</span>
+<a name="l00148"></a>00148 <span class="preprocessor"></span>
+<a name="l00149"></a>00149   StkFloat *samples = &amp;frames[channel];
+<a name="l00150"></a>00150   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j, hop = frames.channels() - nChannels;
+<a name="l00151"></a>00151   <span class="keywordflow">if</span> ( nChannels == 1 ) {
+<a name="l00152"></a>00152     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00153"></a>00153       *samples++ = <a class="code" href="classstk_1_1Shakers.html#ae06ebba276cef74cb8c83db4e33f21c2" title="Compute and return one output sample.">tick</a>();
+<a name="l00154"></a>00154   }
+<a name="l00155"></a>00155   <span class="keywordflow">else</span> {
+<a name="l00156"></a>00156     <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop ) {
+<a name="l00157"></a>00157       *samples++ = <a class="code" href="classstk_1_1Shakers.html#ae06ebba276cef74cb8c83db4e33f21c2" title="Compute and return one output sample.">tick</a>();
+<a name="l00158"></a>00158       <span class="keywordflow">for</span> ( j=1; j&lt;nChannels; j++ )
+<a name="l00159"></a>00159         *samples++ = lastFrame_[j];
+<a name="l00160"></a>00160     }
+<a name="l00161"></a>00161   }
+<a name="l00162"></a>00162 
+<a name="l00163"></a>00163   <span class="keywordflow">return</span> frames;
+<a name="l00164"></a>00164 }
+</pre></div></p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="Shakers_8h_source.html">Shakers.h</a></li>
 </ul>
@@ -130,7 +191,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

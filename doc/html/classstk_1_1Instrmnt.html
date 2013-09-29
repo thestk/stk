@@ -33,10 +33,10 @@ Inheritance diagram for stk::Instrmnt:</div>
 <area href="classstk_1_1Drummer.html" alt="stk::Drummer" shape="rect" coords="106,448,202,472"/>
 <area href="classstk_1_1Flute.html" alt="stk::Flute" shape="rect" coords="106,504,202,528"/>
 <area href="classstk_1_1FM.html" alt="stk::FM" shape="rect" coords="106,560,202,584"/>
-<area href="classstk_1_1Mesh2D.html" alt="stk::Mesh2D" shape="rect" coords="106,616,202,640"/>
-<area href="classstk_1_1Modal.html" alt="stk::Modal" shape="rect" coords="106,672,202,696"/>
-<area href="classstk_1_1Plucked.html" alt="stk::Plucked" shape="rect" coords="106,728,202,752"/>
-<area href="classstk_1_1PluckTwo.html" alt="stk::PluckTwo" shape="rect" coords="106,784,202,808"/>
+<area href="classstk_1_1Mandolin.html" alt="stk::Mandolin" shape="rect" coords="106,616,202,640"/>
+<area href="classstk_1_1Mesh2D.html" alt="stk::Mesh2D" shape="rect" coords="106,672,202,696"/>
+<area href="classstk_1_1Modal.html" alt="stk::Modal" shape="rect" coords="106,728,202,752"/>
+<area href="classstk_1_1Plucked.html" alt="stk::Plucked" shape="rect" coords="106,784,202,808"/>
 <area href="classstk_1_1Resonate.html" alt="stk::Resonate" shape="rect" coords="106,840,202,864"/>
 <area href="classstk_1_1Sampler.html" alt="stk::Sampler" shape="rect" coords="106,896,202,920"/>
 <area href="classstk_1_1Saxofony.html" alt="stk::Saxofony" shape="rect" coords="106,952,202,976"/>
@@ -78,13 +78,13 @@ const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;<
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the specified channel value of the last computed frame.  <a href="#aaa6bd5e4a5be7f9b0be967daf012872e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Instrmnt.html#ad5d070c1fc6f93124dfed2a27b8e3cf1">tick</a> (unsigned int channel=0)=0</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute one sample frame and return the specified <code>channel</code> value.  <a href="#ad5d070c1fc6f93124dfed2a27b8e3cf1"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Instrmnt.html#a4abfe94b5fc8d87b47729fe317222eb9">tick</a> (<a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;frames, unsigned int channel=0)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fill the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed sample frames, starting at the specified channel.  <a href="#a4abfe94b5fc8d87b47729fe317222eb9"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classstk_1_1Instrmnt.html#a34c6733ca145763462d9e44ae3c772b6">tick</a> (<a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;frames, unsigned int channel=0)=0</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fill the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed sample frames, starting at the specified channel.  <a href="#a34c6733ca145763462d9e44ae3c772b6"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK instrument abstract base class. </p>
 <p>This class provides a common interface for all STK instruments.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="aaa6bd5e4a5be7f9b0be967daf012872e"></a><!-- doxytag: member="stk::Instrmnt::lastOut" ref="aaa6bd5e4a5be7f9b0be967daf012872e" args="(unsigned int channel=0)" -->
 <div class="memitem">
@@ -105,6 +105,18 @@ const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;<
 <p>Return the specified channel value of the last computed frame. </p>
 <p>The <code>channel</code> argument must be less than the number of output channels, which can be determined with the <a class="el" href="classstk_1_1Instrmnt.html#a32564b611598653fce5e708821b3fcb4" title="Return the number of output channels for the class.">channelsOut()</a> function (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classstk_1_1Instrmnt.html#a277ac5149ec22c33d794dfd462a82d2b" title="Return an StkFrames reference to the last output sample frame.">lastFrame()</a> </dd></dl>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00083"></a>00083 {
+<a name="l00084"></a>00084 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00085"></a>00085 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= lastFrame_.channels() ) {
+<a name="l00086"></a>00086     oStream_ &lt;&lt; <span class="stringliteral">&quot;Instrmnt::lastOut(): channel argument is invalid!&quot;</span>;
+<a name="l00087"></a>00087     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00088"></a>00088   }
+<a name="l00089"></a>00089 <span class="preprocessor">#endif</span>
+<a name="l00090"></a>00090 <span class="preprocessor"></span>
+<a name="l00091"></a>00091   <span class="keywordflow">return</span> lastFrame_[channel];
+<a name="l00092"></a>00092 }
+</pre></div></p>
 
 </div>
 </div>
@@ -131,12 +143,12 @@ const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;<
 
 </div>
 </div>
-<a class="anchor" id="a4abfe94b5fc8d87b47729fe317222eb9"></a><!-- doxytag: member="stk::Instrmnt::tick" ref="a4abfe94b5fc8d87b47729fe317222eb9" args="(StkFrames &amp;frames, unsigned int channel=0)" -->
+<a class="anchor" id="a34c6733ca145763462d9e44ae3c772b6"></a><!-- doxytag: member="stk::Instrmnt::tick" ref="a34c6733ca145763462d9e44ae3c772b6" args="(StkFrames &amp;frames, unsigned int channel=0)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp; stk::Instrmnt::tick </td>
+          <td class="memname">virtual <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a>&amp; stk::Instrmnt::tick </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>frames</em>, </td>
@@ -150,7 +162,7 @@ const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;<
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -158,6 +170,8 @@ const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;<
 
 <p>Fill the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> object with computed sample frames, starting at the specified channel. </p>
 <p>The <code>channel</code> argument plus the number of output channels must be less than the number of channels in the <a class="el" href="classstk_1_1StkFrames.html" title="An STK class to handle vectorized audio data.">StkFrames</a> argument (the first channel is specified by 0). However, range checking is only performed if _STK_DEBUG_ is defined during compilation, in which case an out-of-range value will trigger an <a class="el" href="classstk_1_1StkError.html" title="STK error handling class.">StkError</a> exception. </p>
+
+<p>Implemented in <a class="el" href="classstk_1_1BandedWG.html#a6c2ebb66862b173c4835add6847801c9">stk::BandedWG</a>, <a class="el" href="classstk_1_1BeeThree.html#a30520efff3fac0674d3c7ab95ac35999">stk::BeeThree</a>, <a class="el" href="classstk_1_1BlowBotl.html#a49e1f536d821a8b2bf133533cb4bc93e">stk::BlowBotl</a>, <a class="el" href="classstk_1_1BlowHole.html#ad220cd597fa5f6edd043c0783bdc2ec7">stk::BlowHole</a>, <a class="el" href="classstk_1_1Bowed.html#ab7985e95058016201d16f3717039e1cd">stk::Bowed</a>, <a class="el" href="classstk_1_1Brass.html#a10334fc5573b68f2b5c2819bdba786b8">stk::Brass</a>, <a class="el" href="classstk_1_1Clarinet.html#a059174eb1ab84e306bfad1d8b5833548">stk::Clarinet</a>, <a class="el" href="classstk_1_1Drummer.html#ad186a954527a518c47467e6caaa2e2f5">stk::Drummer</a>, <a class="el" href="classstk_1_1Flute.html#a86640ddfacea6fd9385bc4e197fe1a28">stk::Flute</a>, <a class="el" href="classstk_1_1FM.html#a870c602be292d2dcc1b0fd97f515f2ff">stk::FM</a>, <a class="el" href="classstk_1_1FMVoices.html#abad16be89b38d4618a07c5d71ab49e26">stk::FMVoices</a>, <a class="el" href="classstk_1_1HevyMetl.html#a555f3bf9322fd11150b00bb99476769a">stk::HevyMetl</a>, <a class="el" href="classstk_1_1Mandolin.html#a37134f89e73e3e62ad5dfcfb0300a12d">stk::Mandolin</a>, <a class="el" href="classstk_1_1Mesh2D.html#a0bfe62f0ab05859963571f4a9a569bd8">stk::Mesh2D</a>, <a class="el" href="classstk_1_1Modal.html#ad2a28e7bd5fdae7d2a6d9fb79bbfb7b0">stk::Modal</a>, <a class="el" href="classstk_1_1Moog.html#aee6aa6373c424e941f963b2709310f4e">stk::Moog</a>, <a class="el" href="classstk_1_1PercFlut.html#a4105b2b1dfe375bcf870fb4903509e4e">stk::PercFlut</a>, <a class="el" href="classstk_1_1Plucked.html#ab9bb602c6f6867cf00995bc42101c006">stk::Plucked</a>, <a class="el" href="classstk_1_1Resonate.html#aeefb870c1eeb430160fdca374e8324b3">stk::Resonate</a>, <a class="el" href="classstk_1_1Rhodey.html#a9d843b764e5219c8289884d0903462f9">stk::Rhodey</a>, <a class="el" href="classstk_1_1Sampler.html#a30ef51142f99faf0586e2da78bc6daf6">stk::Sampler</a>, <a class="el" href="classstk_1_1Saxofony.html#a98c686337ea0c2be7683ddc569bb0a1d">stk::Saxofony</a>, <a class="el" href="classstk_1_1Shakers.html#a655713b658ddeb065d755997cac4b62e">stk::Shakers</a>, <a class="el" href="classstk_1_1Simple.html#adff17b07913c312e989f1987e4fb5cc8">stk::Simple</a>, <a class="el" href="classstk_1_1Sitar.html#a755cc36fe9cde1942184af0b1ae88f7a">stk::Sitar</a>, <a class="el" href="classstk_1_1StifKarp.html#a7d4afff257faa7ad9ef630f1db1ed93f">stk::StifKarp</a>, <a class="el" href="classstk_1_1TubeBell.html#a664cede881352aea1d300ca93ba416ac">stk::TubeBell</a>, <a class="el" href="classstk_1_1VoicForm.html#a619d2995894216181c2dc38fd863fe33">stk::VoicForm</a>, <a class="el" href="classstk_1_1Whistle.html#a46135035da33d0825e3ff0db04b857d4">stk::Whistle</a>, and <a class="el" href="classstk_1_1Wurley.html#a505f7e6499761f64d0cc4b6419d945c3">stk::Wurley</a>.</p>
 
 </div>
 </div>
@@ -169,7 +183,7 @@ const <a class="el" href="classstk_1_1StkFrames.html">StkFrames</a> &amp;&nbsp;<
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

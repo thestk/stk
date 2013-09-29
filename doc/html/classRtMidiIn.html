@@ -33,8 +33,8 @@ Inheritance diagram for RtMidiIn:</div>
 typedef void(*&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a297d2eb3c3420b437970a6fc59d89cbf">RtMidiCallback</a> )(double timeStamp, std::vector&lt; unsigned char &gt; *message, void *userData)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User callback function type definition. <br/></td></tr>
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a31abb996e5fdc4a8f9dc5a50848e2ee5">RtMidiIn</a> (const std::string clientName=std::string(&quot;RtMidi Input Client&quot;))</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Default constructor that allows an optional client name.  <a href="#a31abb996e5fdc4a8f9dc5a50848e2ee5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a1d70da3ef18d24c5b3f0cc01888e093d">RtMidiIn</a> (const std::string clientName=std::string(&quot;RtMidi Input Client&quot;), unsigned int queueSizeLimit=100)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Default constructor that allows an optional client name and queue size.  <a href="#a1d70da3ef18d24c5b3f0cc01888e093d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af865d88c154b6fdadc640da5dc278d40"></a><!-- doxytag: member="RtMidiIn::~RtMidiIn" ref="af865d88c154b6fdadc640da5dc278d40" args="()" -->
 &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#af865d88c154b6fdadc640da5dc278d40">~RtMidiIn</a> ()</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">If a MIDI connection is still open, it will be closed by the destructor. <br/></td></tr>
@@ -54,8 +54,6 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the number of available MIDI input ports. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::string&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#af2961fff09fa01a3d5bc0f0c5a042aaf">getPortName</a> (unsigned int portNumber=0)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return a string identifier for the specified MIDI input port number.  <a href="#af2961fff09fa01a3d5bc0f0c5a042aaf"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a2e15868916737039e0a34d47bffdf188">setQueueSizeLimit</a> (unsigned int queueSize)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the maximum number of MIDI messages to be saved in the queue.  <a href="#a2e15868916737039e0a34d47bffdf188"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#af9507125aaa42276ccc01df576fc3533">ignoreTypes</a> (bool midiSysex=true, bool midiTime=true, bool midiSense=true)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Specify whether certain MIDI message types should be queued or ignored during input.  <a href="#af9507125aaa42276ccc01df576fc3533"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">double&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRtMidiIn.html#a1ba10ecd276b30a8579c7d60a9c890eb">getMessage</a> (std::vector&lt; unsigned char &gt; *message)</td></tr>
@@ -66,7 +64,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>This class provides a common, platform-independent API for realtime MIDI input. It allows access to a single MIDI input port. Incoming MIDI messages are either saved to a queue for retrieval using the <a class="el" href="classRtMidiIn.html#a1ba10ecd276b30a8579c7d60a9c890eb" title="Fill the user-provided vector with the data bytes for the next available MIDI message...">getMessage()</a> function or immediately passed to a user-specified callback function. Create multiple instances of this class to connect to more than one MIDI device at the same time. With the OS-X and Linux ALSA MIDI APIs, it is also possible to open a virtual input port to which other MIDI software clients can connect.</p>
 <p>by Gary P. Scavone, 2003-2008. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a31abb996e5fdc4a8f9dc5a50848e2ee5"></a><!-- doxytag: member="RtMidiIn::RtMidiIn" ref="a31abb996e5fdc4a8f9dc5a50848e2ee5" args="(const std::string clientName=std::string(&quot;RtMidi Input Client&quot;))" -->
+<a class="anchor" id="a1d70da3ef18d24c5b3f0cc01888e093d"></a><!-- doxytag: member="RtMidiIn::RtMidiIn" ref="a1d70da3ef18d24c5b3f0cc01888e093d" args="(const std::string clientName=std::string(&quot;RtMidi Input Client&quot;), unsigned int queueSizeLimit=100)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -74,16 +72,25 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td class="memname">RtMidiIn::RtMidiIn </td>
           <td>(</td>
           <td class="paramtype">const std::string&nbsp;</td>
-          <td class="paramname"> <em>clientName</em> = <code>std::string(&quot;RtMidi&nbsp;Input&nbsp;Client&quot;)</code></td>
-          <td>&nbsp;)&nbsp;</td>
+          <td class="paramname"> <em>clientName</em> = <code>std::string(&quot;RtMidi&nbsp;Input&nbsp;Client&quot;)</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">unsigned int&nbsp;</td>
+          <td class="paramname"> <em>queueSizeLimit</em> = <code>100</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Default constructor that allows an optional client name. </p>
-<p>An exception will be thrown if a MIDI system initialization error occurs. </p>
+<p>Default constructor that allows an optional client name and queue size. </p>
+<p>An exception will be thrown if a MIDI system initialization error occurs. The queue size defines the maximum number of messages that can be held in the MIDI queue (when not using a callback function). If the queue size limit is reached, incoming messages will be ignored. </p>
 
 </div>
 </div>
@@ -210,30 +217,9 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <div class="memdoc">
 
 <p>Return a string identifier for the specified MIDI input port number. </p>
-<p>An exception is thrown if an invalid port specifier is provided. </p>
+<p>An empty string is returned if an invalid port specifier is provided. </p>
 
 <p>Implements <a class="el" href="classRtMidi.html#a799e2b9f4df39b298518f2b394db3391">RtMidi</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a2e15868916737039e0a34d47bffdf188"></a><!-- doxytag: member="RtMidiIn::setQueueSizeLimit" ref="a2e15868916737039e0a34d47bffdf188" args="(unsigned int queueSize)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void RtMidiIn::setQueueSizeLimit </td>
-          <td>(</td>
-          <td class="paramtype">unsigned int&nbsp;</td>
-          <td class="paramname"> <em>queueSize</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Set the maximum number of MIDI messages to be saved in the queue. </p>
-<p>If the queue size limit is reached, incoming messages will be ignored. The default limit is 1024. </p>
 
 </div>
 </div>
@@ -269,7 +255,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <div class="memdoc">
 
 <p>Specify whether certain MIDI message types should be queued or ignored during input. </p>
-<p>By default, MIDI timing and active sensing messages are ignored during message input because of their relative high data rates. MIDI sysex messages are ignored by default as well. Variable values of "true" imply that the respective message type will be ignored. </p>
+<p>o By default, MIDI timing and active sensing messages are ignored during message input because of their relative high data rates. MIDI sysex messages are ignored by default as well. Variable values of "true" imply that the respective message type will be ignored. </p>
 
 </div>
 </div>
@@ -302,7 +288,7 @@ unsigned int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>

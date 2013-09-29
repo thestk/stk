@@ -85,7 +85,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>STK "singing" looped soundfile class. </p>
 <p>This class loops a specified soundfile and modulates it both periodically and randomly to produce a pitched musical sound, like a simple voice or violin. In general, it is not be used alone because of "munchkinification" effects from pitch shifting. Within STK, it is used as an excitation source for other instruments.</p>
-<p>by Perry R. Cook and Gary P. Scavone, 1995 - 2010. </p>
+<p>by Perry R. Cook and Gary P. Scavone, 1995-2011. </p>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a7a38283d4e42d5f9b96d3ce8c401183a"></a><!-- doxytag: member="stk::SingWave::SingWave" ref="a7a38283d4e42d5f9b96d3ce8c401183a" args="(std::string fileName, bool raw=false)" -->
 <div class="memitem">
@@ -148,6 +148,23 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <p>Implements <a class="el" href="classstk_1_1Generator.html#a86bb0421223cf27e25704d5f27b97425">stk::Generator</a>.</p>
 
+<p><div class="fragment"><pre class="fragment"><a name="l00118"></a>00118 {
+<a name="l00119"></a>00119 <span class="preprocessor">#if defined(_STK_DEBUG_)</span>
+<a name="l00120"></a>00120 <span class="preprocessor"></span>  <span class="keywordflow">if</span> ( channel &gt;= frames.channels() ) {
+<a name="l00121"></a>00121     oStream_ &lt;&lt; <span class="stringliteral">&quot;SingWave::tick(): channel and StkFrames arguments are incompatible!&quot;</span>;
+<a name="l00122"></a>00122     <a class="code" href="classstk_1_1Stk.html#a48ac73a0d8ca28445ba1a054e1f061ff" title="Static function for error reporting and handling using c-strings.">handleError</a>( StkError::FUNCTION_ARGUMENT );
+<a name="l00123"></a>00123   }
+<a name="l00124"></a>00124 <span class="preprocessor">#endif</span>
+<a name="l00125"></a>00125 <span class="preprocessor"></span>
+<a name="l00126"></a>00126   StkFloat *samples = &amp;frames[channel];
+<a name="l00127"></a>00127   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hop = frames.channels();
+<a name="l00128"></a>00128   <span class="keywordflow">for</span> ( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0; i&lt;frames.frames(); i++, samples += hop )
+<a name="l00129"></a>00129     *samples = <a class="code" href="classstk_1_1SingWave.html#a45136f9bf5b6f58433d4d65864d9db78" title="Compute and return one output sample.">SingWave::tick</a>();
+<a name="l00130"></a>00130 
+<a name="l00131"></a>00131   <span class="keywordflow">return</span> frames;
+<a name="l00132"></a>00132 }
+</pre></div></p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
@@ -158,7 +175,7 @@ StkFloat&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 <table>
   <tr><td><A HREF="http://ccrma.stanford.edu/software/stk/"><I>The Synthesis ToolKit in C++ (STK)</I></A></td></tr>
-  <tr><td>&copy;1995-2010 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
+  <tr><td>&copy;1995-2011 Perry R. Cook and Gary P. Scavone. All Rights Reserved.</td></tr>
 </table>
 
 </BODY>
