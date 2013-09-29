@@ -20,11 +20,10 @@
 #include "utilities.h"
 
 #include <signal.h>
+#include <cmath>
 #include <iostream>
 #include <algorithm>
-#if !defined(__OS_WINDOWS__) // Windoze bogosity for VC++ 6.0
-  using std::min;
-#endif
+using std::min;
 
 bool done;
 static void finish(int ignore){ done = true; }
@@ -48,6 +47,7 @@ struct TickData {
   bool realtime;
   bool settling;
   bool haveMessage;
+  int frequency;
 
   // Default constructor.
   TickData()
@@ -75,13 +75,13 @@ void processMessage( TickData* data )
 
   case __SK_NoteOn_:
     if ( value2 == 0.0 ) // velocity is zero ... really a NoteOff
-      data->voicer->noteOff( value1, 64.0 );
+      data->voicer->noteOff( value1, 64.0, data->message.channel );
     else // a NoteOn
-      data->voicer->noteOn( value1, value2 );
+      data->voicer->noteOn( value1, value2, data->message.channel );
     break;
 
   case __SK_NoteOff_:
-    data->voicer->noteOff( value1, value2 );
+    data->voicer->noteOff( value1, value2, data->message.channel );
     break;
 
   case __SK_ControlChange_:
@@ -90,21 +90,31 @@ void processMessage( TickData* data )
     else if (value1 == 7.0)
       data->volume = value2 * ONE_OVER_128;
     else if (value1 == 49.0)
-      data->voicer->setFrequency( value2 );
+      data->voicer->setFrequency( value2, data->message.channel );
+    else if (value1 == 50.0)
+      data->voicer->controlChange( 128, value2, data->message.channel );
+    else if (value1 == 51.0)
+      data->frequency = data->message.intValues[1];
+    else if (value1 == 52.0) {
+      data->frequency += ( data->message.intValues[1] << 7 );
+      // Convert to a fractional MIDI note value
+      StkFloat note = 12.0 * log( data->frequency / 220.0 ) / log( 2.0 ) + 57.0;
+      data->voicer->setFrequency( note, data->message.channel );
+    }
     else
-      data->voicer->controlChange( (int) value1, value2 );
+      data->voicer->controlChange( (int) value1, value2, data->message.channel );
     break;
 
   case __SK_AfterTouch_:
-    data->voicer->controlChange( 128, value1 );
+    data->voicer->controlChange( 128, value1, data->message.channel );
     break;
 
   case __SK_PitchChange_:
-    data->voicer->setFrequency( value1 );
+    data->voicer->setFrequency( value1, data->message.channel );
     break;
 
   case __SK_PitchBend_:
-    data->voicer->pitchBend( value1 );
+    data->voicer->pitchBend( value1, data->message.channel );
     break;
 
   case __SK_Volume_:
@@ -124,7 +134,7 @@ void processMessage( TickData* data )
       data->currentVoice = voiceByNumber( (int)value1, &data->instrument[i] );
       if ( data->currentVoice < 0 )
         data->currentVoice = voiceByNumber( 0, &data->instrument[i] );
-      data->voicer->addInstrument( data->instrument[i] );
+      data->voicer->addInstrument( data->instrument[i], data->message.channel );
       data->settling = false;
     }
 
@@ -144,11 +154,12 @@ void processMessage( TickData* data )
 // The tick() function handles sample computation and scheduling of
 // control updates.  If doing realtime audio output, it will be called
 // automatically when the system needs a new buffer of audio samples.
-int tick(char *buffer, int bufferSize, void *dataPointer)
+int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+         double streamTime, RtAudioStreamStatus status, void *dataPointer )
 {
   TickData *data = (TickData *) dataPointer;
-  register StkFloat sample, *samples = (StkFloat *) buffer;
-  int counter, nTicks = bufferSize;
+  register StkFloat sample, *samples = (StkFloat *) outputBuffer;
+  int counter, nTicks = (int) nBufferFrames;
 
   while ( nTicks > 0 && !done ) {
 
@@ -186,7 +197,7 @@ int main( int argc, char *argv[] )
   int i;
 
 #if defined(__STK_REALTIME__)
-  RtAudio *dac = 0;
+  RtAudio dac;
 #endif
 
   // If you want to change the default sample rate (set in Stk.h), do
@@ -219,7 +230,7 @@ int main( int argc, char *argv[] )
 
   data.voicer = (Voicer *) new Voicer( data.nVoices );
   for ( i=0; i<data.nVoices; i++ )
-    data.voicer->addInstrument( data.instrument[i] );
+    data.voicer->addInstrument( data.instrument[i], i+1 );
 
   // Parse the command-line flags, instantiate WvOut objects, and
   // instantiate the input message controller (in utilities.cpp).
@@ -234,11 +245,14 @@ int main( int argc, char *argv[] )
 #if defined(__STK_REALTIME__)
   if ( data.realtime ) {
     RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
-    int bufferSize = RT_BUFFER_SIZE;
+    RtAudio::StreamParameters parameters;
+    parameters.deviceId = dac.getDefaultOutputDevice();
+    parameters.nChannels = data.channels;
+    unsigned int bufferFrames = RT_BUFFER_SIZE;
     try {
-      dac = new RtAudio(0, data.channels, 0, 0, format, (int)Stk::sampleRate(), &bufferSize, 4);
+      dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
     }
-    catch (RtError& error) {
+    catch ( RtError& error ) {
       error.printMessage();
       goto cleanup;
     }
@@ -256,10 +270,9 @@ int main( int argc, char *argv[] )
 #if defined(__STK_REALTIME__)
   if ( data.realtime ) {
     try {
-      dac->setStreamCallback(&tick, (void *)&data);
-      dac->startStream();
+      dac.startStream();
     }
-    catch (RtError &error) {
+    catch ( RtError &error ) {
       error.printMessage();
       goto cleanup;
     }
@@ -275,17 +288,16 @@ int main( int argc, char *argv[] )
     else
 #endif
       // Call the "tick" function to process data.
-      tick( NULL, 256, (void *)&data );
+      tick( NULL, NULL, 256, 0, 0, (void *)&data );
   }
 
-  // Shut down the callback and output stream.
+  // Shut down the output stream.
 #if defined(__STK_REALTIME__)
   if ( data.realtime ) {
     try {
-      dac->cancelStreamCallback();
-      dac->closeStream();
+      dac.closeStream();
     }
-    catch (RtError& error) {
+    catch ( RtError& error ) {
       error.printMessage();
     }
   }
@@ -296,9 +308,6 @@ int main( int argc, char *argv[] )
   for ( i=0; i<(int)data.nWvOuts; i++ ) delete data.wvout[i];
   free( data.wvout );
 
-#if defined(__STK_REALTIME__)
-  delete dac;
-#endif
   delete data.reverb;
   delete data.voicer;
 

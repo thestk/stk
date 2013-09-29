@@ -5,7 +5,7 @@
     This class provides a common interface for
     all STK instruments.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

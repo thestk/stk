@@ -1,15 +1,33 @@
 /*! \page download Download, Release Notes, and Bug Fixes
 
-\section down Download Version 4.2.1 (14 October 2005):
+\section down Download Version 4.3.0 (13 August 2007):
 
 <UL>
-<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.2.1.tar.gz">Source distribution</A></LI>
-<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.2.1.binaries.tar.gz">Source with precompiled Windows binaries</A></LI>
+<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.3.0.tar.gz">Source distribution</A></LI>
+<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.3.0.binaries.tar.gz">Source with precompiled Windows binaries</A></LI>
 <LI><A HREF="http://ccrma.stanford.edu/planetccrma/software/">Linux RPMs from Planet CCRMA</A></LI>
 </UL>
 
 
 \section notes Release Notes:
+
+\subsection v4dot3dot0 Version 4.3.0
+
+<ul>
+<li>An official MIT-like license.</li>
+<li>New functionality to automatically update class data when the STK sample rate changes (partly implemented).</li>
+<li>Updates for new RtAudio version 4.0.</li>
+<li>Bug fix in interpolate() function in Stk.h for non-interleaved data.</li>
+<li>Fixes / improvements to the Granulate class.</li>
+<li>Fix in Whistle when doing animation.</li>
+<li>Fixes in BlitSquare for frequency, harmonics, and dc offset.</li>
+<li>Updates to Makefiles for non-realtime compile.</li>
+<li>Fix in demo.cpp for voice channel assignment.</li>
+<li>Updated versions of RtMidi and RtAudio.</li>
+<li>Updated ASIO files for MinGW compiler.</li>
+<li>New FAQ in documentation.</li>
+<li>MAT-file bug fix in FileRead class.</li>
+</ul>
 
 \subsection v4dot2dot1 Version 4.2.1
 

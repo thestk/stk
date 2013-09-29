@@ -27,7 +27,7 @@
     See the FileRead class for a description of the supported audio
     file formats.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -126,6 +126,7 @@ public:
 protected:
 
   virtual void computeFrame( void );
+  virtual void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
 
   FileRead file_;
   bool finished_;

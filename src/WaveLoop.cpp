@@ -12,7 +12,7 @@
     which return references or pointers to multi-channel sample
     frames.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -22,6 +22,7 @@
 WaveLoop :: WaveLoop( unsigned long chunkThreshold, unsigned long chunkSize )
   : FileWvIn( chunkThreshold, chunkSize ), phaseOffset_(0.0)
 {
+  Stk::addSampleRateAlert( this );
 }
 
 WaveLoop :: WaveLoop( std::string fileName, bool raw, bool doNormalize,
@@ -29,10 +30,18 @@ WaveLoop :: WaveLoop( std::string fileName, bool raw, bool doNormalize,
   : FileWvIn( chunkThreshold, chunkSize ), phaseOffset_(0.0)
 {
   this->openFile( fileName, raw, doNormalize );
+  Stk::addSampleRateAlert( this );
 }
 
 WaveLoop :: ~WaveLoop()
 {
+  Stk::removeSampleRateAlert( this );
+}
+
+void WaveLoop :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
+{
+  if ( !ignoreSampleRateChange_ )
+    this->setRate( oldRate * rate_ / newRate );
 }
 
 void WaveLoop :: openFile( std::string fileName, bool raw, bool doNormalize )

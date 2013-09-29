@@ -5,7 +5,7 @@
     This class provides common functionality for
     STK unit generator sample-source subclasses.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

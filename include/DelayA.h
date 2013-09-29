@@ -15,7 +15,7 @@
     minimum delay possible in this implementation is limited to a
     value of 0.5.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

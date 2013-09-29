@@ -13,7 +13,7 @@
     Smith (1986), Hirschman, Cook, Scavone, and
     others for more information.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

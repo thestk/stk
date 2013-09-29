@@ -8,7 +8,7 @@
     sample rates.  You can specify the maximum polyphony (maximum
     number of simultaneous voices) in VoicDrum.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -108,7 +108,7 @@ void VoicDrum :: noteOn( StkFloat instrument, StkFloat amplitude )
 
 #if defined(_STK_DEBUG_)
   errorString_ << "VoicDrum::noteOn: number sounding = " << nSounding_ << '\n';
-  for (i=0; i<nSounding_; i++) errorString_ << soundNumber_[i] << "  ";
+  for (int i=0; i<nSounding_; i++) errorString_ << soundNumber_[i] << "  ";
   errorString_ << '\n';
   handleError( StkError::DEBUG_WARNING );
 #endif

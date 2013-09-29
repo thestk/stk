@@ -76,9 +76,11 @@ class Granulate: public Generator
     trapezoidal window.  In addition, each grain can have a time delay
     of length \e delay and a grain pointer increment of length \e
     offset, which can be negative, before the next ramp onset (in
-    milliseconds).  The actual values calculated for each grain will
-    be randomized by a factor set using the setRandomFactor()
-    function.
+    milliseconds).  The \e offset parameter controls grain pointer
+    jumps between enveloped grain segments, while the \e delay
+    parameter causes grain calculations to pause between grains.  The
+    actual values calculated for each grain will be randomized by a
+    factor set using the setRandomFactor() function.
   */
   void setGrainParameters( unsigned int duration = 30, unsigned int rampPercent = 50,
                            int offset = 0, unsigned int delay = 0 );

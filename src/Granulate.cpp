@@ -17,6 +17,7 @@
 
 #include "Granulate.h"
 #include "FileRead.h"
+#include <cmath>
 
 Granulate :: Granulate( void )
 {
@@ -120,7 +121,7 @@ void Granulate :: reset()
 void Granulate :: setVoices( unsigned int nVoices )
 {
 #if defined(_STK_DEBUG_)
-  errorString_ << "Granulate::setGrains: nGrains = " << nGrains << ", existing grains = " << grains_.size() << '.';
+  errorString_ << "Granulate::setVoices: nVoices = " << nVoices << ", existing voices = " << grains_.size() << '.';
   handleError( StkError::DEBUG_WARNING );
 #endif
 
@@ -133,6 +134,7 @@ void Granulate :: setVoices( unsigned int nVoices )
     grains_[i].repeats = 0;
     count = (unsigned int ) ( i * gDuration_ * 0.001 * Stk::sampleRate() / nVoices );
     grains_[i].counter = count;
+    grains_[i].pointer = gPointer_;
     grains_[i].state = GRAIN_STOPPED;
   }
 
@@ -186,9 +188,13 @@ void Granulate :: calculateGrain( Granulate::Grain& grain )
 
   // Calculate offset parameter.
   seconds = gOffset_ * 0.001;
-  seconds += ( seconds * gRandomFactor_ * noise.tick() );
+  seconds += ( seconds * gRandomFactor_ * std::abs( noise.tick() ) );
   int offset = (int) ( seconds * Stk::sampleRate() );
-  grain.pointer = gPointer_ + offset;
+
+  // Add some randomization to the pointer start position.
+  seconds = gDuration_ * 0.001 * gRandomFactor_ * noise.tick();
+  offset += (int) ( seconds * Stk::sampleRate() );
+  grain.pointer += offset;
   while ( grain.pointer >= data_.frames() ) grain.pointer -= data_.frames();
   if ( grain.pointer <  0 ) grain.pointer = 0;
   grain.startPointer = grain.pointer;

@@ -9,7 +9,7 @@
     \e keyOff messages, ramping to 1.0 on
     keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -21,6 +21,7 @@ Envelope :: Envelope(void) : Generator()
   value_ = 0.0;
   rate_ = 0.001;
   state_ = 0;
+  Stk::addSampleRateAlert( this );
 }
 
 Envelope :: Envelope ( const Envelope& e )
@@ -29,10 +30,12 @@ Envelope :: Envelope ( const Envelope& e )
   value_ = 0.0;
   rate_ = 0.001;
   state_ = 0;
+  Stk::addSampleRateAlert( this );
 }
 
 Envelope :: ~Envelope(void)
 {
+  Stk::removeSampleRateAlert( this );
 }
 
 Envelope& Envelope :: operator= ( const Envelope& e )
@@ -45,6 +48,12 @@ Envelope& Envelope :: operator= ( const Envelope& e )
   }
 
   return *this;
+}
+
+void Envelope :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
+{
+  if ( !ignoreSampleRateChange_ )
+    rate_ = oldRate * rate_ / newRate;
 }
 
 void Envelope :: keyOn(void)

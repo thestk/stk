@@ -1,6 +1,6 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2005.
+By Perry R. Cook and Gary P. Scavone, 1995-2007.
 
 EFFECTS PROJECT:
 
@@ -20,7 +20,7 @@ NOTES:
 2. Audio input from either a microphone or line-input device MUST be
    available to the audio input port when the program is started.
 
-3. Latency can be controlled using the RtDuplex bufferSize and
-   nBuffers constructor arguments.  The default settings in
-   effects.cpp are relatively high because some Windows soundcard
-   drivers crash if the settings are too low.
+3. Latency can be controlled using the nBufferFrames argument to the
+   RtAudio openStream() function.  The default settings in effects.cpp
+   are relatively high because some Windows soundcard drivers crash if
+   the settings are too low.

@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(STK, 4.2.1, gary@music.mcgill.ca, stk)
+AC_INIT(STK, 4.3, gary@music.mcgill.ca, stk)
 AC_CONFIG_SRCDIR(src/Stk.cpp)
 AC_CONFIG_FILES(src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile)
 
@@ -69,12 +69,12 @@ if test $realtime = yes; then
     audio_apis="-D__LINUX_ALSASEQ__" 
 
     # Look for Jack flag
-    AC_ARG_WITH(jack, [  --with-jack = choose JACK server support (linux only)], [AC_SUBST( sound_api, [-D__LINUX_JACK__] ) AC_MSG_RESULT(using JACK)] , )
-    if [test $sound_api = -D__LINUX_JACK__;] then
+    AC_ARG_WITH(jack, [  --with-jack = choose JACK server support (linux only)], [AC_SUBST( sound_api, [-D__UNIX_JACK__] ) AC_MSG_RESULT(using JACK)] , )
+    if [test $sound_api = -D__UNIX_JACK__;] then
       TEMP_LIBS=$LIBS
       AC_CHECK_LIB(jack, jack_client_new, , AC_MSG_ERROR(JACK support requires the jack library!))
       LIBS="`pkg-config --cflags --libs jack` $TEMP_LIBS -lasound"
-      audio_apis="-D__LINUX_JACK__ $audio_apis"
+      audio_apis="-D__UNIX_JACK__ $audio_apis"
     fi
 
     # Look for Alsa flag
@@ -96,19 +96,33 @@ if test $realtime = yes; then
     fi
     ;;
 
-    *-sgi*)
-    AC_SUBST( audio_apis, ["-D__IRIX_AL__ -D__IRIX_MD__ -LANG:std -w"] )
-    AC_MSG_RESULT(using IRIX AL)
-    AC_CHECK_LIB(audio, alOpenPort, , AC_MSG_ERROR(IRIX audio support requires the audio library!) )
-    AC_CHECK_LIB(md, mdOpenInPort, , AC_MSG_ERROR(IRIX MIDI support requires the md library!) )
-    ;;
-
     *-apple*)
-    # Check for CoreAudio and CoreMIDI framework
-    AC_CHECK_HEADERS(CoreAudio/CoreAudio.h CoreMIDI/CoreMIDI.h CoreServices/CoreServices.h,
-      [AC_SUBST( audio_apis, [-D__MACOSX_CORE__] )],
-      [AC_MSG_ERROR(CoreAudio and/or CoreMIDI header files not found!)] )
-    AC_SUBST( frameworks, ["-framework CoreAudio -framework CoreMIDI -framework CoreFoundation"] )
+    AC_SUBST( sound_api, [_NO_API_] )
+
+    # Look for JACK flag
+    AC_ARG_WITH(jack, [  --with-jack = choose JACK server support (unix only)], [AC_SUBST( sound_api, [-D__UNIX_JACK__] ) AC_MSG_RESULT(using JACK)], )
+    if [test $sound_api = -D__UNIX_JACK__;] then
+    AC_CHECK_LIB(jack, jack_client_new, , AC_MSG_ERROR(JACK support requires the jack library!))
+    audio_apis="-D__UNIX_JACK__"
+    fi
+
+    # Look for Core flag
+    AC_ARG_WITH(core, [  --with-core = choose CoreAudio API support (mac only)], [AC_SUBST( sound_api, [-D__MACOSX_CORE__] ) AC_MSG_RESULT(using CoreAudio)], )
+    if test $sound_api = -D__MACOSX_CORE__; then
+      AC_CHECK_HEADER(CoreAudio/CoreAudio.h, [], [AC_MSG_ERROR(CoreAudio header files not found!)] )
+      AC_SUBST( frameworks, ["-framework CoreAudio -framework CoreFoundation -framework CoreMidi"] )
+      audio_apis="-D__MACOSX_CORE__ $audio_apis"
+    fi
+
+    # If no audio api flags specified, use CoreAudio
+    if [test $sound_api = _NO_API_;] then
+      AC_SUBST( sound_api, [-D__MACOSX_CORE__] )
+      AC_MSG_RESULT(using CoreAudio)
+      AC_CHECK_HEADER(CoreAudio/CoreAudio.h,
+        [AC_SUBST( audio_apis, [-D__MACOSX_CORE__] )],
+        [AC_MSG_ERROR(CoreAudio header files not found!)] )
+      AC_SUBST( frameworks, ["-framework CoreAudio -framework CoreFoundation -framework CoreMidi"] )
+    fi
     ;;
 
     *)

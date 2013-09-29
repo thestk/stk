@@ -38,10 +38,11 @@ void usage(void) {
 // This tick() function handles sample computation only.  It will be
 // called automatically when the system needs a new buffer of audio
 // samples.
-int tick(char *buffer, int bufferSize, void *dataPointer)
+int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+         double streamTime, RtAudioStreamStatus status, void *userData )
 {
-  FileWvIn *input = (FileWvIn *) dataPointer;
-  register StkFloat *samples = (StkFloat *) buffer;
+  FileWvIn *input = (FileWvIn *) userData;
+  register StkFloat *samples = (StkFloat *) outputBuffer;
 
   input->tickFrame( frames );
   for ( unsigned int i=0; i<frames.size(); i++ )
@@ -58,18 +59,18 @@ int tick(char *buffer, int bufferSize, void *dataPointer)
 int main(int argc, char *argv[])
 {
   // Minimal command-line checking.
-  if (argc < 3 || argc > 4) usage();
+  if ( argc < 3 || argc > 4 ) usage();
 
   // Set the global sample rate before creating class instances.
   Stk::setSampleRate( (StkFloat) atof(argv[2]) );
 
   // Initialize our WvIn and RtAudio pointers.
-  RtAudio *dac = 0;
-  FileWvIn *input = 0;
+  RtAudio dac;
+  FileWvIn input;
 
   // Try to load the soundfile.
   try {
-    input = new FileWvIn( argv[1] );
+    input.openFile( argv[1] );
   }
   catch (StkError &) {
     exit(0);
@@ -77,21 +78,25 @@ int main(int argc, char *argv[])
 
   // Set input read rate based on the default STK sample rate.
   double rate = 1.0;
-  rate = input->getFileRate() / Stk::sampleRate();
+  rate = input.getFileRate() / Stk::sampleRate();
   if ( argc == 4 ) rate *= atof(argv[3]);
-  input->setRate( rate );
+  input.setRate( rate );
+
+  input.ignoreSampleRateChange();
 
   // Find out how many channels we have.
-  int channels = input->getChannels();
+  int channels = input.getChannels();
 
-  // Define and open the realtime output device.
-  // Figure out how many bytes in an StkFloat and setup the RtAudio object.
+  // Figure out how many bytes in an StkFloat and setup the RtAudio stream.
+  RtAudio::StreamParameters parameters;
+  parameters.deviceId = dac.getDefaultOutputDevice();
+  parameters.nChannels = channels;
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
-  int bufferSize = RT_BUFFER_SIZE;
+  unsigned int bufferFrames = RT_BUFFER_SIZE;
   try {
-    dac = new RtAudio(0, channels, 0, 0, format, (int)Stk::sampleRate(), &bufferSize, 4);
+    dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&input );
   }
-  catch (RtError &error) {
+  catch ( RtError &error ) {
     error.printMessage();
     goto cleanup;
   }
@@ -100,13 +105,12 @@ int main(int argc, char *argv[])
 	(void) signal(SIGINT, finish);
 
   // Resize the StkFrames object appropriately.
-  frames.resize( bufferSize, channels );
+  frames.resize( bufferFrames, channels );
 
   try {
-    dac->setStreamCallback(&tick, (void *)input);
-    dac->startStream();
+    dac.startStream();
   }
-  catch (RtError &error) {
+  catch ( RtError &error ) {
     error.printMessage();
     goto cleanup;
   }
@@ -118,15 +122,12 @@ int main(int argc, char *argv[])
   // By returning a non-zero value in the callback above, the stream
   // is automatically stopped.  But we should still close it.
   try {
-    dac->cancelStreamCallback();
-    dac->closeStream();
+    dac.closeStream();
   }
-  catch (RtError &error) {
+  catch ( RtError &error ) {
     error.printMessage();
   }
 
  cleanup:
-  delete input;
-  delete dac;
   return 0;
 }

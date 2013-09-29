@@ -18,7 +18,7 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -46,7 +46,7 @@ Clarinet :: ~Clarinet()
 void Clarinet :: clear()
 {
   delayLine_.clear();
-  filter_.tick((StkFloat) 0.0);
+  filter_.tick( 0.0 );
 }
 
 void Clarinet :: setFrequency(StkFloat frequency)

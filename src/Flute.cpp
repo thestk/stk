@@ -18,7 +18,7 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -31,7 +31,6 @@ Flute :: Flute(StkFloat lowestFrequency)
   boreDelay_.setMaximumDelay( length_ );
   boreDelay_.setDelay( 100.0 );
 
-  length_ >>= 1;
   jetDelay_.setMaximumDelay( length_ );
   jetDelay_.setDelay( 49.0 );
 
@@ -133,7 +132,7 @@ void Flute :: setEndReflection(StkFloat coefficient)
   endReflection_ = coefficient;
 }               
 
-void Flute :: setJetDelay(StkFloat aRatio)
+void Flute :: setJetDelay( StkFloat aRatio )
 {
   // Delay = length - approximate filter delay.
   StkFloat temp = Stk::sampleRate() / lastFrequency_ - (StkFloat) 2.0;
@@ -149,7 +148,6 @@ StkFloat Flute :: computeSample()
   // Calculate the breath pressure (envelope + noise + vibrato)
   breathPressure = maxPressure_ * adsr_.tick();
   breathPressure += breathPressure * ( noiseGain_ * noise_.tick() + vibratoGain_ * vibrato_.tick() );
-  //breathPressure += breathPressure * vibratoGain_ * vibrato_.tick();
 
   StkFloat temp = filter_.tick( boreDelay_.lastOut() );
   temp = dcBlock_.tick( temp ); // Block DC on reflection.

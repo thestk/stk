@@ -139,7 +139,7 @@ StkFloat Whistle :: computeSample()
     frameCount += 1;
     if ( frameCount >= (1470 / subSample_) ) {
       frameCount = 0;
-      printf("%f %f %f\n",tempVectorP->getX(),tempVectorP->getY(),envOut);
+      printf("%f %f %f\n",tempVectorP_->getX(),tempVectorP_->getY(),envOut);
       fflush(stdout);
     }
 #endif

@@ -7,7 +7,7 @@
     systems, the pthread library is used.  Under Windows,
     the Windows thread library is used.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

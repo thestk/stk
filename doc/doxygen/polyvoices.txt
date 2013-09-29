@@ -14,7 +14,7 @@ We have written this program to accept control messages from \c STDIN.  Assuming
 threebees < scores/bachfugue.ski
 \endcode
 
-For more fun, surf to <A HREF="http://kern.humdrum.net/">Kern Scores</A> for a huge assortment of other scorefiles which can be downloaded in the SKINI format.
+For more fun, surf to <A HREF="http://kern.humdrum.net/">Kern Scores</A> for a huge assortment of other scorefiles that can be downloaded in the SKINI format.
 
 Another easy extension would be to add the \c Messager::startMidiInput() function to the program and then play the instruments via a MIDI keyboard.
 

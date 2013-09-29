@@ -8,7 +8,7 @@
     It provides methods for controlling the sweep
     rate and target frequency.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

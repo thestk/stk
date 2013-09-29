@@ -8,7 +8,7 @@
     frequency response while maintaining a constant
     filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -26,6 +26,9 @@ public:
 
   //! Class destructor.
   virtual ~BiQuad();
+
+  //! A function to enable/disable the automatic updating of class data when the STK sample rate changes.
+  void ignoreSampleRateChange( bool ignore = true ) { ignoreSampleRateChange_ = ignore; };
 
   //! Clears all internal states of the filter.
   void clear(void);
@@ -107,6 +110,30 @@ public:
   // This function must be implemented in all subclasses. It is used
   // to get around a C++ problem with overloaded virtual functions.
   virtual StkFloat computeSample( StkFloat input );
+  virtual void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
 };
+
+inline StkFloat BiQuad :: computeSample( StkFloat input )
+{
+  inputs_[0] = gain_ * input;
+  outputs_[0] = b_[0] * inputs_[0] + b_[1] * inputs_[1] + b_[2] * inputs_[2];
+  outputs_[0] -= a_[2] * outputs_[2] + a_[1] * outputs_[1];
+  inputs_[2] = inputs_[1];
+  inputs_[1] = inputs_[0];
+  outputs_[2] = outputs_[1];
+  outputs_[1] = outputs_[0];
+
+  return outputs_[0];
+}
+
+inline StkFloat BiQuad :: tick( StkFloat input )
+{
+  return this->computeSample( input );
+}
+
+inline StkFrames& BiQuad :: tick( StkFrames& frames, unsigned int channel )
+{
+  return Filter::tick( frames, channel );
+}
 
 #endif

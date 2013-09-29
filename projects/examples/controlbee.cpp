@@ -78,11 +78,12 @@ void processMessage( TickData* data )
 // This tick() function handles sample computation and scheduling of
 // control updates.  It will be called automatically when the system
 // needs a new buffer of audio samples.
-int tick(char *buffer, int bufferSize, void *dataPointer)
+int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
+         double streamTime, RtAudioStreamStatus status, void *dataPointer )
 {
   TickData *data = (TickData *) dataPointer;
-  register StkFloat *samples = (StkFloat *) buffer;
-  int counter, nTicks = bufferSize;
+  register StkFloat *samples = (StkFloat *) outputBuffer;
+  int counter, nTicks = (int) nBufferFrames;
 
   while ( nTicks > 0 && !data->done ) {
 
@@ -121,15 +122,18 @@ int main( int argc, char *argv[] )
   Stk::setRawwavePath( "../../rawwaves/" );
 
   TickData data;
-  RtAudio *dac = 0;
+  RtAudio dac;
 
-  // Figure out how many bytes in an StkFloat and setup the RtAudio object.
+  // Figure out how many bytes in an StkFloat and setup the RtAudio stream.
+  RtAudio::StreamParameters parameters;
+  parameters.deviceId = dac.getDefaultOutputDevice();
+  parameters.nChannels = 1;
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
-  int bufferSize = RT_BUFFER_SIZE;
+  unsigned int bufferFrames = RT_BUFFER_SIZE;
   try {
-    dac = new RtAudio(0, 1, 0, 0, format, (int)Stk::sampleRate(), &bufferSize, 4);
+    dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
   }
-  catch (RtError& error) {
+  catch ( RtError &error ) {
     error.printMessage();
     goto cleanup;
   }
@@ -138,7 +142,7 @@ int main( int argc, char *argv[] )
     // Define and load the BeeThree instrument
     data.instrument = new BeeThree();
   }
-  catch (StkError &) {
+  catch ( StkError & ) {
     goto cleanup;
   }
 
@@ -146,10 +150,9 @@ int main( int argc, char *argv[] )
     goto cleanup;
 
   try {
-    dac->setStreamCallback(&tick, (void *)&data);
-    dac->startStream();
+    dac.startStream();
   }
-  catch (RtError &error) {
+  catch ( RtError &error ) {
     error.printMessage();
     goto cleanup;
   }
@@ -158,18 +161,16 @@ int main( int argc, char *argv[] )
   while ( !data.done )
     Stk::sleep( 100 );
   
-  // Shut down the callback and output stream.
+  // Shut down the output stream.
   try {
-    dac->cancelStreamCallback();
-    dac->closeStream();
+    dac.closeStream();
   }
-  catch (RtError &error) {
+  catch ( RtError &error ) {
     error.printMessage();
   }
 
  cleanup:
   delete data.instrument;
-  delete dac;
 
   return 0;
 }

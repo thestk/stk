@@ -23,7 +23,7 @@
     results in one extra multiply per computed sample,
     but allows easy control of the overall filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 

@@ -1,6 +1,6 @@
 ### STK effects Makefile - for various flavors of unix
 
-PROGRAMS = effects
+PROGRAMS = 
 RM = /bin/rm
 SRC_PATH = ../../src
 OBJECT_PATH = @object_path@
@@ -28,6 +28,7 @@ LIBRARY += @frameworks@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
+  PROGRAMS += effects
 	OBJECTS += RtMidi.o RtAudio.o Thread.o Mutex.o Socket.o TcpServer.o
 	DEFS    += @audio_apis@
 endif

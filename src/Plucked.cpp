@@ -13,13 +13,13 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
 #include "Plucked.h"
 
-Plucked :: Plucked(StkFloat lowestFrequency)
+Plucked :: Plucked( StkFloat lowestFrequency )
 {
   length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
   loopGain_ = 0.999;
@@ -39,7 +39,7 @@ void Plucked :: clear()
   pickFilter_.clear();
 }
 
-void Plucked :: setFrequency(StkFloat frequency)
+void Plucked :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -60,7 +60,7 @@ void Plucked :: setFrequency(StkFloat frequency)
   if ( loopGain_ >= 1.0 ) loopGain_ = 0.99999;
 }
 
-void Plucked :: pluck(StkFloat amplitude)
+void Plucked :: pluck( StkFloat amplitude )
 {
   StkFloat gain = amplitude;
   if ( gain > 1.0 ) {
@@ -81,7 +81,7 @@ void Plucked :: pluck(StkFloat amplitude)
     delayLine_.tick( 0.6 * delayLine_.lastOut() + pickFilter_.tick( noise_.tick() ) );
 }
 
-void Plucked :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Plucked :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->pluck( amplitude );

@@ -8,8 +8,8 @@
     The algorithm implemented in this class uses a SincM function with
     an even M value to achieve a bipolar bandlimited impulse train.
     This signal is then integrated to achieve a square waveform.  The
-    integration process has an associated DC offset but that is
-    subtracted off the output signal.
+    integration process has an associated DC offset so a DC blocking
+    filter is applied at the output.
 
     The user can specify both the fundamental frequency of the
     waveform and the number of harmonics contained in the resulting
@@ -19,10 +19,14 @@
     to half the sample rate.  Note, however, that this setting may
     produce aliasing in the signal when the frequency is changing (no
     automatic modification of the number of harmonics is performed by
-    the setFrequency() function).
+    the setFrequency() function).  Also note that the harmonics of a
+    square wave fall at odd integer multiples of the fundamental, so
+    aliasing will happen with a lower fundamental than with the other
+    Blit waveforms.  This class is not guaranteed to be well behaved
+    in the presence of significant aliasing.
 
     Based on initial code of Robin Davies, 2005.
-    Modified algorithm code by Gary Scavone, 2005.
+    Modified algorithm code by Gary Scavone, 2005 - 2006.
 */
 /***************************************************/
 
@@ -83,7 +87,9 @@ class BlitSquare: public Generator
   StkFloat rate_;
   StkFloat phase_;
   StkFloat p_;
-  StkFloat offset_;
+  StkFloat a_;
+  StkFloat lastBlitOutput_;
+  StkFloat dcbState_;
 };
 
 #endif

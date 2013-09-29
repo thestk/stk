@@ -25,7 +25,7 @@
     filling a matrix row.  The sample rate for
     MAT-files is assumed to be 44100 Hz.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2007.
 */
 /***************************************************/
 
@@ -469,11 +469,12 @@ bool FileRead :: getMatInfo( const char *fileName )
   // http://www.mathworks.com/access/helpdesk/help/pdf_doc/matlab/matfile_format.pdf
 
   // Verify this is a version 5 MAT-file format.
-  char head[4];
+  char head[5];
   if ( fseek(fd_, 0, SEEK_SET) == -1 ) goto error;
   if ( fread(&head, 4, 1, fd_) != 1 ) goto error;
   // If any of the first 4 characters of the header = 0, then this is
   // a Version 4 MAT-file.
+  head[4] = '\0';
   if ( strstr(head, "0") ) {
     errorString_ << "FileRead: " << fileName << " appears to be a Version 4 MAT-file, which is not currently supported.";
     return false;
