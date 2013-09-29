@@ -8,12 +8,13 @@
 #include "NRev.h"
 #include "Echo.h"
 #include "PitShift.h"
+//#include "LentPitShift.h"
 #include "Chorus.h"
 #include "Messager.h"
 #include "RtAudio.h"
 
 #include <signal.h>
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <algorithm>
 using std::min;
@@ -42,6 +43,7 @@ struct TickData {
   NRev     nrev;
   Echo     echo;
   PitShift shifter;
+  //LentPitShift shifter;
   Chorus   chorus;
   Envelope envelope;
   Messager messager;

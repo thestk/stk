@@ -11,12 +11,12 @@
     Tempo changes are internally tracked by the class and reflected in
     the values returned by the function getTickSeconds().
 
-    by Gary P. Scavone, 2003 - 2009.
+    by Gary P. Scavone, 2003 - 2010.
 */
 /**********************************************************************/
 
 #include "MidiFileIn.h"
-#include <string.h>
+#include <cstring>
 #include <iostream>
 
 namespace stk {

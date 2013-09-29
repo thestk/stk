@@ -2,6 +2,8 @@
 
 #include "SineWave.h"
 #include "RtWvOut.h"
+#include <cstdlib>
+
 using namespace stk;
 
 int main()

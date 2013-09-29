@@ -26,7 +26,7 @@ namespace stk {
     to \e keyOn and \e keyOff messages by ramping to
     1.0 on keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

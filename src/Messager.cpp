@@ -28,7 +28,7 @@
     This class is primarily for use in STK example programs but it is
     generic enough to work in many other contexts.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 
@@ -162,8 +162,6 @@ bool Messager :: startStdInput()
   return true;
 }
 
-//} // stk namespace
-
 THREAD_RETURN THREAD_TYPE stdinHandler(void *ptr)
 {
   Messager::MessagerData *data = (Messager::MessagerData *) ptr;
@@ -219,8 +217,6 @@ void midiHandler( double timeStamp, std::vector<unsigned char> *bytes, void *ptr
   data->queue.push( message );
   data->mutex.unlock();
 }
-
-//namespace stk {
 
 bool Messager :: startMidiInput( int port )
 {
@@ -303,8 +299,6 @@ bool Messager :: startSocketInput( int port )
   data_.sources |= STK_SOCKET;
   return true;
 }
-
-//} // stk namespace
 
 #if (defined(__OS_IRIX__) || defined(__OS_LINUX__) || defined(__OS_MACOSX__))
   #include <sys/time.h>
@@ -428,7 +422,7 @@ THREAD_RETURN THREAD_TYPE socketHandler(void *ptr)
   return NULL;
 }
 
-} // stk namespace
-
 #endif
+
+} // stk namespace
 

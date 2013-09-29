@@ -1,13 +1,23 @@
 /*! \page download Download, Release Notes, and Bug Fixes
 
-\section down Download Version 4.4.1 (3 June 2009):
+\section down Download Version 4.4.2 (4 February 2010):
 
 <UL>
-<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.4.1.tar.gz">Source distribution</A></LI>
+<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.4.2.tar.gz">Source distribution</A></LI>
 </UL>
 
 
 \section notes Release Notes:
+
+\subsection v4dot4dot2 Version 4.4.2
+
+<ul>
+<li>Added various header file includes for newer compilers.</li>
+<li>Updates to RtAudio and RtMidi.</li>
+<li>New LentPitShift class (thanks to Francois Germain).</li>
+<li>Bug fixes in Voicer class (thanks Richard Dobson!).</li>
+<li>Added Makefile.in to compile library and all projects, as well as clean and distclean.</li>
+</ul>
 
 \subsection v4dot4dot1 Version 4.4.1
 

@@ -13,7 +13,7 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

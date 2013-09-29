@@ -6,7 +6,7 @@
     C rand() function.  The quality of the rand()
     function varies from one OS to another.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

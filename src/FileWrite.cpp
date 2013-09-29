@@ -17,12 +17,13 @@
     type, the data type will automatically be modified.  Compressed
     data types are not supported.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 
 #include "FileWrite.h"
-#include <string.h>
+#include <cstring>
+#include <cstdio>
 #include <cmath>
 
 namespace stk {

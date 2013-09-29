@@ -32,8 +32,9 @@
 #include "FileRead.h"
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <string.h>
+#include <cstring>
 #include <cmath>
+#include <cstdio>
 
 namespace stk {
 

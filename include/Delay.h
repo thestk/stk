@@ -17,7 +17,7 @@ namespace stk {
     A non-interpolating delay line is typically used in fixed
     delay-length applications, such as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 
@@ -62,6 +62,14 @@ public:
     the last input value).
   */
   StkFloat contentsAt( unsigned long tapDelay );
+
+  //! Sum the provided value into the delay line at \e tapDelay samples from the input.
+  /*!
+    The new value is returned.  The tap point is determined modulo
+    the delay-line length and is relative to the last input value
+    (i.e., a tapDelay of zero sums into the last input value).
+  */
+  StkFloat addTo( unsigned long tapDelay, StkFloat value );
 
   //! Return the last computed output value.
   StkFloat lastOut( void ) const { return lastFrame_[0]; };

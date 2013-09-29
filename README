@@ -1,6 +1,6 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2009.
+By Perry R. Cook and Gary P. Scavone, 1995-2010.
 
 This distribution of the Synthesis ToolKit in C++ (STK) contains the following:
 
@@ -27,7 +27,7 @@ portable (it's mostly platform-independent C and C++ code), and it's
 completely user-extensible (all source included, no unusual libraries,
 and no hidden drivers).  We like to think that this increases the
 chances that our programs will still work in another 5-10 years.  In
-fact, the ToolKit has been working continuously for nearly 10 years
+fact, the ToolKit has been working continuously for nearly 15 years
 now.  STK currently runs with "realtime" support (audio and MIDI) on
 Linux, Macintosh OS X, and Windows computer platforms.  Generic,
 non-realtime support has been tested under NeXTStep, Sun, and other
@@ -146,7 +146,7 @@ LICENSE:
 STK WWW site: http://ccrma.stanford.edu/software/stk/
 
 The Synthesis ToolKit in C++ (STK)
-Copyright (c) 1995-2009 Perry R. Cook and Gary P. Scavone
+Copyright (c) 1995-2010 Perry R. Cook and Gary P. Scavone
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

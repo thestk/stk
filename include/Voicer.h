@@ -27,7 +27,7 @@ namespace stk {
     Alternately, control changes can be sent to all voices in a given
     group.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 
@@ -184,11 +184,10 @@ inline StkFloat Voicer :: tick( unsigned int channel )
       voices_[i].instrument->tick();
       for ( j=0; j<voices_[i].instrument->channelsOut(); j++ ) lastFrame_[j] += voices_[i].instrument->lastOut( j );
     }
-    if ( voices_[i].sounding < 0 ) {
+    if ( voices_[i].sounding < 0 )
       voices_[i].sounding++;
-      if ( voices_[i].sounding == 0 )
-        voices_[i].noteNumber = -1;
-    }
+    if ( voices_[i].sounding == 0 )
+      voices_[i].noteNumber = -1;
   }
 
   return lastFrame_[channel];
