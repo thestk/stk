@@ -1,8 +1,0 @@
-base referer
-rect $classEffect.html 7,134 52,155
-rect $classStk.html 77,16 115,38
-rect $classWvIn.html 76,88 116,110
-rect $classFilter.html 141,88 181,110
-rect $classWaveLoop.html 59,224 133,246
-rect $classDelayL.html 157,270 208,291
-rect $classDelay.html 152,179 195,200

@@ -1,9 +1,0 @@
-base referer
-rect $classGenerator.html 56,88 125,109
-rect $classNoise.html 69,160 112,181
-rect $classStk.html 153,16 191,37
-rect $classFilter.html 152,88 192,109
-rect $classWvIn.html 223,88 263,109
-rect $classOnePole.html 141,205 203,227
-rect $classSubNoise.html 57,251 124,272
-rect $classWaveLoop.html 228,205 303,227

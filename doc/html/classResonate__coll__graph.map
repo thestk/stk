@@ -1,9 +1,0 @@
-base referer
-rect $classInstrmnt.html 7,134 63,155
-rect $classStk.html 123,16 160,38
-rect $classGenerator.html 107,88 176,110
-rect $classFilter.html 205,88 245,110
-rect $classADSR.html 64,270 112,291
-rect $classEnvelope.html 61,179 125,200
-rect $classNoise.html 144,224 187,246
-rect $classBiQuad.html 225,224 279,246

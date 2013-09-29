@@ -1,9 +1,0 @@
-base referer
-rect $classEnvelope.html 36,155 100,176
-rect $classModulate.html 124,155 188,176
-rect $classNoise.html 212,155 255,176
-rect $classSingWave.html 279,155 348,176
-rect $classStk.html 176,16 213,38
-rect $classADSR.html 7,224 55,246
-rect $classAsymp.html 79,224 132,246
-rect $classSubNoise.html 200,224 267,246

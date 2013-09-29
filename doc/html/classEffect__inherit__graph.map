@@ -1,8 +1,0 @@
-base referer
-rect $classChorus.html 7,154 60,176
-rect $classEcho.html 84,154 124,176
-rect $classJCRev.html 148,154 199,176
-rect $classNRev.html 223,154 265,176
-rect $classPitShift.html 289,154 343,176
-rect $classPRCRev.html 367,154 431,176
-rect $classStk.html 189,16 227,37

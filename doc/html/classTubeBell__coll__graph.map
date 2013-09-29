@@ -1,8 +1,0 @@
-base referer
-rect $classFM.html 72,269 109,291
-rect $classInstrmnt.html 7,133 63,155
-rect $classStk.html 85,16 123,37
-rect $classWvIn.html 84,88 124,109
-rect $classFilter.html 156,88 196,109
-rect $classWaveLoop.html 67,179 141,200
-rect $classTwoZero.html 167,179 231,200
