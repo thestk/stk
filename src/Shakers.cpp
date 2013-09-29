@@ -48,14 +48,15 @@
         - Little Rocks = 21
         - Tuned Bamboo Chimes = 22
 
-    by Perry R. Cook, 1996 - 2009.
+    by Perry R. Cook, 1996 - 2010.
 */
 /***************************************************/
 
 #include "Shakers.h"
 #include "SKINI.msg"
-#include <string.h>
+#include <cstring>
 #include <cmath>
+#include <cstdlib>
 
 namespace stk {
 

@@ -21,7 +21,7 @@ namespace stk {
     Chris Rolfe and Damian Keller, though there are likely to be a
     number of differences in the actual implementation.
 
-    by Gary Scavone, 2005 - 2009.
+    by Gary Scavone, 2005 - 2010.
 */
 /***************************************************/
 
@@ -139,7 +139,8 @@ class Granulate: public Generator
     unsigned long decayCount;
     unsigned long delayCount;
     unsigned long counter;
-    unsigned long pointer;
+    //unsigned long pointer;
+    StkFloat pointer;
     unsigned long startPointer;
     unsigned int repeats;
     GrainState state;
@@ -155,7 +156,8 @@ class Granulate: public Generator
   StkFrames data_;
   std::vector<Grain> grains_;
   Noise noise;
-  long gPointer_;
+  //long gPointer_;
+  StkFloat gPointer_;
 
   // Global grain parameters.
   unsigned int gDuration_;

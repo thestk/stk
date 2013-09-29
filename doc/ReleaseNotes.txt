@@ -1,14 +1,23 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2009.
+By Perry R. Cook and Gary P. Scavone, 1995-2010.
 
-v4.4.1: (3 June 2009)
+v4.4.2: (4 February 2010)
+- added various header file includes for newer compilers
+- new LentPitShift class (thanks to Francois Germain)
+- added "addTo" function to Delay class
+- updates to RtAudio and RtMidi
+- bug fixes in Voicer class (thanks Richard Dobson!)
+- bug fixes in Granulate class
+- added Makefile.in to compile library and all projects, as well as clean and distclean all
+
+v4.4.1: (3 June 2010)
 - added multi-channel/frame tick() virtual function to WvIn and WvOut abstract base classes (required update to RtWvOut class)
 - updated configure script to select g++ compiler by default
 - in demo.cpp: removed voicer grouping for messages, fixing polyphony when messages are on the same MIDI/SKINI channel
 - updates to RtAudio and RtMidi
 
-v4.4: (30 April 2009)
+v4.4: (30 April 2010)
 - all classes embedded in the "stk" namespace (except RtAudio, RtMidi, and RtError)
 - class WaveLoop renamed FileLoop
 - significant efficiency improvements via code restructuring and inlining

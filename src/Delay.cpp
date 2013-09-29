@@ -10,7 +10,7 @@
     A non-interpolating delay line is typically used in fixed
     delay-length applications, such as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 
@@ -116,6 +116,15 @@ StkFloat Delay :: contentsAt( unsigned long tapDelay )
     tap += inputs_.size();
 
   return inputs_[tap];
+}
+
+StkFloat Delay :: addTo( unsigned long tapDelay, StkFloat value )
+{
+  long tap = inPoint_ - tapDelay - 1;
+  while ( tap < 0 ) // Check for wraparound.
+    tap += inputs_.size();
+
+  return inputs_[tap]+= value;
 }
 
 } // stk namespace

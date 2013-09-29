@@ -47,17 +47,20 @@ DEFS    += -DRAWWAVE_PATH=\"$(RAWWAVES)\"
 all : $(PROGRAMS)
 
 effects: effects.cpp $(OBJECTS)
-	$(CC) $(CFLAGS) $(DEFS) -o effects effects.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o effects effects.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
 
 libeffects: effects.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o effects effects.cpp -L../../src -lstk $(LIBRARY)
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o effects effects.cpp -L../../src -lstk $(LIBRARY)
 
 $(OBJECTS) : Stk.h
 
 clean : 
-	-rm $(OBJECT_PATH)/*.o
-	-rm $(PROGRAMS) *.exe
-	-rm -fR *.dSYM
+	$(RM) -f $(OBJECT_PATH)/*.o
+	$(RM) -f $(PROGRAMS) *.exe
+	$(RM) -fR *~ *.dSYM
+
+distclean: clean
+	$(RM) Makefile
 
 strip : 
 	strip $(PROGRAMS)

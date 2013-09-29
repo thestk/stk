@@ -14,12 +14,12 @@
     that takes a reference to an StkFrames object for multi-channel
     and/or multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 
 #include "RtWvOut.h"
-#include <string.h>
+#include <cstring>
 
 namespace stk {
 

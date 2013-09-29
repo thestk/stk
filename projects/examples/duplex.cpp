@@ -10,8 +10,8 @@
 
 #include "RtAudio.h"
 #include <iostream>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 /*
 typedef signed long  MY_TYPE;

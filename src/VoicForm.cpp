@@ -21,14 +21,14 @@
        - Vibrato Gain = 1
        - Loudness (Spectral Tilt) = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 
 #include "VoicForm.h"
 #include "Phonemes.h"
 #include "SKINI.msg"
-#include <string.h>
+#include <cstring>
 #include <cmath>
 
 namespace stk {

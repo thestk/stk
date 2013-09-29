@@ -5,7 +5,7 @@
     This instrument provides an ADSR envelope, a one-pole filter, and
     structures for an arbitrary number of attack and looped files.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

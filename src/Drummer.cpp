@@ -11,7 +11,7 @@
     of simultaneous voices) via a #define in the
     Drummer.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

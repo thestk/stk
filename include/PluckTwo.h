@@ -24,7 +24,7 @@ namespace stk {
     use possibly subject to patents held by
     Stanford University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

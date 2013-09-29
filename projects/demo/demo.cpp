@@ -9,9 +9,9 @@
 #include "PRCRev.h"
 #include "Voicer.h"
 #include "Skini.h"
+#include "RtAudio.h"
 
 #if defined(__STK_REALTIME__)
-  #include "RtAudio.h"
   #include "Mutex.h"
 #endif
 

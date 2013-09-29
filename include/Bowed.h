@@ -30,7 +30,7 @@ namespace stk {
        - Vibrato Gain = 1
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

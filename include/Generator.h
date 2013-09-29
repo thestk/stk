@@ -13,7 +13,7 @@ namespace stk {
     generator sample-source subclasses.  It is general enough to
     support both monophonic and polyphonic output classes.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

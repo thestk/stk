@@ -24,7 +24,7 @@
          - Two Fixed = 7
          - Clump = 8
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

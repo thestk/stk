@@ -48,17 +48,20 @@ DEFS    += -DRAWWAVE_PATH=\"$(RAWWAVES)\"
 all : $(PROGRAMS)
 
 ragamat: ragamat.cpp $(OBJECTS)
-	$(CC) $(CFLAGS) $(DEFS) -o ragamat ragamat.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o ragamat ragamat.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
 
 libragamat: ragamat.cpp Tabla.cpp Drone.cpp VoicDrum.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o ragamat Tabla.cpp Drone.cpp VoicDrum.cpp ragamat.cpp -L../../src $(LIBRARY) -lstk
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o ragamat Tabla.cpp Drone.cpp VoicDrum.cpp ragamat.cpp -L../../src $(LIBRARY) -lstk
 
 $(OBJECTS) : Stk.h
 
 clean : 
-	-rm $(OBJECT_PATH)/*.o
-	-rm $(PROGRAMS) *.exe
-	-rm -fR *.dSYM
+	$(RM) -f $(OBJECT_PATH)/*.o
+	$(RM) -f $(PROGRAMS) *.exe
+	$(RM) -fR *~ *.dSYM
+
+distclean: clean
+	$(RM) Makefile
 
 strip : 
 	strip $(PROGRAMS)

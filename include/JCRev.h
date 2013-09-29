@@ -17,7 +17,7 @@ namespace stk {
     followed by four parallel comb filters, and two decorrelation
     delay lines in parallel at the output.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 

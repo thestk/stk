@@ -13,7 +13,7 @@ namespace stk {
     This class implements a spherical ball with
     radius, mass, position, and velocity parameters.
 
-    by Perry R. Cook, 1995 - 2009.
+    by Perry R. Cook, 1995 - 2010.
 */
 /***************************************************/
 

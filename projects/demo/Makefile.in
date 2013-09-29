@@ -58,23 +58,26 @@ DEFS    += -DRAWWAVE_PATH=\"$(RAWWAVES)\"
 all : $(PROGRAMS)
 
 demo: demo.cpp $(OBJECTS)
-	$(CC) $(CFLAGS) $(DEFS) -o demo demo.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o demo demo.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
 
 libdemo: demo.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o demo utilities.cpp demo.cpp -L../../src -lstk $(LIBRARY)
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o demo utilities.cpp demo.cpp -L../../src -lstk $(LIBRARY)
 
 Md2Skini: Md2Skini.cpp Stk.o RtMidi.o
-	$(CC) $(CFLAGS) $(DEFS) -o Md2Skini Md2Skini.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/RtMidi.o $(LIBRARY)
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o Md2Skini Md2Skini.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/RtMidi.o $(LIBRARY)
 
 libMd2Skini: Md2Skini.cpp
-	$(CC) $(CFLAGS) $(DEFS) -o Md2Skini Md2Skini.cpp -L../../src -lstk $(LIBRARY)
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o Md2Skini Md2Skini.cpp -L../../src -lstk $(LIBRARY)
 
 $(OBJECTS) : Stk.h
 
 clean : 
-	-rm $(OBJECT_PATH)/*.o
-	-rm $(PROGRAMS) *.exe
-	-rm -fR *~ *.dSYM
+	$(RM) -f $(OBJECT_PATH)/*.o
+	$(RM) -f $(PROGRAMS) *.exe
+	$(RM) -fR *~ *.dSYM
+
+distclean: clean
+	$(RM) Makefile
 
 strip : 
 	strip $(PROGRAMS)

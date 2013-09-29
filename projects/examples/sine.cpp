@@ -14,6 +14,8 @@
 
 #include "SineWave.h"
 #include "FileWvOut.h"
+#include <cstdlib>
+
 using namespace stk;
 
 void usage(void) {

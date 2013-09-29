@@ -4,6 +4,7 @@
 
 #include "Granulate.h"
 #include "RtAudio.h"
+#include <cstdlib>
 
 using namespace stk;
 

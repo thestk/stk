@@ -17,12 +17,12 @@
     read/write methods.  Values less than or equal to zero indicate
     the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2009.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2010.
 */
 /***************************************************/
 
 #include "UdpSocket.h"
-#include <string.h>
+#include <cstring>
 
 namespace stk {
 

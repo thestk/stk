@@ -2,8 +2,13 @@
 ### libstk Makefile - for various flavors of unix
 
 LIBRARY = libstk.a
+SHAREDLIB = libstk.so
+MAJOR = 4
+RELEASE = 4.4.2
+
 AR = ar -rsc
 RM = /bin/rm
+LN = /bin/ln
 OBJECT_PATH = @object_path@
 vpath %.o $(OBJECT_PATH)
 
@@ -14,7 +19,7 @@ OBJECTS	=	Stk.o Generator.o Noise.o Blit.o BlitSaw.o BlitSquare.o Granulate.o \
 					BiQuad.o FormSwep.o Delay.o DelayL.o DelayA.o \
 					\
 					Effect.o PRCRev.o JCRev.o NRev.o \
-					Chorus.o Echo.o PitShift.o \
+					Chorus.o Echo.o PitShift.o LentPitShift.o \
 					Function.o ReedTable.o JetTable.o BowTable.o \
 					Voicer.o Vector3D.o Sphere.o \
 					\
@@ -39,7 +44,8 @@ CC       = @CXX@
 DEFS     = @CPPFLAGS@
 DEFS    += @byte_order@
 CFLAGS   = @CXXFLAGS@
-CFLAGS  += $(INCLUDE) -Iinclude
+CFLAGS  += $(INCLUDE) -Iinclude -fPIC
+LIBS     = @LIBS@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
@@ -61,12 +67,24 @@ DEFS    += -DRAWWAVE_PATH=\"$(RAWWAVES)\"
 all : $(LIBRARY)
 
 $(LIBRARY) : $(OBJECTS)
-	/bin/rm -f $(LIBRARY)
+	$(RM) -f $(LIBRARY)
 	$(AR) $(LIBRARY) $(OBJECT_PATH)/*.o
+
+$(SHAREDLIB).$(RELEASE) : $(OBJECTS)
+	$(RM) -f $(@) $(SHAREDLIB).$(MAJOR) $(SHAREDLIB)
+	$(CC) $(LDFLAGS) -fPIC -shared -o $(@) $(OBJECT_PATH)/*.o $(LIBS)
+	$(LN) -s $(SHAREDLIB).$(RELEASE) $(SHAREDLIB).$(MAJOR)
+	$(LN) -s $(SHAREDLIB).$(RELEASE) $(SHAREDLIB)
+#	$(CC) $(LDFLAGS) -fPIC -shared -Wl,-soname,$(SHAREDLIB).$(MAJOR) -o $(@) $(OBJECT_PATH)/*.o $(LIBS)
 
 $(OBJECTS) : Stk.h
 
 clean : 
-	-rm $(OBJECT_PATH)/*.o
-	-rm $(LIBRARY)
-	-rm -fR *.dSYM
+	$(RM) -f $(OBJECT_PATH)/*.o
+	$(RM) -f $(LIBRARY)
+	$(RM) -f $(SHAREDLIB)*
+	$(RM) -f *~
+	$(RM) -fR *.dSYM
+
+distclean: clean
+	$(RM) Makefile

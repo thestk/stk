@@ -55,7 +55,7 @@ namespace stk {
         - Little Rocks = 21
         - Tuned Bamboo Chimes = 22
 
-    by Perry R. Cook, 1996 - 2009.
+    by Perry R. Cook, 1996 - 2010.
 */
 /***************************************************/
 
