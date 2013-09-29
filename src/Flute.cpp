@@ -18,7 +18,7 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -35,14 +35,15 @@ Flute :: Flute(StkFloat lowestFrequency)
   jetDelay_.setMaximumDelay( length_ );
   jetDelay_.setDelay( 49.0 );
 
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  vibrato_->setFrequency( 5.925 );
+  vibrato_.setFrequency( 5.925 );
 
   this->clear();
 
   filter_.setPole( 0.7 - ((StkFloat) 0.1 * 22050.0 / Stk::sampleRate() ) );
   filter_.setGain( -1.0 );
+
+  dcBlock_.setBlockZero();
+
   adsr_.setAllTimes( 0.005, 0.01, 0.8, 0.010);
   endReflection_ = 0.5;
   jetReflection_ = 0.5;
@@ -56,7 +57,6 @@ Flute :: Flute(StkFloat lowestFrequency)
 
 Flute :: ~Flute()
 {
-  delete vibrato_;
 }
 
 void Flute :: clear()
@@ -141,18 +141,18 @@ void Flute :: setJetDelay(StkFloat aRatio)
   jetDelay_.setDelay(temp * aRatio); // Scaled by ratio.
 }
 
-StkFloat Flute :: tick()
+StkFloat Flute :: computeSample()
 {
   StkFloat pressureDiff;
   StkFloat breathPressure;
 
   // Calculate the breath pressure (envelope + noise + vibrato)
   breathPressure = maxPressure_ * adsr_.tick();
-  breathPressure += breathPressure * noiseGain_ * noise_.tick();
-  breathPressure += breathPressure * vibratoGain_ * vibrato_->tick();
+  breathPressure += breathPressure * ( noiseGain_ * noise_.tick() + vibratoGain_ * vibrato_.tick() );
+  //breathPressure += breathPressure * vibratoGain_ * vibrato_.tick();
 
   StkFloat temp = filter_.tick( boreDelay_.lastOut() );
-  temp = dcBlock_.tick(temp); // Block DC on reflection.
+  temp = dcBlock_.tick( temp ); // Block DC on reflection.
 
   pressureDiff = breathPressure - (jetReflection_ * temp);
   pressureDiff = jetDelay_.tick( pressureDiff );
@@ -161,16 +161,6 @@ StkFloat Flute :: tick()
 
   lastOutput_ *= outputGain_;
   return lastOutput_;
-}
-
-StkFloat *Flute :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Flute :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Flute :: controlChange(int number, StkFloat value)
@@ -192,7 +182,7 @@ void Flute :: controlChange(int number, StkFloat value)
   else if (number == __SK_NoiseLevel_) // 4
     noiseGain_ = ( norm * 0.4);
   else if (number == __SK_ModFrequency_) // 11
-    vibrato_->setFrequency( norm * 12.0);
+    vibrato_.setFrequency( norm * 12.0);
   else if (number == __SK_ModWheel_) // 1
     vibratoGain_ = ( norm * 0.4 );
   else if (number == __SK_AfterTouch_Cont_) // 128

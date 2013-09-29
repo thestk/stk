@@ -4,7 +4,7 @@
 
     This class implements an echo effect.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -54,20 +54,10 @@ void Echo :: setDelay( unsigned long delay )
   delayLine_.setDelay( size );
 }
 
-StkFloat Echo :: tick(StkFloat input)
+StkFloat Echo :: computeSample(StkFloat input)
 {
   lastOutput_[0] = effectMix_ * delayLine_.tick(input);
   lastOutput_[0] += input * (1.0 - effectMix_);
   lastOutput_[1] = lastOutput_[0];
   return lastOutput_[0];
-}
-
-StkFloat *Echo :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Effect::tick( vector, vectorSize );
-}
-
-StkFrames& Echo :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Effect::tick( frames, channel );
 }

@@ -18,7 +18,7 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -33,9 +33,7 @@ Clarinet :: Clarinet(StkFloat lowestFrequency)
   reedTable_.setOffset((StkFloat) 0.7);
   reedTable_.setSlope((StkFloat) -0.3);
 
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  vibrato_->setFrequency((StkFloat) 5.735);
+  vibrato_.setFrequency((StkFloat) 5.735);
   outputGain_ = (StkFloat) 1.0;
   noiseGain_ = (StkFloat) 0.2;
   vibratoGain_ = (StkFloat) 0.1;
@@ -43,7 +41,6 @@ Clarinet :: Clarinet(StkFloat lowestFrequency)
 
 Clarinet :: ~Clarinet()
 {
-  delete vibrato_;
 }
 
 void Clarinet :: clear()
@@ -102,7 +99,7 @@ void Clarinet :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Clarinet :: tick()
+StkFloat Clarinet :: computeSample()
 {
   StkFloat pressureDiff;
   StkFloat breathPressure;
@@ -110,7 +107,7 @@ StkFloat Clarinet :: tick()
   // Calculate the breath pressure (envelope + noise + vibrato)
   breathPressure = envelope_.tick(); 
   breathPressure += breathPressure * noiseGain_ * noise_.tick();
-  breathPressure += breathPressure * vibratoGain_ * vibrato_->tick();
+  breathPressure += breathPressure * vibratoGain_ * vibrato_.tick();
 
   // Perform commuted loss filtering.
   pressureDiff = -0.95 * filter_.tick(delayLine_.lastOut());
@@ -125,16 +122,6 @@ StkFloat Clarinet :: tick()
   lastOutput_ *= outputGain_;
 
   return lastOutput_;
-}
-
-StkFloat *Clarinet :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Clarinet :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Clarinet :: controlChange(int number, StkFloat value)
@@ -156,7 +143,7 @@ void Clarinet :: controlChange(int number, StkFloat value)
   else if (number == __SK_NoiseLevel_) // 4
     noiseGain_ = (norm * (StkFloat) 0.4);
   else if (number == __SK_ModFrequency_) // 11
-    vibrato_->setFrequency((norm * (StkFloat) 12.0));
+    vibrato_.setFrequency((norm * (StkFloat) 12.0));
   else if (number == __SK_ModWheel_) // 1
     vibratoGain_ = (norm * (StkFloat) 0.5);
   else if (number == __SK_AfterTouch_Cont_) // 128

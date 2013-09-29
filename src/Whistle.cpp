@@ -18,7 +18,7 @@
 
 #include "Whistle.h"
 #include "SKINI.msg"
-#include <math.h>
+#include <cmath>
 
 const int CAN_RADIUS = 100;
 const int PEA_RADIUS = 30;
@@ -35,9 +35,7 @@ const StkFloat ENV_RATE = 0.001;
 
 Whistle :: Whistle()
 {
-  // Concatenate the STK rawwave path to the rawwave file
-  sine_ = new WaveLoop( ( Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  sine_->setFrequency( 2800.0 );
+  sine_.setFrequency( 2800.0 );
 
   can_.setRadius( CAN_RADIUS );
   can_.setPosition(0, 0, 0); // set can location
@@ -71,7 +69,9 @@ Whistle :: Whistle()
 
 Whistle :: ~Whistle()
 {
-  delete sine_;
+#ifdef WHISTLE_ANIMATION
+  printf("Exit, Whistle bye bye!!\n");
+#endif
 }
 
 void Whistle :: clear()
@@ -124,7 +124,7 @@ void Whistle :: noteOff(StkFloat amplitude)
 
 int frameCount = 0;
 
-StkFloat Whistle :: tick()
+StkFloat Whistle :: computeSample()
 {
   StkFloat soundMix, tempFreq;
   StkFloat envOut = 0, temp, temp1, temp2, tempX, tempY;
@@ -163,7 +163,7 @@ StkFloat Whistle :: tick()
     tempFreq = 1.0 + fippleFreqMod_*(0.25-temp) + blowFreqMod_*(envOut-1.0);
     tempFreq *= baseFrequency_;
 
-    sine_->setFrequency(tempFreq);
+    sine_.setFrequency(tempFreq);
     
     tempVectorP_ = pea_.getPosition();
     temp = can_.isInside(tempVectorP_);
@@ -211,20 +211,10 @@ StkFloat Whistle :: tick()
 	}
 
 	temp = envOut * envOut * gain / 2;
-	soundMix = temp * ( sine_->tick() + ( noiseGain_*noise_.tick() ) );
+	soundMix = temp * ( sine_.tick() + ( noiseGain_*noise_.tick() ) );
 	lastOutput_ = 0.25 * soundMix; // should probably do one-zero filter here
 
 	return lastOutput_;
-}
-
-StkFloat *Whistle :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Whistle :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Whistle :: controlChange(int number, StkFloat value)
@@ -241,18 +231,21 @@ void Whistle :: controlChange(int number, StkFloat value)
     handleError( StkError::WARNING );
   }
 
-  if (number == __SK_NoiseLevel_) // 4
+  if ( number == __SK_NoiseLevel_ ) // 4
     noiseGain_ = 0.25 * norm;
-  else if (number == __SK_ModFrequency_) // 11
+  else if ( number == __SK_ModFrequency_ ) // 11
     fippleFreqMod_ = norm;
-  else if (number == __SK_ModWheel_) // 1
+  else if ( number == __SK_ModWheel_ ) // 1
     fippleGainMod_ = norm;
-  else if (number == __SK_AfterTouch_Cont_) // 128
+  else if ( number == __SK_AfterTouch_Cont_ ) // 128
     envelope_.setTarget( norm * 2.0 );
-  else if (number == __SK_Breath_) // 2
+  else if ( number == __SK_Breath_ ) // 2
     blowFreqMod_ = norm * 0.5;
-  else if (number == __SK_Sustain_)	 // 64
-	  if (value < 1.0) subSample_ = 1;
+  else if ( number == __SK_Sustain_ )	{ // 64
+    subSample_ = (int) value;
+    if ( subSample_ < 1.0 ) subSample_ = 1;
+    envelope_.setRate( ENV_RATE / subSample_ );
+  }
   else {
     errorString_ << "Whistle::controlChange: undefined control number (" << number << ")!";
     handleError( StkError::WARNING );

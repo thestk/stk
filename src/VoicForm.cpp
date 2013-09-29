@@ -21,7 +21,7 @@
        - Vibrato Gain = 1
        - Loudness (Spectral Tilt) = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -29,7 +29,7 @@
 #include "Phonemes.h"
 #include "SKINI.msg"
 
-#include <math.h>
+#include <cmath>
 
 VoicForm :: VoicForm() : Instrmnt()
 {
@@ -65,7 +65,7 @@ void VoicForm :: clear()
   }
 }
 
-void VoicForm :: setFrequency(StkFloat frequency)
+void VoicForm :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -77,7 +77,7 @@ void VoicForm :: setFrequency(StkFloat frequency)
 	voiced_->setFrequency( freakency );
 }
 
-bool VoicForm :: setPhoneme(const char *phoneme )
+bool VoicForm :: setPhoneme( const char *phoneme )
 {
 	bool found = false;
   unsigned int i = 0;
@@ -155,33 +155,23 @@ void VoicForm :: noteOff(StkFloat amplitude)
 	this->quiet();
 }
 
-StkFloat VoicForm :: tick()
+StkFloat VoicForm :: computeSample()
 {
-	StkFloat temp;
-	temp = onepole_.tick( onezero_.tick( voiced_->tick() ) );
-	temp += noiseEnv_.tick() * noise_.tick();
-	lastOutput_ = filters_[0].tick(temp);
-	lastOutput_ += filters_[1].tick(temp);
-	lastOutput_ += filters_[2].tick(temp);
-	lastOutput_ += filters_[3].tick(temp);
+  StkFloat temp;
+  temp = onepole_.tick( onezero_.tick( voiced_->tick() ) );
+  temp += noiseEnv_.tick() * noise_.tick();
+  lastOutput_ = filters_[0].tick(temp);
+  lastOutput_ += filters_[1].tick(temp);
+  lastOutput_ += filters_[2].tick(temp);
+  lastOutput_ += filters_[3].tick(temp);
   /*
-	temp  += noiseEnv_.tick() * noise_.tick();
-	lastOutput_  = filters_[0].tick(temp);
-	lastOutput_  = filters_[1].tick(lastOutput_);
-	lastOutput_  = filters_[2].tick(lastOutput_);
-	lastOutput_  = filters_[3].tick(lastOutput_);
+    temp  += noiseEnv_.tick() * noise_.tick();
+    lastOutput_  = filters_[0].tick(temp);
+    lastOutput_  = filters_[1].tick(lastOutput_);
+    lastOutput_  = filters_[2].tick(lastOutput_);
+    lastOutput_  = filters_[3].tick(lastOutput_);
   */
 	return lastOutput_;
-}
-
-StkFloat *VoicForm :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& VoicForm :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
  
 void VoicForm :: controlChange(int number, StkFloat value)

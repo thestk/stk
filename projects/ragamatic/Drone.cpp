@@ -13,13 +13,13 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
 #include "Drone.h"
 
-Drone :: Drone(StkFloat lowestFrequency)
+Drone :: Drone( StkFloat lowestFrequency )
 {
   length_ = (unsigned long) (Stk::sampleRate() / lowestFrequency + 1);
   loopGain_ = 0.999;
@@ -39,7 +39,7 @@ void Drone :: clear()
   loopFilter_.clear();
 }
 
-void Drone :: setFrequency(StkFloat frequency)
+void Drone :: setFrequency( StkFloat frequency )
 {
   StkFloat freakency = frequency;
   if ( frequency <= 0.0 ) {
@@ -59,12 +59,12 @@ void Drone :: setFrequency(StkFloat frequency)
   if ( loopGain_ >= 1.0 ) loopGain_ = 0.99999;
 }
 
-void Drone :: pluck(StkFloat amplitude)
+void Drone :: pluck( StkFloat amplitude )
 {
   envelope_.keyOn();
 }
 
-void Drone :: noteOn(StkFloat frequency, StkFloat amplitude)
+void Drone :: noteOn( StkFloat frequency, StkFloat amplitude )
 {
   this->setFrequency( frequency );
   this->pluck( amplitude );
@@ -75,7 +75,7 @@ void Drone :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-void Drone :: noteOff(StkFloat amplitude)
+void Drone :: noteOff( StkFloat amplitude )
 {
   loopGain_ = 1.0 - amplitude;
   if ( loopGain_ < 0.0 ) {
@@ -95,19 +95,11 @@ void Drone :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Drone :: tick()
+StkFloat Drone :: computeSample()
 {
   // Here's the whole inner loop of the instrument!!
-  lastOutput_ = delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ ) + (0.005 * envelope_.tick() * noise_.tick())); 
+  lastOutput_ = delayLine_.tick( loopFilter_.tick( delayLine_.lastOut() * loopGain_ )
+                                 + (0.005 * envelope_.tick() * noise_.tick())); 
   return lastOutput_;
 }
 
-StkFloat *Drone :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Drone :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
-}

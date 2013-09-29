@@ -8,7 +8,7 @@
     RtMidi WWW site: http://music.mcgill.ca/~gary/rtmidi/
 
     RtMidi: realtime MIDI i/o C++ classes
-    Copyright (c) 2003-2004 Gary P. Scavone
+    Copyright (c) 2003-2005 Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -35,7 +35,7 @@
 */
 /**********************************************************************/
 
-// RtMidi: Version 1.0.2, 21 September 2004
+// RtMidi: Version 1.0.4, 14 October 2005
 
 #include "RtMidi.h"
 #include <sstream>
@@ -270,6 +270,14 @@ void midiInputCallback( const MIDIPacketList *list, void *procRef, void *srcRef 
           else size = 3;
         }
         else if ( status == 0xF3 ) size = 2;
+        else if ( status == 0xF8 ) {
+          size = 1;
+          if ( data->ignoreFlags & 0x02 ) {
+            // A MIDI timing tick message and we're ignoring it.
+            size = 0;
+            iByte += 3;
+          }
+        }
         else if ( status == 0xFE && (data->ignoreFlags & 0x04) ) {
           // A MIDI active sensing message and we're ignoring it.
           size = 0;
@@ -620,8 +628,10 @@ void RtMidiOut :: sendMessage( std::vector<unsigned char> *message )
 #if defined(__LINUX_ALSASEQ__)
 
 // The ALSA Sequencer API is based on the use of a callback function for
-// MIDI input.  We convert the system specific time stamps to delta
-// time values.
+// MIDI input.
+//
+// Thanks to Pedro Lopez-Cabanillas for help with the ALSA sequencer
+// time stamps and other assorted fixes!!!
 
 #include <pthread.h>
 #include <sys/time.h>
@@ -640,6 +650,7 @@ struct AlsaMidiData {
   unsigned char *buffer;
   pthread_t thread;
   unsigned long long lastTime;
+  int queue_id; // an input queue is needed to get timestamped events
 };
 
 #define PORT_TYPE( pinfo, bits ) ((snd_seq_port_info_get_capability(pinfo) & (bits)) == (bits))
@@ -656,11 +667,10 @@ extern "C" void *alsaMidiHandler( void *ptr )
 
   long nBytes;
   unsigned long long time, lastTime;
-  unsigned char lastStatus = 0;
+  bool continueSysex = false;
   RtMidiIn::MidiMessage message;
 
   snd_seq_event_t *ev;
-  struct timeval tv;
   int result;
   apiData->bufferSize = 32;
   result = snd_midi_event_new( 0, &apiData->coder );
@@ -669,13 +679,14 @@ extern "C" void *alsaMidiHandler( void *ptr )
     std::cerr << "\nRtMidiIn::alsaMidiHandler: error initializing MIDI event parser!\n\n";
     return 0;
   }
-  unsigned char *buffer = (unsigned char *) malloc(apiData->bufferSize);
+  unsigned char *buffer = (unsigned char *) malloc( apiData->bufferSize );
   if ( buffer == NULL ) {
     data->doInput = false;
     std::cerr << "\nRtMidiIn::alsaMidiHandler: error initializing buffer memory!\n\n";
     return 0;
   }
   snd_midi_event_init( apiData->coder );
+  snd_midi_event_no_status( apiData->coder, 1 ); // suppress running status messages
 
   while ( data->doInput ) {
 
@@ -699,7 +710,7 @@ extern "C" void *alsaMidiHandler( void *ptr )
     // This is a bit weird, but we now have to decode an ALSA MIDI
     // event (back) into MIDI bytes.  We'll ignore non-MIDI types.
     message.bytes.clear();
-    switch (ev->type) {
+    switch ( ev->type ) {
 
 		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
 #if defined(__RTMIDI_DEBUG__)
@@ -715,6 +726,9 @@ extern "C" void *alsaMidiHandler( void *ptr )
     case SND_SEQ_EVENT_QFRAME: // MIDI time code
       if ( data->ignoreFlags & 0x02 ) break;
 
+    case SND_SEQ_EVENT_TICK: // MIDI timing tick
+      if ( data->ignoreFlags & 0x02 ) break;
+
     case SND_SEQ_EVENT_SENSING: // Active sensing
       if ( data->ignoreFlags & 0x04 ) break;
 
@@ -722,8 +736,8 @@ extern "C" void *alsaMidiHandler( void *ptr )
       if ( (data->ignoreFlags & 0x01) ) break;
       if ( ev->data.ext.len > apiData->bufferSize ) {
         apiData->bufferSize = ev->data.ext.len;
-        free(buffer);
-        buffer = (unsigned char *) malloc(apiData->bufferSize);
+        free( buffer );
+        buffer = (unsigned char *) malloc( apiData->bufferSize );
         if ( buffer == NULL ) {
           data->doInput = false;
           std::cerr << "\nRtMidiIn::alsaMidiHandler: error resizing buffer memory!\n\n";
@@ -739,25 +753,41 @@ extern "C" void *alsaMidiHandler( void *ptr )
 #endif
         break;
       }
-      message.bytes.assign( buffer, &buffer[nBytes] );
 
-      // Save last status byte in case of running status.
-      if ( message.bytes[0] & 0x80 ) lastStatus = message.bytes[0];
-      else if ( lastStatus ) message.bytes.insert( message.bytes.begin(), lastStatus );
-      // I found the ALSA sequencer documentation to be very inadequate,
-      // especially regarding timestamps.  So, I ignore the event
-      // timestamp and use system time to determine ours.
+      // The ALSA sequencer has a maximum buffer size for MIDI sysex
+      // events of 256 bytes.  If a device sends sysex messages larger
+      // than this, they are segmented into 256 byte chunks.  So,
+      // we'll watch for this and concatenate sysex chunks into a
+      // single sysex message if necessary.
+      if ( !continueSysex )
+        message.bytes.assign( buffer, &buffer[nBytes] );
+      else
+        message.bytes.insert( message.bytes.end(), buffer, &buffer[nBytes] );
+
+      if ( ev->type == SND_SEQ_EVENT_SYSEX && message.bytes.back() == 0xF7 )
+        continueSysex = false;
+      else {
+        continueSysex = true;
+        break;
+      }
+
+      // Calculate the time stamp:
       message.timeStamp = 0.0;
-      (void)gettimeofday(&tv, (struct timezone *)NULL);
-      time = (tv.tv_sec * 1000000) + tv.tv_usec;
+
+      // Method 1: Use the system time.
+      //(void)gettimeofday(&tv, (struct timezone *)NULL);
+      //time = (tv.tv_sec * 1000000) + tv.tv_usec;
+
+      // Method 2: Use the ALSA sequencer event time data.
+      // (thanks to Pedro Lopez-Cabanillas!).
+      time = ( ev->time.time.tv_sec * 1000000 ) + ( ev->time.time.tv_nsec/1000 );
       lastTime = time;
       time -= apiData->lastTime;
       apiData->lastTime = lastTime;
       if ( data->firstMessage == true )
         data->firstMessage = false;
-      else {
+      else
         message.timeStamp = time * 0.000001;
-      }
     }
 
     snd_seq_free_event(ev);
@@ -776,6 +806,7 @@ extern "C" void *alsaMidiHandler( void *ptr )
     }
   }
 
+  if ( buffer ) free( buffer );
   snd_midi_event_free( apiData->coder );
   apiData->coder = 0;
   return 0;
@@ -785,7 +816,7 @@ void RtMidiIn :: initialize( void )
 {
   // Set up the ALSA sequencer client.
 	snd_seq_t *seq;
-  int result = snd_seq_open(&seq, "default", SND_SEQ_OPEN_INPUT, 0);
+  int result = snd_seq_open(&seq, "default", SND_SEQ_OPEN_DUPLEX, SND_SEQ_NONBLOCK);
   if ( result < 0 ) {
     errorString_ = "RtMidiIn::initialize: error creating ALSA sequencer input client object.";
     error( RtError::DRIVER_ERROR );
@@ -800,6 +831,16 @@ void RtMidiIn :: initialize( void )
   data->vport = -1;
   apiData_ = (void *) data;
   inputData_.apiData = (void *) data;
+
+  // Create the input queue
+  data->queue_id = snd_seq_alloc_named_queue(seq, "RtMidi Queue");
+  // Set arbitrary tempo (mm=100) and resolution (240)
+  snd_seq_queue_tempo_t *qtempo;
+  snd_seq_queue_tempo_alloca(&qtempo);
+  snd_seq_queue_tempo_set_tempo(qtempo, 600000);
+  snd_seq_queue_tempo_set_ppq(qtempo, 240);
+  snd_seq_set_queue_tempo(data->seq, data->queue_id, qtempo);
+  snd_seq_drain_output(data->seq);
 }
 
 // This function is used to count or get the pinfo structure for a given port number.
@@ -859,9 +900,21 @@ void RtMidiIn :: openPort( unsigned int portNumber )
   sender.port = snd_seq_port_info_get_port( pinfo );
   receiver.client = snd_seq_client_id( data->seq );
   if ( data->vport < 0 ) {
-    data->vport = snd_seq_create_simple_port( data->seq, "RtMidi Input",
-                                              SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
-                                              SND_SEQ_PORT_TYPE_MIDI_GENERIC );
+    snd_seq_port_info_set_client( pinfo, 0 );
+    snd_seq_port_info_set_port( pinfo, 0 );
+    snd_seq_port_info_set_capability( pinfo,
+                                      SND_SEQ_PORT_CAP_WRITE |
+                                      SND_SEQ_PORT_CAP_SUBS_WRITE );
+    snd_seq_port_info_set_type( pinfo,
+                                SND_SEQ_PORT_TYPE_MIDI_GENERIC |
+                                SND_SEQ_PORT_TYPE_APPLICATION );
+    snd_seq_port_info_set_midi_channels(pinfo, 16);
+    snd_seq_port_info_set_timestamping(pinfo, 1);
+    snd_seq_port_info_set_timestamp_real(pinfo, 1);    
+    snd_seq_port_info_set_timestamp_queue(pinfo, data->queue_id);
+    snd_seq_port_info_set_name(pinfo, "RtMidi Input");
+    data->vport = snd_seq_create_port(data->seq, pinfo);
+  
     if ( data->vport < 0 ) {
       errorString_ = "RtMidiIn::openPort: ALSA error creating input port.";
       error( RtError::DRIVER_ERROR );
@@ -874,19 +927,20 @@ void RtMidiIn :: openPort( unsigned int portNumber )
   snd_seq_port_subscribe_malloc( &data->subscription );
   snd_seq_port_subscribe_set_sender(data->subscription, &sender);
   snd_seq_port_subscribe_set_dest(data->subscription, &receiver);
-  snd_seq_port_subscribe_set_time_update(data->subscription, 1);
-  snd_seq_port_subscribe_set_time_real(data->subscription, 1);
   if ( snd_seq_subscribe_port(data->seq, data->subscription) ) {
     errorString_ = "RtMidiIn::openPort: ALSA error making port connection.";
     error( RtError::DRIVER_ERROR );
   }
 
   if ( inputData_.doInput == false ) {
+    // Start the input queue
+    snd_seq_start_queue( data->seq, data->queue_id, NULL );
+    snd_seq_drain_output( data->seq );
     // Start our MIDI input thread.
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-    pthread_attr_setschedpolicy(&attr, SCHED_RR);
+    pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
 
     inputData_.doInput = true;
     int err = pthread_create(&data->thread, &attr, alsaMidiHandler, &inputData_);
@@ -907,9 +961,20 @@ void RtMidiIn :: openVirtualPort()
 {
   AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
   if ( data->vport < 0 ) {
-    data->vport = snd_seq_create_simple_port( data->seq, "RtMidi Input",
-                                              SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
-                                              SND_SEQ_PORT_TYPE_MIDI_GENERIC );
+    snd_seq_port_info_t *pinfo;
+    snd_seq_port_info_alloca( &pinfo );
+    snd_seq_port_info_set_capability( pinfo,
+				      SND_SEQ_PORT_CAP_WRITE |
+				      SND_SEQ_PORT_CAP_SUBS_WRITE );
+    snd_seq_port_info_set_type( pinfo,
+				SND_SEQ_PORT_TYPE_MIDI_GENERIC |
+				SND_SEQ_PORT_TYPE_APPLICATION );
+    snd_seq_port_info_set_midi_channels(pinfo, 16);
+    snd_seq_port_info_set_timestamping(pinfo, 1);
+    snd_seq_port_info_set_timestamp_real(pinfo, 1);    
+    snd_seq_port_info_set_timestamp_queue(pinfo, data->queue_id);
+    snd_seq_port_info_set_name(pinfo, "RtMidi Input");
+    data->vport = snd_seq_create_port(data->seq, pinfo);
 
     if ( data->vport < 0 ) {
       errorString_ = "RtMidiIn::openVirtualPort: ALSA error creating virtual port.";
@@ -918,11 +983,14 @@ void RtMidiIn :: openVirtualPort()
   }
 
   if ( inputData_.doInput == false ) {
+    // Start the input queue
+    snd_seq_start_queue( data->seq, data->queue_id, NULL );
+    snd_seq_drain_output( data->seq );
     // Start our MIDI input thread.
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-    pthread_attr_setschedpolicy(&attr, SCHED_RR);
+    pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
 
     inputData_.doInput = true;
     int err = pthread_create(&data->thread, &attr, alsaMidiHandler, &inputData_);
@@ -943,6 +1011,9 @@ void RtMidiIn :: closePort( void )
     AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
     snd_seq_unsubscribe_port( data->seq, data->subscription );
     snd_seq_port_subscribe_free( data->subscription );
+    // Stop the input queue
+    snd_seq_stop_queue( data->seq, data->queue_id, NULL );
+    snd_seq_drain_output( data->seq );
     connected_ = false;
   }
 }
@@ -961,6 +1032,7 @@ RtMidiIn :: ~RtMidiIn()
 
   // Cleanup.
   if ( data->vport >= 0 ) snd_seq_delete_port( data->seq, data->vport );
+  snd_seq_free_queue( data->seq, data->queue_id );
   snd_seq_close( data->seq );
   delete data;
 }
@@ -1316,6 +1388,12 @@ extern "C" void *irixMidiHandler( void *ptr )
       }
     }
     else if ( status == 0xF3 ) size = 2;
+    else if ( status == 0xF8 ) {
+      if ( !(data->ignoreFlags & 0x02) ) {
+        // A MIDI timing tick message and we're not ignoring it.
+        size = 1;
+      }
+    }
     else if ( status == 0xFE ) { // MIDI active sensing
       if ( !(data->ignoreFlags & 0x04) )
         size = 1;
@@ -1657,6 +1735,10 @@ static void CALLBACK midiInputCallback( HMIDIOUT hmin,
       nBytes = 3;
     }
     else if ( status == 0xF3 ) nBytes = 2;
+    else if ( status == 0xF8 && (data->ignoreFlags & 0x02) ) {
+      // A MIDI timing tick message and we're ignoring it.
+      return;
+    }
     else if ( status == 0xFE && (data->ignoreFlags & 0x04) ) {
       // A MIDI active sensing message and we're ignoring it.
       return;

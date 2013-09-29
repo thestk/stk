@@ -8,7 +8,7 @@
     provides error handling and byte-swapping
     functions.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -18,9 +18,12 @@ StkFloat Stk :: srate_ = (StkFloat) SRATE;
 std::string Stk :: rawwavepath_ = RAWWAVE_PATH;
 const Stk::StkFormat Stk :: STK_SINT8   = 0x1;
 const Stk::StkFormat Stk :: STK_SINT16  = 0x2;
+const Stk::StkFormat Stk :: STK_SINT24  = 0x4;
 const Stk::StkFormat Stk :: STK_SINT32  = 0x8;
 const Stk::StkFormat Stk :: STK_FLOAT32 = 0x10;
 const Stk::StkFormat Stk :: STK_FLOAT64 = 0x20;
+bool Stk :: showWarnings_ = false;
+bool Stk :: printErrors_ = true;
 
 Stk :: Stk(void)
 {
@@ -123,60 +126,186 @@ void Stk :: handleError( const char *message, StkError::Type type )
 
 void Stk :: handleError( std::string message, StkError::Type type )
 {
-  if (type == StkError::WARNING || type == StkError::STATUS )
+  if ( type == StkError::WARNING || type == StkError::STATUS ) {
+    if ( !showWarnings_ ) return;
     std::cerr << '\n' << message << '\n' << std::endl;
+  }
   else if (type == StkError::DEBUG_WARNING) {
 #if defined(_STK_DEBUG_)
     std::cerr << '\n' << message << '\n' << std::endl;
 #endif
   }
   else {
-    // Print error message before throwing.
-    std::cerr << '\n' << message << '\n' << std::endl;
+    if ( printErrors_ ) {
+      // Print error message before throwing.
+      std::cerr << '\n' << message << '\n' << std::endl;
+    }
     throw StkError(message, type);
   }
 }
 
+//
+// StkFrames definitions
+//
+
 StkFrames :: StkFrames( unsigned int nFrames, unsigned int nChannels, bool interleaved )
   : nFrames_( nFrames ), nChannels_( nChannels ), interleaved_( interleaved )
 {
-  if ( nChannels == 0 ) {
-    std::string message = "StkFrames::StkFrames: nChannels argument should be 1 or greater (even if nFrames = 0) ... correcting to one channel!";
-    Stk::handleError( message, StkError::WARNING );
-    nChannels_ = 1;
-  }
-
   size_ = nFrames_ * nChannels_;
-  if ( size_ > 0 ) data_.resize( size_, 0.0 );
+  bufferSize_ = size_;
+
+  if ( size_ > 0 ) {
+    data_ = (StkFloat *) calloc( size_, sizeof( StkFloat ) );
+#if defined(_STK_DEBUG_)
+    if ( data_ == NULL ) {
+      std::string error = "StkFrames: memory allocation error in constructor!";
+      Stk::handleError( error, StkError::MEMORY_ALLOCATION );
+    }
+#endif
+  }
+  else data_ = 0;
+
+  dataRate_ = Stk::sampleRate();
 }
 
 StkFrames :: StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels, bool interleaved )
   : nFrames_( nFrames ), nChannels_( nChannels ), interleaved_( interleaved )
 {
-  if ( nChannels == 0 ) {
-    std::string message = "StkFrames::StkFrames: nChannels argument should be 1 or greater (even if nFrames = 0) ... correcting to one channel!";
-    Stk::handleError( message, StkError::WARNING );
-    nChannels_ = 1;
-  }
-
   size_ = nFrames_ * nChannels_;
-  if ( size_ > 0 ) data_.resize( size_, value );
+  bufferSize_ = size_;
+  if ( size_ > 0 ) {
+    data_ = (StkFloat *) malloc( size_ * sizeof( StkFloat ) );
+#if defined(_STK_DEBUG_)
+    if ( data_ == NULL ) {
+      std::string error = "StkFrames: memory allocation error in constructor!";
+      Stk::handleError( error, StkError::MEMORY_ALLOCATION );
+    }
+#endif
+    for ( long i=0; i<(long)size_; i++ ) data_[i] = value;
+  }
+  else data_ = 0;
+
+  dataRate_ = Stk::sampleRate();
 }
 
-void StkFrames :: resize( unsigned int nFrames, unsigned int nChannels, StkFloat value )
+StkFrames :: ~StkFrames()
+{
+  if ( data_ ) free( data_ );
+}
+
+bool StkFrames :: empty() const
+{
+  if ( size_ > 0 ) return false;
+  else return true;
+}
+
+void StkFrames :: resize( size_t nFrames, unsigned int nChannels )
 {
   nFrames_ = nFrames;
   nChannels_ = nChannels;
 
-  if ( nChannels == 0 ) {
-    std::string message = "StkFrames::resize(): nChannels argument should be 1 or greater (even if nFrames = 0) ... correcting to one channel!";
-    Stk::handleError( message, StkError::WARNING );
-    nChannels_ = 1;
+  size_ = nFrames_ * nChannels_;
+  if ( size_ > bufferSize_ ) {
+    if ( data_ ) free( data_ );
+    data_ = (StkFloat *) malloc( size_ * sizeof( StkFloat ) );
+#if defined(_STK_DEBUG_)
+    if ( data_ == NULL ) {
+      std::string error = "StkFrames::resize: memory allocation error!";
+      Stk::handleError( error, StkError::MEMORY_ALLOCATION );
+    }
+#endif
+    bufferSize_ = size_;
+  }
+}
+
+void StkFrames :: resize( size_t nFrames, unsigned int nChannels, StkFloat value )
+{
+  this->resize( nFrames, nChannels );
+
+  for ( size_t i=0; i<size_; i++ ) data_[i] = value;
+}
+
+StkFloat& StkFrames :: operator[] ( size_t n )
+{
+#if defined(_STK_DEBUG_)
+    if ( n >= size_ ) {
+      std::ostringstream error;
+      error << "StkFrames::operator[]: invalid index (" << n << ") value!";
+      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+    }
+#endif
+
+  return data_[n];
+}
+
+StkFloat StkFrames :: operator[] ( size_t n ) const
+{
+#if defined(_STK_DEBUG_)
+    if ( n >= size_ ) {
+      std::ostringstream error;
+      error << "StkFrames::operator[]: invalid index (" << n << ") value!";
+      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+    }
+#endif
+
+  return data_[n];
+}
+
+StkFloat& StkFrames :: operator() ( size_t frame, unsigned int channel )
+{
+#if defined(_STK_DEBUG_)
+    if ( frame >= nFrames_ || channel >= nChannels_ ) {
+      std::ostringstream error;
+      error << "StkFrames::operator(): invalid frame (" << frame << ") or channel (" << channel << ") value!";
+      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+    }
+#endif
+
+  if ( interleaved_ )
+    return data_[ frame * nChannels_ + channel ];
+  else
+    return data_[ channel * nFrames_ + frame ];
+}
+
+StkFloat StkFrames :: operator() ( size_t frame, unsigned int channel ) const
+{
+#if defined(_STK_DEBUG_)
+    if ( frame >= nFrames_ || channel >= nChannels_ ) {
+      std::ostringstream error;
+      error << "StkFrames::operator(): invalid frame (" << frame << ") or channel (" << channel << ") value!";
+      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+    }
+#endif
+
+  if ( interleaved_ )
+    return data_[ frame * nChannels_ + channel ];
+  else
+    return data_[ channel * nFrames_ + frame ];
+}
+
+StkFloat StkFrames :: interpolate( StkFloat frame, unsigned int channel ) const
+{
+#if defined(_STK_DEBUG_)
+    if ( frame >= (StkFloat) nFrames_ || channel >= nChannels_ ) {
+      std::ostringstream error;
+      error << "StkFrames::interpolate: invalid frame (" << frame << ") or channel (" << channel << ") value!";
+      Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+    }
+#endif
+
+  size_t iIndex = ( size_t ) frame;                    // integer part of index
+  StkFloat output, alpha = frame - (StkFloat) iIndex;  // fractional part of index
+
+  if ( interleaved_ ) {
+    iIndex = iIndex * nChannels_ + channel;
+    output = data_[ iIndex ];
+    output += ( alpha * ( data_[ iIndex + nChannels_ ] - output ) );
+  }
+  else {
+    iIndex += channel * nFrames_;
+    output = data_[ iIndex ];
+    output += ( alpha * ( data_[ iIndex++ ] - output ) );
   }
 
-  size_t newSize = nFrames_ * nChannels_;
-  if ( size_ != newSize ) {
-    size_ = newSize;
-    data_.resize( size_, value );
-  }
+  return output;
 }

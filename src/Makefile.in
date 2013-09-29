@@ -6,14 +6,14 @@ RM = /bin/rm
 OBJECT_PATH = @object_path@
 vpath %.o $(OBJECT_PATH)
 
-OBJECTS	=	Stk.o Generator.o Noise.o SubNoise.o \
-					Envelope.o ADSR.o Asymp.o Modulate.o SingWave.o \
-					WvIn.o WaveLoop.o WvOut.o \
+OBJECTS	=	Stk.o Generator.o Noise.o SubNoise.o Blit.o BlitSaw.o BlitSquare.o \
+					Envelope.o ADSR.o Asymp.o Modulate.o SingWave.o SineWave.o Granulate.o \
+					FileRead.o FileWrite.o WvIn.o FileWvIn.o WaveLoop.o WvOut.o FileWvOut.o \
 					Filter.o OneZero.o OnePole.o PoleZero.o TwoZero.o TwoPole.o \
 					BiQuad.o FormSwep.o Delay.o DelayL.o DelayA.o \
 					Effect.o PRCRev.o JCRev.o NRev.o \
 					Chorus.o Echo.o PitShift.o \
-					Function.o Table.o ReedTable.o JetTable.o BowTable.o \
+					Function.o ReedTable.o JetTable.o BowTable.o \
 					Voicer.o Vector3D.o Sphere.o \
 					\
 					Instrmnt.o Clarinet.o BlowHole.o Saxofony.o Flute.o Brass.o BlowBotl.o \
@@ -42,7 +42,7 @@ CFLAGS  += @warn@ $(INCLUDE)
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
-	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o RtWvIn.o RtDuplex.o TcpWvOut.o TcpWvIn.o Thread.o Mutex.o Socket.o
+	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o RtWvIn.o RtDuplex.o InetWvOut.o InetWvIn.o Thread.o Mutex.o Socket.o TcpClient.o TcpServer.o UdpSocket.o
 	DEFS    += @audio_apis@
 endif
 

@@ -10,7 +10,7 @@
     filters, and two decorrelation delay lines in
     parallel at the output.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -35,22 +35,10 @@ class JCRev : public Effect
   //! Set the reverberation T60 decay time.
   void setT60( StkFloat T60 );
 
-  //! Compute one output sample.
-  StkFloat tick(StkFloat input);
-
-  //! Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
-  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
-
-  //! Take a channel of the StkFrames object as inputs to the effect and replace with corresponding outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
  protected:
+
+  StkFloat computeSample( StkFloat input );
+
   Delay allpassDelays_[3];
   Delay combDelays_[4];
   Delay outLeftDelay_;

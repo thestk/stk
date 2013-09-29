@@ -39,5 +39,5 @@ Only a few basic SKINI message type case statements are included in this example
 
 This example could also be easily extended to accept "realtime" control input messages via pipe, socket or MIDI connections.  The Messager class provides Messager::startStdInput(), Messager::startSocketInput(), and Messager::startMidiInput() functions for this purpose.
 
-[<A HREF="multichannel.html">Next tutorial</A>] &nbsp; [<A HREF="tutorial.html">Main tutorial page</A>]
+[<A HREF="tutorial.html">Main tutorial page</A>] &nbsp; [<A HREF="multichannel.html">Next tutorial</A>]
 */

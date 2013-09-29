@@ -7,7 +7,7 @@
     (non-sweeping BiQuad filters), where N is set
     during instantiation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -17,6 +17,7 @@
 #include "Instrmnt.h"
 #include "Envelope.h"
 #include "WaveLoop.h"
+#include "SineWave.h"
 #include "BiQuad.h"
 #include "OnePole.h"
 
@@ -62,30 +63,18 @@ public:
   //! Stop a note with the given amplitude (speed of decay).
   void noteOff(StkFloat amplitude);
 
-  //! Compute one output sample.
-  virtual StkFloat tick();
-
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   virtual void controlChange(int number, StkFloat value) = 0;
 
-protected:  
+protected:
+
+  StkFloat computeSample( void );
+
   Envelope envelope_; 
-  WvIn    *wave_;
+  FileWvIn *wave_;
   BiQuad **filters_;
   OnePole  onepole_;
-  WaveLoop *vibrato_;
+  SineWave vibrato_;
 
   unsigned int nModes_;
   std::vector<StkFloat> ratios_;

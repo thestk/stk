@@ -23,9 +23,15 @@ void usage(void) {
   std::cout << "   With flag = -f <filename>, the output stream is simultaneously\n";
   std::cout << "   written to the file specified by the optional <filename>\n";
   std::cout << "   (default = test.ski).\n";
+  std::cout << "   With flag = -c, MIDI control change messages will not be\n";
+  std::cout << "   converted to SKINI-specific named controls.\n";
   std::cout << "   A MIDI input port can be specified with flag = -p portNumber.\n" << std::endl;
   exit(0);
 }
+
+#include <signal.h>
+static void finish( int ignore ){ std::cout << "Type 'Exit' to quit." << std::endl; }
+bool parseSkiniControl = true;
 
 void midiCallback( double deltatime, std::vector< unsigned char > *bytes, void *userData )
 {
@@ -35,7 +41,7 @@ void midiCallback( double deltatime, std::vector< unsigned char > *bytes, void *
   if ( bytes->at(0) > 239 ) return;
 
   register long type = bytes->at(0) & 0xF0;
-  register long channel = bytes->at(0) & 0x0F;
+  register int channel = bytes->at(0) & 0x0F;
   register long databyte1 = bytes->at(1);
   register long databyte2 = 0;
   if ( ( type != 0xC0 ) && ( type != 0xD0 ) ) {
@@ -75,55 +81,62 @@ void midiCallback( double deltatime, std::vector< unsigned char > *bytes, void *
 
   case __SK_ControlChange_:
 
+    if ( parseSkiniControl != true ) {
+      typeName = "ControlChange\t";
+      goto output;
+    }
+
     switch( databyte1 ) {
     case __SK_PitchChange_:
       typeName = "PitchChange\t";
-      break;
+      goto output;
 
     case __SK_Volume_:
       typeName = "Volume\t";
-      break;
+      goto output;
 
     case __SK_ModWheel_:
       typeName = "ModWheel\t";
-      break;
+      goto output;
 
     case __SK_Breath_:
       typeName = "Breath\t\t";
-      break;
+      goto output;
 
     case __SK_FootControl_:
       typeName = "FootControl\t";
-      break;
+      goto output;
 
     case __SK_Portamento_:
       typeName = "Portamento\t";
-      break;
+      goto output;
 
     case __SK_Balance_:
       typeName = "Balance\t";
-      break;
+      goto output;
 
     case __SK_Pan_:
       typeName = "Pan\t\t";
-      break;
+      goto output;
 
     case __SK_Sustain_:
       typeName = "Sustain\t";
-      break;
+      goto output;
 
     case __SK_Expression_:
       typeName = "Expression\t";
-      break;
+      goto output;
 
     default:
       typeName = "ControlChange\t";
-      break;
+      goto output;
     }
 
   default:
-      typeName = "Unknown\t";
+    typeName = "Unknown\t";
   }
+
+ output:
 
   FILE *file = (FILE *) userData;
   if ( type == 0xC0 || type == 0xD0 || type == 0xE0 ) { // program change, channel pressure, or pitchbend
@@ -132,9 +145,16 @@ void midiCallback( double deltatime, std::vector< unsigned char > *bytes, void *
       fprintf( file, "%s  %.3f  %d  %.1f\n", typeName.c_str(), deltatime, channel, (float)databyte1 );
   }
   else if ( type == 0xB0 ) { // control change
+    if ( typeName == "ControlChange\t" ) {
+      fprintf( stdout, "%s  %.3f  %d  %.1f %.1f\n", typeName.c_str(), 0.0, channel, (float)databyte1, (float)databyte2 );
+      if ( file != NULL )
+        fprintf( file, "%s  %.3f  %d  %.1f %.1f\n", typeName.c_str(), deltatime, channel, (float)databyte1, (float)databyte2 );
+    }
+    else {
     fprintf( stdout, "%s  %.3f  %d  %.1f\n", typeName.c_str(), 0.0, channel, (float)databyte2 );
     if ( file != NULL )
       fprintf( file, "%s  %.3f  %d  %.1f\n", typeName.c_str(), deltatime, channel, (float)databyte2 );
+    }
   }
   else { // noteon, noteoff, aftertouch, and unknown
     fprintf( stdout, "%s  %.3f  %d  %.1f  %.1f\n", typeName.c_str(), 0.0, channel, (float)databyte1, (float)databyte2 );
@@ -149,6 +169,7 @@ int main( int argc,char *argv[] )
   std::string fileName;
   RtMidiIn *midiin = 0;
   unsigned int port = 0;
+  std::string input;
 
   if ( argc > 5 ) usage();
 
@@ -171,6 +192,10 @@ int main( int argc,char *argv[] )
       case 'p':
         if ( i++ >= argc) usage();
         port = (unsigned int) atoi( argv[i] );
+        break;
+
+      case 'c':
+        parseSkiniControl = false;
         break;
           
       default:
@@ -219,9 +244,15 @@ int main( int argc,char *argv[] )
   // We'll ignore sysex, timing, and active sensing messages.
   midiin->ignoreTypes( true, true, true );
 
-  std::cout << "\nReading MIDI input ... press <enter> to quit.\n";
-  char input;
-  std::cin.get(input);
+  // Install an interrupt handler function.
+  (void) signal(SIGINT, finish);
+
+  std::cout << "\nReading MIDI input ... type 'Exit' to quit.\n";
+  while ( input != "Exit" && input != "exit" ) {
+    input.erase();
+    std::cin >> input;
+    std::cout << input << std::endl;
+  }
 
  cleanup:
   delete midiin;

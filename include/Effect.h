@@ -5,7 +5,7 @@
     This class provides common functionality for
     STK effects subclasses.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -38,22 +38,24 @@ class Effect : public Stk
   //! Return the last right output value.
   StkFloat lastOutRight() const;
 
-  //! Abstract tick function ... must be implemented in subclasses.
-  virtual StkFloat tick( StkFloat input ) = 0;
-
-  //! Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
-  virtual StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
+  //! Take one sample input and compute one sample of output.
+  StkFloat tick( StkFloat input );
 
   //! Take a channel of the StkFrames object as inputs to the effect and replace with corresponding outputs.
   /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
+    The \c channel argument should be zero or greater (the first
+    channel is specified by 0).  An StkError will be thrown if the \c
+    channel argument is equal to or greater than the number of
     channels in the StkFrames object.
   */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
 
  protected:
+
+  // This abstract function must be implemented in all subclasses.
+  // It is used to get around a C++ problem with overloaded virtual
+  // functions.
+  virtual StkFloat computeSample( StkFloat input ) = 0;
 
   // Returns true if argument value is prime.
   bool isPrime( int number );

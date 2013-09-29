@@ -1,6 +1,6 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2004.
+By Perry R. Cook and Gary P. Scavone, 1995-2005.
 
 This distribution of the Synthesis ToolKit in C++ (STK) contains the following:
 
@@ -35,7 +35,7 @@ WHAT'S NEW (AND NOT SO NEW):
 
 Despite being available in one form or another since 1996, we still consider STK to be alpha software.  We attempt to maintain backward compatability but changes are sometimes made in an effort to improve the overall design or performance of the software.  Please read the Release Notes to see what has changed since the last release.
 
-A new StkFrames class has been created to facilitate the handling and passing of multichannel, vectorized audio data.  All STK classes have been updated to include tick() functions which accept StkFrames arguments.
+A new StkFrames class has been created to facilitate the handling and passing of multichannel, vectorized audio data.  All STK classes have been updated to include tick() functions that accept StkFrames arguments.
 
 The control message handling scheme has been simplified greatly through the use of the Messager class.  It is now possible to have access to simultaneous piped, socketed, and/or MIDI input control messages.  In most cases, this should eliminate the use of the Md2Skini program.
 

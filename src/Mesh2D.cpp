@@ -241,7 +241,7 @@ void Mesh2D :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Mesh2D :: tick(StkFloat input)
+StkFloat Mesh2D :: inputTick( StkFloat input )
 {
   if ( counter_ & 1 ) {
     vxp1_[xInput_][yInput_] += input;
@@ -258,7 +258,7 @@ StkFloat Mesh2D :: tick(StkFloat input)
   return lastOutput_;
 }
 
-StkFloat Mesh2D :: tick()
+StkFloat Mesh2D :: computeSample()
 {
   lastOutput_ = ((counter_ & 1) ? this->tick1() : this->tick0());
   counter_++;
@@ -360,16 +360,6 @@ StkFloat Mesh2D :: tick1()
   outsamp = vxp1_[NX_-1][NY_-2] + vyp1_[NX_-2][NY_-1];
 
   return outsamp;
-}
-
-StkFloat *Mesh2D :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Mesh2D :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Mesh2D :: controlChange(int number, StkFloat value)

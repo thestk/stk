@@ -13,7 +13,7 @@
 */
 /******************************************/
 
-#include "WvIn.h"
+#include "FileWvIn.h"
 #include "RtAudio.h"
 
 #include <signal.h>
@@ -40,7 +40,7 @@ void usage(void) {
 // samples.
 int tick(char *buffer, int bufferSize, void *dataPointer)
 {
-  WvIn *input = (WvIn *) dataPointer;
+  FileWvIn *input = (FileWvIn *) dataPointer;
   register StkFloat *samples = (StkFloat *) buffer;
 
   input->tickFrame( frames );
@@ -65,11 +65,11 @@ int main(int argc, char *argv[])
 
   // Initialize our WvIn and RtAudio pointers.
   RtAudio *dac = 0;
-  WvIn *input = 0;
+  FileWvIn *input = 0;
 
   // Try to load the soundfile.
   try {
-    input = new WvIn( argv[1] );
+    input = new FileWvIn( argv[1] );
   }
   catch (StkError &) {
     exit(0);

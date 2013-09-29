@@ -19,7 +19,7 @@
     to \e keyOn and \e keyOff messages by ramping to
     1.0 on keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -61,22 +61,10 @@ class Asymp : public Envelope
   //! Set the target value.
   void setTarget(StkFloat target);
 
-  //! Return one envelope output value.
-  StkFloat tick(void);
-
-  //! Compute \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick( StkFloat *vector, unsigned int vectorSize );
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
  protected:
+
+  StkFloat computeSample( void );
+
   StkFloat factor_;
   StkFloat constant_;
 };

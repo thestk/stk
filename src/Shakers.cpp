@@ -53,7 +53,7 @@
 /***************************************************/
 
 #include "Stk.h"
-#include <math.h>
+#include <cmath>
 
 int my_random(int max) //  Return Random Int Between 0 and max
 {
@@ -816,7 +816,7 @@ void Shakers :: noteOff(StkFloat amplitude)
 
 const StkFloat MIN_ENERGY = 0.3;
 
-StkFloat Shakers :: tick()
+StkFloat Shakers :: computeSample()
 {
   StkFloat data;
   StkFloat temp_rand;
@@ -885,16 +885,6 @@ StkFloat Shakers :: tick()
   }
 
   return lastOutput_;
-}
-
-StkFloat *Shakers :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Shakers :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void Shakers :: controlChange(int number, StkFloat value)

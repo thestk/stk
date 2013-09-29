@@ -19,7 +19,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -37,9 +37,7 @@ FM :: FM( unsigned int operators )
   twozero_.setB2( -1.0 );
   twozero_.setGain( 0.0 );
 
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  vibrato_->setFrequency( 6.0 );
+  vibrato_.setFrequency( 6.0 );
 
   unsigned int j;
   adsr_.resize( nOperators_ );
@@ -77,8 +75,6 @@ FM :: FM( unsigned int operators )
 
 FM :: ~FM()
 {
-  delete vibrato_;
-
   for (unsigned int i=0; i<nOperators_; i++ ) {
     delete waves_[i];
     delete adsr_[i];
@@ -137,7 +133,7 @@ void FM :: setGain(unsigned int waveIndex, StkFloat gain)
 
 void FM :: setModulationSpeed(StkFloat mSpeed)
 {
-  vibrato_->setFrequency( mSpeed );
+  vibrato_.setFrequency( mSpeed );
 }
 
 void FM :: setModulationDepth(StkFloat mDepth)

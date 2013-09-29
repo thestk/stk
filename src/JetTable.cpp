@@ -9,7 +9,7 @@
     Consult Fletcher and Rossing, Karjalainen,
     Cook, and others for more information.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -23,7 +23,7 @@ JetTable :: ~JetTable()
 {
 }
 
-StkFloat JetTable :: tick( StkFloat input )
+StkFloat JetTable :: computeSample( StkFloat input )
 {
   // Perform "table lookup" using a polynomial
   // calculation (x^3 - x), which approximates
@@ -36,14 +36,4 @@ StkFloat JetTable :: tick( StkFloat input )
   if (lastOutput_ < -1.0)
     lastOutput_ = (StkFloat) -1.0; 
   return lastOutput_;
-}
-
-StkFloat *JetTable :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Function::tick( vector, vectorSize );
-}
-
-StkFrames& JetTable :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Function::tick( frames, channel );
 }

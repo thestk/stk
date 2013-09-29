@@ -10,7 +10,7 @@
     two series allpass units and two parallel comb
     filters.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -68,7 +68,7 @@ void PRCRev :: setT60( StkFloat T60 )
   combCoefficient_[1] = pow(10.0, (-3.0 * combDelays_[1].getDelay() / (T60 * Stk::sampleRate())));
 }
 
-StkFloat PRCRev :: tick(StkFloat input)
+StkFloat PRCRev :: computeSample(StkFloat input)
 {
   StkFloat temp, temp0, temp1, temp2, temp3;
 
@@ -94,15 +94,5 @@ StkFloat PRCRev :: tick(StkFloat input)
   lastOutput_[1] += temp;
     
   return Effect::lastOut();
-
 }
 
-StkFloat *PRCRev :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Effect::tick( vector, vectorSize );
-}
-
-StkFrames& PRCRev :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Effect::tick( frames, channel );
-}

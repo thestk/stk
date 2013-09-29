@@ -1,6 +1,6 @@
 // crtsine.cpp STK tutorial program
 
-#include "WaveLoop.h"
+#include "SineWave.h"
 #include "RtAudio.h"
 
 // This tick() function handles sample computation only.  It will be
@@ -8,7 +8,7 @@
 // samples.
 int tick(char *buffer, int bufferSize, void *dataPointer)
 {
-  WaveLoop *sine = (WaveLoop *) dataPointer;
+  SineWave *sine = (SineWave *) dataPointer;
   register StkFloat *samples = (StkFloat *) buffer;
 
   for ( int i=0; i<bufferSize; i++ )
@@ -22,7 +22,7 @@ int main()
   // Set the global sample rate before creating class instances.
   Stk::setSampleRate( 44100.0 );
 
-  WaveLoop *sine = 0;
+  SineWave sine;
   RtAudio *dac = 0;
 
   // Figure out how many bytes in an StkFloat and setup the RtAudio object.
@@ -33,21 +33,13 @@ int main()
   }
   catch (RtError& error) {
     error.printMessage();
-    goto cleanup;
+    exit(0);
   }
+
+  sine.setFrequency(440.0);
 
   try {
-    // Define and load the sine wave file
-    sine = new WaveLoop( "rawwaves/sinewave.raw", true );
-  }
-  catch (StkError &) {
-    goto cleanup;
-  }
-
-  sine->setFrequency(440.0);
-
-  try {
-    dac->setStreamCallback(&tick, (void *)sine);
+    dac->setStreamCallback(&tick, (void *)&sine);
     dac->startStream();
   }
   catch (RtError &error) {
@@ -71,7 +63,6 @@ int main()
 
  cleanup:
 
-  delete sine;
   delete dac;
 
   return 0;

@@ -66,28 +66,15 @@ class Mesh2D : public Instrmnt
   //! Calculate and return the signal energy stored in the mesh.
   StkFloat energy();
 
-  //! Compute one output sample, without adding energy to the mesh.
-  StkFloat tick();
-
   //! Input a sample to the mesh and compute one output sample.
-  StkFloat tick(StkFloat input);
-
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
+  StkFloat inputTick( StkFloat input );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   void controlChange(int number, StkFloat value);
 
  protected:
+
+  StkFloat computeSample( void );
 
   StkFloat tick0();
   StkFloat tick1();

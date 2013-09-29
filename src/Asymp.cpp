@@ -19,7 +19,7 @@
     to \e keyOn and \e keyOff messages by ramping to
     1.0 on keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -79,7 +79,7 @@ void Asymp :: setTarget(StkFloat target)
   constant_ = ( 1.0 - factor_ ) * target_;
 }
 
-StkFloat Asymp :: tick(void)
+StkFloat Asymp :: computeSample(void)
 {
   if (state_) {
 
@@ -104,12 +104,3 @@ StkFloat Asymp :: tick(void)
   return value_;
 }
 
-StkFloat *Asymp :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Generator::tick( vector, vectorSize );
-}
-
-StkFrames& Asymp :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Generator::tick( frames, channel );
-}

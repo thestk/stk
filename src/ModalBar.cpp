@@ -9,9 +9,9 @@
     Control Change Numbers: 
        - Stick Hardness = 2
        - Stick Position = 4
-       - Vibrato Gain = 1
+       - Vibrato Gain = 8
        - Vibrato Frequency = 11
-       - Direct Stick Mix = 8
+       - Direct Stick Mix = 1
        - Volume = 128
        - Modal Presets = 16
          - Marimba = 0
@@ -24,19 +24,19 @@
          - Two Fixed = 7
          - Clump = 8
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
 #include "ModalBar.h"
 #include "SKINI.msg"
-#include <math.h>
+#include <cmath>
 
 ModalBar :: ModalBar()
   : Modal()
 {
   // Concatenate the STK rawwave path to the rawwave file
-  wave_ = new WvIn( (Stk::rawwavePath() + "marmstk1.raw").c_str(), true );
+  wave_ = new FileWvIn( (Stk::rawwavePath() + "marmstk1.raw").c_str(), true );
   wave_->setRate( 0.5 * 22050.0 / Stk::sampleRate() );
 
   // Set the resonances for preset 0 (marimba).
@@ -177,11 +177,11 @@ void ModalBar :: controlChange(int number, StkFloat value)
   else if (number == __SK_ProphesyRibbon_) // 16
 		this->setPreset((int) value);
   else if (number == __SK_Balance_) // 8
-    directGain_ = norm;
-  else if (number == __SK_ModWheel_) // 1
     vibratoGain_ = norm * 0.3;
+  else if (number == __SK_ModWheel_) // 1
+    directGain_ = norm;
   else if (number == __SK_ModFrequency_) // 11
-    vibrato_->setFrequency( norm * 12.0 );
+    vibrato_.setFrequency( norm * 12.0 );
   else if (number == __SK_AfterTouch_Cont_)	// 128
     envelope_.setTarget( norm );
   else {

@@ -87,7 +87,31 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=..\..\src\FileRead.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWrite.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWvIn.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\FileWvOut.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\Generator.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\sine.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\SineWave.cpp
 # End Source File
 # Begin Source File
 

@@ -21,7 +21,7 @@
 MidiFileIn :: MidiFileIn( std::string fileName )
 {
   // Attempt to open the file.
-  file_.open( fileName.c_str(), std::ios::in );
+  file_.open( fileName.c_str(), std::ios::in | std::ios::binary );
   if ( !file_ ) {
     errorString_ << "MidiFileIn: error opening or finding file (" <<  fileName << ").";
     handleError( StkError::FILE_NOT_FOUND );
@@ -90,7 +90,8 @@ MidiFileIn :: MidiFileIn( std::string fileName )
   // code, we can initialize the "tick time" using a default tempo of
   // 120 beats per minute.  We will then check for tempo meta-events
   // afterward.
-  for ( unsigned int i=0; i<nTracks_; i++ ) {
+  unsigned int i;
+  for ( i=0; i<nTracks_; i++ ) {
     if ( !file_.read( chunkType, 4 ) ) goto error;
     if ( strncmp( chunkType, "MTrk", 4 ) ) goto error;
     if ( !file_.read( buffer, 4 ) ) goto error;
@@ -249,7 +250,8 @@ unsigned long MidiFileIn :: getNextEvent( std::vector<unsigned char> *event, uns
     file_.seekg( position, std::ios_base::beg );
     break;
 
-  case 0xF0 || 0xF7: // The start or continuation of a Sysex event
+  case 0xF0:
+  case 0xF7: // The start or continuation of a Sysex event
     trackStatus_[track] = 0;
     event->push_back( c );
     position = file_.tellg();
@@ -278,7 +280,8 @@ unsigned long MidiFileIn :: getNextEvent( std::vector<unsigned char> *event, uns
   }
 
   // Read the rest of the event into the event vector.
-  for ( unsigned long i=0; i<bytes; i++ ) {
+  unsigned long i;
+  for ( i=0; i<bytes; i++ ) {
     if ( !file_.read( (char *)&c, 1 ) ) goto error;
     event->push_back( c );
   }

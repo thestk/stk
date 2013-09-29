@@ -17,7 +17,7 @@
        - String Sustain = 11
        - String Stretch = 1
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -69,39 +69,27 @@ class StifKarp : public Instrmnt
   //! Stop a note with the given amplitude (speed of decay).
   void noteOff(StkFloat amplitude);
 
-  //! Compute one output sample.
-  StkFloat tick();
-
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  StkFloat *tick(StkFloat *vector, unsigned int vectorSize);
-
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  StkFrames& tick( StkFrames& frames, unsigned int channel = 1 );
-
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
   void controlChange(int number, StkFloat value);
 
- protected:  
-    DelayA  delayLine_;
-    DelayL  combDelay_;
-    OneZero filter_;
-    Noise   noise_;
-    BiQuad  biquad_[4];
+ protected:
 
-    unsigned long length_;
-    StkFloat loopGain_;
-    StkFloat baseLoopGain_;
-    StkFloat lastFrequency_;
-    StkFloat lastLength_;
-    StkFloat stretching_;
-    StkFloat pluckAmplitude_;
-    StkFloat pickupPosition_;
+  StkFloat computeSample( void );
+
+  DelayA  delayLine_;
+  DelayL  combDelay_;
+  OneZero filter_;
+  Noise   noise_;
+  BiQuad  biquad_[4];
+
+  unsigned long length_;
+  StkFloat loopGain_;
+  StkFloat baseLoopGain_;
+  StkFloat lastFrequency_;
+  StkFloat lastLength_;
+  StkFloat stretching_;
+  StkFloat pluckAmplitude_;
+  StkFloat pickupPosition_;
 
 };
 

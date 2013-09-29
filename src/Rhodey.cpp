@@ -26,7 +26,7 @@
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -56,14 +56,14 @@ Rhodey :: Rhodey()
   adsr_[3]->setAllTimes( 0.001, 0.25, 0.0, 0.04);
 
   twozero_.setGain( 1.0 );
-}  
+}
 
 Rhodey :: ~Rhodey()
 {
 }
 
 void Rhodey :: setFrequency(StkFloat frequency)
-{    
+{
   baseFrequency_ = frequency * 2.0;
 
   for (unsigned int i=0; i<nOperators_; i++ )
@@ -85,7 +85,7 @@ void Rhodey :: noteOn(StkFloat frequency, StkFloat amplitude)
 #endif
 }
 
-StkFloat Rhodey :: tick()
+StkFloat Rhodey :: computeSample()
 {
   StkFloat temp, temp2;
 
@@ -102,19 +102,9 @@ StkFloat Rhodey :: tick()
   temp += control2_ * 0.5 * gains_[2] * adsr_[2]->tick() * waves_[2]->tick();
 
   // Calculate amplitude modulation and apply it to output.
-  temp2 = vibrato_->tick() * modDepth_;
+  temp2 = vibrato_.tick() * modDepth_;
   temp = temp * (1.0 + temp2);
     
   lastOutput_ = temp * 0.5;
   return lastOutput_;
-}
-
-StkFloat *Rhodey :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Rhodey :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }

@@ -7,7 +7,7 @@ In this section, we demonstrate the use of a few of the STK filter classes.  The
 
 int main()
 {
-  StkFrames output( 20 );   // initialize StkFrames to 20 elements (defaults: 1 channel, interleaved)
+  StkFrames output( 20, 1 );   // initialize StkFrames to 20 frames and 1 channel (default: interleaved)
   output[0] = 1.0;
 
   std::vector<StkFloat> numerator( 5, 0.1 ); // create and initialize numerator coefficients
@@ -46,7 +46,7 @@ The STK BiQuad and TwoPole classes provide functionality for creating resonance 
 
 int main()
 {
-  StkFrames output( 20 );   // initialize StkFrames to 20 elements (defaults: 1 channel, interleaved)
+  StkFrames output( 20, 1 );   // initialize StkFrames to 20 frames and 1 channel (default: interleaved)
   Noise noise;
 
   BiQuad biquad;
@@ -69,7 +69,7 @@ By passing a boolian value of \c true as the third argument to the BiQuad::setRe
 
 int main()
 {
-  StkFrames output( 20 );   // initialize StkFrames to 20 elements (defaults: 1 channel, interleaved)
+  StkFrames output( 20, 1 );   // initialize StkFrames to 20 frames and 1 channel (default: interleaved)
   Noise noise;
 
   BiQuad biquad;
@@ -84,5 +84,5 @@ int main()
 }
 \endcode
 
-[<A HREF="realtime.html">Next tutorial</A>] &nbsp; [<A HREF="tutorial.html">Main tutorial page</A>]
+[<A HREF="tutorial.html">Main tutorial page</A>] &nbsp; [<A HREF="realtime.html">Next tutorial</A>]
 */

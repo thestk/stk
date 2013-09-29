@@ -659,7 +659,7 @@ proc patchChange {value} {
             .right.cont4 config -state normal -label "Stick Position"
             set preset [expr $value-2400]
             if {$preset == 1} {
-                .right.cont11 config -state normal -label "Vibrato Gain"
+                .right.cont11 config -state normal -label "Vibrato Rate"
             } else {
                 .right.cont11 config -state disabled -label "Disabled"
             }

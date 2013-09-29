@@ -2,23 +2,20 @@
 /*! \class DelayA
     \brief STK allpass interpolating delay line class.
 
-    This Delay subclass implements a fractional-
-    length digital delay-line using a first-order
-    allpass filter.  A fixed maximum length
-    of 4095 and a delay of 0.5 is set using the
-    default constructor.  Alternatively, the
-    delay and maximum length can be set during
-    instantiation with an overloaded constructor.
+    This Delay subclass implements a fractional-length digital
+    delay-line using a first-order allpass filter.  A fixed maximum
+    length of 4095 and a delay of 0.5 is set using the default
+    constructor.  Alternatively, the delay and maximum length can be
+    set during instantiation with an overloaded constructor.
 
-    An allpass filter has unity magnitude gain but
-    variable phase delay properties, making it useful
-    in achieving fractional delays without affecting
-    a signal's frequency magnitude response.  In
-    order to achieve a maximally flat phase delay
-    response, the minimum delay possible in this
-    implementation is limited to a value of 0.5.
+    An allpass filter has unity magnitude gain but variable phase
+    delay properties, making it useful in achieving fractional delays
+    without affecting a signal's frequency magnitude response.  In
+    order to achieve a maximally flat phase delay response, the
+    minimum delay possible in this implementation is limited to a
+    value of 0.5.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -109,6 +106,11 @@ void DelayA :: setDelay(StkFloat delay)
     ((StkFloat) 1.0 + alpha_);         // coefficient for all pass
 }
 
+StkFloat DelayA :: getDelay(void) const
+{
+  return delay_;
+}
+
 StkFloat DelayA :: nextOut(void)
 {
   if ( doNextOut_ ) {
@@ -121,9 +123,9 @@ StkFloat DelayA :: nextOut(void)
   return nextOutput_;
 }
 
-StkFloat DelayA :: tick(StkFloat sample)
+StkFloat DelayA :: computeSample( StkFloat input )
 {
-  inputs_[inPoint_++] = sample;
+  inputs_[inPoint_++] = input;
 
   // Increment input pointer modulo length.
   if (inPoint_ == inputs_.size())
@@ -138,14 +140,4 @@ StkFloat DelayA :: tick(StkFloat sample)
     outPoint_ = 0;
 
   return outputs_[0];
-}
-
-StkFloat *DelayA :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Filter::tick( vector, vectorSize );
-}
-
-StkFrames& DelayA :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Filter::tick( frames, channel );
 }

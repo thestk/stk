@@ -194,6 +194,10 @@ int main( int argc, char *argv[] )
   // specified in the command line, it will override this setting.
   Stk::setSampleRate( 44100.0 );
 
+  // By default, warning messages are not printed.  If we want to see
+  // them, we need to specify that here.
+  Stk::showWarnings( true );
+
   // Check the command-line arguments for errors and to determine
   // the number of WvOut objects to be instantiated (in utilities.cpp).
   data.nWvOuts = checkArgs(argc, argv);
@@ -276,12 +280,14 @@ int main( int argc, char *argv[] )
 
   // Shut down the callback and output stream.
 #if defined(__STK_REALTIME__)
-  try {
-    dac->cancelStreamCallback();
-    dac->closeStream();
-  }
-  catch (RtError& error) {
-    error.printMessage();
+  if ( data.realtime ) {
+    try {
+      dac->cancelStreamCallback();
+      dac->closeStream();
+    }
+    catch (RtError& error) {
+      error.printMessage();
+    }
   }
 #endif
 

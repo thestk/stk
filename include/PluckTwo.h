@@ -14,7 +14,7 @@
     use possibly subject to patents held by
     Stanford University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -61,36 +61,24 @@ class PluckTwo : public Instrmnt
   //! Stop a note with the given amplitude (speed of decay).
   virtual void noteOff(StkFloat amplitude);
 
-  //! Virtual (abstract) tick function is implemented by subclasses.
-  virtual StkFloat tick() = 0;
+ protected:
 
-  //! Computer \e vectorSize outputs and return them in \e vector.
-  virtual StkFloat *tick(StkFloat *vector, unsigned int vectorSize) = 0;
+  virtual StkFloat computeSample( void ) = 0;
 
-  //! Fill a channel of the StkFrames object with computed outputs.
-  /*!
-    The \c channel argument should be one or greater (the first
-    channel is specified by 1).  An StkError will be thrown if the \c
-    channel argument is zero or it is greater than the number of
-    channels in the StkFrames object.
-  */
-  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 1 ) = 0;
+  DelayA  delayLine_;
+  DelayA  delayLine2_;
+  DelayL  combDelay_;
+  OneZero filter_;
+  OneZero filter2_;
 
- protected:  
-    DelayA  delayLine_;
-    DelayA  delayLine2_;
-    DelayL  combDelay_;
-    OneZero filter_;
-    OneZero filter2_;
-
-    unsigned long length_;
-    StkFloat loopGain_;
-    StkFloat baseLoopGain_;
-    StkFloat lastFrequency_;
-    StkFloat lastLength_;
-    StkFloat detuning_;
-    StkFloat pluckAmplitude_;
-    StkFloat pluckPosition_;
+  unsigned long length_;
+  StkFloat loopGain_;
+  StkFloat baseLoopGain_;
+  StkFloat lastFrequency_;
+  StkFloat lastLength_;
+  StkFloat detuning_;
+  StkFloat pluckAmplitude_;
+  StkFloat pluckPosition_;
 
 };
 

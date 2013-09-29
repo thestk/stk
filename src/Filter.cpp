@@ -2,7 +2,7 @@
 /*! \class Filter
     \brief STK filter class.
 
-    This class implements a generic structure which
+    This class implements a generic structure that
     can be used to create a wide range of filters.
     It can function independently or be subclassed
     to provide more specific controls based on a
@@ -23,7 +23,7 @@
     results in one extra multiply per computed sample,
     but allows easy control of the overall filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -76,7 +76,7 @@ void Filter :: clear(void)
     outputs_[i] = 0.0;
 }
 
-void Filter :: setCoefficients( std::vector<StkFloat> &bCoefficients, std::vector<StkFloat> &aCoefficients )
+void Filter :: setCoefficients( std::vector<StkFloat> &bCoefficients, std::vector<StkFloat> &aCoefficients, bool clearState )
 {
   // Check the arguments.
   if ( bCoefficients.size() == 0 || aCoefficients.size() == 0 ) {
@@ -107,7 +107,7 @@ void Filter :: setCoefficients( std::vector<StkFloat> &bCoefficients, std::vecto
     for ( unsigned int i=0; i<a_.size(); i++ ) a_[i] = aCoefficients[i];
   }
 
-  this->clear();
+  if ( clearState ) this->clear();
 
   // Scale coefficients by a[0] if necessary
   if ( a_[0] != 1.0 ) {
@@ -117,7 +117,7 @@ void Filter :: setCoefficients( std::vector<StkFloat> &bCoefficients, std::vecto
   }
 }
 
-void Filter :: setNumerator( std::vector<StkFloat> &bCoefficients )
+void Filter :: setNumerator( std::vector<StkFloat> &bCoefficients, bool clearState )
 {
   // Check the argument.
   if ( bCoefficients.size() == 0 ) {
@@ -134,10 +134,10 @@ void Filter :: setNumerator( std::vector<StkFloat> &bCoefficients )
     for ( unsigned int i=0; i<b_.size(); i++ ) b_[i] = bCoefficients[i];
   }
 
-  this->clear();
+  if ( clearState ) this->clear();
 }
 
-void Filter :: setDenominator( std::vector<StkFloat> &aCoefficients )
+void Filter :: setDenominator( std::vector<StkFloat> &aCoefficients, bool clearState )
 {
   // Check the argument.
   if ( aCoefficients.size() == 0 ) {
@@ -159,7 +159,7 @@ void Filter :: setDenominator( std::vector<StkFloat> &aCoefficients )
     for ( unsigned int i=0; i<a_.size(); i++ ) a_[i] = aCoefficients[i];
   }
 
-  this->clear();
+  if ( clearState ) this->clear();
 
   // Scale coefficients by a[0] if necessary
   if ( a_[0] != 1.0 ) {
@@ -184,12 +184,12 @@ StkFloat Filter :: lastOut(void) const
   return outputs_[0];
 }
 
-StkFloat Filter :: tick(StkFloat sample)
+StkFloat Filter :: tick( StkFloat input )
 {
   unsigned int i;
 
   outputs_[0] = 0.0;
-  inputs_[0] = gain_ * sample;
+  inputs_[0] = gain_ * input;
   for (i=b_.size()-1; i>0; i--) {
     outputs_[0] += b_[i] * inputs_[i];
     inputs_[i] = inputs_[i-1];
@@ -204,18 +204,11 @@ StkFloat Filter :: tick(StkFloat sample)
   return outputs_[0];
 }
 
-StkFloat *Filter :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick(vector[i]);
-
-  return vector;
-}
 
 StkFrames& Filter :: tick( StkFrames& frames, unsigned int channel )
 {
-  if ( channel == 0 || frames.channels() < channel ) {
-    errorString_ << "Filter::tick(): channel argument (" << channel << ") is zero or > channels in StkFrames argument!";
+  if ( channel >= frames.channels() ) {
+    errorString_ << "Filter::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
@@ -225,16 +218,16 @@ StkFrames& Filter :: tick( StkFrames& frames, unsigned int channel )
   }
   else if ( frames.interleaved() ) {
     unsigned int hop = frames.channels();
-    unsigned int index = channel - 1;
+    unsigned int index = channel;
     for ( unsigned int i=0; i<frames.frames(); i++ ) {
       frames[index] = tick( frames[index] );
       index += hop;
     }
   }
   else {
-    unsigned int iStart = (channel - 1) * frames.frames();
-    for ( unsigned int i=0; i<frames.frames(); i++ )
-      frames[iStart + i] = tick( frames[iStart + i] );
+    unsigned int iStart = channel * frames.frames();
+    for ( unsigned int i=0; i<frames.frames(); i++, iStart++ )
+      frames[iStart] = tick( frames[iStart] );
   }
 
   return frames;

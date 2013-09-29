@@ -13,7 +13,7 @@
     Smith (1986), Hirschman, Cook, Scavone, and
     others for more information.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -39,7 +39,7 @@ void ReedTable :: setSlope(StkFloat slope)
   slope_ = slope;
 }
 
-StkFloat ReedTable :: tick(StkFloat input)    
+StkFloat ReedTable :: computeSample(StkFloat input)    
 {
   // The input is differential pressure across the reed.
   lastOutput_ = offset_ + (slope_ * input);
@@ -55,12 +55,3 @@ StkFloat ReedTable :: tick(StkFloat input)
   return lastOutput_;
 }
 
-StkFloat *ReedTable :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Function::tick( vector, vectorSize );
-}
-
-StkFrames& ReedTable :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Function::tick( frames, channel );
-}

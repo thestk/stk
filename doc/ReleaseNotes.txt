@@ -1,6 +1,38 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995-2004.
+By Perry R. Cook and Gary P. Scavone, 1995-2005.
+
+Future To Do:
+- OSC server/client classes
+- move various error checks, especially in tick() functions, into __DEBUG__ blocks?
+- add WAVEFORMATEXTENSIBLE support to RtAudio
+- add WAVEFORMATEXTENSIBLE support to WvIn/WvOut?
+- better documentation
+
+v4.2.1: (14 October 2005)
+- greatly expanded StkFrames functionality (including interpolation and indexing by channel/frame)
+- new Granulate granular synthesis class
+- new Blit, BlitSaw, and BlitSquare bandlimited waveform classes (thanks to Robin Davies!)
+- removed Table class ... all functionality (including interpolation) now in StkFrames and FileRead classes
+- revised Socket class (now abstract) and added TcpServer, TcpClient, and UdpSocket subclasses
+- added Stk::showWarnings() and Stk::printErrors() functions to dis/enable warning and error printouts
+- extracted file I/O functionality to new FileRead and FileWrite classes
+- revised WvIn / WvOut class structure (WvIn / WvOut now abstract and file I/O functionality in new FileWvIn / FileWvOut subclasses)
+- new SineWave class which calculates its own static table of variable length (no rawwave dependency)
+- new sinewave.raw file of length 1024 samples (used to be 256)
+- TcpWvIn and TcpWvOut renamed InetWvIn and InetWvOut, with added support for UDP sockets
+- fixed bug in WvOut tickFrame( const  StkFrames &frames ) function
+- fixed bug in demo.cpp when writing output soundfiles without realtime output
+- added "binary" open flag to MidiFileIn class for Windows
+- fixed oversized MAT-file header in WvOut.cpp
+- fixed case statement bug in MidiFileIn.cpp for sysex
+- added missing getDelay() function to DelayA.cpp
+- fixed modDepth omission in Chorus.cpp
+- fixed DC blocker initialization bug in Flute.cpp
+- changed Filter class behavior so no default clearing of state when changing coefficients
+- bug fixes to RtAudio, especially for Windows DirectSound and ASIO (thanks to Robin Davies)
+- bug fixes to RtMidi, especially for Linux (thanks to Pedro Pedro Lopez-Cabanillas)
+
 
 v4.2.0: (4 October 2004)
 - simultaneous multiple audio APIs supported at compile time

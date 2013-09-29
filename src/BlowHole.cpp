@@ -29,7 +29,7 @@
        - Register State = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -77,9 +77,7 @@ BlowHole :: BlowHole(StkFloat lowestFrequency)
   // Start with register vent closed
   vent_.setGain(0.0);
 
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  vibrato_->setFrequency((StkFloat) 5.735);
+  vibrato_.setFrequency((StkFloat) 5.735);
   outputGain_ = 1.0;
   noiseGain_ = 0.2;
   vibratoGain_ = 0.01;
@@ -87,7 +85,6 @@ BlowHole :: BlowHole(StkFloat lowestFrequency)
 
 BlowHole :: ~BlowHole()
 {
-  delete vibrato_;
 }
 
 void BlowHole :: clear()
@@ -187,7 +184,7 @@ void BlowHole :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat BlowHole :: tick()
+StkFloat BlowHole :: computeSample()
 {
   StkFloat pressureDiff;
   StkFloat breathPressure;
@@ -196,7 +193,7 @@ StkFloat BlowHole :: tick()
   // Calculate the breath pressure (envelope + noise + vibrato)
   breathPressure = envelope_.tick(); 
   breathPressure += breathPressure * noiseGain_ * noise_.tick();
-  breathPressure += breathPressure * vibratoGain_ * vibrato_->tick();
+  breathPressure += breathPressure * vibratoGain_ * vibrato_.tick();
 
   // Calculate the differential pressure = reflected - mouthpiece pressures
   pressureDiff = delays_[0].lastOut() - breathPressure;
@@ -220,16 +217,6 @@ StkFloat BlowHole :: tick()
   tonehole_.tick( pa + pb - pth + temp );
 
   return lastOutput_;
-}
-
-StkFloat *BlowHole :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& BlowHole :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }
 
 void BlowHole :: controlChange(int number, StkFloat value)

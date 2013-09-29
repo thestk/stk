@@ -19,7 +19,7 @@
 
     See also SKINI.txt.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -173,6 +173,11 @@ long Skini :: parseString( std::string& line, Message& message )
     case SK_STR: // Must be the last field.
       message.remainder = tokens[iValue+3];
       return message.type;
+
+    default: // MIDI extension message
+      message.intValues[iValue] = dataType;
+      message.floatValues[iValue] = (StkFloat) message.intValues[iValue];
+      iValue--;
     }
 
     if ( ++iValue == 1 )

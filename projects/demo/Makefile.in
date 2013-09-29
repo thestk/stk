@@ -1,14 +1,14 @@
 ### STK demo Makefile - for various flavors of unix
 
-PROGRAMS = demo
+PROGRAMS = demo Md2Skini
 RM = /bin/rm
 SRC_PATH = ../../src
 OBJECT_PATH = @object_path@
 vpath %.o $(OBJECT_PATH)
 
 OBJECTS	=	Stk.o Generator.o Noise.o SubNoise.o Envelope.o ADSR.o \
-					Modulate.o SingWave.o \
-					WvIn.o WaveLoop.o WvOut.o \
+					Modulate.o SingWave.o SineWave.o FileRead.o FileWrite.o \
+					WvIn.o FileWvIn.o WaveLoop.o WvOut.o FileWvOut.o \
 					Filter.o OneZero.o OnePole.o PoleZero.o TwoZero.o \
 					BiQuad.o FormSwep.o Delay.o DelayL.o DelayA.o \
 					Function.o ReedTable.o JetTable.o BowTable.o \
@@ -39,7 +39,7 @@ LIBRARY += @frameworks@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
-	OBJECTS += RtMidi.o RtAudio.o Thread.o Mutex.o Socket.o
+	OBJECTS += RtMidi.o RtAudio.o Thread.o Mutex.o Socket.o TcpServer.o
 	DEFS    += @audio_apis@
 endif
 

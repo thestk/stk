@@ -6,7 +6,7 @@
     modulations to give a nice, natural human
     modulation function.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -14,9 +14,7 @@
 
 Modulate :: Modulate()
 {
-  // Concatenate the STK rawwave path to the rawwave file
-  vibrato_ = new WaveLoop( (Stk::rawwavePath() + "sinewave.raw").c_str(), true );
-  vibrato_->setFrequency( 6.0 );
+  vibrato_.setFrequency( 6.0 );
   vibratoGain_ = 0.04;
 
   noise_.setRate( 330 );
@@ -28,7 +26,6 @@ Modulate :: Modulate()
 
 Modulate :: ~Modulate()
 {
-  delete vibrato_;
 }
 
 void Modulate :: reset()
@@ -38,7 +35,7 @@ void Modulate :: reset()
 
 void Modulate :: setVibratoRate(StkFloat rate)
 {
-  vibrato_->setFrequency( rate );
+  vibrato_.setFrequency( rate );
 }
 
 void Modulate :: setVibratoGain(StkFloat gain)
@@ -52,21 +49,11 @@ void Modulate :: setRandomGain(StkFloat gain)
   filter_.setGain( randomGain_ );
 }
 
-StkFloat Modulate :: tick()
+StkFloat Modulate :: computeSample()
 {
   // Compute periodic and random modulations.
-  lastOutput_ = vibratoGain_ * vibrato_->tick();
+  lastOutput_ = vibratoGain_ * vibrato_.tick();
   lastOutput_ += filter_.tick( noise_.tick() );
   return lastOutput_;
-}
-
-StkFloat *Modulate :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Generator::tick( vector, vectorSize );
-}
-
-StkFrames& Modulate :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Generator::tick( frames, channel );
 }
 

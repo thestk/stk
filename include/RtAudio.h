@@ -10,7 +10,7 @@
     RtAudio WWW site: http://music.mcgill.ca/~gary/rtaudio/
 
     RtAudio: realtime audio i/o C++ classes
-    Copyright (c) 2001-2004 Gary P. Scavone
+    Copyright (c) 2001-2005 Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -37,7 +37,7 @@
 */
 /************************************************************************/
 
-// RtAudio: Version 3.0.2, pre-release for STK 4.2.0
+// RtAudio: Version 3.0.2 (14 October 2005)
 
 #ifndef __RTAUDIO_H
 #define __RTAUDIO_H
@@ -676,6 +676,53 @@ public:
   void setStreamCallback( RtAudioCallback callback, void *userData );
   void cancelStreamCallback();
 
+  public:
+  // \brief Internal structure that provide debug information on the state of a running DSound device.
+  struct RtDsStatistics {
+    // \brief Sample Rate.
+    long sampleRate;
+    // \brief The size of one sample * number of channels on the input device.
+    int inputFrameSize; 
+    // \brief The size of one sample * number of channels on the output device.
+    int outputFrameSize; 
+    /* \brief The number of times the read pointer had to be adjusted to avoid reading from an unsafe buffer position.
+     *
+     * This field is only used when running in DUPLEX mode. INPUT mode devices just wait until the data is 
+     * available.
+     */
+    int numberOfReadOverruns;
+    // \brief The number of times the write pointer had to be adjusted to avoid writing in an unsafe buffer position.
+    int numberOfWriteUnderruns;
+    // \brief Number of bytes by attribute to buffer configuration by which writing must lead the current write pointer.
+    int writeDeviceBufferLeadBytes;
+    // \brief Number of bytes by attributable to the device driver by which writing must lead the current write pointer on this output device.
+    unsigned long writeDeviceSafeLeadBytes;
+    // \brief Number of bytes by which reading must trail the current read pointer on this input device.
+    unsigned long readDeviceSafeLeadBytes; 
+    /* \brief Estimated latency in seconds. 
+    *
+    * For INPUT mode devices, based the latency of the device's safe read pointer, plus one buffer's
+    * worth of additional latency.
+    *
+    * For OUTPUT mode devices, the latency of the device's safe write pointer, plus N buffers of 
+    * additional buffer latency.
+    *
+    * For DUPLEX devices, the sum of latencies for both input and output devices. DUPLEX devices
+    * also back off the read pointers an additional amount in order to maintain synchronization 
+    * between out-of-phase read and write pointers. This time is also included.
+    *
+    * Note that most software packages report latency between the safe write pointer 
+    * and the software lead pointer, excluding the hardware device's safe write pointer 
+    * latency. Figures of 1 or 2ms of latency on Windows audio devices are invariably of this type.
+    * The reality is that hardware devices often have latencies of 30ms or more (often much 
+    * higher for duplex operation).
+    */
+
+    double latency;
+  };
+  // \brief Report on the current state of a running DSound device.
+  static RtDsStatistics getDsStatistics();
+
   private:
 
   void initialize(void);
@@ -683,6 +730,12 @@ public:
   bool probeDeviceOpen( int device, StreamMode mode, int channels, 
                         int sampleRate, RtAudioFormat format,
                         int *bufferSize, int numberOfBuffers );
+
+  bool coInitialized;
+  bool buffersRolling;
+  long duplexPrerollBytes;
+  static RtDsStatistics statistics;
+
 };
 
 #endif
@@ -716,6 +769,9 @@ public:
   bool probeDeviceOpen( int device, StreamMode mode, int channels, 
                         int sampleRate, RtAudioFormat format,
                         int *bufferSize, int numberOfBuffers );
+
+  bool coInitialized;
+
 };
 
 #endif

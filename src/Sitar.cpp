@@ -13,7 +13,7 @@
     Stanford, bearing the names of Karplus and/or
     Strong.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -98,7 +98,7 @@ void Sitar :: noteOff(StkFloat amplitude)
 #endif
 }
 
-StkFloat Sitar :: tick()
+StkFloat Sitar :: computeSample()
 {
   if ( fabs(targetDelay_ - delay_) > 0.001 ) {
     if ( targetDelay_ < delay_ )
@@ -112,14 +112,4 @@ StkFloat Sitar :: tick()
                                 (amGain_ * envelope_.tick() * noise_.tick()));
   
   return lastOutput_;
-}
-
-StkFloat *Sitar :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Instrmnt::tick( vector, vectorSize );
-}
-
-StkFrames& Sitar :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Instrmnt::tick( frames, channel );
 }

@@ -10,7 +10,7 @@
     filters, and two decorrelation delay lines in
     parallel at the output.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -78,7 +78,7 @@ void JCRev :: setT60( StkFloat T60 )
     combCoefficient_[i] = pow(10.0, (-3.0 * combDelays_[i].getDelay() / (T60 * Stk::sampleRate())));
 }
 
-StkFloat JCRev :: tick(StkFloat input)
+StkFloat JCRev :: computeSample(StkFloat input)
 {
   StkFloat temp, temp0, temp1, temp2, temp3, temp4, temp5, temp6;
   StkFloat filtout;
@@ -120,14 +120,4 @@ StkFloat JCRev :: tick(StkFloat input)
   lastOutput_[1] += temp;
     
   return Effect::lastOut();
-}
-
-StkFloat *JCRev :: tick(StkFloat *vector, unsigned int vectorSize)
-{
-  return Effect::tick( vector, vectorSize );
-}
-
-StkFrames& JCRev :: tick( StkFrames& frames, unsigned int channel )
-{
-  return Effect::tick( frames, channel );
 }

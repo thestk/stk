@@ -6,7 +6,7 @@
     implement tables or other types of input to output function
     mappings.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2004.
+    by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
 */
 /***************************************************/
 
@@ -21,37 +21,34 @@ Function :: ~Function()
 {
 }
 
-StkFloat *Function :: tick(StkFloat *vector, unsigned int vectorSize)
+StkFloat Function :: tick( StkFloat input )
 {
-  for (unsigned int i=0; i<vectorSize; i++)
-    vector[i] = tick( vector[i] );
-
-  return vector;
+  return computeSample( input );
 }
 
 StkFrames& Function :: tick( StkFrames& frames, unsigned int channel )
 {
-  if ( channel == 0 || frames.channels() < channel ) {
-    errorString_ << "Function::tick(): channel argument (" << channel << ") is zero or > channels in StkFrames argument!";
+  if ( channel >= frames.channels() ) {
+    errorString_ << "Function::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 
   if ( frames.channels() == 1 ) {
     for ( unsigned int i=0; i<frames.frames(); i++ )
-      frames[i] = tick( frames[i] );
+      frames[i] = computeSample( frames[i] );
   }
   else if ( frames.interleaved() ) {
     unsigned int hop = frames.channels();
-    unsigned int index = channel - 1;
+    unsigned int index = channel;
     for ( unsigned int i=0; i<frames.frames(); i++ ) {
-      frames[index] = tick( frames[index] );
+      frames[index] = computeSample( frames[index] );
       index += hop;
     }
   }
   else {
-    unsigned int iStart = (channel - 1) * frames.frames();
-    for ( unsigned int i=0; i<frames.frames(); i++ )
-      frames[iStart + i] = tick( frames[iStart + i] );
+    unsigned int iStart = channel * frames.frames();
+    for ( unsigned int i=0; i<frames.frames(); i++, iStart++ )
+      frames[iStart] = computeSample( frames[iStart] );
   }
 
   return frames;
