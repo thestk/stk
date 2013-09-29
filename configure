@@ -1764,7 +1764,7 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-ac_config_files="$ac_config_files src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile"
+ac_config_files="$ac_config_files Makefile src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile"
 
 
 # Fill GXX with something before test.
@@ -3661,7 +3661,7 @@ if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
 else
   ac_cv_header_stdc=no
 fi
-rm -f conftest*
+rm -f -r conftest*
 
 fi
 
@@ -3682,7 +3682,7 @@ if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
 else
   ac_cv_header_stdc=no
 fi
-rm -f conftest*
+rm -f -r conftest*
 
 fi
 
@@ -4469,7 +4469,7 @@ if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
   byte_order=-D__LITTLE_ENDIAN__
 
 fi
-rm -f conftest*
+rm -f -r conftest*
 
 
 { echo "$as_me:$LINENO: checking for RAWWAVE_PATH argument" >&5
@@ -6459,6 +6459,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
+    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "projects/demo/Makefile") CONFIG_FILES="$CONFIG_FILES projects/demo/Makefile" ;;
     "projects/effects/Makefile") CONFIG_FILES="$CONFIG_FILES projects/effects/Makefile" ;;
