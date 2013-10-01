@@ -115,7 +115,7 @@ class TapDelay : public Filter
 inline StkFloat TapDelay :: lastOut( unsigned int tap ) const
 {
 #if defined(_STK_DEBUG_)
-  if ( tap >= lastFrame_.size() ) ) {
+  if ( tap >= lastFrame_.size() ) {
     oStream_ << "TapDelay::lastOut(): tap argument and number of taps are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
