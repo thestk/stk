@@ -192,7 +192,7 @@ void Stk :: sleep(unsigned long milliseconds)
 #endif
 }
 
-void Stk :: handleError( StkError::Type type )
+void Stk :: handleError( StkError::Type type ) const
 {
   handleError( oStream_.str(), type );
   oStream_.str( std::string() ); // reset the ostringstream buffer
