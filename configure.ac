@@ -80,7 +80,6 @@ fi
 CPPFLAGS="$CPPFLAGS $cppflag"
 
 # For debugging and optimization ... overwrite default because it has both -g and -O2
-echo "$CXXFLAGS"
 CXXFLAGS="$cxxflag"
 
 # Check compiler and use -Wall if gnu.
