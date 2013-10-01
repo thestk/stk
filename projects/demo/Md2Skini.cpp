@@ -14,6 +14,7 @@
 #include "SKINI.msg"
 #include <iostream>
 #include <stdlib.h>
+#include <stdio.h>
 
 void usage(void) {
   std::cout << "\nuseage: Md2Skini <flag(s)>\n\n";
