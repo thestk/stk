@@ -247,9 +247,7 @@ bool FileWrite :: setWavFile( std::string fileName )
   hdr.bytesPerSecond = (SINT32) (hdr.sampleRate * hdr.bytesPerSample);
 
   unsigned int bytesToWrite = 36;
-  bool useExtensible = false;
   if ( channels_ > 2 || hdr.bitsPerSample > 16 ) { // use extensible format
-    useExtensible = true;
     bytesToWrite = 72;
     hdr.chunkSize += 24;
     hdr.formatCode = 0xFFFE;
@@ -459,7 +457,7 @@ bool FileWrite :: setAifFile( std::string fileName )
 #ifdef __LITTLE_ENDIAN__
   swap16((unsigned char *)&i);
 #endif
-  *(SINT16 *)(hdr.srate) = (SINT16) i;
+  memcpy( hdr.srate, &i, sizeof(SINT16) );
 
   for ( i=32; i; i-- ) {
     if ( rate & 0x80000000 ) break;
@@ -469,7 +467,7 @@ bool FileWrite :: setAifFile( std::string fileName )
 #ifdef __LITTLE_ENDIAN__
   swap32((unsigned char *)&rate);
 #endif
-  *(unsigned long *)(hdr.srate+2) = (unsigned long) rate;
+  memcpy( hdr.srate + 2, &rate, sizeof(rate) );
 
   byteswap_ = false;  
 #ifdef __LITTLE_ENDIAN__
@@ -690,7 +688,11 @@ void FileWrite :: closeMatFile( void )
 
   SINT32 headsize, temp;
   fseek(fd_, 196, SEEK_SET);  // jump to header size
-  fread(&headsize, 4, 1, fd_);
+  if (fread(&headsize, 4, 1, fd_) < 4) {
+      oStream_ << "FileWrite: could not read MAT-file header size.";
+      goto close_file;
+  }
+
   temp = headsize;
   headsize += (SINT32) (frameCounter_ * 8 * channels_);
   fseek(fd_, 196, SEEK_SET);
@@ -701,6 +703,7 @@ void FileWrite :: closeMatFile( void )
   temp = frameCounter_ * 8 * channels_;
   fwrite(&temp, 4, 1, fd_);
 
+close_file:
   fclose(fd_);
 }
 
