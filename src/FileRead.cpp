@@ -141,6 +141,10 @@ bool FileRead :: getRawInfo( const char *fileName, unsigned int nChannels, StkFo
     oStream_ << "FileRead: Could not stat RAW file (" << fileName << ").";
     return false;
   }
+  if ( nChannels == 0 ) {
+    oStream_ << "FileRead: number of channels can't be 0 (" << fileName << ").";
+    return false;
+  }
 
   // Rawwave files have no header and by default, are assumed to
   // contain a monophonic stream of 16-bit signed integers in
@@ -155,6 +159,10 @@ bool FileRead :: getRawInfo( const char *fileName, unsigned int nChannels, StkFo
   else if ( format == STK_SINT16 ) sampleBytes = 2;
   else if ( format == STK_SINT32 || format == STK_FLOAT32 ) sampleBytes = 4;
   else if ( format == STK_FLOAT64 ) sampleBytes = 8;
+  else {
+    oStream_ << "FileRead: StkFormat " << format << " is invalid (" << fileName << ").";
+    return false;
+  }
 
   fileSize_ = (long) filestat.st_size / sampleBytes / channels_;  // length in frames
 
