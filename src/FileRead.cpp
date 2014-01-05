@@ -622,7 +622,7 @@ bool FileRead :: getMatInfo( const char *fileName )
         if ( fread(&rate, 1, 1, fd_) != 1 ) goto error;
         srate = (StkFloat) rate;
       }
-      if ( type == 2 ) { // UINT8
+      else if ( type == 2 ) { // UINT8
         unsigned char rate;
         if ( fread(&rate, 1, 1, fd_) != 1 ) goto error;
         srate = (StkFloat) rate;
