@@ -88,7 +88,7 @@ void Stk :: setSampleRate( StkFloat rate )
   }
 }
 
-void Stk :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
+void Stk :: sampleRateChanged( StkFloat /*newRate*/, StkFloat /*oldRate*/ )
 {
   // This function should be reimplemented in classes that need to
   // make internal variable adjustments in response to a global sample
