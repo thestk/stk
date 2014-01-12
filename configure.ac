@@ -180,7 +180,7 @@ if test $realtime = yes; then
     fi
 
     api="$api -D__WINDOWS_MM__"
-    LIBS="-lole32 -lwinmm -lWsock32 $LIBS"
+    LIBS="-lole32 -lwinmm -lwsock32 $LIBS"
     ;;
 
     *)
