@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(STK, 4.4, gary@music.mcgill.ca, stk)
+AC_INIT(STK, 4.4.4, gary@music.mcgill.ca, stk)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR(src/Stk.cpp)
 AC_CONFIG_FILES(Makefile src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile projects/eguitar/Makefile)
@@ -80,7 +80,6 @@ fi
 CPPFLAGS="$CPPFLAGS $cppflag"
 
 # For debugging and optimization ... overwrite default because it has both -g and -O2
-echo "$CXXFLAGS"
 CXXFLAGS="$cxxflag"
 
 # Check compiler and use -Wall if gnu.
@@ -181,7 +180,7 @@ if test $realtime = yes; then
     fi
 
     api="$api -D__WINDOWS_MM__"
-    LIBS="-lole32 -lwinmm -lWsock32 $LIBS"
+    LIBS="-lole32 -lwinmm -lwsock32 $LIBS"
     ;;
 
     *)
