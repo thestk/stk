@@ -236,7 +236,7 @@ protected:
   void removeSampleRateAlert( Stk *ptr );
 
   //! Internal function for error reporting that assumes message in \c oStream_ variable.
-  void handleError( StkError::Type type );
+  void handleError( StkError::Type type ) const;
 };
 
 
