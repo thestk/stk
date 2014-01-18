@@ -598,7 +598,7 @@ bool FileRead :: getMatInfo( const char *fileName )
       SINT32 namesize = 4;
       if ( nametype == 1 ) { // array name > 4 characters
         if ( fread(&namesize, 4, 1, fd_) != 1 ) goto error;
-        if ( byteswap_ ) swap32((unsigned char *)namesize);
+        if ( byteswap_ ) swap32((unsigned char *)&namesize);
         if ( namesize != 2 ) goto tryagain; // expecting name = "fs"
         namesize = 8; // field must be padded to multiple of 8 bytes
       }
@@ -684,7 +684,7 @@ bool FileRead :: getMatInfo( const char *fileName )
       SINT32 namesize = 4;
       if ( nametype == 1 ) { // array name > 4 characters
         if ( fread(&namesize, 4, 1, fd_) != 1 ) goto error;
-        if ( byteswap_ ) swap32((unsigned char *)namesize);
+        if ( byteswap_ ) swap32((unsigned char *)&namesize);
         namesize = (SINT32) ceil((float)namesize / 8);
         if ( fseek( fd_, namesize*8, SEEK_CUR) == -1 ) goto error;  // jump over array name
       }
