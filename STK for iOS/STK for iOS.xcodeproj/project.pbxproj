@@ -38,17 +38,17 @@
 		B08F60AB18BA9B1800C14A90 /* Filter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Filter.h; path = ../include/Filter.h; sourceTree = "<group>"; };
 		B08F60AC18BA9B1800C14A90 /* Fir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Fir.h; path = ../include/Fir.h; sourceTree = "<group>"; };
 		B08F60AD18BA9B1800C14A90 /* Flute.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Flute.h; sourceTree = "<group>"; };
-		B08F60AE18BA9B1800C14A90 /* FM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FM.h; sourceTree = "<group>"; };
+		B08F60AE18BA9B1800C14A90 /* FM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FM.h; path = ../include/FM.h; sourceTree = "<group>"; };
 		B08F60AF18BA9B1800C14A90 /* FMVoices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FMVoices.h; path = ../include/FMVoices.h; sourceTree = "<group>"; };
 		B08F60B018BA9B1800C14A90 /* FormSwep.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FormSwep.h; path = ../include/FormSwep.h; sourceTree = "<group>"; };
 		B08F60B118BA9B1800C14A90 /* FreeVerb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FreeVerb.h; path = ../include/FreeVerb.h; sourceTree = "<group>"; };
 		B08F60B218BA9B1800C14A90 /* Function.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Function.h; path = ../include/Function.h; sourceTree = "<group>"; };
 		B08F60B318BA9B1800C14A90 /* Generator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Generator.h; path = ../include/Generator.h; sourceTree = "<group>"; };
 		B08F60B418BA9B1800C14A90 /* Granulate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Granulate.h; path = ../include/Granulate.h; sourceTree = "<group>"; };
-		B08F60B518BA9B1800C14A90 /* Guitar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Guitar.h; path = ../include/Guitar.h; sourceTree = "<group>"; };
+		B08F60B518BA9B1800C14A90 /* Guitar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Guitar.h; sourceTree = "<group>"; };
 		B08F60B618BA9B1800C14A90 /* HevyMetl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HevyMetl.h; path = ../include/HevyMetl.h; sourceTree = "<group>"; };
 		B08F60B718BA9B1800C14A90 /* Iir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Iir.h; path = ../include/Iir.h; sourceTree = "<group>"; };
-		B08F60BA18BA9B1800C14A90 /* Instrmnt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Instrmnt.h; path = ../include/Instrmnt.h; sourceTree = "<group>"; };
+		B08F60BA18BA9B1800C14A90 /* Instrmnt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Instrmnt.h; sourceTree = "<group>"; };
 		B08F60BB18BA9B1800C14A90 /* JCRev.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JCRev.h; path = ../include/JCRev.h; sourceTree = "<group>"; };
 		B08F60BC18BA9B1800C14A90 /* JetTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JetTable.h; path = ../include/JetTable.h; sourceTree = "<group>"; };
 		B08F60BD18BA9B1800C14A90 /* LentPitShift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LentPitShift.h; path = ../include/LentPitShift.h; sourceTree = "<group>"; };
@@ -59,7 +59,7 @@
 		B08F60C218BA9B1800C14A90 /* Modal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Modal.h; sourceTree = "<group>"; };
 		B08F60C318BA9B1800C14A90 /* ModalBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ModalBar.h; path = ../include/ModalBar.h; sourceTree = "<group>"; };
 		B08F60C418BA9B1800C14A90 /* Modulate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Modulate.h; path = ../include/Modulate.h; sourceTree = "<group>"; };
-		B08F60C518BA9B1800C14A90 /* Moog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Moog.h; path = ../include/Moog.h; sourceTree = "<group>"; };
+		B08F60C518BA9B1800C14A90 /* Moog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Moog.h; sourceTree = "<group>"; };
 		B08F60C718BA9B1800C14A90 /* Noise.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Noise.h; path = ../include/Noise.h; sourceTree = "<group>"; };
 		B08F60C818BA9B1800C14A90 /* NRev.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NRev.h; path = ../include/NRev.h; sourceTree = "<group>"; };
 		B08F60C918BA9B1800C14A90 /* OnePole.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OnePole.h; path = ../include/OnePole.h; sourceTree = "<group>"; };
@@ -166,12 +166,12 @@
 		B08F613E18BA9B1800C14A90 /* FileWvOut.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FileWvOut.cpp; sourceTree = "<group>"; };
 		B08F613F18BA9B1800C14A90 /* Fir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Fir.cpp; sourceTree = "<group>"; };
 		B08F614018BA9B1800C14A90 /* Flute.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Flute.cpp; path = ../src/Flute.cpp; sourceTree = "<group>"; };
-		B08F614118BA9B1800C14A90 /* FM.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = FM.cpp; path = ../src/FM.cpp; sourceTree = "<group>"; };
+		B08F614118BA9B1800C14A90 /* FM.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FM.cpp; sourceTree = "<group>"; };
 		B08F614218BA9B1800C14A90 /* FMVoices.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FMVoices.cpp; sourceTree = "<group>"; };
 		B08F614318BA9B1800C14A90 /* FormSwep.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FormSwep.cpp; sourceTree = "<group>"; };
 		B08F614418BA9B1800C14A90 /* FreeVerb.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FreeVerb.cpp; sourceTree = "<group>"; };
 		B08F614518BA9B1800C14A90 /* Granulate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Granulate.cpp; sourceTree = "<group>"; };
-		B08F614618BA9B1800C14A90 /* Guitar.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Guitar.cpp; sourceTree = "<group>"; };
+		B08F614618BA9B1800C14A90 /* Guitar.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Guitar.cpp; path = ../src/Guitar.cpp; sourceTree = "<group>"; };
 		B08F614718BA9B1800C14A90 /* HevyMetl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HevyMetl.cpp; sourceTree = "<group>"; };
 		B08F614818BA9B1800C14A90 /* Iir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Iir.cpp; sourceTree = "<group>"; };
 		B08F615A18BA9B1800C14A90 /* JCRev.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JCRev.cpp; sourceTree = "<group>"; };
@@ -183,7 +183,7 @@
 		B08F616118BA9B1800C14A90 /* Modal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Modal.cpp; path = ../src/Modal.cpp; sourceTree = "<group>"; };
 		B08F616218BA9B1800C14A90 /* ModalBar.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ModalBar.cpp; sourceTree = "<group>"; };
 		B08F616318BA9B1800C14A90 /* Modulate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Modulate.cpp; sourceTree = "<group>"; };
-		B08F616418BA9B1800C14A90 /* Moog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Moog.cpp; sourceTree = "<group>"; };
+		B08F616418BA9B1800C14A90 /* Moog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Moog.cpp; path = ../src/Moog.cpp; sourceTree = "<group>"; };
 		B08F616618BA9B1800C14A90 /* Noise.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Noise.cpp; sourceTree = "<group>"; };
 		B08F616718BA9B1800C14A90 /* NRev.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NRev.cpp; sourceTree = "<group>"; };
 		B08F616818BA9B1800C14A90 /* OnePole.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OnePole.cpp; sourceTree = "<group>"; };
@@ -222,8 +222,11 @@
 		B08F608718BA9B0600C14A90 = {
 			isa = PBXGroup;
 			children = (
-				B08F60F718BA9B1800C14A90 /* rawwaves */,
-				B08F612518BA9B1800C14A90 /* src */,
+				B08F619018BA9E1C00C14A90 /* Generators */,
+				B08F608E18BA9B1800C14A90 /* Instruments */,
+				E81E86DA18BBDA1200289223 /* Effects */,
+				E81E86D818BBD93600289223 /* Filters */,
+				E81E86DC18BBDB9C00289223 /* Helpers */,
 			);
 			sourceTree = "<group>";
 		};
@@ -231,6 +234,7 @@
 			isa = PBXGroup;
 			children = (
 				B08F619218BABDEB00C14A90 /* FM Synthesis */,
+				B08F60BA18BA9B1800C14A90 /* Instrmnt.h */,
 				B08F609118BA9B1800C14A90 /* BandedWG.h */,
 				B08F612818BA9B1800C14A90 /* BandedWG.cpp */,
 				B08F609718BA9B1800C14A90 /* BlowBotl.h */,
@@ -247,10 +251,12 @@
 				B08F613718BA9B1800C14A90 /* Drummer.cpp */,
 				B08F60AD18BA9B1800C14A90 /* Flute.h */,
 				B08F614018BA9B1800C14A90 /* Flute.cpp */,
-				B08F60AE18BA9B1800C14A90 /* FM.h */,
-				B08F614118BA9B1800C14A90 /* FM.cpp */,
+				B08F60B518BA9B1800C14A90 /* Guitar.h */,
+				B08F614618BA9B1800C14A90 /* Guitar.cpp */,
 				B08F60BE18BA9B1800C14A90 /* Mandolin.h */,
 				B08F615D18BA9B1800C14A90 /* Mandolin.cpp */,
+				B08F60C518BA9B1800C14A90 /* Moog.h */,
+				B08F616418BA9B1800C14A90 /* Moog.cpp */,
 				B08F60BF18BA9B1800C14A90 /* Mesh2D.h */,
 				B08F615E18BA9B1800C14A90 /* Mesh2D.cpp */,
 				B08F60C218BA9B1800C14A90 /* Modal.h */,
@@ -329,65 +335,10 @@
 			path = ../rawwaves;
 			sourceTree = "<group>";
 		};
-		B08F612518BA9B1800C14A90 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				B08F619018BA9E1C00C14A90 /* Generators */,
-				B08F608E18BA9B1800C14A90 /* Instruments */,
-				B08F618F18BA9DAA00C14A90 /* Effects */,
-				B08F619118BA9EE200C14A90 /* inc */,
-				B08F612A18BA9B1800C14A90 /* BiQuad.cpp */,
-				B08F613218BA9B1800C14A90 /* Chorus.cpp */,
-				B08F613418BA9B1800C14A90 /* Delay.cpp */,
-				B08F613518BA9B1800C14A90 /* DelayA.cpp */,
-				B08F613618BA9B1800C14A90 /* DelayL.cpp */,
-				B08F613818BA9B1800C14A90 /* Echo.cpp */,
-				B08F613A18BA9B1800C14A90 /* FileLoop.cpp */,
-				B08F613B18BA9B1800C14A90 /* FileRead.cpp */,
-				B08F613C18BA9B1800C14A90 /* FileWrite.cpp */,
-				B08F613D18BA9B1800C14A90 /* FileWvIn.cpp */,
-				B08F613E18BA9B1800C14A90 /* FileWvOut.cpp */,
-				B08F613F18BA9B1800C14A90 /* Fir.cpp */,
-				B08F614318BA9B1800C14A90 /* FormSwep.cpp */,
-				B08F614418BA9B1800C14A90 /* FreeVerb.cpp */,
-				B08F614618BA9B1800C14A90 /* Guitar.cpp */,
-				B08F614818BA9B1800C14A90 /* Iir.cpp */,
-				B08F615A18BA9B1800C14A90 /* JCRev.cpp */,
-				B08F615B18BA9B1800C14A90 /* LentPitShift.cpp */,
-				B08F615F18BA9B1800C14A90 /* Messager.cpp */,
-				B08F616018BA9B1800C14A90 /* MidiFileIn.cpp */,
-				B08F616218BA9B1800C14A90 /* ModalBar.cpp */,
-				B08F616418BA9B1800C14A90 /* Moog.cpp */,
-				B08F616718BA9B1800C14A90 /* NRev.cpp */,
-				B08F616818BA9B1800C14A90 /* OnePole.cpp */,
-				B08F616918BA9B1800C14A90 /* OneZero.cpp */,
-				B08F616B18BA9B1800C14A90 /* Phonemes.cpp */,
-				B08F616C18BA9B1800C14A90 /* PitShift.cpp */,
-				B08F616E18BA9B1800C14A90 /* PoleZero.cpp */,
-				B08F616F18BA9B1800C14A90 /* PRCRev.cpp */,
-				B08F617D18BA9B1800C14A90 /* Skini.cpp */,
-				B08F617F18BA9B1800C14A90 /* Sphere.cpp */,
-				B08F618118BA9B1800C14A90 /* Stk.cpp */,
-				B08F618218BA9B1800C14A90 /* TapDelay.cpp */,
-				B08F618718BA9B1900C14A90 /* Twang.cpp */,
-				B08F618818BA9B1900C14A90 /* TwoPole.cpp */,
-				B08F618918BA9B1900C14A90 /* TwoZero.cpp */,
-				B08F618B18BA9B1900C14A90 /* Voicer.cpp */,
-			);
-			name = src;
-			path = ../src;
-			sourceTree = "<group>";
-		};
-		B08F618F18BA9DAA00C14A90 /* Effects */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Effects;
-			sourceTree = "<group>";
-		};
 		B08F619018BA9E1C00C14A90 /* Generators */ = {
 			isa = PBXGroup;
 			children = (
+				B08F60B318BA9B1800C14A90 /* Generator.h */,
 				B08F608F18BA9B1800C14A90 /* ADSR.h */,
 				B08F612618BA9B1800C14A90 /* ADSR.cpp */,
 				B08F609018BA9B1800C14A90 /* Asymp.h */,
@@ -412,69 +363,14 @@
 				B08F617B18BA9B1800C14A90 /* SingWave.cpp */,
 			);
 			name = Generators;
-			sourceTree = "<group>";
-		};
-		B08F619118BA9EE200C14A90 /* inc */ = {
-			isa = PBXGroup;
-			children = (
-				B08F609318BA9B1800C14A90 /* BiQuad.h */,
-				B08F609A18BA9B1800C14A90 /* BowTable.h */,
-				B08F609C18BA9B1800C14A90 /* Chorus.h */,
-				B08F609E18BA9B1800C14A90 /* Cubic.h */,
-				B08F609F18BA9B1800C14A90 /* Delay.h */,
-				B08F60A018BA9B1800C14A90 /* DelayA.h */,
-				B08F60A118BA9B1800C14A90 /* DelayL.h */,
-				B08F60A318BA9B1800C14A90 /* Echo.h */,
-				B08F60A418BA9B1800C14A90 /* Effect.h */,
-				B08F60A618BA9B1800C14A90 /* FileLoop.h */,
-				B08F60A718BA9B1800C14A90 /* FileRead.h */,
-				B08F60A818BA9B1800C14A90 /* FileWrite.h */,
-				B08F60A918BA9B1800C14A90 /* FileWvIn.h */,
-				B08F60AA18BA9B1800C14A90 /* FileWvOut.h */,
-				B08F60AB18BA9B1800C14A90 /* Filter.h */,
-				B08F60AC18BA9B1800C14A90 /* Fir.h */,
-				B08F60B018BA9B1800C14A90 /* FormSwep.h */,
-				B08F60B118BA9B1800C14A90 /* FreeVerb.h */,
-				B08F60B218BA9B1800C14A90 /* Function.h */,
-				B08F60B318BA9B1800C14A90 /* Generator.h */,
-				B08F60B518BA9B1800C14A90 /* Guitar.h */,
-				B08F60B718BA9B1800C14A90 /* Iir.h */,
-				B08F60BA18BA9B1800C14A90 /* Instrmnt.h */,
-				B08F60BB18BA9B1800C14A90 /* JCRev.h */,
-				B08F60BC18BA9B1800C14A90 /* JetTable.h */,
-				B08F60BD18BA9B1800C14A90 /* LentPitShift.h */,
-				B08F60C018BA9B1800C14A90 /* Messager.h */,
-				B08F60C118BA9B1800C14A90 /* MidiFileIn.h */,
-				B08F60C318BA9B1800C14A90 /* ModalBar.h */,
-				B08F60C518BA9B1800C14A90 /* Moog.h */,
-				B08F60C818BA9B1800C14A90 /* NRev.h */,
-				B08F60C918BA9B1800C14A90 /* OnePole.h */,
-				B08F60CA18BA9B1800C14A90 /* OneZero.h */,
-				B08F60CC18BA9B1800C14A90 /* Phonemes.h */,
-				B08F60CD18BA9B1800C14A90 /* PitShift.h */,
-				B08F60CF18BA9B1800C14A90 /* PoleZero.h */,
-				B08F60D018BA9B1800C14A90 /* PRCRev.h */,
-				B08F60D118BA9B1800C14A90 /* ReedTable.h */,
-				B08F60E018BA9B1800C14A90 /* Skini.h */,
-				B08F60E118BA9B1800C14A90 /* SKINI.msg */,
-				B08F60E218BA9B1800C14A90 /* SKINI.tbl */,
-				B08F60E418BA9B1800C14A90 /* Sphere.h */,
-				B08F60E618BA9B1800C14A90 /* Stk.h */,
-				B08F60E718BA9B1800C14A90 /* TapDelay.h */,
-				B08F60EC18BA9B1800C14A90 /* Twang.h */,
-				B08F60ED18BA9B1800C14A90 /* TwoPole.h */,
-				B08F60EE18BA9B1800C14A90 /* TwoZero.h */,
-				B08F60F018BA9B1800C14A90 /* Vector3D.h */,
-				B08F60F118BA9B1800C14A90 /* Voicer.h */,
-				B08F60F518BA9B1800C14A90 /* WvIn.h */,
-				B08F60F618BA9B1800C14A90 /* WvOut.h */,
-			);
-			name = inc;
+			path = ../src;
 			sourceTree = "<group>";
 		};
 		B08F619218BABDEB00C14A90 /* FM Synthesis */ = {
 			isa = PBXGroup;
 			children = (
+				B08F60AE18BA9B1800C14A90 /* FM.h */,
+				B08F614118BA9B1800C14A90 /* FM.cpp */,
 				B08F609218BA9B1800C14A90 /* BeeThree.h */,
 				B08F612918BA9B1800C14A90 /* BeeThree.cpp */,
 				B08F60AF18BA9B1800C14A90 /* FMVoices.h */,
@@ -492,6 +388,137 @@
 			);
 			name = "FM Synthesis";
 			path = ../src;
+			sourceTree = "<group>";
+		};
+		E81E86D818BBD93600289223 /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				B08F60AB18BA9B1800C14A90 /* Filter.h */,
+				B08F609318BA9B1800C14A90 /* BiQuad.h */,
+				B08F612A18BA9B1800C14A90 /* BiQuad.cpp */,
+				B08F609F18BA9B1800C14A90 /* Delay.h */,
+				B08F613418BA9B1800C14A90 /* Delay.cpp */,
+				B08F60A018BA9B1800C14A90 /* DelayA.h */,
+				B08F613518BA9B1800C14A90 /* DelayA.cpp */,
+				B08F60A118BA9B1800C14A90 /* DelayL.h */,
+				B08F613618BA9B1800C14A90 /* DelayL.cpp */,
+				B08F60AC18BA9B1800C14A90 /* Fir.h */,
+				B08F613F18BA9B1800C14A90 /* Fir.cpp */,
+				B08F614318BA9B1800C14A90 /* FormSwep.cpp */,
+				B08F60B018BA9B1800C14A90 /* FormSwep.h */,
+				B08F614818BA9B1800C14A90 /* Iir.cpp */,
+				B08F60B718BA9B1800C14A90 /* Iir.h */,
+				B08F60C918BA9B1800C14A90 /* OnePole.h */,
+				B08F616818BA9B1800C14A90 /* OnePole.cpp */,
+				B08F60CA18BA9B1800C14A90 /* OneZero.h */,
+				B08F616918BA9B1800C14A90 /* OneZero.cpp */,
+				B08F60CF18BA9B1800C14A90 /* PoleZero.h */,
+				B08F616E18BA9B1800C14A90 /* PoleZero.cpp */,
+				B08F60E718BA9B1800C14A90 /* TapDelay.h */,
+				B08F618218BA9B1800C14A90 /* TapDelay.cpp */,
+				B08F60ED18BA9B1800C14A90 /* TwoPole.h */,
+				B08F618818BA9B1900C14A90 /* TwoPole.cpp */,
+				B08F60EE18BA9B1800C14A90 /* TwoZero.h */,
+				B08F618918BA9B1900C14A90 /* TwoZero.cpp */,
+			);
+			name = Filters;
+			path = ../src;
+			sourceTree = "<group>";
+		};
+		E81E86D918BBD9D000289223 /* Maths */ = {
+			isa = PBXGroup;
+			children = (
+				B08F60B218BA9B1800C14A90 /* Function.h */,
+				B08F609A18BA9B1800C14A90 /* BowTable.h */,
+				B08F609E18BA9B1800C14A90 /* Cubic.h */,
+				B08F60BC18BA9B1800C14A90 /* JetTable.h */,
+				B08F60D118BA9B1800C14A90 /* ReedTable.h */,
+				B08F60F018BA9B1800C14A90 /* Vector3D.h */,
+			);
+			name = Maths;
+			sourceTree = "<group>";
+		};
+		E81E86DA18BBDA1200289223 /* Effects */ = {
+			isa = PBXGroup;
+			children = (
+				B08F60A418BA9B1800C14A90 /* Effect.h */,
+				B08F609C18BA9B1800C14A90 /* Chorus.h */,
+				B08F613218BA9B1800C14A90 /* Chorus.cpp */,
+				B08F60A318BA9B1800C14A90 /* Echo.h */,
+				B08F613818BA9B1800C14A90 /* Echo.cpp */,
+				B08F60B118BA9B1800C14A90 /* FreeVerb.h */,
+				B08F614418BA9B1800C14A90 /* FreeVerb.cpp */,
+				B08F60BB18BA9B1800C14A90 /* JCRev.h */,
+				B08F615A18BA9B1800C14A90 /* JCRev.cpp */,
+				B08F60BD18BA9B1800C14A90 /* LentPitShift.h */,
+				B08F615B18BA9B1800C14A90 /* LentPitShift.cpp */,
+				B08F60C818BA9B1800C14A90 /* NRev.h */,
+				B08F616718BA9B1800C14A90 /* NRev.cpp */,
+				B08F60CD18BA9B1800C14A90 /* PitShift.h */,
+				B08F616C18BA9B1800C14A90 /* PitShift.cpp */,
+				B08F60D018BA9B1800C14A90 /* PRCRev.h */,
+				B08F616F18BA9B1800C14A90 /* PRCRev.cpp */,
+			);
+			name = Effects;
+			path = ../src;
+			sourceTree = "<group>";
+		};
+		E81E86DB18BBDAA800289223 /* File I/O */ = {
+			isa = PBXGroup;
+			children = (
+				B08F60F518BA9B1800C14A90 /* WvIn.h */,
+				B08F60F618BA9B1800C14A90 /* WvOut.h */,
+				B08F60A718BA9B1800C14A90 /* FileRead.h */,
+				B08F613B18BA9B1800C14A90 /* FileRead.cpp */,
+				B08F60A818BA9B1800C14A90 /* FileWrite.h */,
+				B08F613C18BA9B1800C14A90 /* FileWrite.cpp */,
+				B08F60A918BA9B1800C14A90 /* FileWvIn.h */,
+				B08F613D18BA9B1800C14A90 /* FileWvIn.cpp */,
+				B08F60A618BA9B1800C14A90 /* FileLoop.h */,
+				B08F613A18BA9B1800C14A90 /* FileLoop.cpp */,
+				B08F613E18BA9B1800C14A90 /* FileWvOut.cpp */,
+				B08F60AA18BA9B1800C14A90 /* FileWvOut.h */,
+			);
+			name = "File I/O";
+			sourceTree = "<group>";
+		};
+		E81E86DC18BBDB9C00289223 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				B08F60E618BA9B1800C14A90 /* Stk.h */,
+				B08F618118BA9B1800C14A90 /* Stk.cpp */,
+				B08F60C018BA9B1800C14A90 /* Messager.h */,
+				B08F615F18BA9B1800C14A90 /* Messager.cpp */,
+				B08F60C118BA9B1800C14A90 /* MidiFileIn.h */,
+				B08F616018BA9B1800C14A90 /* MidiFileIn.cpp */,
+				B08F60C318BA9B1800C14A90 /* ModalBar.h */,
+				B08F616218BA9B1800C14A90 /* ModalBar.cpp */,
+				B08F60CC18BA9B1800C14A90 /* Phonemes.h */,
+				B08F616B18BA9B1800C14A90 /* Phonemes.cpp */,
+				B08F60E418BA9B1800C14A90 /* Sphere.h */,
+				B08F617F18BA9B1800C14A90 /* Sphere.cpp */,
+				B08F60EC18BA9B1800C14A90 /* Twang.h */,
+				B08F618718BA9B1900C14A90 /* Twang.cpp */,
+				B08F60F118BA9B1800C14A90 /* Voicer.h */,
+				B08F618B18BA9B1900C14A90 /* Voicer.cpp */,
+				E81E86DB18BBDAA800289223 /* File I/O */,
+				E81E86D918BBD9D000289223 /* Maths */,
+				E81E86DD18BBDBC900289223 /* SKINI */,
+				B08F60F718BA9B1800C14A90 /* rawwaves */,
+			);
+			name = Helpers;
+			path = ../src;
+			sourceTree = "<group>";
+		};
+		E81E86DD18BBDBC900289223 /* SKINI */ = {
+			isa = PBXGroup;
+			children = (
+				B08F60E018BA9B1800C14A90 /* Skini.h */,
+				B08F617D18BA9B1800C14A90 /* Skini.cpp */,
+				B08F60E118BA9B1800C14A90 /* SKINI.msg */,
+				B08F60E218BA9B1800C14A90 /* SKINI.tbl */,
+			);
+			name = SKINI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
