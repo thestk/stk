@@ -577,7 +577,7 @@ bool FileRead :: getMatInfo( const char *fileName )
   haveSampleRate = false;
   while ( !doneParsing ) {
 
-    dataoffset = ftell( fd_ ); // save location in file
+    dataoffset = (int)ftell( fd_ ); // save location in file
     if ( findNextMatArray( &chunkSize, &rows, &columns, &nametype ) == false ) {
       // No more Matlab array type chunks found.
       if ( !haveData ) {
@@ -747,7 +747,7 @@ void FileRead :: read( StkFrames& buffer, unsigned long startFrame, bool doNorma
 
   // Check for file end.
   if ( startFrame + nFrames >= fileSize_ )
-    nFrames = fileSize_ - startFrame;
+    nFrames = fabs(fileSize_ - startFrame);
 
   long i, nSamples = (long) ( nFrames * channels_ );
   unsigned long offset = startFrame * channels_;
