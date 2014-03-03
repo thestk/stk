@@ -7,20 +7,56 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B05F5A9718BC12F8008EE790 /* Stk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B08F618118BA9B1800C14A90 /* Stk.cpp */; };
+		B005830E18C00D1F003019FF /* Stk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B08F618118BA9B1800C14A90 /* Stk.cpp */; };
+		B04CF3E218C00B4A009F9935 /* Mandolin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B08F615D18BA9B1800C14A90 /* Mandolin.cpp */; };
+		B04CF3E318C00B6C009F9935 /* Fir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B08F613F18BA9B1800C14A90 /* Fir.cpp */; };
+		B04CF3E418C00B70009F9935 /* Twang.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B08F618718BA9B1900C14A90 /* Twang.cpp */; };
+		B04CF3E518C00B7A009F9935 /* DelayA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B08F613518BA9B1800C14A90 /* DelayA.cpp */; };
+		B04CF3E618C00B7A009F9935 /* DelayL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B08F613618BA9B1800C14A90 /* DelayL.cpp */; };
+		B04CF3E718C00B7F009F9935 /* FileWvIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B08F613D18BA9B1800C14A90 /* FileWvIn.cpp */; };
+		B04CF3E818C00B8A009F9935 /* FileRead.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B08F613B18BA9B1800C14A90 /* FileRead.cpp */; };
+		B0F70EE318C01AE700DAF1DF /* ahh.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F60F818BA9B1800C14A90 /* ahh.raw */; };
+		B0F70EE418C01AE700DAF1DF /* bassdrum.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F60F918BA9B1800C14A90 /* bassdrum.raw */; };
+		B0F70EE518C01AE700DAF1DF /* britestk.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F60FA18BA9B1800C14A90 /* britestk.raw */; };
+		B0F70EE618C01AE700DAF1DF /* cowbell1.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F60FB18BA9B1800C14A90 /* cowbell1.raw */; };
+		B0F70EE718C01AE700DAF1DF /* crashcym.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F60FC18BA9B1800C14A90 /* crashcym.raw */; };
+		B0F70EE818C01AE700DAF1DF /* dope.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F60FD18BA9B1800C14A90 /* dope.raw */; };
+		B0F70EE918C01AE700DAF1DF /* eee.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F60FE18BA9B1800C14A90 /* eee.raw */; };
+		B0F70EEA18C01AE700DAF1DF /* fwavblnk.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F60FF18BA9B1800C14A90 /* fwavblnk.raw */; };
+		B0F70EEB18C01AE700DAF1DF /* halfwave.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610018BA9B1800C14A90 /* halfwave.raw */; };
+		B0F70EEC18C01AE700DAF1DF /* hihatcym.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610118BA9B1800C14A90 /* hihatcym.raw */; };
+		B0F70EED18C01AE700DAF1DF /* impuls10.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610218BA9B1800C14A90 /* impuls10.raw */; };
+		B0F70EEE18C01AE700DAF1DF /* impuls20.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610318BA9B1800C14A90 /* impuls20.raw */; };
+		B0F70EEF18C01AE700DAF1DF /* impuls40.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610418BA9B1800C14A90 /* impuls40.raw */; };
+		B0F70EF018C01AE700DAF1DF /* mand1.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610818BA9B1800C14A90 /* mand1.raw */; };
+		B0F70EF118C01AE700DAF1DF /* mand10.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610918BA9B1800C14A90 /* mand10.raw */; };
+		B0F70EF218C01AE700DAF1DF /* mand11.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610A18BA9B1800C14A90 /* mand11.raw */; };
+		B0F70EF318C01AE700DAF1DF /* mand12.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610B18BA9B1800C14A90 /* mand12.raw */; };
+		B0F70EF418C01AE700DAF1DF /* mand2.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610C18BA9B1800C14A90 /* mand2.raw */; };
+		B0F70EF518C01AE700DAF1DF /* mand3.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610D18BA9B1800C14A90 /* mand3.raw */; };
+		B0F70EF618C01AE700DAF1DF /* mand4.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610E18BA9B1800C14A90 /* mand4.raw */; };
+		B0F70EF718C01AE700DAF1DF /* mand5.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F610F18BA9B1800C14A90 /* mand5.raw */; };
+		B0F70EF818C01AE700DAF1DF /* mand6.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611018BA9B1800C14A90 /* mand6.raw */; };
+		B0F70EF918C01AE700DAF1DF /* mand7.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611118BA9B1800C14A90 /* mand7.raw */; };
+		B0F70EFA18C01AE700DAF1DF /* mand8.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611218BA9B1800C14A90 /* mand8.raw */; };
+		B0F70EFB18C01AE700DAF1DF /* mand9.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611318BA9B1800C14A90 /* mand9.raw */; };
+		B0F70EFC18C01AE700DAF1DF /* mandpluk.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611418BA9B1800C14A90 /* mandpluk.raw */; };
+		B0F70EFD18C01AE700DAF1DF /* marmstk1.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611518BA9B1800C14A90 /* marmstk1.raw */; };
+		B0F70EFE18C01AE700DAF1DF /* ooo.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611618BA9B1800C14A90 /* ooo.raw */; };
+		B0F70EFF18C01AE700DAF1DF /* peksblnk.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611718BA9B1800C14A90 /* peksblnk.raw */; };
+		B0F70F0018C01AE700DAF1DF /* ppksblnk.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611818BA9B1800C14A90 /* ppksblnk.raw */; };
+		B0F70F0118C01AE700DAF1DF /* ridecymb.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611918BA9B1800C14A90 /* ridecymb.raw */; };
+		B0F70F0218C01AE700DAF1DF /* silence.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611A18BA9B1800C14A90 /* silence.raw */; };
+		B0F70F0318C01AE700DAF1DF /* sineblnk.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611C18BA9B1800C14A90 /* sineblnk.raw */; };
+		B0F70F0418C01AE700DAF1DF /* sinewave.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611D18BA9B1800C14A90 /* sinewave.raw */; };
+		B0F70F0518C01AE700DAF1DF /* snardrum.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611E18BA9B1800C14A90 /* snardrum.raw */; };
+		B0F70F0618C01AE700DAF1DF /* snglpeak.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F611F18BA9B1800C14A90 /* snglpeak.raw */; };
+		B0F70F0718C01AE700DAF1DF /* tambourn.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F612018BA9B1800C14A90 /* tambourn.raw */; };
+		B0F70F0818C01AE700DAF1DF /* tomhidrm.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F612118BA9B1800C14A90 /* tomhidrm.raw */; };
+		B0F70F0918C01AE700DAF1DF /* tomlowdr.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F612218BA9B1800C14A90 /* tomlowdr.raw */; };
+		B0F70F0A18C01AE700DAF1DF /* tommiddr.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F612318BA9B1800C14A90 /* tommiddr.raw */; };
+		B0F70F0B18C01AE700DAF1DF /* twopeaks.raw in Resources */ = {isa = PBXBuildFile; fileRef = B08F612418BA9B1800C14A90 /* twopeaks.raw */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		B05F5A5718BC1018008EE790 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 6;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		B05F5A5918BC1018008EE790 /* libSTK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSTK.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -233,10 +269,18 @@
 		B08F618C18BA9B1900C14A90 /* VoicForm.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = VoicForm.cpp; path = ../src/VoicForm.cpp; sourceTree = "<group>"; };
 		B08F618D18BA9B1900C14A90 /* Whistle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Whistle.cpp; path = ../src/Whistle.cpp; sourceTree = "<group>"; };
 		B08F618E18BA9B1900C14A90 /* Wurley.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Wurley.cpp; path = ../src/Wurley.cpp; sourceTree = "<group>"; };
+		B0F70ED518C01AB600DAF1DF /* rawwaves.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = rawwaves.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		B05F5A5618BC1018008EE790 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B0F70ED218C01AB600DAF1DF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -267,6 +311,7 @@
 				E81E86DD18BBDBC900289223 /* SKINI */,
 				B08F60F718BA9B1800C14A90 /* rawwaves */,
 				B05F5A5918BC1018008EE790 /* libSTK.a */,
+				B0F70ED518C01AB600DAF1DF /* rawwaves.bundle */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -560,7 +605,6 @@
 			buildPhases = (
 				B05F5A5518BC1018008EE790 /* Sources */,
 				B05F5A5618BC1018008EE790 /* Frameworks */,
-				B05F5A5718BC1018008EE790 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -570,6 +614,23 @@
 			productName = STK;
 			productReference = B05F5A5918BC1018008EE790 /* libSTK.a */;
 			productType = "com.apple.product-type.library.static";
+		};
+		B0F70ED418C01AB600DAF1DF /* rawwaves */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B0F70EE018C01AB600DAF1DF /* Build configuration list for PBXNativeTarget "rawwaves" */;
+			buildPhases = (
+				B0F70ED118C01AB600DAF1DF /* Sources */,
+				B0F70ED218C01AB600DAF1DF /* Frameworks */,
+				B0F70ED318C01AB600DAF1DF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = rawwaves;
+			productName = rawwaves;
+			productReference = B0F70ED518C01AB600DAF1DF /* rawwaves.bundle */;
+			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
 
@@ -592,16 +653,82 @@
 			projectRoot = "";
 			targets = (
 				B05F5A5818BC1018008EE790 /* STK */,
+				B0F70ED418C01AB600DAF1DF /* rawwaves */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B0F70ED318C01AB600DAF1DF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B0F70EE318C01AE700DAF1DF /* ahh.raw in Resources */,
+				B0F70EE418C01AE700DAF1DF /* bassdrum.raw in Resources */,
+				B0F70EE518C01AE700DAF1DF /* britestk.raw in Resources */,
+				B0F70EE618C01AE700DAF1DF /* cowbell1.raw in Resources */,
+				B0F70EE718C01AE700DAF1DF /* crashcym.raw in Resources */,
+				B0F70EE818C01AE700DAF1DF /* dope.raw in Resources */,
+				B0F70EE918C01AE700DAF1DF /* eee.raw in Resources */,
+				B0F70EEA18C01AE700DAF1DF /* fwavblnk.raw in Resources */,
+				B0F70EEB18C01AE700DAF1DF /* halfwave.raw in Resources */,
+				B0F70EEC18C01AE700DAF1DF /* hihatcym.raw in Resources */,
+				B0F70EED18C01AE700DAF1DF /* impuls10.raw in Resources */,
+				B0F70EEE18C01AE700DAF1DF /* impuls20.raw in Resources */,
+				B0F70EEF18C01AE700DAF1DF /* impuls40.raw in Resources */,
+				B0F70EF018C01AE700DAF1DF /* mand1.raw in Resources */,
+				B0F70EF118C01AE700DAF1DF /* mand10.raw in Resources */,
+				B0F70EF218C01AE700DAF1DF /* mand11.raw in Resources */,
+				B0F70EF318C01AE700DAF1DF /* mand12.raw in Resources */,
+				B0F70EF418C01AE700DAF1DF /* mand2.raw in Resources */,
+				B0F70EF518C01AE700DAF1DF /* mand3.raw in Resources */,
+				B0F70EF618C01AE700DAF1DF /* mand4.raw in Resources */,
+				B0F70EF718C01AE700DAF1DF /* mand5.raw in Resources */,
+				B0F70EF818C01AE700DAF1DF /* mand6.raw in Resources */,
+				B0F70EF918C01AE700DAF1DF /* mand7.raw in Resources */,
+				B0F70EFA18C01AE700DAF1DF /* mand8.raw in Resources */,
+				B0F70EFB18C01AE700DAF1DF /* mand9.raw in Resources */,
+				B0F70EFC18C01AE700DAF1DF /* mandpluk.raw in Resources */,
+				B0F70EFD18C01AE700DAF1DF /* marmstk1.raw in Resources */,
+				B0F70EFE18C01AE700DAF1DF /* ooo.raw in Resources */,
+				B0F70EFF18C01AE700DAF1DF /* peksblnk.raw in Resources */,
+				B0F70F0018C01AE700DAF1DF /* ppksblnk.raw in Resources */,
+				B0F70F0118C01AE700DAF1DF /* ridecymb.raw in Resources */,
+				B0F70F0218C01AE700DAF1DF /* silence.raw in Resources */,
+				B0F70F0318C01AE700DAF1DF /* sineblnk.raw in Resources */,
+				B0F70F0418C01AE700DAF1DF /* sinewave.raw in Resources */,
+				B0F70F0518C01AE700DAF1DF /* snardrum.raw in Resources */,
+				B0F70F0618C01AE700DAF1DF /* snglpeak.raw in Resources */,
+				B0F70F0718C01AE700DAF1DF /* tambourn.raw in Resources */,
+				B0F70F0818C01AE700DAF1DF /* tomhidrm.raw in Resources */,
+				B0F70F0918C01AE700DAF1DF /* tomlowdr.raw in Resources */,
+				B0F70F0A18C01AE700DAF1DF /* tommiddr.raw in Resources */,
+				B0F70F0B18C01AE700DAF1DF /* twopeaks.raw in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B05F5A5518BC1018008EE790 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B05F5A9718BC12F8008EE790 /* Stk.cpp in Sources */,
+				B005830E18C00D1F003019FF /* Stk.cpp in Sources */,
+				B04CF3E218C00B4A009F9935 /* Mandolin.cpp in Sources */,
+				B04CF3E818C00B8A009F9935 /* FileRead.cpp in Sources */,
+				B04CF3E718C00B7F009F9935 /* FileWvIn.cpp in Sources */,
+				B04CF3E518C00B7A009F9935 /* DelayA.cpp in Sources */,
+				B04CF3E618C00B7A009F9935 /* DelayL.cpp in Sources */,
+				B04CF3E418C00B70009F9935 /* Twang.cpp in Sources */,
+				B04CF3E318C00B6C009F9935 /* Fir.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B0F70ED118C01AB600DAF1DF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -712,6 +839,88 @@
 			};
 			name = Release;
 		};
+		B0F70EE118C01AB600DAF1DF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "rawwaves/rawwaves-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		B0F70EE218C01AB600DAF1DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "rawwaves/rawwaves-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -729,6 +938,15 @@
 			buildConfigurations = (
 				B08F608C18BA9B0600C14A90 /* Debug */,
 				B08F608D18BA9B0600C14A90 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B0F70EE018C01AB600DAF1DF /* Build configuration list for PBXNativeTarget "rawwaves" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B0F70EE118C01AB600DAF1DF /* Debug */,
+				B0F70EE218C01AB600DAF1DF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
