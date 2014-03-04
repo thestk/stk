@@ -77,11 +77,10 @@
     [sineSlider setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.view addSubview:sineSlider];
     
-    NSArray *sliderConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[sineSlider(200)]" options:0 metrics:nil views:@{@"sineSlider": sineSlider}];
-    [self.view addConstraints:sliderConstraints];
-    sliderConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[sineSlider]" options:0 metrics:nil views:@{@"sineSlider": sineSlider}];
-    [self.view addConstraints:sliderConstraints];
+    NSDictionary *metrics = @{@"sliderWidth": @200};
     
+    NSArray *sliderConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[sineSlider(sliderWidth)]" options:0 metrics:metrics views:@{@"sineSlider": sineSlider}];
+    [self.view addConstraints:sliderConstraints];
     
     //Add slider to control brass's frequency:
     UISlider *brassSlider = [[UISlider alloc] init];
@@ -91,9 +90,9 @@
     [brassSlider setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self.view addSubview:brassSlider];
     
-    sliderConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[brassSlider(200)]" options:0 metrics:nil views:@{@"brassSlider": brassSlider}];
+    sliderConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[brassSlider(sliderWidth)]" options:0 metrics:metrics views:@{@"brassSlider": brassSlider}];
     [self.view addConstraints:sliderConstraints];
-    sliderConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[brassSlider]" options:0 metrics:nil views:@{@"brassSlider": brassSlider}];
+    sliderConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[sineSlider]-[brassSlider]" options:0 metrics:nil views:@{@"sineSlider": sineSlider, @"brassSlider": brassSlider}];
     [self.view addConstraints:sliderConstraints];
 }
 
