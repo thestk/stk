@@ -744,10 +744,15 @@ void FileRead :: read( StkFrames& buffer, unsigned long startFrame, bool doNorma
     oStream_ << "FileRead::read: StkFrames argument has incompatible number of channels!";
     Stk::handleError( StkError::FUNCTION_ARGUMENT );
   }
+    
+  if ( startFrame < fileSize_ ) {
+    oStream_ << "FileRead::read: startFrame is smaller than file size!";
+    Stk::handleError( StkError::FUNCTION_ARGUMENT );
+  }
 
   // Check for file end.
   if ( startFrame + nFrames >= fileSize_ )
-    nFrames = fabs(fileSize_ - startFrame);
+    nFrames = fileSize_ - startFrame;
 
   long i, nSamples = (long) ( nFrames * channels_ );
   unsigned long offset = startFrame * channels_;
