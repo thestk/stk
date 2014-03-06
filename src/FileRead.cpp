@@ -571,13 +571,13 @@ bool FileRead :: getMatInfo( const char *fileName )
 
   bool doneParsing, haveData, haveSampleRate;
   SINT32 chunkSize, rows, columns, nametype;
-  int dataoffset;
+  long dataoffset;
   doneParsing = false;
   haveData = false;
   haveSampleRate = false;
   while ( !doneParsing ) {
 
-    dataoffset = (int)ftell( fd_ ); // save location in file
+    dataoffset = ftell( fd_ ); // save location in file
     if ( findNextMatArray( &chunkSize, &rows, &columns, &nametype ) == false ) {
       // No more Matlab array type chunks found.
       if ( !haveData ) {
