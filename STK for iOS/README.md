@@ -1,42 +1,40 @@
 ##Setup
 
-1. Clone or download the STK into a folder within your project.
+1. [Clone][clone_link] or [download][download_link] the STK into your project's directory.
 
 1. Open the **STK for iOS** folder, and drag and drop **STK.xcodeproj** into your Xcode project.
 
 1. Open your project's settings, open the *Build Phases* tab. In the *Link Binary with Libraries* section, add **libSTK.a**. 
-![][linking_libSTK]
+![][linking_libSTK_screenshot]
 
-1. In your project's settings, open the *Build Settings* tab. In the *Search Paths* section, double click on the field to the right of *Header Search Paths*, and add the path to the STK's **include** folder relative to your Xcode project.
-![][header_search_paths]
+1. In your project's settings, open the *Build Settings* tab. In the *Search Paths* section, double click on the field to the right of *Header Search Paths*, and add the path to the STK's **include** directory relative to your Xcode project's directory.
+![][header_search_paths_screenshot]
 
 
 ##Usage
 
-1. Import the STK classes in the source files you require. E.g.
-`#import "SineWave.h"`
+1. Import the STK classes in the source files you require. 
+  * E.g. `#import "SineWave.h"`
 
-1. Change the extension of Objective-C files that import STK files to **.mm**. E.g. **ViewController.m** —> **ViewController.mm**
+1. Change the extension of Objective-C files that import STK files to **.mm**. 
+  * E.g. **ViewController.m** —> **ViewController.mm**
 
 You can also look at the [iOS Demo project](..projects/demo/iOS%20Demo) for a sample usage. 
 
 
 ##Troubleshooting
 
-###`Lexical or preprocessor Issue 'FileName.h' file not found
+###'FileName.h' file not found
 
-You have the wrong header search path in your project's settings. 
+If you get this error when `#import`ing an STK header, you have added the wrong header search path for the STK in your project's settings (see Step 4 in Setup)
 
-This is the path to the STK's **include** folder relative to your project's folder (as if you were `cd`ing into it). For example, it is `../stk/include/` if both share the same directory, but it would be `stk/include/` if the stk folder is inside your project's folder. 
+The STK's header search path you need to add is the path to the STK's **include** directory relative to your project's directory (as if you were `cd`ing into it). For example, it is `stk/include/` if the stk directory is inside your project's directory, but it is `../stk/include/` if both share the same directory. 
 
 If this problem doesn't go away:
 
 1. Delete **STK.xcodeproj** from your Xcode project
 1. Move the STK directory within your project's directory. 
 1. Follow step 1 from **Setup**, add `stk/include` to the *Header Search Paths*.
-
-[!](header_search_paths)
-
 
 ###Raw waves
 
@@ -53,22 +51,23 @@ stk::Stk::setRawwavePath([[rawwaveBundle resourcePath] UTF8String]);
 ```
 
 
-###`rawwaves.bundle: No such file or directory`
+###rawwaves.bundle: No such file or directory
 
 This means that **rawwaves.bundle** hasn't been copied to the build folder, so you'll need to do it manually:
 
 Select the rawwaves scheme:
 
-![][rawwaves_scheme]
+![][rawwaves_scheme_screenshot]
   
 Build it (⌘+B)  then build your project's main scheme. 
 
-###`Apple Mach-O Linker Error`
+###Apple Mach-O Linker Error
 
 This means that **STKLib.a** isn't being linked to your binary. Follow step 2 above in Setup. 
 
 
-[rawwaves_scheme]: http://i.imgur.com/PKd7epf.png
-
-[linking_libSTK]: http://i.imgur.com/cLbGrtq.png
-[header_search_paths]: http://i.imgur.com/iBTC06h.png
+[clone_link]: git@github.com:thestk/stk.git
+[download_link] : https://github.com/thestk/stk/archive/master.zip
+[linking_libSTK_screenshot]: http://i.imgur.com/cLbGrtq.png
+[header_search_paths_screenshot]: http://i.imgur.com/iBTC06h.png
+[rawwaves_scheme_screenshot]: http://i.imgur.com/PKd7epf.png
