@@ -232,7 +232,7 @@ unsigned long MidiFileIn :: getNextEvent( std::vector<unsigned char> *event, uns
     if ( !file_.read( (char *)&c, 1 ) ) goto error;
     event->push_back( c );
     if ( format_ != 1 && ( c == 0x51 ) ) isTempoEvent = true;
-    position = file_.tellg();
+    position = (unsigned long)file_.tellg();
     if ( !readVariableLength( &bytes ) ) goto error;
     bytes += ( (unsigned long)file_.tellg() - position );
     file_.seekg( position, std::ios_base::beg );
@@ -242,7 +242,7 @@ unsigned long MidiFileIn :: getNextEvent( std::vector<unsigned char> *event, uns
   case 0xF7: // The start or continuation of a Sysex event
     trackStatus_[track] = 0;
     event->push_back( c );
-    position = file_.tellg();
+    position = (unsigned long)file_.tellg();
     if ( !readVariableLength( &bytes ) ) goto error;
     bytes += ( (unsigned long)file_.tellg() - position );
     file_.seekg( position, std::ios_base::beg );
@@ -294,7 +294,7 @@ unsigned long MidiFileIn :: getNextEvent( std::vector<unsigned char> *event, uns
   }
 
   // Save the current track pointer value.
-  trackPointers_[track] = file_.tellg();
+  trackPointers_[track] = (long)file_.tellg();
 
   return ticks;
 
