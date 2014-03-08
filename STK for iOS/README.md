@@ -1,8 +1,8 @@
 ##Usage
 
-1. Drag and drop STK.xcodeproj into your xcode project
+1. Drag and drop **STK.xcodeproj** into your Xcode project.
 
-1. Open the project's settings, open the *Build Phases* tab. In the *Link Binary with Libraries section*, add add **libSTK.a**. 
+1. Open your project's settings, open the *Build Phases* tab. In the *Link Binary with Libraries* section, add **libSTK.a**. 
 
 1. Add the STK's **include** folder to your project's header search paths: `../stk/include/`. Use `..` for each step above you need to go. 
 
