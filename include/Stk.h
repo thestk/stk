@@ -376,7 +376,7 @@ public:
   unsigned int channels( void ) const { return nChannels_; };
 
   //! Return the number of sample frames represented by the data.
-  unsigned int frames( void ) const { return nFrames_; };
+  unsigned int frames( void ) const { return (unsigned int)nFrames_; };
 
   //! Set the sample rate associated with the StkFrames data.
   /*!
