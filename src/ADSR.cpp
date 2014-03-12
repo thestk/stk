@@ -149,8 +149,8 @@ void ADSR :: setReleaseTime( StkFloat time )
 void ADSR :: setAllTimes( StkFloat aTime, StkFloat dTime, StkFloat sLevel, StkFloat rTime )
 {
   this->setAttackTime( aTime );
-  this->setDecayTime( dTime );
   this->setSustainLevel( sLevel );
+  this->setDecayTime( dTime );
   this->setReleaseTime( rTime );
 }
 

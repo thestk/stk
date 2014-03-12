@@ -571,7 +571,7 @@ bool FileRead :: getMatInfo( const char *fileName )
 
   bool doneParsing, haveData, haveSampleRate;
   SINT32 chunkSize, rows, columns, nametype;
-  int dataoffset;
+  long dataoffset;
   doneParsing = false;
   haveData = false;
   haveSampleRate = false;
@@ -734,7 +734,7 @@ void FileRead :: read( StkFrames& buffer, unsigned long startFrame, bool doNorma
   }
 
   // Check the buffer size.
-  unsigned int nFrames = buffer.frames();
+  unsigned long nFrames = buffer.frames();
   if ( nFrames == 0 ) {
     oStream_ << "FileRead::read: StkFrames buffer size is zero ... no data read!";
     Stk::handleError( StkError::WARNING ); return;
@@ -745,8 +745,13 @@ void FileRead :: read( StkFrames& buffer, unsigned long startFrame, bool doNorma
     Stk::handleError( StkError::FUNCTION_ARGUMENT );
   }
 
+  if ( startFrame >= fileSize_ ) {
+    oStream_ << "FileRead::read: startFrame argument is greater than or equal to the file size!";
+    Stk::handleError( StkError::FUNCTION_ARGUMENT );
+  }
+
   // Check for file end.
-  if ( startFrame + nFrames >= fileSize_ )
+  if ( startFrame + nFrames > fileSize_ )
     nFrames = fileSize_ - startFrame;
 
   long i, nSamples = (long) ( nFrames * channels_ );
