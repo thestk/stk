@@ -571,7 +571,7 @@ bool FileRead :: getMatInfo( const char *fileName )
 
   bool doneParsing, haveData, haveSampleRate;
   SINT32 chunkSize, rows, columns, nametype;
-  int dataoffset;
+  long dataoffset;
   doneParsing = false;
   haveData = false;
   haveSampleRate = false;
@@ -742,6 +742,11 @@ void FileRead :: read( StkFrames& buffer, unsigned long startFrame, bool doNorma
 
   if ( buffer.channels() != channels_ ) {
     oStream_ << "FileRead::read: StkFrames argument has incompatible number of channels!";
+    Stk::handleError( StkError::FUNCTION_ARGUMENT );
+  }
+    
+  if ( startFrame < fileSize_ ) {
+    oStream_ << "FileRead::read: startFrame is smaller than file size!";
     Stk::handleError( StkError::FUNCTION_ARGUMENT );
   }
 
