@@ -50,6 +50,26 @@ else
 fi
 AC_MSG_RESULT($realtime)
 
+AC_MSG_CHECKING(whether to build the static library)
+AC_ARG_ENABLE(static,
+         [  --disable-static = do not compile static library ],
+	 build_static=$enableval,
+	 build_static=yes)
+AC_SUBST(build_static)
+AC_MSG_RESULT($build_static)
+
+AC_MSG_CHECKING(whether to build the shared library)
+AC_ARG_ENABLE(shared,
+         [  --enable-shared = compile the shared library ],
+	 build_shared=$enableval,
+	 build_shared=no)
+AC_SUBST(build_shared)
+AC_MSG_RESULT($build_shared)
+
+if test x$build_static = xno -a x$build_shared = xno ; then
+        AC_MSG_ERROR([ both static and shared libraries are disabled], 1)
+fi
+
 # Check for math library
 AC_CHECK_LIB(m, cos, , AC_MSG_ERROR(math library is needed!))
 

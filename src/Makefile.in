@@ -55,6 +55,16 @@ ifeq ($(REALTIME),yes)
 	OBJECTS += RtMidi.o RtAudio.o RtWvOut.o RtWvIn.o InetWvOut.o InetWvIn.o Thread.o Mutex.o Socket.o TcpClient.o TcpServer.o UdpSocket.o @objects@
 endif
 
+BUILD_STATIC = @build_static@
+BUILD_SHARED = @build_shared@
+DEFAULT_TARGETS = 
+ifeq ($(BUILD_STATIC),yes)
+ DEFAULT_TARGETS += $(STATICLIB)
+endif
+ifeq ($(BUILD_SHARED),yes)
+ DEFAULT_TARGETS += $(SHAREDLIB)
+endif
+
 RAWWAVES = @rawwaves@
 ifeq ($(strip $(RAWWAVES)), )
 	RAWWAVES = ../../rawwaves/
@@ -67,7 +77,7 @@ DEFS    += -DRAWWAVE_PATH=\"$(RAWWAVES)\"
 %.o : ../src/include/%.cpp $(OBJECT_PATH)/.placeholder
 	$(CC) $(CFLAGS) $(DEFS) -c $(<) -o $(OBJECT_PATH)/$@
 
-all : $(STATICLIB)
+all : $(DEFAULT_TARGETS)
 
 $(OBJECT_PATH)/.placeholder:
 	mkdir -vp $(OBJECT_PATH)
