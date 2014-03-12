@@ -67,7 +67,7 @@ This means that **STKLib.a** isn't being linked to your binary. Follow step 2 ab
 
 
 [clone_link]: git@github.com:thestk/stk.git
-[download_link] : https://github.com/thestk/stk/archive/master.zip
+[download_link]: https://github.com/thestk/stk/archive/master.zip
 [linking_libSTK_screenshot]: http://i.imgur.com/cLbGrtq.png
 [header_search_paths_screenshot]: http://i.imgur.com/iBTC06h.png
 [rawwaves_scheme_screenshot]: http://i.imgur.com/PKd7epf.png
