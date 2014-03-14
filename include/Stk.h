@@ -174,9 +174,6 @@ public:
   //! Static method that returns the current rawwave path.
   static std::string rawwavePath(void) { return rawwavepath_; }
 
-  //! Static method to set the rawwave path on platforms where library resources are loaded dynamically.
-  static void setRawwavePathForDynamicallyLoadedRawwaves ( void );
-
   //! Static method that sets the STK rawwave path.
   static void setRawwavePath( std::string path );
 
@@ -522,9 +519,6 @@ const unsigned int RT_BUFFER_SIZE = 512;
 // the various STK core classes (ex. Clarinet.cpp).  If you wish to
 // move the rawwaves directory to a different location in your file
 // system, you will need to set this path definition appropriately.
-// Platforms that load resources dynamically will call
-// Stk::setRawwavePathForDynamicallyLoadedRawwaves() and set the raw
-//wave path accordingly.
 #if !defined(RAWWAVE_PATH)
   #define RAWWAVE_PATH "../../rawwaves/"
 #endif
@@ -532,10 +526,6 @@ const unsigned int RT_BUFFER_SIZE = 512;
 const StkFloat PI           = 3.14159265358979;
 const StkFloat TWO_PI       = 2 * PI;
 const StkFloat ONE_OVER_128 = 0.0078125;
-    
-#ifdef __APPLE__
-  #include "TargetConditionals.h"
-#endif
 
 #if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__) || defined(__WINDOWS_MM__)
   #define __OS_WINDOWS__
@@ -545,8 +535,6 @@ const StkFloat ONE_OVER_128 = 0.0078125;
   #define __STK_REALTIME__
 #elif defined(__IRIX_AL__)
   #define __OS_IRIX__
-#elif defined TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
-  #define __OS_IOS__
 #elif defined(__MACOSX_CORE__) || defined(__UNIX_JACK__)
   #define __OS_MACOSX__
   #define __STK_REALTIME__

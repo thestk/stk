@@ -71,41 +71,12 @@ std::ostringstream Stk :: oStream_;
 Stk :: Stk( void )
   : ignoreSampleRateChange_(false)
 {
-  setRawwavePathForDynamicallyLoadedRawwaves();
 }
 
 Stk :: ~Stk( void )
 {
 }
 
-#ifdef __OS_IOS__
-  #include <CoreFoundation/CoreFoundation.h>
-#endif
-void Stk :: setRawwavePathForDynamicallyLoadedRawwaves ( void )
-{
-  static bool rawwavesPathSet;
-  if (!rawwavesPathSet)
-  {
-#ifdef __OS_IOS__
-    CFBundleRef mainBundle = CFBundleGetMainBundle();
-    CFURLRef url = CFBundleCopyResourceURL(mainBundle, CFSTR("rawwaves"), CFSTR("bundle"), NULL);
-    if (url) {
-        CFStringRef rawwavesPathCFString = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
-        CFIndex length = CFStringGetLength(rawwavesPathCFString);
-        CFIndex maxSize = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8);
-        char *rawwavesPathCString = (char *)malloc(maxSize);
-        CFStringGetCString(rawwavesPathCFString, rawwavesPathCString, maxSize, kCFStringEncodingUTF8);
-        std::string str(rawwavesPathCString);
-        setRawwavePath(rawwavesPathCString);
-        
-        CFRelease(url);
-        CFRelease(rawwavesPathCFString);
-    }
-#endif
-      rawwavesPathSet = true;
-  }
-}
-    
 void Stk :: setSampleRate( StkFloat rate )
 {
   if ( rate > 0.0 && rate != srate_ ) {
