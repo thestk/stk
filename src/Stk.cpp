@@ -89,19 +89,21 @@ void Stk :: setRawwavePathForDynamicallyLoadedRawwaves ( void )
 #ifdef __OS_IOS__
     CFBundleRef mainBundle = CFBundleGetMainBundle();
     CFURLRef url = CFBundleCopyResourceURL(mainBundle, CFSTR("rawwaves"), CFSTR("bundle"), NULL);
-    CFStringRef rawwavesPathCFString = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
-    CFIndex length = CFStringGetLength(rawwavesPathCFString);
-    CFIndex maxSize = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8);
-    char *rawwavesPathCString = (char *)malloc(maxSize);
-    CFStringGetCString(rawwavesPathCFString, rawwavesPathCString, maxSize, kCFStringEncodingUTF8);
-    std::string str(rawwavesPathCString);
-    setRawwavePath(rawwavesPathCString);
-    
-    CFRelease(url);
-    CFRelease(rawwavesPathCFString);
-#endif
-    rawwavesPathSet = true;
+    if (url) {
+        CFStringRef rawwavesPathCFString = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
+        CFIndex length = CFStringGetLength(rawwavesPathCFString);
+        CFIndex maxSize = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8);
+        char *rawwavesPathCString = (char *)malloc(maxSize);
+        CFStringGetCString(rawwavesPathCFString, rawwavesPathCString, maxSize, kCFStringEncodingUTF8);
+        std::string str(rawwavesPathCString);
+        setRawwavePath(rawwavesPathCString);
+        
+        CFRelease(url);
+        CFRelease(rawwavesPathCFString);
     }
+#endif
+      rawwavesPathSet = true;
+  }
 }
     
 void Stk :: setSampleRate( StkFloat rate )
