@@ -19,8 +19,9 @@
 		B02FD55118C520D70009ECA9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B02FD53918C520D60009ECA9 /* UIKit.framework */; };
 		B02FD55918C520D70009ECA9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B02FD55718C520D70009ECA9 /* InfoPlist.strings */; };
 		B02FD55B18C520D70009ECA9 /* iOS_DemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B02FD55A18C520D70009ECA9 /* iOS_DemoTests.m */; };
-		B02FD56D18C521390009ECA9 /* libSTK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B02FD56A18C520E60009ECA9 /* libSTK.a */; };
 		B02FD57018C521560009ECA9 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B02FD56F18C521560009ECA9 /* ViewController.mm */; };
+		B0779A8718D376F5004DA9B7 /* libSTK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0779A8418D376A6004DA9B7 /* libSTK.a */; };
+		B0779A8B18D37C13004DA9B7 /* rawwaves.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B0779A8618D376A6004DA9B7 /* rawwaves.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,18 +32,18 @@
 			remoteGlobalIDString = B02FD53118C520D60009ECA9;
 			remoteInfo = "iOS Demo";
 		};
-		B02FD56918C520E60009ECA9 /* PBXContainerItemProxy */ = {
+		B0779A8318D376A6004DA9B7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B02FD56418C520E60009ECA9 /* STK.xcodeproj */;
+			containerPortal = B0779A7E18D376A5004DA9B7 /* STK.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = B05F5A5918BC1018008EE790;
+			remoteGlobalIDString = B0AC5BEE18CB31DE00D860C0;
 			remoteInfo = STK;
 		};
-		B02FD56B18C520E60009ECA9 /* PBXContainerItemProxy */ = {
+		B0779A8518D376A6004DA9B7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B02FD56418C520E60009ECA9 /* STK.xcodeproj */;
+			containerPortal = B0779A7E18D376A5004DA9B7 /* STK.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = B0F70ED518C01AB600DAF1DF;
+			remoteGlobalIDString = B0EC33B718CB73A70005787B;
 			remoteInfo = rawwaves;
 		};
 /* End PBXContainerItemProxy section */
@@ -64,9 +65,10 @@
 		B02FD55618C520D70009ECA9 /* iOS DemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iOS DemoTests-Info.plist"; sourceTree = "<group>"; };
 		B02FD55818C520D70009ECA9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B02FD55A18C520D70009ECA9 /* iOS_DemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iOS_DemoTests.m; sourceTree = "<group>"; };
-		B02FD56418C520E60009ECA9 /* STK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = STK.xcodeproj; path = "../../../STK for iOS/STK.xcodeproj"; sourceTree = "<group>"; };
 		B02FD56E18C521560009ECA9 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		B02FD56F18C521560009ECA9 /* ViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
+		B0779A7E18D376A5004DA9B7 /* STK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = STK.xcodeproj; path = ../STK.xcodeproj; sourceTree = "<group>"; };
+		B0779A8918D37977004DA9B7 /* README.MD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.MD; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B02FD56D18C521390009ECA9 /* libSTK.a in Frameworks */,
+				B0779A8718D376F5004DA9B7 /* libSTK.a in Frameworks */,
 				B02FD53818C520D60009ECA9 /* CoreGraphics.framework in Frameworks */,
 				B02FD53A18C520D60009ECA9 /* UIKit.framework in Frameworks */,
 				B02FD53618C520D60009ECA9 /* Foundation.framework in Frameworks */,
@@ -97,7 +99,8 @@
 		B02FD52918C520D60009ECA9 = {
 			isa = PBXGroup;
 			children = (
-				B02FD56418C520E60009ECA9 /* STK.xcodeproj */,
+				B0779A8918D37977004DA9B7 /* README.MD */,
+				B0779A7E18D376A5004DA9B7 /* STK.xcodeproj */,
 				B02FD53B18C520D60009ECA9 /* iOS Demo */,
 				B02FD55418C520D70009ECA9 /* iOS DemoTests */,
 				B02FD53418C520D60009ECA9 /* Frameworks */,
@@ -167,11 +170,11 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		B02FD56518C520E60009ECA9 /* Products */ = {
+		B0779A7F18D376A5004DA9B7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B02FD56A18C520E60009ECA9 /* libSTK.a */,
-				B02FD56C18C520E60009ECA9 /* rawwaves.bundle */,
+				B0779A8418D376A6004DA9B7 /* libSTK.a */,
+				B0779A8618D376A6004DA9B7 /* rawwaves.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -220,7 +223,7 @@
 		B02FD52A18C520D60009ECA9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Ariel Elkin";
 				TargetAttributes = {
 					B02FD54C18C520D70009ECA9 = {
@@ -240,8 +243,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = B02FD56518C520E60009ECA9 /* Products */;
-					ProjectRef = B02FD56418C520E60009ECA9 /* STK.xcodeproj */;
+					ProductGroup = B0779A7F18D376A5004DA9B7 /* Products */;
+					ProjectRef = B0779A7E18D376A5004DA9B7 /* STK.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -253,18 +256,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		B02FD56A18C520E60009ECA9 /* libSTK.a */ = {
+		B0779A8418D376A6004DA9B7 /* libSTK.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libSTK.a;
-			remoteRef = B02FD56918C520E60009ECA9 /* PBXContainerItemProxy */;
+			remoteRef = B0779A8318D376A6004DA9B7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		B02FD56C18C520E60009ECA9 /* rawwaves.bundle */ = {
+		B0779A8618D376A6004DA9B7 /* rawwaves.bundle */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = rawwaves.bundle;
-			remoteRef = B02FD56B18C520E60009ECA9 /* PBXContainerItemProxy */;
+			remoteRef = B0779A8518D376A6004DA9B7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -274,6 +277,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0779A8B18D37C13004DA9B7 /* rawwaves.bundle in Resources */,
 				B02FD54018C520D60009ECA9 /* InfoPlist.strings in Resources */,
 				B02FD54818C520D60009ECA9 /* Images.xcassets in Resources */,
 			);
@@ -342,7 +346,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -381,7 +384,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -418,7 +420,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Demo/iOS Demo-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					../../../include/,
+					../../include/,
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -436,7 +438,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Demo/iOS Demo-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					../../../include/,
+					../../include/,
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -449,7 +451,6 @@
 		B02FD56218C520D70009ECA9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/iOS Demo.app/iOS Demo";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -472,7 +473,6 @@
 		B02FD56318C520D70009ECA9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/iOS Demo.app/iOS Demo";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -507,6 +507,7 @@
 				B02FD56018C520D70009ECA9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B02FD56118C520D70009ECA9 /* Build configuration list for PBXNativeTarget "iOS DemoTests" */ = {
 			isa = XCConfigurationList;
@@ -515,6 +516,7 @@
 				B02FD56318C520D70009ECA9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

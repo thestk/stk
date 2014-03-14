@@ -7,17 +7,9 @@
 
 #import "ViewController.h"
 
-/* 
- 
- Cherry-pick the files you'll need for your app:
- 
- Click on STK.xcodeproj, select the STK target,
- go to the Build Phases, and add the .cpp files you
- need in the 'Compile Sources' section.
- */
-
-#import "SineWave.h" //Add SineWave.cpp
-#import "Brass.h"  //Add ADSR.cpp, BiQuad.cpp, DelayA.cpp, and PoleZero.cpp
+#import "SineWave.h"
+#import "Brass.h"
+#import "Mandolin.h"
 
 @implementation ViewController {
     stk::SineWave *sineWave;
@@ -30,8 +22,8 @@
     [self setupUI];
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     
     NSUInteger samplesToGenerate = 1000;
     
@@ -52,6 +44,17 @@
         float sample = brass->tick();
         NSLog(@"Brass sample: %f", sample);
     }
+    
+    //Test Mandolin:
+    stk::Mandolin *mandolin = new stk::Mandolin(400);
+    
+    mandolin->pluck(1);
+    
+    for (NSUInteger i = 0; i < samplesToGenerate; i ++) {
+        float sample = mandolin->tick();
+        NSLog(@"Mandolin sample: %f", sample);
+    }
+    
     
     #pragma mark TODO - Audio playback
 }
