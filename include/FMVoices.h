@@ -80,7 +80,7 @@ class FMVoices : public FM
 
 inline StkFloat FMVoices :: tick( unsigned int )
 {
-  register StkFloat temp, temp2;
+  StkFloat temp, temp2;
 
   temp = gains_[3] * adsr_[3]->tick() * waves_[3]->tick();
   temp2 = vibrato_.tick() * modDepth_ * 0.1;
