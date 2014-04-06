@@ -72,7 +72,7 @@ void TapDelay :: setTapDelays( std::vector<unsigned long> taps )
   if ( taps.size() != outPoint_.size() ) {
     outPoint_.resize( taps.size() );
     delays_.resize( taps.size() );
-      lastFrame_.resize( 1, (unsigned int)taps.size(), 0.0 );
+    lastFrame_.resize( 1, (unsigned int)taps.size(), 0.0 );
   }
 
   for ( unsigned int i=0; i<taps.size(); i++ ) {
