@@ -106,10 +106,11 @@ void Granulate :: reset( void )
   gPointer_ = 0;
 
   // Reset grain parameters.
-  unsigned int count, nVoices = grains_.size();
+  std::vector<Grain>::size_type count;
+  std::vector<Grain>::size_type nVoices = (unsigned int)grains_.size();
   for ( unsigned int i=0; i<grains_.size(); i++ ) {
     grains_[i].repeats = 0;
-    count = (unsigned int ) ( i * gDuration_ * 0.001 * Stk::sampleRate() / nVoices );
+    count = ( i * gDuration_ * 0.001 * Stk::sampleRate() / nVoices );
     grains_[i].counter = count;
     grains_[i].state = GRAIN_STOPPED;
   }
@@ -126,14 +127,14 @@ void Granulate :: setVoices( unsigned int nVoices )
   handleError( message.str(), StkError::DEBUG_PRINT );
 #endif
 
-  unsigned int oldSize = grains_.size();
+  std::vector<Grain>::size_type oldSize = grains_.size();
   grains_.resize( nVoices );
 
   // Initialize new grain voices.
-  unsigned int count;
-  for ( unsigned int i=oldSize; i<nVoices; i++ ) {
+  std::vector<Grain>::size_type count;
+  for ( std::vector<Grain>::size_type i=oldSize; i<nVoices; i++ ) {
     grains_[i].repeats = 0;
-    count = (unsigned int ) ( i * gDuration_ * 0.001 * Stk::sampleRate() / nVoices );
+    count = ( i * gDuration_ * 0.001 * Stk::sampleRate() / nVoices );
     grains_[i].counter = count;
     grains_[i].pointer = gPointer_;
     grains_[i].state = GRAIN_STOPPED;
@@ -163,7 +164,7 @@ void Granulate :: calculateGrain( Granulate::Grain& grain )
   // Calculate duration and envelope parameters.
   StkFloat seconds = gDuration_ * 0.001;
   seconds += ( seconds * gRandomFactor_ * noise.tick() );
-  unsigned int count = (unsigned long) ( seconds * Stk::sampleRate() );
+  unsigned long count = (unsigned long) ( seconds * Stk::sampleRate() );
   grain.attackCount = (unsigned int) ( gRampPercent_ * 0.005 * count );
   grain.decayCount = grain.attackCount;
   grain.sustainCount = count - 2 * grain.attackCount;
