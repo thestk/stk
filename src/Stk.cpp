@@ -125,7 +125,7 @@ void Stk :: setRawwavePath( std::string path )
 
 void Stk :: swap16(unsigned char *ptr)
 {
-  register unsigned char val;
+  unsigned char val;
 
   // Swap 1st and 2nd bytes
   val = *(ptr);
@@ -135,7 +135,7 @@ void Stk :: swap16(unsigned char *ptr)
 
 void Stk :: swap32(unsigned char *ptr)
 {
-  register unsigned char val;
+  unsigned char val;
 
   // Swap 1st and 4th bytes
   val = *(ptr);
@@ -151,7 +151,7 @@ void Stk :: swap32(unsigned char *ptr)
 
 void Stk :: swap64(unsigned char *ptr)
 {
-  register unsigned char val;
+  unsigned char val;
 
   // Swap 1st and 8th bytes
   val = *(ptr);
