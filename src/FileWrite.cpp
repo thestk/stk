@@ -570,7 +570,7 @@ bool FileWrite :: setMatFile( std::string fileName )
 
   struct MatHeader hdr;
   strcpy( hdr.heading,"MATLAB 5.0 MAT-file, Generated using the Synthesis ToolKit in C++ (STK). By Perry R. Cook and Gary P. Scavone." );
-    for ( std::vector<char>::size_type i =strlen(hdr.heading); i<124; i++ ) hdr.heading[i] = ' ';
+  for ( size_t i =strlen(hdr.heading); i<124; i++ ) hdr.heading[i] = ' ';
 
   // Header Flag Fields
   hdr.hff[0] = (SINT16) 0x0100;   // Version field
