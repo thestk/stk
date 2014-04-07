@@ -112,7 +112,7 @@ inline void LentPitShift::process()
   StkFloat x_t_T;  // previous input coefficient at T samples
   StkFloat coeff;  // new coefficient for the difference function
 
-  int alternativePitch = tMax_;  // Global minimum storage
+  unsigned long alternativePitch = tMax_;  // Global minimum storage
   lastPeriod_ = tMax_+1;         // Storage of the lowest local minimum under the threshold
 
   // Loop variables
@@ -175,8 +175,8 @@ inline void LentPitShift::process()
   for ( int n=-(int)lastPeriod_; n<(int)lastPeriod_; n++ )
     window[n+lastPeriod_] = (1 + cos(PI*n/lastPeriod_)) / 2	;
 
-  int M;  // Index of reading in the input delay line
-  int N;  // Index of writing in the output delay line
+  long M;  // Index of reading in the input delay line
+  long N;  // Index of writing in the output delay line
   double sample;  // Temporary storage for the new coefficient
 
   // We loop for all the frames of length lastPeriod_ presents between inputPtr and tMax_
