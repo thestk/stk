@@ -7,7 +7,7 @@ By Perry R. Cook and Gary P. Scavone, 1995--2012.
 
 The Synthesis ToolKit in C++ can be used in a variety of ways, depending on your particular needs.  Some people simmply choose the classes they need for a particular project and copy those to their project directory.  Others like to compile and link to a library of object files.  STK was not designed with one particular style of use in mind.
 
-To configure and compile (on Unix systems and MinGW):
+## Unix systems and MinGW
 
 1. If you downloaded the software from the git repository, first run autoconf,
 
@@ -47,6 +47,10 @@ If you wish to use a different compiler than that selected by configure, specify
     ./configure CXX=CC
 
 
-## For Windows Users
+## Windows
 
 MinGW support is provided in the configure script.  In addition, Visual C++ 6.0 project files are included for each of the example STK projects, though these may not work with more recent versions of Visual Studio.
+
+##iOS
+
+You can integrate the STK in iOS projects either by using its iOS static library or Cocoapods. See the [iOS README file](iOS/README-iOS.md) for instructions. 
