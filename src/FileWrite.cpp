@@ -309,7 +309,7 @@ void FileWrite :: closeWavFile( void )
     dataLocation = 76;
   }
 
-  SINT32 bytes = frameCounter_ * channels_ * bytesPerSample;
+  SINT32 bytes = (SINT32) (frameCounter_ * channels_ * bytesPerSample);
   if ( bytes % 2 ) { // pad extra byte if odd
     signed char sample = 0;
     fwrite( &sample, 1, 1, fd_ );
@@ -320,7 +320,7 @@ void FileWrite :: closeWavFile( void )
   fseek( fd_, dataLocation, SEEK_SET ); // jump to data length
   fwrite( &bytes, 4, 1, fd_ );
 
-  bytes = frameCounter_ * channels_ * bytesPerSample + 44;
+  bytes = (SINT32) (frameCounter_ * channels_ * bytesPerSample + 44);
   if ( useExtensible ) bytes += 36;
 #ifndef __LITTLE_ENDIAN__
   swap32((unsigned char *)&bytes);
@@ -329,7 +329,7 @@ void FileWrite :: closeWavFile( void )
   fwrite( &bytes, 4, 1, fd_ );
 
   if ( useExtensible ) { // fill in the "fact" chunk frames value
-    bytes = frameCounter_;
+    bytes = (SINT32) frameCounter_;
 #ifndef __LITTLE_ENDIAN__
     swap32((unsigned char *)&bytes);
 #endif
@@ -399,7 +399,7 @@ void FileWrite :: closeSndFile( void )
   else if ( dataType_ == STK_FLOAT64 )
     bytesPerSample = 8;
 
-  SINT32 bytes = frameCounter_ * bytesPerSample * channels_;
+  SINT32 bytes = (SINT32) (frameCounter_ * bytesPerSample * channels_);
 #ifdef __LITTLE_ENDIAN__
   swap32 ((unsigned char *)&bytes);
 #endif
@@ -570,7 +570,7 @@ bool FileWrite :: setMatFile( std::string fileName )
 
   struct MatHeader hdr;
   strcpy( hdr.heading,"MATLAB 5.0 MAT-file, Generated using the Synthesis ToolKit in C++ (STK). By Perry R. Cook and Gary P. Scavone." );
-  for ( int i=strlen(hdr.heading); i<124; i++ ) hdr.heading[i] = ' ';
+  for ( size_t i =strlen(hdr.heading); i<124; i++ ) hdr.heading[i] = ' ';
 
   // Header Flag Fields
   hdr.hff[0] = (SINT16) 0x0100;   // Version field
@@ -700,7 +700,7 @@ void FileWrite :: closeMatFile( void )
   fwrite(&headsize, 4, 1, fd_);
 
   fseek(fd_, temp+196, SEEK_SET); // jumpt to data size (in bytes)
-  temp = frameCounter_ * 8 * channels_;
+  temp = (SINT32) (frameCounter_ * 8 * channels_);
   fwrite(&temp, 4, 1, fd_);
 
 close_file:
