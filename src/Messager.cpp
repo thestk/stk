@@ -46,10 +46,11 @@ extern "C" THREAD_RETURN THREAD_TYPE socketHandler(void * ptr);
 
 #endif // __STK_REALTIME__
 
-static const int STK_FILE   = 0x1;
-static const int STK_MIDI   = 0x2;
-static const int STK_STDIN   = 0x4;
-static const int STK_SOCKET = 0x8;
+typedef int MessagerSourceType;
+MessagerSourceType STK_FILE   = 0x1;
+MessagerSourceType STK_MIDI   = 0x2;
+MessagerSourceType STK_STDIN   = 0x4;
+MessagerSourceType STK_SOCKET = 0x8;
 
 Messager :: Messager()
 {
