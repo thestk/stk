@@ -379,8 +379,6 @@
 				E81E86D918BBD9D000289223 /* Maths */,
 				E81E86DD18BBDBC900289223 /* SKINI */,
 				B08F60F718BA9B1800C14A90 /* rawwaves */,
-				B0AC5BEE18CB31DE00D860C0 /* libSTK.a */,
-				B0EC33B718CB73A70005787B /* rawwaves.bundle */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -393,6 +391,7 @@
 				E81E86DA18BBDA1200289223 /* Effects */,
 				E81E86D818BBD93600289223 /* Filters */,
 				B05F5A5A18BC1018008EE790 /* Helpers */,
+				B0FBB66118F89ED900845111 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -559,6 +558,15 @@
 			);
 			name = Base;
 			path = ../src;
+			sourceTree = "<group>";
+		};
+		B0FBB66118F89ED900845111 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B0AC5BEE18CB31DE00D860C0 /* libSTK.a */,
+				B0EC33B718CB73A70005787B /* rawwaves.bundle */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		E81E86D818BBD93600289223 /* Filters */ = {
