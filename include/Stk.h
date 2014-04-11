@@ -2,6 +2,7 @@
 #define STK_STK_H
 
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <vector>

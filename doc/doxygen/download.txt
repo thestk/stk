@@ -14,6 +14,7 @@
 <ul>
 <li>Updated versions of RtAudio and RtMidi, with associated renaming of RtError class to either RtAudioError or RtMidiError</li>
 <li>New iOS project files (thanks to Ariel Elkin)</li>
+<li>Bug fix in FreeVerb that could cause crackling for stereo input</li>
 <li>Various bug fixes and updates to minimize compiler warnings</li>
 <li>ADSR fix for decay/release time calculations</li>
 <li>Various updates to build system</li>

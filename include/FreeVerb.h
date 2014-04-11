@@ -183,10 +183,6 @@ inline StkFloat FreeVerb::tick( StkFloat inputL, StkFloat inputR, unsigned int c
   }
 #endif
 
-  if ( !inputR ) {
-    inputR = inputL;
-  }
-
   StkFloat fInput = (inputL + inputR) * gain_;
   StkFloat outL = 0.0;
   StkFloat outR = 0.0;

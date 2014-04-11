@@ -5,6 +5,7 @@ By Perry R. Cook and Gary P. Scavone, 1995--2014.
 v4.5.0: (?? April 2014)
 - updated versions of RtAudio and RtMidi, with associated renaming of RtError class to either RtAudioError or RtMidiError
 - new iOS project files (thanks to Ariel Elkin)
+- bug fix in FreeVerb that could cause crackling for stereo input
 - various bug fixes and updates to minimize compiler warnings
 - ADSR fix for decay/release time calculations
 - various updates to build system
