@@ -1,6 +1,6 @@
 ##Setup
 
-1. [Clone][clone_link] or [download][download_link] the STK into your project's directory.
+1. Clone or [download][download_link] the STK into your project's directory.
 
 1. Open the **STK for iOS** folder, and drag and drop **STK.xcodeproj** into your Xcode project.
 
@@ -66,7 +66,6 @@ Build it (⌘+B)  then build your project's main scheme.
 This means that **STKLib.a** isn't being linked to your binary. Follow step 2 above in Setup. 
 
 
-[clone_link]: git@github.com:thestk/stk.git
 [download_link]: https://github.com/thestk/stk/archive/master.zip
 [linking_libSTK_screenshot]: http://i.imgur.com/cLbGrtq.png
 [header_search_paths_screenshot]: http://i.imgur.com/iBTC06h.png
