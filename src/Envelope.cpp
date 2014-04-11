@@ -7,7 +7,7 @@
     specified \e rate.  It also responds to simple \e keyOn and \e
     keyOff messages, ramping to 1.0 on keyOn and to 0.0 on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2012.
+    by Perry R. Cook and Gary P. Scavone, 1995--2014.
 */
 /***************************************************/
 

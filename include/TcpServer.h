@@ -26,7 +26,7 @@ namespace stk {
     less than or equal to zero indicate a closed
     or lost connection or the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2012.
+    by Perry R. Cook and Gary P. Scavone, 1995--2014.
 */
 /***************************************************/
 

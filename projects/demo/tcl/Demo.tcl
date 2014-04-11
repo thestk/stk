@@ -1,5 +1,5 @@
 # Tcl/Tk Demo GUI for the Synthesis Toolkit (STK)
-# by Gary P. Scavone, CCRMA, Stanford University, 1999-2012.
+# by Gary P. Scavone, CCRMA, Stanford University, 1995--2014.
 
 # Set initial control values
 set pitch 64.0

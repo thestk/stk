@@ -13,7 +13,7 @@
        - Envelope Rate = 11
        - Gain = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2012.
+    by Perry R. Cook and Gary P. Scavone, 1995--2014.
 */
 /***************************************************/
 

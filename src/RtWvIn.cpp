@@ -15,7 +15,7 @@
     that takes an StkFrames object for multi-channel and/or
     multi-frame data.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2012.
+    by Perry R. Cook and Gary P. Scavone, 1995--2014.
 */
 /***************************************************/
 

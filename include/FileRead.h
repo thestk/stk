@@ -34,7 +34,7 @@ namespace stk {
     such variable is found, the sample rate is
     assumed to be 44100 Hz.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2012.
+    by Perry R. Cook and Gary P. Scavone, 1995--2014.
 */
 /***************************************************/
 

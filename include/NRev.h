@@ -18,7 +18,7 @@ namespace stk {
     another allpass in series, followed by two allpass filters in
     parallel with corresponding right and left outputs.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2012.
+    by Perry R. Cook and Gary P. Scavone, 1995--2014.
 */
 /***************************************************/
 

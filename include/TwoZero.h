@@ -13,7 +13,7 @@ namespace stk {
     provided for creating a "notch" in the frequency response while
     maintaining a constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2012.
+    by Perry R. Cook and Gary P. Scavone, 1995--2014.
 */
 /***************************************************/
 

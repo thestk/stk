@@ -8,7 +8,7 @@
     sample rates.  You can specify the maximum polyphony (maximum
     number of simultaneous voices) in VoicDrum.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2012.
+    by Perry R. Cook and Gary P. Scavone, 1995--2014.
 */
 /***************************************************/
 

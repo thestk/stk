@@ -53,7 +53,7 @@ namespace stk {
     - Water Drops = 21
     - Tuned Bamboo Chimes = 22
 
-    by Perry R. Cook with updates by Gary Scavone, 1995-2012.
+    by Perry R. Cook with updates by Gary Scavone, 1995--2014.
 */
 /***************************************************/
 

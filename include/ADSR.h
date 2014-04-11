@@ -17,7 +17,7 @@ namespace stk {
     be non-negative.  All time settings are in seconds and must be
     positive.
 
-    by Perry R. Cook and Gary P. Scavone, 1995-2012.
+    by Perry R. Cook and Gary P. Scavone, 1995--2014.
 */
 /***************************************************/
 
