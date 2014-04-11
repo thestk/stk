@@ -212,7 +212,7 @@ int main( int argc,char *argv[] )
   try {
     midiin = new RtMidiIn();
   }
-  catch (RtError &error) {
+  catch (RtMidiError &error) {
     error.printMessage();
     if ( file != NULL ) fclose( file );
     exit(EXIT_FAILURE);
@@ -233,7 +233,7 @@ int main( int argc,char *argv[] )
   try {
     midiin->openPort( port );
   }
-  catch (RtError &error) {
+  catch (RtMidiError &error) {
     error.printMessage();
     goto cleanup;
   }

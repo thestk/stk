@@ -1,6 +1,6 @@
 /*! \page fundamentals STK Fundamentals
 
-The Synthesis ToolKit is implemented in the C++ programming language.  STK does not attempt to provide a new programming environment or paradigm but rather provides a set of objects that can be used within a normal C++ programming framework.  Therefore, it is expected that users of STK will have some familiarity with C/C++ programming concepts.  That said, the STK classes do have some particular idiosyncrasies that we will mention here.  Starting with STK version 4.4, all STK classes except RtAudio, RtMidi, and RtError are defined within the stk namespace.
+The Synthesis ToolKit is implemented in the C++ programming language.  STK does not attempt to provide a new programming environment or paradigm but rather provides a set of objects that can be used within a normal C++ programming framework.  Therefore, it is expected that users of STK will have some familiarity with C/C++ programming concepts.  That said, the STK classes do have some particular idiosyncrasies that we will mention here.  Starting with STK version 4.4, all STK classes except RtAudio and RtMidi are defined within the stk namespace.
 
 \section Signal Computations:
 
