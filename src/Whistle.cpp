@@ -26,15 +26,12 @@ const int CAN_RADIUS = 100;
 const int PEA_RADIUS = 30;
 const int BUMP_RADIUS = 5;
 
-typedef StkFloat WhistleCanLoss;
-WhistleCanLoss NORM_CAN_LOSS = 0.97;
-WhistleCanLoss SLOW_CAN_LOSS = 0.90;
-
+const StkFloat NORM_CAN_LOSS = 0.97;
+//const StkFloat SLOW_CAN_LOSS = 0.90;
 const StkFloat GRAVITY = 20.0;
 
-typedef StkFloat WhistleTickSize;
-WhistleTickSize NORM_TICK_SIZE = 0.004;
-WhistleTickSize SLOW_TICK_SIZE = 0.0001;
+const StkFloat NORM_TICK_SIZE = 0.004;
+//const StkFloat SLOW_TICK_SIZE = 0.0001;
 
 const StkFloat ENV_RATE = 0.001;
 
