@@ -17,7 +17,7 @@ int main()
   try {
     midiin = new RtMidiIn();
   }
-  catch ( RtError &error ) {
+  catch ( RtMidiError &error ) {
     error.printMessage();
     exit( EXIT_FAILURE );
   }
@@ -31,7 +31,7 @@ int main()
     try {
       portName = midiin->getPortName(i);
     }
-    catch ( RtError &error ) {
+    catch ( RtMidiError &error ) {
       error.printMessage();
       goto cleanup;
     }
@@ -42,7 +42,7 @@ int main()
   try {
     midiout = new RtMidiOut();
   }
-  catch ( RtError &error ) {
+  catch ( RtMidiError &error ) {
     error.printMessage();
     exit( EXIT_FAILURE );
   }
@@ -54,7 +54,7 @@ int main()
     try {
       portName = midiout->getPortName(i);
     }
-    catch ( RtError &error ) {
+    catch ( RtMidiError &error ) {
       error.printMessage();
       goto cleanup;
     }

@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
   try {
     adac.openStream( &oParams, &iParams, FORMAT, fs, &bufferFrames, &inout, (void *)&bufferBytes, &options );
   }
-  catch ( RtError& e ) {
+  catch ( RtAudioError& e ) {
     std::cout << '\n' << e.getMessage() << '\n' << std::endl;
     exit( 1 );
   }
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
     // Stop the stream.
     adac.stopStream();
   }
-  catch ( RtError& e ) {
+  catch ( RtAudioError& e ) {
     std::cout << '\n' << e.getMessage() << '\n' << std::endl;
     goto cleanup;
   }

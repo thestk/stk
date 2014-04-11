@@ -36,7 +36,7 @@ int main( int argc, char *argv[] )
   try {
     midiout = new RtMidiOut();
   }
-  catch ( RtError& error ) {
+  catch ( RtMidiError& error ) {
     error.printMessage();
     exit(0);
   }
@@ -48,7 +48,7 @@ int main( int argc, char *argv[] )
     try {
       midiout->openVirtualPort();
     }
-    catch ( RtError& error ) {
+    catch ( RtMidiError& error ) {
       error.printMessage();
       goto cleanup;
     }
@@ -62,7 +62,7 @@ int main( int argc, char *argv[] )
     try {
       midiout->openPort( port );
     }
-    catch ( RtError& error ) {
+    catch ( RtMidiError& error ) {
       error.printMessage();
       goto cleanup;
     }

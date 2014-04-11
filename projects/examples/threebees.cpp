@@ -133,7 +133,7 @@ int main()
   try {
     dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
   }
-  catch ( RtError &error ) {
+  catch ( RtAudioError &error ) {
     error.printMessage();
     goto cleanup;
   }
@@ -157,7 +157,7 @@ int main()
   try {
     dac.startStream();
   }
-  catch ( RtError &error ) {
+  catch ( RtAudioError &error ) {
     error.printMessage();
     goto cleanup;
   }
@@ -170,7 +170,7 @@ int main()
   try {
     dac.closeStream();
   }
-  catch ( RtError &error ) {
+  catch ( RtAudioError &error ) {
     error.printMessage();
   }
 
