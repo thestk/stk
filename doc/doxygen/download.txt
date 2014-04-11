@@ -1,13 +1,23 @@
 /*! \page download Download, Release Notes, and Bug Fixes
 
-\section down Download Version 4.4.4 (24 August 2012):
+\section down Download Version 4.5.0 (?? April 2014):
 
 <UL>
-<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.4.4.tar.gz">Source distribution</A></LI>
+<LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.5.0.tar.gz">Source distribution</A></LI>
 </UL>
 
 
 \section notes Release Notes:
+
+\subsection v4dot5dot0 Version 4.5.0
+
+<ul>
+<li>Updated versions of RtAudio and RtMidi, with associated renaming of RtError class to either RtAudioError or RtMidiError</li>
+<li>New iOS project files (thanks to Ariel Elkin)</li>
+<li>Various bug fixes and updates to minimize compiler warnings</li>
+<li>ADSR fix for decay/release time calculations</li>
+<li>Various updates to build system</li>
+</ul>
 
 \subsection v4dot4dot4 Version 4.4.4
 

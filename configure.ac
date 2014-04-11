@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(STK, 4.4.4, gary@music.mcgill.ca, stk)
+AC_INIT(STK, 4.5.0, gary@music.mcgill.ca, stk)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR(src/Stk.cpp)
 AC_CONFIG_FILES(Makefile src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile projects/eguitar/Makefile)

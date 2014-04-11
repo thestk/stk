@@ -15,7 +15,7 @@ portable (it's mostly platform-independent C and C++ code), and it's
 completely user-extensible (all source included, no unusual libraries,
 and no hidden drivers).  We like to think that this increases the
 chances that our programs will still work in another 5-10 years.  In
-fact, the ToolKit has been working continuously for nearly 15 years
+fact, the ToolKit has been working continuously for nearly 20 years
 now.  STK currently runs with realtime support (audio and MIDI) on
 Linux, Macintosh OS X, and Windows computer platforms.  Generic,
 non-realtime support has been tested under NeXTStep, Sun, and other
