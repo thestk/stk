@@ -107,7 +107,7 @@ RtWvOut :: RtWvOut( unsigned int nChannels, StkFloat sampleRate, int device, int
   try {
     dac_.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &size, &write, (void *)this );
   }
-  catch ( RtError &error ) {
+  catch ( RtAudioError &error ) {
     handleError( error.what(), StkError::AUDIO_SYSTEM );
   }
 

@@ -262,7 +262,7 @@ int main( int argc, char *argv[] )
     try {
       dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
     }
-    catch ( RtError& error ) {
+    catch ( RtAudioError& error ) {
       error.printMessage();
       goto cleanup;
     }
@@ -282,7 +282,7 @@ int main( int argc, char *argv[] )
     try {
       dac.startStream();
     }
-    catch ( RtError &error ) {
+    catch ( RtAudioError &error ) {
       error.printMessage();
       goto cleanup;
     }
@@ -307,7 +307,7 @@ int main( int argc, char *argv[] )
     try {
       dac.closeStream();
     }
-    catch ( RtError& error ) {
+    catch ( RtAudioError& error ) {
       error.printMessage();
     }
   }

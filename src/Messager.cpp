@@ -255,7 +255,7 @@ bool Messager :: startMidiInput( int port )
     if ( port == -1 ) data_.midi->openVirtualPort();
     else data_.midi->openPort( (unsigned int)port );
   }
-  catch ( RtError &error ) {
+  catch ( RtMidiError &error ) {
     oStream_ << "Messager::startMidiInput: error creating RtMidiIn instance (" << error.getMessage() << ").";
     handleError( StkError::WARNING );
     return false;

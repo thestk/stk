@@ -86,7 +86,7 @@ RtWvIn :: RtWvIn( unsigned int nChannels, StkFloat sampleRate, int device, int b
   try {
     adc_.openStream( NULL, &parameters, format, (unsigned int)Stk::sampleRate(), &size, &read, (void *)this );
   }
-  catch ( RtError &error ) {
+  catch ( RtAudioError &error ) {
     handleError( error.what(), StkError::AUDIO_SYSTEM );
   }
 

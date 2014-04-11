@@ -11,7 +11,7 @@
     \brief The STK namespace.
 
     Most Stk classes are defined within the STK namespace.  Exceptions
-    to this include the classes RtAudio, RtMidi, and RtError.
+    to this include the classes RtAudio and RtMidi.
 */
 namespace stk {
 
