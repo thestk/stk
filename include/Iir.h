@@ -113,7 +113,7 @@ protected:
 
 inline StkFloat Iir :: tick( StkFloat input )
 {
-  unsigned int i;
+  size_t i;
 
   outputs_[0] = 0.0;
   inputs_[0] = gain_ * input;
@@ -142,7 +142,8 @@ inline StkFrames& Iir :: tick( StkFrames& frames, unsigned int channel )
 #endif
 
   StkFloat *samples = &frames[channel];
-  unsigned int i, hop = frames.channels();
+  size_t i;
+  unsigned int hop = frames.channels();
   for ( unsigned int j=0; j<frames.frames(); j++, samples += hop ) {
     outputs_[0] = 0.0;
     inputs_[0] = gain_ * *samples;
@@ -175,7 +176,8 @@ inline StkFrames& Iir :: tick( StkFrames& iFrames, StkFrames& oFrames, unsigned 
 
   StkFloat *iSamples = &iFrames[iChannel];
   StkFloat *oSamples = &oFrames[oChannel];
-  unsigned int i, iHop = iFrames.channels(), oHop = oFrames.channels();
+  size_t i;
+  unsigned int iHop = iFrames.channels(), oHop = oFrames.channels();
   for ( unsigned int j=0; j<iFrames.frames(); j++, iSamples += iHop, oSamples += oHop ) {
     outputs_[0] = 0.0;
     inputs_[0] = gain_ * *iSamples;
