@@ -36,9 +36,9 @@ If this problem doesn't go away:
 1. Move the STK directory within your project's directory. 
 1. Follow step 1 from **Setup**, add `stk/include` to the *Header Search Paths*.
 
-###Raw waves
+###FileRead::open: could not open or find file (../../rawwaves/filename.raw)!
 
-If you use a class that makes use of raw waves (such as `Mandolin`, `Wurley`, or `Rhodey`) you need to copy the STK's raw wave files into your bundle. You'll know you need to if you get this runtime error: 
+If you use a class that makes use of raw waves (such as `Mandolin`, `Wurley`, or `Rhodey`) you need to copy the STK's raw wave files into your bundle. You'll know you need to if you get this runtime error:
 `FileRead::open: could not open or find file (../../rawwaves/filename.raw)!`
 
 1. Open your project's settings, open the *Build Phases* tab. 
@@ -63,7 +63,7 @@ Build it (⌘+B)  then build your project's main scheme.
 
 ###Apple Mach-O Linker Error
 
-This means that **STKLib.a** isn't being linked to your binary. Follow step 2 above in Setup. 
+This means that **STKLib.a** isn't being linked to your binary. Follow step 2 above in [Setup](#setup). 
 
 
 [download_link]: https://github.com/thestk/stk/archive/master.zip
