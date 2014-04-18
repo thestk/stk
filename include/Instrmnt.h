@@ -22,6 +22,12 @@ class Instrmnt : public Stk
   //! Class constructor.
   Instrmnt( void ) { lastFrame_.resize( 1, 1, 0.0 ); };
 
+  //! Reset and clear all internal state (for subclasses).
+  /*!
+    Not all subclasses implement a clear() function.
+  */
+  virtual void clear( void ) {};
+
   //! Start a note with the given frequency and amplitude.
   virtual void noteOn( StkFloat frequency, StkFloat amplitude ) = 0;
 
