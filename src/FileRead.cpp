@@ -442,6 +442,17 @@ bool FileRead :: getAifInfo( const char *fileName )
   if (last & 0x00000001) mantissa++;
   fileRate_ = (StkFloat) mantissa;
 
+  byteswap_ = false;
+#ifdef __LITTLE_ENDIAN__
+  byteswap_ = true;
+#endif
+
+  if ( fread(&id, 4, 1, fd_) != 1 ) goto error;
+  if ( !strncmp(id, "sowt", 4) ) { // uncompressed little-endian
+    if ( byteswap_ == false ) byteswap_ = true;
+    else byteswap_ = false;
+  }
+
   // Determine the data format.
   dataType_ = 0;
   if ( aifc == false ) {
@@ -451,8 +462,7 @@ bool FileRead :: getAifInfo( const char *fileName )
     else if ( temp <= 32 ) dataType_ = STK_SINT32;
   }
   else {
-    if ( fread(&id, 4, 1, fd_) != 1 ) goto error;
-    if ( !strncmp(id, "NONE", 4) ) {
+    if ( !strncmp(id, "NONE", 4) || !strncmp(id, "sowt", 4) ) {
       if ( temp <= 8 ) dataType_ = STK_SINT8;
       else if ( temp <= 16 ) dataType_ = STK_SINT16;
       else if ( temp <= 24 ) dataType_ = STK_SINT24;
@@ -485,11 +495,6 @@ bool FileRead :: getAifInfo( const char *fileName )
   if ( fseek(fd_, 12, SEEK_CUR) == -1 ) goto error;
 
   dataOffset_ = ftell(fd_);
-  byteswap_ = false;
-#ifdef __LITTLE_ENDIAN__
-  byteswap_ = true;
-#endif
-
   return true;
 
  error:
