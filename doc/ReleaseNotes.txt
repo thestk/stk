@@ -3,7 +3,8 @@ The Synthesis ToolKit in C++ (STK)
 By Perry R. Cook and Gary P. Scavone, 1995--2014.
 
 v4.5.0: (?? April 2014)
-- updated versions of RtAudio and RtMidi, with associated renaming of RtError class to either RtAudioError or RtMidiError
+- updated versions of RtAudio and RtMidi, with associated renaming of RtError class to either RtAudioError or RtMidiError and addition of WASAPI support in Windows
+- added support in FileRead for little-endian AIFC file format
 - new iOS project files (thanks to Ariel Elkin)
 - bug fix in FreeVerb that could cause crackling for stereo input
 - various bug fixes and updates to minimize compiler warnings

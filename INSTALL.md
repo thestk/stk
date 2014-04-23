@@ -35,6 +35,7 @@ Several options can be passed to configure, including:
     --with-core = choose OS-X Core Audio API (macintosh OS-X only)
     --with-asio = choose ASIO API support (windows only)
     --with-ds = choose DirectSound API support (windows only)
+    --with-wasapi = choose Windows Audio Session API support (windows only)
 
 It is now possible to specify more than one audio and MIDI API where supported.  Note, however, that the ALSA library is required in order to compile the RtMidi class in Linux if the `--with-oss` option is provided (only the OSS audio API will be used, not the OSS MIDI API).  Typing `./configure --help` will display all the available options.  In addition, it is possible to specify the RAWWAVES and INCLUDE paths to configure as (ex. to set to /home/me/rawwaves and /home/me/include):
 

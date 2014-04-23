@@ -41,9 +41,6 @@ class Simple : public Instrmnt
   //! Class destructor.
   ~Simple( void );
 
-  //! Clear internal states.
-  void clear( void );
-
   //! Set instrument parameters for a particular frequency.
   void setFrequency( StkFloat frequency );
 

@@ -190,7 +190,13 @@ if test $realtime = yes; then
     AC_ARG_WITH(ds, [  --with-ds = choose DirectSound API support (windoze only)], [
     api="$api -D__WINDOWS_DS__"
     AC_MSG_RESULT(using DirectSound)
-    LIBS="-ldsound -lwinmm $LIBS" ], )
+    LIBS="-ldsound $LIBS" ], )
+
+    # Look for WASAPI flag
+    AC_ARG_WITH(wasapi, [  --with-wasapi = choose Windows Audio Session API support (windoze only)], [
+    api="$api -D__WINDOWS_WASAPI__"
+    AC_MSG_RESULT(using WASAPI)
+    LIBS="-luuid -lksuser $LIBS" ], )
 
     # If no audio api flags specified, use DirectSound
     if [test "$api" == "";] then

@@ -36,9 +36,6 @@ class Resonate : public Instrmnt
   //! Class destructor.
   ~Resonate( void );
 
-  //! Reset and clear all internal state.
-  void clear( void );
-
   //! Set the filter for a resonance at the given frequency (Hz) and radius.
   void setResonance( StkFloat frequency, StkFloat radius );
 

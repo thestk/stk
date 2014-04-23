@@ -10,7 +10,7 @@ With Windows XP/7, piping works as under unix.  Simply fire up the script files 
 
 IMPORTANT VC++ NOTE: When compiling "release" versions of STK programs, link to the release multithreaded library.  When compiling "debug" versions, link to the debug multithreaded library.  Compiler errors will result otherwise.
 
-Both the DirectSound and Steinberg ASIO audio APIs are supported for realtime audio input/output.  The Visual C++ project files included with this distribution are configured to use the DirectSound API.  In order to use the ASIO API, it is necessary to change the preprocessor definition from __WINDOWS_DS__ to __WINDOWS_ASIO__, as well as include all the files in the /src/include/ directory (i.e. asio.h, asio.cpp, ...).  If you have a good quality soundcard and a native ASIO driver (not emulated), you are likely to get much better input/output response using that.
+The DirectSound, WASAPI and Steinberg ASIO audio APIs are supported for realtime audio input/output.  The Visual C++ project files included with this distribution are configured to use all supported APIs.  In order to use the ASIO API, it is necessary to use the preprocessor definition __WINDOWS_ASIO__, as well as include most of the files in the /src/include/ directory (i.e. asio.h, asio.cpp, ...).  If you have a good quality soundcard and a native ASIO driver (not emulated), you are likely to get much better input/output response using that.
 
 When using the DirectSound API for audio input, latency can be high.  If you experience realtime audio "stuttering", you should experiment with different "buffer size" and "number of buffers" values.
 

@@ -28,9 +28,6 @@ class Sampler : public Instrmnt
   //! Class destructor.
   virtual ~Sampler( void );
 
-  //! Reset and clear all internal state.
-  void clear( void );
-
   //! Set instrument parameters for a particular frequency.
   virtual void setFrequency( StkFloat frequency ) = 0;
 

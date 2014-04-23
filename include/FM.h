@@ -46,9 +46,6 @@ class FM : public Instrmnt
   //! Class destructor.
   virtual ~FM( void );
 
-  //! Reset and clear all wave and envelope states.
-  void clear( void );
-
   //! Load the rawwave filenames in waves.
   void loadWaves( const char **filenames );
 
