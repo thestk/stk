@@ -1,6 +1,6 @@
 /*! \page download Download, Release Notes, and Bug Fixes
 
-\section down Download Version 4.5.0 (?? April 2014):
+\section down Download Version 4.5.0 (26 April 2014):
 
 <UL>
 <LI><A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.5.0.tar.gz">Source distribution</A></LI>
