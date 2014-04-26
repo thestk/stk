@@ -38,7 +38,7 @@
 */
 /************************************************************************/
 
-// RtAudio: Version 4.1.1pre
+// RtAudio: Version 4.1.1
 
 #include "RtAudio.h"
 #include <iostream>
@@ -402,6 +402,14 @@ double RtApi :: getStreamTime( void )
 #else
   return stream_.streamTime;
 #endif
+}
+
+void RtApi :: setStreamTime( double time )
+{
+  verifyStream();
+
+  if ( time >= 0.0 )
+    stream_.streamTime = time;
 }
 
 unsigned int RtApi :: getStreamSampleRate( void )
@@ -1682,11 +1690,12 @@ bool RtApiCore :: callbackEvent( AudioDeviceID deviceId,
         }
       }
     }
+  }
 
-    if ( handle->drainCounter ) {
-      handle->drainCounter++;
-      goto unlock;
-    }
+  // Don't bother draining input
+  if ( handle->drainCounter ) {
+    handle->drainCounter++;
+    goto unlock;
   }
 
   AudioDeviceID inputDevice;
@@ -2572,11 +2581,12 @@ bool RtApiJack :: callbackEvent( unsigned long nframes )
         memcpy( jackbuffer, &stream_.userBuffer[0][i*bufferBytes], bufferBytes );
       }
     }
+  }
 
-    if ( handle->drainCounter ) {
-      handle->drainCounter++;
-      goto unlock;
-    }
+  // Don't bother draining input
+  if ( handle->drainCounter ) {
+    handle->drainCounter++;
+    goto unlock;
   }
 
   if ( stream_.mode == INPUT || stream_.mode == DUPLEX ) {
@@ -3403,11 +3413,12 @@ bool RtApiAsio :: callbackEvent( long bufferIndex )
       }
 
     }
+  }
 
-    if ( handle->drainCounter ) {
-      handle->drainCounter++;
-      goto unlock;
-    }
+  // Don't bother draining input
+  if ( handle->drainCounter ) {
+    handle->drainCounter++;
+    goto unlock;
   }
 
   if ( stream_.mode == INPUT || stream_.mode == DUPLEX ) {
@@ -3582,7 +3593,7 @@ static const char* getAsioErrorString( ASIOError result )
 // - Introduces support for the Windows WASAPI API
 // - Aims to deliver bit streams to and from hardware at the lowest possible latency, via the absolute minimum buffer sizes required
 // - Provides flexible stream configuration to an otherwise strict and inflexible WASAPI interface
-// - Includes automatic internal conversion of sample rate, buffer size and channel count
+// - Includes automatic internal conversion of sample rate and buffer size between hardware and the user
 
 #ifndef INITGUID
   #define INITGUID
@@ -3764,15 +3775,14 @@ private:
 
 //-----------------------------------------------------------------------------
 
-// In order to satisfy WASAPI's buffer requirements, we need a means of converting sample rate and
-// channel counts between HW and the user. The convertBufferWasapi function is used to perform
-// these conversions between HwIn->UserIn and UserOut->HwOut during the stream callback loop.
+// In order to satisfy WASAPI's buffer requirements, we need a means of converting sample rate
+// between HW and the user. The convertBufferWasapi function is used to perform this conversion
+// between HwIn->UserIn and UserOut->HwOut during the stream callback loop.
 // This sample rate converter favors speed over quality, and works best with conversions between
 // one rate and its multiple.
 void convertBufferWasapi( char* outBuffer,
                           const char* inBuffer,
-                          const unsigned int& inChannelCount,
-                          const unsigned int& outChannelCount,
+                          const unsigned int& channelCount,
                           const unsigned int& inSampleRate,
                           const unsigned int& outSampleRate,
                           const unsigned int& inSampleCount,
@@ -3783,7 +3793,6 @@ void convertBufferWasapi( char* outBuffer,
   float sampleRatio = ( float ) outSampleRate / inSampleRate;
   float sampleStep = 1.0f / sampleRatio;
   float inSampleFraction = 0.0f;
-  unsigned int commonChannelCount = std::min( inChannelCount, outChannelCount );
 
   outSampleCount = ( unsigned int ) ( inSampleCount * sampleRatio );
 
@@ -3795,22 +3804,22 @@ void convertBufferWasapi( char* outBuffer,
     switch ( format )
     {
       case RTAUDIO_SINT8:
-        memcpy( &( ( char* ) outBuffer )[ outSample * outChannelCount ], &( ( char* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( char ) );
+        memcpy( &( ( char* ) outBuffer )[ outSample * channelCount ], &( ( char* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( char ) );
         break;
       case RTAUDIO_SINT16:
-        memcpy( &( ( short* ) outBuffer )[ outSample * outChannelCount ], &( ( short* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( short ) );
+        memcpy( &( ( short* ) outBuffer )[ outSample * channelCount ], &( ( short* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( short ) );
         break;
       case RTAUDIO_SINT24:
-        memcpy( &( ( S24* ) outBuffer )[ outSample * outChannelCount ], &( ( S24* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( S24 ) );
+        memcpy( &( ( S24* ) outBuffer )[ outSample * channelCount ], &( ( S24* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( S24 ) );
         break;
       case RTAUDIO_SINT32:
-        memcpy( &( ( int* ) outBuffer )[ outSample * outChannelCount ], &( ( int* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( int ) );
+        memcpy( &( ( int* ) outBuffer )[ outSample * channelCount ], &( ( int* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( int ) );
         break;
       case RTAUDIO_FLOAT32:
-        memcpy( &( ( float* ) outBuffer )[ outSample * outChannelCount ], &( ( float* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( float ) );
+        memcpy( &( ( float* ) outBuffer )[ outSample * channelCount ], &( ( float* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( float ) );
         break;
       case RTAUDIO_FLOAT64:
-        memcpy( &( ( double* ) outBuffer )[ outSample * outChannelCount ], &( ( double* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( double ) );
+        memcpy( &( ( double* ) outBuffer )[ outSample * channelCount ], &( ( double* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( double ) );
         break;
     }
 
@@ -3847,7 +3856,6 @@ RtApiWasapi::RtApiWasapi()
 {
   // WASAPI can run either apartment or multi-threaded
   HRESULT hr = CoInitialize( NULL );
-
   if ( !FAILED( hr ) )
     coInitialized_ = true;
 
@@ -3866,16 +3874,14 @@ RtApiWasapi::RtApiWasapi()
 
 RtApiWasapi::~RtApiWasapi()
 {
-  // if this object previously called CoInitialize()
-  if ( coInitialized_ ) {
-    CoUninitialize();
-  }
-
-  if ( stream_.state != STREAM_CLOSED ) {
+  if ( stream_.state != STREAM_CLOSED )
     closeStream();
-  }
 
   SAFE_RELEASE( deviceEnumerator_ );
+
+  // If this object previously called CoInitialize()
+  if ( coInitialized_ )
+    CoUninitialize();
 }
 
 //=============================================================================
@@ -4508,10 +4514,11 @@ bool RtApiWasapi::probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
 
   // Set flags for buffer conversion.
   stream_.doConvertBuffer[mode] = false;
-  if ( stream_.userFormat != stream_.deviceFormat[mode] )
+  if ( stream_.userFormat != stream_.deviceFormat[mode] ||
+       stream_.nUserChannels != stream_.nDeviceChannels )
     stream_.doConvertBuffer[mode] = true;
-  if ( stream_.userInterleaved != stream_.deviceInterleaved[mode] &&
-       stream_.nUserChannels[mode] > 1 )
+  else if ( stream_.userInterleaved != stream_.deviceInterleaved[mode] &&
+            stream_.nUserChannels[mode] > 1 )
     stream_.doConvertBuffer[mode] = true;
 
   if ( stream_.doConvertBuffer[mode] )
@@ -4623,7 +4630,7 @@ void RtApiWasapi::wasapiThread()
   RtAudioError::Type errorType = RtAudioError::DRIVER_ERROR;
 
   // Attempt to assign "Pro Audio" characteristic to thread
-  HMODULE AvrtDll = LoadLibrary( "AVRT.dll" );
+  HMODULE AvrtDll = LoadLibrary( (LPCTSTR) "AVRT.dll" );
   if ( AvrtDll ) {
     DWORD taskIndex = 0;
     TAvSetMmThreadCharacteristicsPtr AvSetMmThreadCharacteristicsPtr = ( TAvSetMmThreadCharacteristicsPtr ) GetProcAddress( AvrtDll, "AvSetMmThreadCharacteristicsW" );
@@ -4830,11 +4837,10 @@ void RtApiWasapi::wasapiThread()
                                                    stream_.deviceFormat[INPUT] );
 
         if ( callbackPulled ) {
-          // Convert callback buffer to user sample rate and channel count
+          // Convert callback buffer to user sample rate
           convertBufferWasapi( stream_.deviceBuffer,
                                convBuffer,
                                stream_.nDeviceChannels[INPUT],
-                               stream_.nUserChannels[INPUT],
                                captureFormat->nSamplesPerSec,
                                stream_.sampleRate,
                                ( unsigned int ) ( stream_.bufferSize * captureSrRatio ),
@@ -4848,7 +4854,7 @@ void RtApiWasapi::wasapiThread()
                            stream_.convertInfo[INPUT] );
           }
           else {
-            // no conversion, simple copy deviceBuffer to userBuffer
+            // no further conversion, simple copy deviceBuffer to userBuffer
             memcpy( stream_.userBuffer[INPUT],
                     stream_.deviceBuffer,
                     stream_.bufferSize * stream_.nUserChannels[INPUT] * formatBytes( stream_.userFormat ) );
@@ -4924,34 +4930,26 @@ void RtApiWasapi::wasapiThread()
                        stream_.userBuffer[OUTPUT],
                        stream_.convertInfo[OUTPUT] );
 
-        // Convert callback buffer to stream sample rate and channel count
-        convertBufferWasapi( convBuffer,
-                             stream_.deviceBuffer,
-                             stream_.nUserChannels[OUTPUT],
-                             stream_.nDeviceChannels[OUTPUT],
-                             stream_.sampleRate,
-                             renderFormat->nSamplesPerSec,
-                             stream_.bufferSize,
-                             convBufferSize,
-                             stream_.deviceFormat[OUTPUT] );
       }
-      else {
-        // Convert callback buffer to stream sample rate and channel count
-        convertBufferWasapi( convBuffer,
-                             stream_.userBuffer[OUTPUT],
-                             stream_.nUserChannels[OUTPUT],
-                             stream_.nDeviceChannels[OUTPUT],
-                             stream_.sampleRate,
-                             renderFormat->nSamplesPerSec,
-                             stream_.bufferSize,
-                             convBufferSize,
-                             stream_.deviceFormat[OUTPUT] );
-      }
+
+      // Convert callback buffer to stream sample rate
+      convertBufferWasapi( convBuffer,
+                           stream_.deviceBuffer,
+                           stream_.nDeviceChannels[OUTPUT],
+                           stream_.sampleRate,
+                           renderFormat->nSamplesPerSec,
+                           stream_.bufferSize,
+                           convBufferSize,
+                           stream_.deviceFormat[OUTPUT] );
 
       // Push callback buffer into outputBuffer
       callbackPushed = renderBuffer.pushBuffer( convBuffer,
                                                 convBufferSize * stream_.nDeviceChannels[OUTPUT],
                                                 stream_.deviceFormat[OUTPUT] );
+    }
+    else {
+      // if there is no render stream, set callbackPushed flag
+      callbackPushed = true;
     }
 
     // Stream Capture
@@ -4978,8 +4976,8 @@ void RtApiWasapi::wasapiThread()
       if ( bufferFrameCount != 0 ) {
         // Push capture buffer into inputBuffer
         if ( captureBuffer.pushBuffer( ( char* ) streamBuffer,
-                                      bufferFrameCount * stream_.nDeviceChannels[INPUT],
-                                      stream_.deviceFormat[INPUT] ) )
+                                       bufferFrameCount * stream_.nDeviceChannels[INPUT],
+                                       stream_.deviceFormat[INPUT] ) )
         {
           // Release capture buffer
           hr = captureClient->ReleaseBuffer( bufferFrameCount );
@@ -5047,8 +5045,8 @@ void RtApiWasapi::wasapiThread()
         // Pull next buffer from outputBuffer
         // Fill render buffer with next buffer
         if ( renderBuffer.pullBuffer( ( char* ) streamBuffer,
-                                     bufferFrameCount * stream_.nDeviceChannels[OUTPUT],
-                                     stream_.deviceFormat[OUTPUT] ) )
+                                      bufferFrameCount * stream_.nDeviceChannels[OUTPUT],
+                                      stream_.deviceFormat[OUTPUT] ) )
         {
           // Release render buffer
           hr = renderClient->ReleaseBuffer( bufferFrameCount, 0 );
@@ -5092,7 +5090,6 @@ Exit:
   CoTaskMemFree( captureFormat );
   CoTaskMemFree( renderFormat );
 
-  //delete convBuffer;
   free ( convBuffer );
 
   CoUninitialize();
@@ -6063,6 +6060,8 @@ void RtApiDs :: stopStream()
 
     stream_.state = STREAM_STOPPED;
 
+    MUTEX_LOCK( &stream_.mutex );
+
     // Stop the buffer and clear memory
     LPDIRECTSOUNDBUFFER buffer = (LPDIRECTSOUNDBUFFER) handle->buffer[0];
     result = buffer->Stop();
@@ -6103,6 +6102,9 @@ void RtApiDs :: stopStream()
 
     stream_.state = STREAM_STOPPED;
 
+    if ( stream_.mode != DUPLEX )
+      MUTEX_LOCK( &stream_.mutex );
+
     result = buffer->Stop();
     if ( FAILED( result ) ) {
       errorStream_ << "RtApiDs::stopStream: error (" << getErrorString( result ) << ") stopping input buffer!";
@@ -6136,6 +6138,8 @@ void RtApiDs :: stopStream()
 
  unlock:
   timeEndPeriod( 1 ); // revert to normal scheduler frequency on lesser windows.
+  MUTEX_UNLOCK( &stream_.mutex );
+
   if ( FAILED( result ) ) error( RtAudioError::SYSTEM_ERROR );
 }
 
@@ -6221,6 +6225,12 @@ void RtApiDs :: callbackEvent()
 
   char *buffer;
   long bufferBytes;
+
+  MUTEX_LOCK( &stream_.mutex );
+  if ( stream_.state == STREAM_STOPPED ) {
+    MUTEX_UNLOCK( &stream_.mutex );
+    return;
+  }
 
   if ( buffersRolling == false ) {
     if ( stream_.mode == DUPLEX ) {
@@ -6402,11 +6412,12 @@ void RtApiDs :: callbackEvent()
     }
     nextWritePointer = ( nextWritePointer + bufferSize1 + bufferSize2 ) % dsBufferSize;
     handle->bufferPointer[0] = nextWritePointer;
+  }
 
-    if ( handle->drainCounter ) {
-      handle->drainCounter++;
-      goto unlock;
-    }
+  // Don't bother draining input
+  if ( handle->drainCounter ) {
+    handle->drainCounter++;
+    goto unlock;
   }
 
   if ( stream_.mode == INPUT || stream_.mode == DUPLEX ) {
@@ -6545,6 +6556,7 @@ void RtApiDs :: callbackEvent()
   }
 
  unlock:
+  MUTEX_UNLOCK( &stream_.mutex );
   RtApi::tickStreamTime();
 }
 

@@ -1,1 +1,1 @@
-wish < tcl/EGuitar.tcl | ./eguitar -or -ip
+wish < tcl/Eguitar.tcl | ./eguitar -or -ip
