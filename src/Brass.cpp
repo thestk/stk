@@ -21,7 +21,7 @@
 /***************************************************/
 
 #include "Brass.h"
-#include "SKINI.msg"
+#include "SKINImsg.h"
 #include <cmath>
 
 namespace stk {
