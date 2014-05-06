@@ -202,8 +202,8 @@
 		B08F60DE18BA9B1800C14A90 /* SingWave.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SingWave.h; path = ../include/SingWave.h; sourceTree = "<group>"; };
 		B08F60DF18BA9B1800C14A90 /* Sitar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sitar.h; sourceTree = "<group>"; };
 		B08F60E018BA9B1800C14A90 /* Skini.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Skini.h; path = ../include/Skini.h; sourceTree = "<group>"; };
-		B08F60E118BA9B1800C14A90 /* SKINI.msg */ = {isa = PBXFileReference; lastKnownFileType = text; name = SKINI.msg; path = ../include/SKINI.msg; sourceTree = "<group>"; };
-		B08F60E218BA9B1800C14A90 /* SKINI.tbl */ = {isa = PBXFileReference; lastKnownFileType = text; name = SKINI.tbl; path = ../include/SKINI.tbl; sourceTree = "<group>"; };
+		B08F60E118BA9B1800C14A90 /* SKINImsg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SKINImsg.h; path = ../include/SKINImsg.h; sourceTree = "<group>"; };
+		B08F60E218BA9B1800C14A90 /* SKINItbl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SKINItbl.h; path = ../include/SKINItbl.h; sourceTree = "<group>"; };
 		B08F60E418BA9B1800C14A90 /* Sphere.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Sphere.h; path = ../include/Sphere.h; sourceTree = "<group>"; };
 		B08F60E518BA9B1800C14A90 /* StifKarp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StifKarp.h; sourceTree = "<group>"; };
 		B08F60E618BA9B1800C14A90 /* Stk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Stk.h; path = ../include/Stk.h; sourceTree = "<group>"; };
@@ -666,8 +666,8 @@
 			children = (
 				B08F60E018BA9B1800C14A90 /* Skini.h */,
 				B08F617D18BA9B1800C14A90 /* Skini.cpp */,
-				B08F60E118BA9B1800C14A90 /* SKINI.msg */,
-				B08F60E218BA9B1800C14A90 /* SKINI.tbl */,
+				B08F60E118BA9B1800C14A90 /* SKINImsg.h */,
+				B08F60E218BA9B1800C14A90 /* SKINItbl.h */,
 			);
 			name = SKINI;
 			path = ../src;

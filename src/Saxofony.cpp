@@ -36,7 +36,7 @@
 /***************************************************/
 
 #include "Saxofony.h"
-#include "SKINI.msg"
+#include "SKINImsg.h"
 
 namespace stk {
 

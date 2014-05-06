@@ -25,7 +25,7 @@
 /***************************************************/
 
 #include "Mesh2D.h"
-#include "SKINI.msg"
+#include "SKINImsg.h"
 
 namespace stk {
 
