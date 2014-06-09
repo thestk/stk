@@ -1,1 +1,1 @@
-wish < tcl/Shakers.tcl | demo Shakers -or -ip
+wish < tcl/Shakers.tcl | stk-demo Shakers -or -ip
