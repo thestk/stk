@@ -146,7 +146,7 @@ config.log
 config.status
 configure
 projects/demo/Makefile
-projects/demo/demo
+projects/demo/stk-demo
 projects/demo/Release
 projects/demo/Debug
 projects/effects/Makefile

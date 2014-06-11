@@ -1,1 +1,1 @@
-wish < tcl/Demo.tcl | ./demo Clarinet -or -ip
+wish < tcl/Demo.tcl | stk-demo Clarinet -or -ip

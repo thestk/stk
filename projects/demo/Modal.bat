@@ -1,1 +1,1 @@
-wish < tcl/Modal.tcl | demo ModalBar -or -ip
+wish < tcl/Modal.tcl | stk-demo ModalBar -or -ip

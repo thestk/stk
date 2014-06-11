@@ -1,1 +1,1 @@
-wish < tcl/Drums.tcl | demo Drummer -or -ip
+wish < tcl/Drums.tcl | stk-demo Drummer -or -ip
