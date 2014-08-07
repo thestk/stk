@@ -29,7 +29,7 @@
 // Gary P. Scavone, McGill University 2012.
 
 #include "Guitar.h"
-#include "SKINI.msg"
+#include "SKINImsg.h"
 #include "WvOut.h"
 #include "JCRev.h"
 #include "Skini.h"

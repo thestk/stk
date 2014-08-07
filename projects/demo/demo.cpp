@@ -3,7 +3,7 @@
 // An example STK program that allows voice playback and control of
 // most of the STK instruments.
 
-#include "SKINI.msg"
+#include "SKINImsg.h"
 #include "WvOut.h"
 #include "Instrmnt.h"
 #include "JCRev.h"
