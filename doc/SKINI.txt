@@ -85,7 +85,7 @@ upon/from which to build and depart.
     the channel number is scanned as a long int.  Channels could be socket
     numbers, machine IDs, serial numbers, or even unique tags for each
     event in a synthesis.  Other fields might be used, as specified in the
-    SKINI.tbl file.  This is described in more detail later.
+    SKINItbl.h file.  This is described in more detail later.
 
     Fields in a SKINI line are delimited by spaces, commas, or
     tabs.  The SKINI parser only operates on a line at a time,
@@ -109,9 +109,9 @@ upon/from which to build and depart.
 
     All fields other than type, time, and channel are optional, and the
     types and useage of the additional fields is defined in the file
-    SKINI.tbl.
+    SKINItbl.h.
 
-    The other important file used by SKINI is SKINI.msg, which is a
+    The other important file used by SKINI is SKINImsg.h, which is a
     set of #defines to make C code more readable, and to allow reasonably
     quick re-mapping of control numbers, etc..  All of these defined
     symbols are assigned integer values.  For JAVA, the #defines could
@@ -127,13 +127,13 @@ upon/from which to build and depart.
     receiving SKINI messages a line at a time, usually in real time,
     but not restricted to real time.
 
-    SKINI.msg should be included by anything wanting to use the
+    SKINImsg.h should be included by anything wanting to use the
     Skini.cpp object.  This is not mandatory, but use of the __SK_blah_
     symbols which are defined in the .msg file will help to ensure
     clarity and consistency when messages are added and changed.
 
-    SKINI.tbl is used only by the SKINI parser object (Skini.cpp).
-    In the file SKINI.tbl, an array of structures is declared and
+    SKINItbl.h is used only by the SKINI parser object (Skini.cpp).
+    In the file SKINItbl.h, an array of structures is declared and
     assigned values which instruct the parser as to what the message
     types are, and what the fields mean for those message types.
     This table is compiled and linked into applications using SKINI, but
@@ -195,7 +195,7 @@ upon/from which to build and depart.
         A -1 channel can be used as don't care, omni, or other functions
         depending on your needs and taste.
 
-    g)  All remaining fields are specified in the SKINI.tbl file.
+    g)  All remaining fields are specified in the SKINItbl.h file.
         In general, there are maximum two more fields, which are either
         SK_INT (long), SK_DBL (double float), or SK_STR (string).  The
         latter is the mechanism by which more arguments can be specified
@@ -237,9 +237,9 @@ upon/from which to build and depart.
         NoteOff         0.000000 2 71 82
         NoteOff         0.000000 2 79 82
 
-7)  The SKINI.tbl File, How Messages are Parsed:
+7)  The SKINItbl.h File, How Messages are Parsed:
 
-    The SKINI.tbl file contains an array of structures which
+    The SKINItbl.h file contains an array of structures which
     are accessed by the parser object Skini.cpp.  The struct is:
 
         struct SKINISpec { char messageString[32];
@@ -276,7 +276,7 @@ upon/from which to build and depart.
                            something else stored in the SK_STR field, or
                            as a new type of multi-line message.
 
-    Here's a couple of lines from the SKINI.tbl file
+    Here's a couple of lines from the SKINItbl.h file
 
  {"NoteOff"          ,        __SK_NoteOff_,               SK_DBL,  SK_DBL},
  {"NoteOn"           ,         __SK_NoteOn_,               SK_DBL,  SK_DBL},
@@ -290,7 +290,7 @@ upon/from which to build and depart.
     The first three are basic MIDI messages.  The first two would cause the
     parser, after recognizing a match of the string "NoteOff" or "NoteOn",
     to set the message type to 128 or 144 (__SK_NoteOff_ and __SK_NoteOn_
-    are #defined in the file SKINI.msg to be the MIDI byte value, without
+    are #defined in the file SKINImsg.h to be the MIDI byte value, without
     channel, of the actual MIDI messages for NoteOn and NoteOff).  The parser
     would then set the time or delta time (this is always done and is
     therefore not described in the SKINI Message Struct).  The next two

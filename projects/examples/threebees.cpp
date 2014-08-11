@@ -4,7 +4,7 @@
 #include "RtAudio.h"
 #include "Messager.h"
 #include "Voicer.h"
-#include "SKINI.msg"
+#include "SKINImsg.h"
 
 #include <algorithm>
 using std::min;

@@ -41,7 +41,7 @@ class Skini : public Stk
 
   //! A message structure to store and pass parsed SKINI messages.
   struct Message { 
-    long type;                         /*!< The message type, as defined in SKINI.msg. */
+    long type;                         /*!< The message type, as defined in SKINImsg.h. */
     long channel;                      /*!< The message channel (not limited to 16!). */
     StkFloat time;                     /*!< The message time stamp in seconds (delta or absolute). */
     std::vector<StkFloat> floatValues; /*!< The message values read as floats (values are type-specific). */
