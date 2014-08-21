@@ -66,6 +66,7 @@ void Twang :: setFrequency( StkFloat frequency )
   }
 #endif
 
+  frequency_ = frequency;
   // Delay = length - filter delay.
   StkFloat delay = ( Stk::sampleRate() / frequency ) - loopFilter_.phaseDelay( frequency );
   delayLine_.setDelay( delay );
