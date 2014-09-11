@@ -281,6 +281,7 @@ StkFrames :: StkFrames( const StkFrames& f )
 
 StkFrames& StkFrames :: operator= ( const StkFrames& f )
 {
+  if ( data_ ) free( data_ );
   data_ = 0;
   size_ = 0;
   bufferSize_ = 0;
