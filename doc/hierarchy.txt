@@ -173,7 +173,7 @@ effects.cpp     Effects demonstration program
 ragamatic.cpp   Nirvana just waiting to happen
 
 Skini.cpp	      SKINI file/message parser object
-SKINI.msg	      #defines for often used and universal MIDI/SKINI symbols
-SKINI.tbl	      Table of SKINI messages
+SKINImsg.h	      #defines for often used and universal MIDI/SKINI symbols
+SKINItbl.h	      Table of SKINI messages
 
 

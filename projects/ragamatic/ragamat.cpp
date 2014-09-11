@@ -1,6 +1,6 @@
 /**************  Test Main Program Individual Voice *********************/
 
-#include "SKINI.msg"
+#include "SKINImsg.h"
 #include "Instrmnt.h"
 #include "JCRev.h"
 #include "Drone.h"

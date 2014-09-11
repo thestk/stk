@@ -24,7 +24,7 @@
 /***************************************************/
 
 #include "Skini.h"
-#include "SKINI.tbl"
+#include "SKINItbl.h"
 #include <cstdlib>
 #include <sstream>
 

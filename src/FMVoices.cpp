@@ -31,7 +31,7 @@
 /***************************************************/
 
 #include "FMVoices.h"
-#include "SKINI.msg"
+#include "SKINImsg.h"
 #include "Phonemes.h"
 
 namespace stk {

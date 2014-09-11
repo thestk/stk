@@ -1,7 +1,7 @@
 /**************  Effects Program  *********************/
 
 #include "Skini.h"
-#include "SKINI.msg"
+#include "SKINImsg.h"
 #include "Envelope.h"
 #include "PRCRev.h"
 #include "JCRev.h"

@@ -3,7 +3,7 @@
 #include "BeeThree.h"
 #include "RtAudio.h"
 #include "Messager.h"
-#include "SKINI.msg"
+#include "SKINImsg.h"
 #include <math.h>
 #include <algorithm>
 using std::min;

@@ -32,7 +32,7 @@ The top level distribution contains the following directories:
 This release of STK comes with four separate "project" directories:
 
 <OL>
-<LI> The <I><B>demo</B></I> project is used to demonstrate nearly all of the STK instruments.  The <I><B>demo</B></I> program has been written to allow a variety of control input and sound data output options.  Simple graphical user interfaces (GUIs) are also provided.<P></LI>
+<LI> The <I><B>demo</B></I> project is used to demonstrate nearly all of the STK instruments.  The <I><B>stk-demo</B></I> program has been written to allow a variety of control input and sound data output options.  Simple graphical user interfaces (GUIs) are also provided.<P></LI>
 
 <LI> The <I><B>effects</B></I> project demonstrates realtime duplex mode (simultaneous audio input and output) operation, when available, as well as various delay-line based effects algorithms.<P></LI>
 
@@ -134,23 +134,23 @@ The <I><B>demo</B></I> project demonstrates the behavior of all the distributed 
 
 See the information above with respect to compiling STK for non-realtime use.
 
-In non-realtime mode, it is assumed that input control messages are provided from a SKINI scorefile and that audio output is written to a soundfile (.snd, .wav, .aif, .mat, .raw).  A number of SKINI scorefiles are provided in the <I>scores</I> directory of the <I><B>demo</B></I> project.  Assuming a successful compilation of the <I><B>demo</B></I> program, typing:
+In non-realtime mode, it is assumed that input control messages are provided from a SKINI scorefile and that audio output is written to a soundfile (.snd, .wav, .aif, .mat, .raw).  A number of SKINI scorefiles are provided in the <I>scores</I> directory of the <I><B>demo</B></I> project.  Assuming a successful compilation of the <I><B>stk-demo</B></I> program, typing:
 
 \code
-demo BeeThree -ow myfile.wav -if scores/bookert.ski
+stk-demo BeeThree -ow myfile.wav -if scores/bookert.ski
 \endcode
 
-from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I> using the STK BeeThree instrument and write the resulting audio data to a WAV formatted soundfile called "myfile.wav" (note that you may need to append <TT>./</TT> to the program name if your default shell setup is not set to look in the current directory).  Typing <TT>demo</TT> without any arguments will provide a full program usage description.
+from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I> using the STK BeeThree instrument and write the resulting audio data to a WAV formatted soundfile called "myfile.wav" (note that you may need to append <TT>./</TT> to the program name if your default shell setup is not set to look in the current directory).  Typing <TT>stk-demo</TT> without any arguments will provide a full program usage description.
 
 
 \section rt Demo: Realtime Use
 
 STK realtime audio and MIDI input/output and realtime SKINI control input via socketing support is provided for Linux, Mac OS-X, and Windows95/98/2000/XP operating systems.  STK realtime SKINI control input via piping is possible under Linux, Mac OS X, and Windows2000/XP only.
 <P>
-Control input and audio output options are typically specified as command-line arguments to STK programs.  For example, the <I><B>demo</B></I> program is invoked as:
+Control input and audio output options are typically specified as command-line arguments to STK programs.  For example, the <I><B>stk-demo</B></I> program is invoked as:
 
 \code
-demo instrument flags
+stk-demo instrument flags
 \endcode
 
 where instruments include those described above and flags can be any or all of:
@@ -167,13 +167,13 @@ where instruments include those described above and flags can be any or all of:
 </UL>
 The <i>-ip</i> flag must be used when piping realtime SKINI control data to an STK program.  The <i>-im</i> flag must be used to read MIDI control input from your MIDI port.  Note that you can use both input types simultaneously.
 
-Assuming a successful compilation of the <I><B>demo</B></I> program, typing:
+Assuming a successful compilation of the <I><B>stk-demo</B></I> program, typing:
 
 \code
-demo BeeThree -or -if scores/bookert.ski
+stk-demo BeeThree -or -if scores/bookert.ski
 \endcode
 
-from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I> using the STK BeeThree instrument and stream the resulting audio data in realtime to the audio output channel of your computer.  Typing <TT>demo</TT> without any arguments will provide a full program usage description.
+from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I> using the STK BeeThree instrument and stream the resulting audio data in realtime to the audio output channel of your computer.  Typing <TT>stk-demo</TT> without any arguments will provide a full program usage description.
 
 
 \section tcl Realtime Control Input using Tcl/Tk Graphical User Interfaces:
@@ -181,7 +181,7 @@ from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I>
 There are a number of <A HREF="http://dev.scriptics.com">Tcl/Tk</A> GUIs supplied with the STK projects.  These scripts require Tcl/Tk version 8.0 or later, which can be downloaded for free over the WWW.  On Unix and Windows2000/XP platforms, you can run the various executable scripts (e.g. StkDemo.bat) provided with each project to start everything up (you may need to symbolically link the wishXX executable to the name <I>wish</I>).  The Physical.bat script just implements the following command-line sequence:
 
 \code
-wish < tcl/Physical.tcl | demo Clarinet -or -ip
+wish < tcl/Physical.tcl | stk-demo Clarinet -or -ip
 \endcode
 
 \section midi Realtime MIDI Control Input:
@@ -189,17 +189,17 @@ wish < tcl/Physical.tcl | demo Clarinet -or -ip
 On all supported realtime platforms, you can direct realtime MIDI input to the STK Clarinet by typing:
 
 \code
-demo Clarinet -or -im
+stk-demo Clarinet -or -im
 \endcode
 
 This will attempt to use the default MIDI port for input.  An optional MIDI port number can be specified after the <TT>-im</TT> flag.  Valid MIDI ports are numbered from 0 (default) and higher.  On Linux and Macintosh OS-X systems, it is possible to open a virtual MIDI input port (that other software applications can connect to) by specifying a port identifier of -1.
 
 \section polyphony Polyphony:
 
-The <I><B>demo</B></I> program supports an arbitrary number of voices via the <TT>-n NUMBER</TT> command-line flag and argument.  For example, you can play eight BeeThree instruments with realtime output and control them from a MIDI device by typing:
+The <I><B>stk-demo</B></I> program supports an arbitrary number of voices via the <TT>-n NUMBER</TT> command-line flag and argument.  For example, you can play eight BeeThree instruments with realtime output and control them from a MIDI device by typing:
 
 \code
-demo BeeThree -n 8 -or -im
+stk-demo BeeThree -n 8 -or -im
 \endcode
 
 */
