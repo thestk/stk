@@ -375,11 +375,11 @@ public:
 
   //! Copies a single channel
   /*!
-    Copies the \c sourceChannel into \c destinationFrames's \c destinationChannel. \c destinationChannel must be between 0 and destination.channels() - 1 and
-    sourceChannel must be between 0 and channels() - 1. destination.frames() must be >= frames().
+    Copies the specified \c channel into \c destinationFrames's \c destinationChannel. \c destinationChannel must be between 0 and destination.channels() - 1 and
+    \c channel must be between 0 and channels() - 1. destination.frames() must be >= frames().
     No range checking is performed unless _STK_DEBUG_ is defined.
   */
-  StkFrames& copyChannel(unsigned int sourceChannel,StkFrames& destinationFrames, unsigned int destinationChannel) const;
+  StkFrames& copyChannel(unsigned int channel,StkFrames& destinationFrames, unsigned int destinationChannel) const;
 
   //! Return the number of channels represented by the data.
   unsigned int channels( void ) const { return nChannels_; };
