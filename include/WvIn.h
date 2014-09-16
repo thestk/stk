@@ -31,8 +31,8 @@ public:
   //! Compute one sample frame and return the specified \c channel value.
   virtual StkFloat tick( unsigned int channel = 0 ) = 0;
 
-  //! Fill the StkFrames argument with computed frames and return the same reference.
-  virtual StkFrames& tick( StkFrames& frames ) = 0;
+  //! Fill the StkFrames object with computed sample frames, starting at the specified channel and return the same reference.
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 0 ) = 0;
 
 protected:
 

@@ -140,17 +140,15 @@ class FileLoop : protected FileWvIn
   */
   StkFloat tick( unsigned int channel = 0 );
 
-  //! Fill the StkFrames argument with computed frames and return the same reference.
+  //! Fill the StkFrames object with computed sample frames, starting at the specified channel and return the same reference.
   /*!
-    The number of channels in the StkFrames argument should equal
-    the number of channels in the file data.  However, this is only
-    checked if _STK_DEBUG_ is defined during compilation, in which
-    case an incompatibility will trigger an StkError exception.  If no
-    file data is loaded, the function does nothing (a warning will be
-    issued if _STK_DEBUG_ is defined during compilation and
-    Stk::showWarnings() has been set to \e true).
+    The \c channel argument plus the number of output channels must
+    be less than the number of channels in the StkFrames argument (the
+    first channel is specified by 0).  However, range checking is only
+    performed if _STK_DEBUG_ is defined during compilation, in which
+    case an out-of-range value will trigger an StkError exception.
   */
-  StkFrames& tick( StkFrames& frames );
+  virtual StkFrames& tick( StkFrames& frames,unsigned int channel = 0 );
 
  protected:
 
