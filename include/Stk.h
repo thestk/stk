@@ -375,7 +375,7 @@ public:
 
   //! Copies a single channel
   /*!
-    Copies the \c sourceChannel into \c destination's \c destinationChannel. \c destinationChannel must be between 0 and destination.channels() - 1 and
+    Copies the \c sourceChannel into \c destinationFrames's \c destinationChannel. \c destinationChannel must be between 0 and destination.channels() - 1 and
     sourceChannel must be between 0 and channels() - 1. destination.frames() must be >= frames().
     No range checking is performed unless _STK_DEBUG_ is defined.
   */
