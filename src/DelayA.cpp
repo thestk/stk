@@ -59,7 +59,7 @@ void DelayA :: clear()
 void DelayA :: setMaximumDelay( unsigned long delay )
 {
   if ( delay < inputs_.size() ) return;
-  inputs_.resize( delay + 1 );
+  inputs_.resize(delay + 1, 1, 0.0);
 }
 
 void DelayA :: setDelay( StkFloat delay )
