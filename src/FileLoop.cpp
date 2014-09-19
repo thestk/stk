@@ -193,32 +193,39 @@ StkFloat FileLoop :: tick( unsigned int channel )
   return lastFrame_[channel];
 }
 
-StkFrames& FileLoop :: tick( StkFrames& frames )
+StkFrames& FileLoop :: tick( StkFrames& frames, unsigned int channel)
 {
   if ( !file_.isOpen() ) {
 #if defined(_STK_DEBUG_)
     oStream_ << "FileLoop::tick(): no file data is loaded!";
-    handleError( StkError::WARNING );
+    handleError( StkError::DEBUG_PRINT );
 #endif
-    return frames;
+  return frames;
   }
-
+        
   unsigned int nChannels = lastFrame_.channels();
 #if defined(_STK_DEBUG_)
-  if ( nChannels != frames.channels() ) {
-    oStream_ << "FileLoop::tick(): StkFrames argument is incompatible with file data!";
+  if ( channel > frames.channels() - nChannels ) {
+    oStream_ << "FileLoop::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
-
-  unsigned int j, counter = 0;
-  for ( unsigned int i=0; i<frames.frames(); i++ ) {
-    this->tick();
-    for ( j=0; j<nChannels; j++ )
-      frames[counter++] = lastFrame_[j];
+        
+  StkFloat *samples = &frames[channel];
+  unsigned int j, hop = frames.channels() - nChannels;
+  if ( nChannels == 1 ) {
+  for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
+    *samples++ = tick();
   }
-
+  else {
+    for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
+      *samples++ = tick();
+      for ( j=1; j<nChannels; j++ )
+        *samples++ = lastFrame_[j];
+      }
+    }
   return frames;
+        
 }
 
 } // stk namespace
