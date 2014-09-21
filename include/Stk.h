@@ -303,6 +303,14 @@ public:
     checking is performed unless _STK_DEBUG_ is defined.
   */
   StkFloat operator[] ( size_t n ) const;
+    
+  //! Sum operator
+  /*!
+    The dimensions of the argument are expected to be the same as
+    self.  No range checking is performed unless _STK_DEBUG_ is
+    defined.
+  */
+  StkFrames operator+(const StkFrames &frames) const;
 
   //! Assignment by sum operator into self.
   /*!
@@ -468,6 +476,25 @@ inline StkFloat StkFrames :: operator() ( size_t frame, unsigned int channel ) c
 #endif
 
   return data_[ frame * nChannels_ + channel ];
+}
+    
+inline StkFrames StkFrames::operator+(const StkFrames &f) const
+{
+#if defined(_STK_DEBUG_)
+  if ( f.frames() != nFrames_ || f.channels() != nChannels_ ) {
+    std::ostringstream error;
+    error << "StkFrames::operator+: frames argument must be of equal dimensions!";
+    Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
+  }
+#endif
+  StkFrames sum(nFrames_,nChannels_);
+  StkFloat *sumPtr = &sum[0];
+  const StkFloat *fptr = f.data_;
+  const StkFloat *dPtr = data_;
+  for (unsigned int i = 0; i < size_; i++) {
+    *sumPtr++ = *fptr++ + *dPtr++;
+  }
+  return sum;
 }
 
 inline void StkFrames :: operator+= ( StkFrames& f )
