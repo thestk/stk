@@ -215,6 +215,6 @@ inline StkFrames& TapDelay :: tick( StkFrames& iFrames, StkFrames& oFrames, unsi
   return iFrames;
 }
 
-#endif
-
 } // stk namespace
+
+#endif
