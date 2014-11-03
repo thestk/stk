@@ -381,13 +381,13 @@ public:
   */
   void resize( size_t nFrames, unsigned int nChannels, StkFloat value );
 
-  //! Copies a single channel
+  //! Retrieves a single channel
   /*!
     Copies the specified \c channel into \c destinationFrames's \c destinationChannel. \c destinationChannel must be between 0 and destination.channels() - 1 and
     \c channel must be between 0 and channels() - 1. destination.frames() must be >= frames().
     No range checking is performed unless _STK_DEBUG_ is defined.
   */
-  StkFrames& copyChannel(unsigned int channel,StkFrames& destinationFrames, unsigned int destinationChannel) const;
+  StkFrames& getChannel(unsigned int channel,StkFrames& destinationFrames, unsigned int destinationChannel) const;
 
   //! Sets a single channel
   /*!
