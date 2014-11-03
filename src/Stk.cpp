@@ -345,6 +345,32 @@ StkFrames& StkFrames::copyChannel(unsigned int sourceChannel,StkFrames& destinat
         
 }
 
+void StkFrames::setChannel(unsigned int destinationChannel, const stk::StkFrames &sourceFrames,unsigned int sourceChannel)
+{
+#if defined(_STK_DEBUG_)
+  if (sourceChannel > sourceFrames.channels() - 1) {
+    std::ostringstream error;
+    error << "StkFrames::setChannel invalid sourceChannel (" << sourceChannel << ")";
+    Stk::handleError( error.str(), StkError::FUNCTION_ARGUMENT);
+  }
+  if (destinationChannel > channels() - 1) {
+    std::ostringstream error;
+    error << "StkFrames::setChannel invalid channel (" << destinationChannel << ")";
+    Stk::handleError( error.str(), StkError::FUNCTION_ARGUMENT );
+  }
+  if (f.frames() != frames()) {
+    std::ostringstream error;
+    error << "StkFrames::setChannel f.frames() != frames();
+    Stk::handleError( error.str(), StkError::MEMORY_ACCESS);
+  }
+#endif
+  unsigned int sourceHop = sourceFrames.nChannels_;
+  unsigned int destinationHop = nChannels_;
+  for (int i  = destinationChannel,j = sourceChannel ; i < nFrames_ * nChannels_; i+=destinationHop,j+=sourceHop) {
+    data_[i] = sourceFrames[j];
+  }
+}
+
 StkFloat StkFrames :: interpolate( StkFloat frame, unsigned int channel ) const
 {
 #if defined(_STK_DEBUG_)

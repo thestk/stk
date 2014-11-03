@@ -381,6 +381,14 @@ public:
   */
   StkFrames& copyChannel(unsigned int channel,StkFrames& destinationFrames, unsigned int destinationChannel) const;
 
+  //! Sets a single channel
+  /*!
+    Copies the \c sourceChannel of \c sourceFrames into the \c channel of self.
+    SourceFrames.frames() must be equal to frames().
+    No range checking is performed unless _STK_DEBUG_ is defined.
+  */
+  void setChannel(unsigned int channel,const StkFrames &sourceFrames,unsigned int sourceChannel);
+
   //! Return the number of channels represented by the data.
   unsigned int channels( void ) const { return nChannels_; };
 
