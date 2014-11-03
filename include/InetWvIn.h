@@ -96,17 +96,18 @@ public:
   */
   StkFloat tick( unsigned int channel = 0 );
 
-  //! Fill the StkFrames argument with computed frames and return the same reference.
+  //! Fill the StkFrames object with computed sample frames, starting at the specified channel and return the same reference.
   /*!
-    The number of channels in the StkFrames argument must equal the
-    number of channels specified in the listen() function.  However,
-    this is only checked if _STK_DEBUG_ is defined during compilation,
-    in which case an incompatibility will trigger an StkError
-    exception.  If no connection exists, the function does
+    The \c channel argument plus the number of channels specified
+    in the listen() function must be less than the number of channels
+    in the StkFrames argument (the first channel is specified by 0).
+    However, this is only checked if _STK_DEBUG_ is defined during
+    compilation, in which case an incompatibility will trigger an
+    StkError exception.  If no connection exists, the function does
     nothing (a warning will be issued if _STK_DEBUG_ is defined during
     compilation).
   */
-  StkFrames& tick( StkFrames& frames );
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
 
   // Called by the thread routine to receive data via the socket connection
   // and fill the socket buffer.  This is not intended for general use but

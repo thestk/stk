@@ -288,11 +288,11 @@ StkFloat InetWvIn :: tick( unsigned int channel )
   return lastFrame_[channel];
 }
 
-StkFrames& InetWvIn :: tick( StkFrames& frames )
+StkFrames& InetWvIn :: tick( StkFrames& frames, unsigned int channel )
 {
 #if defined(_STK_DEBUG_)
-  if ( data_.channels() != frames.channels() ) {
-    oStream_ << "InetWvIn::tick(): StkFrames argument is incompatible with streamed channels!";
+  if ( channel > frames.channels() - data_.channels() ) {
+    oStream_ << "InetWvIn::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -306,11 +306,12 @@ StkFrames& InetWvIn :: tick( StkFrames& frames )
     return frames;
   }
 
-  unsigned int j, counter = 0;
-  for ( unsigned int i=0; i<frames.frames(); i++ ) {
+  StkFloat *samples = &frames[channel];
+  unsigned int j, hop = frames.channels() - data_.channels();
+  for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
     this->tick();
     for ( j=0; j<lastFrame_.channels(); j++ )
-      frames[counter++] = lastFrame_[j];
+      *samples++ = lastFrame_[j];
   }
 
   return frames;

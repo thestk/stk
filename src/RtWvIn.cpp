@@ -145,12 +145,12 @@ StkFloat RtWvIn :: tick( unsigned int channel )
   return lastFrame_[channel];
 }
 
-StkFrames& RtWvIn :: tick( StkFrames& frames )
+StkFrames& RtWvIn :: tick( StkFrames& frames, unsigned int channel )
 {
   unsigned int nChannels = lastFrame_.channels();
 #if defined(_STK_DEBUG_)
-  if ( nChannels != frames.channels() ) {
-    oStream_ << "RtWvIn::tick(): StkFrames argument is incompatible with adc channels!";
+  if ( channel > frames.channels() - nChannels ) {
+    oStream_ << "RtWvIn::tick(): channel and StkFrames arguments are incompatible!";
     handleError( StkError::FUNCTION_ARGUMENT );
   }
 #endif
@@ -173,7 +173,17 @@ StkFrames& RtWvIn :: tick( StkFrames& frames )
       nFrames = frames.frames() - framesRead;
     bytes = nFrames * nChannels * sizeof( StkFloat );
     StkFloat *samples = &data_[readIndex_ * nChannels];
-    memcpy( &frames[framesRead * nChannels], samples, bytes );
+    unsigned int hop = frames.channels() - nChannels;
+    if ( hop == 0 ) 
+      memcpy( &frames[framesRead * nChannels], samples, bytes );
+    else {
+      StkFloat *fSamples = &frames[channel];
+      unsigned int j;
+      for ( unsigned int i=0; i<frames.frames(); i++, fSamples += hop ) {
+        for ( j=1; j<nChannels; j++ )
+          *fSamples++ = *samples++;
+      }
+    }
 
     readIndex_ += nFrames;
     if ( readIndex_ == data_.frames() ) readIndex_ = 0;
@@ -186,7 +196,7 @@ StkFrames& RtWvIn :: tick( StkFrames& frames )
 
   unsigned long index = (frames.frames() - 1) * nChannels;
   for ( unsigned int i=0; i<lastFrame_.size(); i++ )
-    lastFrame_[i] = frames[index++];
+    lastFrame_[i] = frames[channel+index++];
 
   return frames;
 }

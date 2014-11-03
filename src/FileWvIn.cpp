@@ -245,14 +245,14 @@ StkFrames& FileWvIn :: tick( StkFrames& frames, unsigned int channel)
   if ( nChannels == 1 ) {
     for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
       *samples++ = tick();
-    }
+  }
   else {
     for ( unsigned int i=0; i<frames.frames(); i++, samples += hop ) {
       *samples++ = tick();
       for ( j=1; j<nChannels; j++ )
         *samples++ = lastFrame_[j];
-      }
     }
+  }
   return frames;
 
 }

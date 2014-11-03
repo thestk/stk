@@ -83,15 +83,16 @@ public:
   */
   StkFloat tick( unsigned int channel = 0 );
 
-  //! Fill the StkFrames argument with computed frames and return the same reference.
+  //! Fill the StkFrames object with computed sample frames, starting at the specified channel and return the same reference.
   /*!
-    If the device is "stopped", it is "started".  The number of
-    channels in the StkFrames argument must equal the number of
-    channels specified during instantiation.  However, this is only
-    checked if _STK_DEBUG_ is defined during compilation, in which
-    case an incompatibility will trigger an StkError exception.
+    If the device is "stopped", it is "started".  The \c channel
+    argument plus the number of input channels must be less than the
+    number of channels in the StkFrames argument (the first channel is
+    specified by 0).  However, range checking is only performed if
+    _STK_DEBUG_ is defined during compilation, in which case an
+    out-of-range value will trigger an StkError exception.
   */
-  StkFrames& tick( StkFrames& frames );
+  StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
 
   // This function is not intended for general use but must be
   // public for access from the audio callback function.

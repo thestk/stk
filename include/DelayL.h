@@ -133,6 +133,33 @@ inline StkFloat DelayL :: nextOut( void )
   return nextOutput_;
 }
 
+inline void DelayL :: setDelay( StkFloat delay )
+{
+  if ( delay + 1 > inputs_.size() ) { // The value is too big.
+    oStream_ << "DelayL::setDelay: argument (" << delay << ") greater than  maximum!";
+    handleError( StkError::WARNING ); return;
+  }
+
+  if (delay < 0 ) {
+    oStream_ << "DelayL::setDelay: argument (" << delay << ") less than zero!";
+    handleError( StkError::WARNING ); return;
+  }
+
+  StkFloat outPointer = inPoint_ - delay;  // read chases write
+  delay_ = delay;
+
+  while ( outPointer < 0 )
+    outPointer += inputs_.size(); // modulo maximum length
+
+  outPoint_ = (long) outPointer;   // integer part
+
+  alpha_ = outPointer - outPoint_; // fractional part
+  omAlpha_ = (StkFloat) 1.0 - alpha_;
+
+  if ( outPoint_ == inputs_.size() ) outPoint_ = 0;
+  doNextOut_ = true;
+}
+
 inline StkFloat DelayL :: tick( StkFloat input )
 {
   inputs_[inPoint_++] = input * gain_;

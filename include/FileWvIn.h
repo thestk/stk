@@ -152,7 +152,7 @@ public:
 
   //! Fill the StkFrames object with computed sample frames, starting at the specified channel and return the same reference.
   /*!
-    The \c channel argument plus the number of output channels must
+    The \c channel argument plus the number of input channels must
     be less than the number of channels in the StkFrames argument (the
     first channel is specified by 0).  However, range checking is only
     performed if _STK_DEBUG_ is defined during compilation, in which
