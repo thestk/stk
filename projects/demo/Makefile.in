@@ -39,7 +39,7 @@ LIBRARY = @LIBS@
 
 REALTIME = @realtime@
 ifeq ($(REALTIME),yes)
-  PROGRAMS += demo
+  PROGRAMS += stk-demo
 	OBJECTS += RtMidi.o RtAudio.o Thread.o Mutex.o Socket.o TcpServer.o @objects@
 endif
 
@@ -65,7 +65,7 @@ stk-demo: demo.cpp $(OBJECTS)
 	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o stk-demo demo.cpp $(OBJECT_PATH)/*.o $(LIBRARY)
 
 libdemo: demo.cpp
-	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o demo utilities.cpp demo.cpp -L../../src -lstk $(LIBRARY)
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o stk-demo utilities.cpp demo.cpp -L../../src -lstk $(LIBRARY)
 
 Md2Skini: Md2Skini.cpp Stk.o RtMidi.o
 	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o Md2Skini Md2Skini.cpp $(OBJECT_PATH)/Stk.o $(OBJECT_PATH)/RtMidi.o $(LIBRARY)

@@ -683,7 +683,7 @@ proc patchChange {value} {
             set cont2 64.0
             set cont4 64.0
             set cont11 64.0
-            puts $outID [format "ControlChange    0.0  1  16  %3.2f" $preset]
+            puts [format "ControlChange    0.0  1  16  %3.2f" $preset]
             printWhatz "ControlChange    0.0  1 " 1  $cont1
             printWhatz "ControlChange    0.0  1 " 2  $cont2
             printWhatz "ControlChange    0.0  1 " 4  $cont4
