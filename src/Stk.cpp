@@ -322,17 +322,17 @@ StkFrames& StkFrames::getChannel(unsigned int sourceChannel,StkFrames& destinati
 #if defined(_STK_DEBUG_)
   if (sourceChannel > channels() - 1) {
     std::ostringstream error;
-    error << "StkFrames::copyChannel invalid sourceChannel (" << sourceChannel << ")";
+    error << "StkFrames::getChannel invalid sourceChannel (" << sourceChannel << ")";
     Stk::handleError( error.str(), StkError::FUNCTION_ARGUMENT);
   }
   if (destinationChannel > destinationFrames.channels() - 1) {
     std::ostringstream error;
-    error << "StkFrames::copyChannel invalid destinationChannel (" << destinationChannel << ")";
+    error << "StkFrames::getChannel invalid destinationChannel (" << destinationChannel << ")";
     Stk::handleError( error.str(), StkError::FUNCTION_ARGUMENT );
   }
   if (destinationFrames.frames() < frames()) {
     std::ostringstream error;
-    error << "StkFrames::copyChannel destination.frames() < frames()";
+    error << "StkFrames::getChannel destination.frames() < frames()";
     Stk::handleError( error.str(), StkError::MEMORY_ACCESS);
   }
 #endif
@@ -358,9 +358,9 @@ void StkFrames::setChannel(unsigned int destinationChannel, const stk::StkFrames
     error << "StkFrames::setChannel invalid channel (" << destinationChannel << ")";
     Stk::handleError( error.str(), StkError::FUNCTION_ARGUMENT );
   }
-  if (f.frames() != frames()) {
+  if (sourceFrames.frames() != frames()) {
     std::ostringstream error;
-    error << "StkFrames::setChannel f.frames() != frames();
+    error << "StkFrames::setChannel sourceFrames.frames() != frames()";
     Stk::handleError( error.str(), StkError::MEMORY_ACCESS);
   }
 #endif
