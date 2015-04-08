@@ -495,7 +495,7 @@ inline StkFrames StkFrames::operator+(const StkFrames &f) const
     Stk::handleError( error.str(), StkError::MEMORY_ACCESS );
   }
 #endif
-  StkFrames sum(nFrames_,nChannels_);
+  StkFrames sum((unsigned int)nFrames_,nChannels_);
   StkFloat *sumPtr = &sum[0];
   const StkFloat *fptr = f.data_;
   const StkFloat *dPtr = data_;
