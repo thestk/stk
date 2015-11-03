@@ -48,9 +48,11 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
   register StkFloat *samples = (StkFloat *) outputBuffer;
 
   input->tick( frames );
-  for ( unsigned int i=0; i<frames.size(); i++ )
+  for ( unsigned int i=0; i<frames.size(); i++ ) {
     *samples++ = frames[i];
-
+    if ( input->channelsOut() == 1 ) *samples++ = frames[i]; // play mono files in stereo
+  }
+  
   if ( input->isFinished() ) {
     done = true;
     return 1;
@@ -93,7 +95,7 @@ int main(int argc, char *argv[])
   // Figure out how many bytes in an StkFloat and setup the RtAudio stream.
   RtAudio::StreamParameters parameters;
   parameters.deviceId = dac.getDefaultOutputDevice();
-  parameters.nChannels = channels;
+  parameters.nChannels = ( channels == 1 ) ? 2 : channels; //  Play mono files as stereo.
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
   unsigned int bufferFrames = RT_BUFFER_SIZE;
   try {
