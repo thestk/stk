@@ -32,6 +32,7 @@ ADSR :: ADSR( void )
 
 ADSR :: ~ADSR( void )
 {
+  Stk::removeSampleRateAlert( this );
 }
 
 void ADSR :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )

@@ -40,6 +40,7 @@ Asymp :: Asymp( void )
 
 Asymp :: ~Asymp( void )
 {    
+  Stk::removeSampleRateAlert( this );
 }
 
 void Asymp :: sampleRateChanged( StkFloat newRate, StkFloat oldRate )
