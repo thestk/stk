@@ -131,7 +131,7 @@ void VoicForm :: controlChange( int number, StkFloat value )
 {
 #if defined(_STK_DEBUG_)
   if ( Stk::inRange( value, 0.0, 128.0 ) == false ) {
-    oStream_ << "Clarinet::controlChange: value (" << value << ") is out of range!";
+    oStream_ << "VoicForm::controlChange: value (" << value << ") is out of range!";
     handleError( StkError::WARNING ); return;
   }
 #endif
