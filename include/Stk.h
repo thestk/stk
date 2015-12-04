@@ -171,7 +171,10 @@ public:
     class basis.
   */
   void ignoreSampleRateChange( bool ignore = true ) { ignoreSampleRateChange_ = ignore; };
-
+  
+  //! Static method that frees memory from alertList_.
+  static void  clear_alertList(){std::vector<Stk *>().swap(alertList_);};
+  
   //! Static method that returns the current rawwave path.
   static std::string rawwavePath(void) { return rawwavepath_; }
 
