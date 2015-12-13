@@ -726,7 +726,7 @@
 		B08F608818BA9B0600C14A90 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0720;
 			};
 			buildConfigurationList = B08F608B18BA9B0600C14A90 /* Build configuration list for PBXProject "STK" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -895,6 +895,7 @@
 		B08F608C18BA9B0600C14A90 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_TESTABILITY = YES;
 				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
