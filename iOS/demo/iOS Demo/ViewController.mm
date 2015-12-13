@@ -44,7 +44,13 @@
         float sample = brass->tick();
         NSLog(@"Brass sample: %f", sample);
     }
-    
+
+    //We're going to be making use of a class that needs
+    //raw wave files, we need to tell the STK where
+    //the files are:
+    stk::Stk::setRawwavePath([[[NSBundle mainBundle] pathForResource:@"rawwaves" ofType:@"bundle"] UTF8String]);
+
+
     //Test Mandolin:
     stk::Mandolin *mandolin = new stk::Mandolin(400);
     
