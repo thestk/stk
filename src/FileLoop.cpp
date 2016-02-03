@@ -77,6 +77,10 @@ void FileLoop :: openFile( std::string fileName, bool raw, bool doNormalize )
   // Resize our lastOutputs container.
   lastFrame_.resize( 1, file_.channels() );
 
+  // Close the file unless chunking
+  fileSize_ = file_.fileSize();
+  if ( !chunking_ ) file_.close();
+
   // Set default rate based on file sampling rate.
   this->setRate( data_.dataRate() / Stk::sampleRate() );
 
@@ -98,29 +102,27 @@ void FileLoop :: addTime( StkFloat time )
   // Add an absolute time in samples.
   time_ += time;
 
-  StkFloat fileSize = file_.fileSize();
   while ( time_ < 0.0 )
-    time_ += fileSize;
-  while ( time_ >= fileSize )
-    time_ -= fileSize;
+    time_ += fileSize_;
+  while ( time_ >= fileSize_ )
+    time_ -= fileSize_;
 }
 
 void FileLoop :: addPhase( StkFloat angle )
 {
   // Add a time in cycles (one cycle = fileSize).
-  StkFloat fileSize = file_.fileSize();
-  time_ += fileSize * angle;
+  time_ += fileSize_ * angle;
 
   while ( time_ < 0.0 )
-    time_ += fileSize;
-  while ( time_ >= fileSize )
-    time_ -= fileSize;
+    time_ += fileSize_;
+  while ( time_ >= fileSize_ )
+    time_ -= fileSize_;
 }
 
 void FileLoop :: addPhaseOffset( StkFloat angle )
 {
   // Add a phase offset in cycles, where 1.0 = fileSize.
-  phaseOffset_ = file_.fileSize() * angle;
+  phaseOffset_ = fileSize_ * angle;
 }
 
 StkFloat FileLoop :: tick( unsigned int channel )
@@ -134,20 +136,18 @@ StkFloat FileLoop :: tick( unsigned int channel )
 
   // Check limits of time address ... if necessary, recalculate modulo
   // fileSize.
-  StkFloat fileSize = file_.fileSize();
-
   while ( time_ < 0.0 )
-    time_ += fileSize;
-  while ( time_ >= fileSize )
-    time_ -= fileSize;
+    time_ += fileSize_;
+  while ( time_ >= fileSize_ )
+    time_ -= fileSize_;
 
   StkFloat tyme = time_;
   if ( phaseOffset_ ) {
     tyme += phaseOffset_;
     while ( tyme < 0.0 )
-      tyme += fileSize;
-    while ( tyme >= fileSize )
-      tyme -= fileSize;
+      tyme += fileSize_;
+    while ( tyme >= fileSize_ )
+      tyme -= fileSize_;
   }
 
   if ( chunking_ ) {
@@ -162,8 +162,8 @@ StkFloat FileLoop :: tick( unsigned int channel )
       }
       while ( time_ > (StkFloat) ( chunkPointer_ + chunkSize_ - 1 ) ) { // positive rate
         chunkPointer_ += chunkSize_ - 1; // overlap chunks by one frame
-        if ( chunkPointer_ + chunkSize_ > file_.fileSize() ) { // at end of file
-          chunkPointer_ = file_.fileSize() - chunkSize_ + 1; // leave extra frame at end of buffer
+        if ( chunkPointer_ + chunkSize_ > fileSize_ ) { // at end of file
+          chunkPointer_ = fileSize_ - chunkSize_ + 1; // leave extra frame at end of buffer
           // Now fill extra frame with first frame data.
           for ( unsigned int j=0; j<firstFrame_.channels(); j++ )
             data_( data_.frames() - 1, j ) = firstFrame_[j];

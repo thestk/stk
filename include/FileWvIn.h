@@ -89,7 +89,7 @@ public:
   virtual void normalize( StkFloat peak );
 
   //! Return the file size in sample frames.
-  virtual unsigned long getSize( void ) const { return file_.fileSize(); };
+  virtual unsigned long getSize( void ) const { return fileSize_; };
 
   //! Return the input file sample rate in Hz (not the data read rate).
   /*!
@@ -171,6 +171,7 @@ protected:
   bool chunking_;
   StkFloat time_;
   StkFloat rate_;
+  unsigned long fileSize_;
   unsigned long chunkThreshold_;
   unsigned long chunkSize_;
   long chunkPointer_;

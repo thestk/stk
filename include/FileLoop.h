@@ -95,7 +95,7 @@ class FileLoop : protected FileWvIn
     corresponds to file cycles per second.  The frequency can be
     negative, in which case the loop is read in reverse order.
   */
-  void setFrequency( StkFloat frequency ) { this->setRate( file_.fileSize() * frequency / Stk::sampleRate() ); };
+  void setFrequency( StkFloat frequency ) { this->setRate( fileSize_ * frequency / Stk::sampleRate() ); };
 
   //! Increment the read pointer by \e time samples, modulo file size.
   void addTime( StkFloat time );
