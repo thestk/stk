@@ -5,7 +5,7 @@
     This class provides common functionality for TCP and UDP internet
     socket server and client subclasses.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

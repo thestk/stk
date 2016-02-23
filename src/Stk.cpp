@@ -22,7 +22,7 @@
     STK WWW site: http://ccrma.stanford.edu/software/stk/
 
     The Synthesis ToolKit in C++ (STK)
-    Copyright (c) 1995--2014 Perry R. Cook and Gary P. Scavone
+    Copyright (c) 1995--2016 Perry R. Cook and Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files

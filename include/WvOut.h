@@ -15,7 +15,7 @@ namespace stk {
     Currently, WvOut is non-interpolating and the output rate is
     always Stk::sampleRate().
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

@@ -20,7 +20,7 @@
     This structure results in one extra multiply per computed sample,
     but allows easy control of the overall filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

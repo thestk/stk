@@ -7,7 +7,7 @@
     coefficient.  Another method is provided to create a DC blocking
     filter.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

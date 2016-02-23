@@ -27,7 +27,7 @@ namespace stk {
     Alternately, control changes can be sent to all voices in a given
     group.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

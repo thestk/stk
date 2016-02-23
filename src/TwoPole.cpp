@@ -6,7 +6,7 @@
     provided for creating a resonance in the frequency response while
     maintaining a nearly constant filter gain.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

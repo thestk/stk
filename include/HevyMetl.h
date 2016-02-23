@@ -31,7 +31,7 @@ namespace stk {
     type who should worry about this (making
     money) worry away.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

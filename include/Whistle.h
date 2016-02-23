@@ -25,7 +25,7 @@ namespace stk {
        - Blowing Frequency Modulation = 2
        - Volume = 128
 
-    by Perry R. Cook  1995--2014.
+    by Perry R. Cook  1995--2016.
 */
 /***************************************************/
 

@@ -1,6 +1,13 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995--2014.
+By Perry R. Cook and Gary P. Scavone, 1995--2016.
+
+v4.5.1 (22 February 2016)
+- fix for FileWvIn / FileLoop classes to avoid keeping files open if not necessary
+- miscellaneous bug fixes, documented on GitHub site (github.com/thestk/stk)
+- update to play.cpp example to play mono files as stereo
+- bug fix in DelayL::setDelay() function
+- miscellanous build bug fixes
 
 v4.5.0: (26 April 2014)
 - updated versions of RtAudio and RtMidi, with associated renaming of RtError class to either RtAudioError or RtMidiError and addition of WASAPI support in Windows

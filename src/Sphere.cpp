@@ -5,7 +5,7 @@
     This class implements a spherical ball with
     radius, mass, position, and velocity parameters.
 
-    by Perry R. Cook, 1995--2014.
+    by Perry R. Cook, 1995--2016.
 */
 /***************************************************/
 

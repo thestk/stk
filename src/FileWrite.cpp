@@ -17,7 +17,7 @@
     type, the data type will automatically be modified.  Compressed
     data types are not supported.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

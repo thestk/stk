@@ -16,7 +16,7 @@ namespace stk {
     Consult Fletcher and Rossing, Karjalainen,
     Cook, and others for more information.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

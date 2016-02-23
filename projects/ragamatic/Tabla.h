@@ -17,7 +17,7 @@ namespace stk {
     sample rates.  You can specify the maximum polyphony (maximum
     number of simultaneous voices) in Tabla.h.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

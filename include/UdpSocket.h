@@ -24,7 +24,7 @@ namespace stk {
     read/write methods.  Values less than or equal to zero indicate
     the occurence of an error.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 

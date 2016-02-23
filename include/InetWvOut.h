@@ -25,7 +25,7 @@ namespace stk {
     data type is signed 16-bit integers but any of the defined
     StkFormats are permissible.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2014.
+    by Perry R. Cook and Gary P. Scavone, 1995--2016.
 */
 /***************************************************/
 
