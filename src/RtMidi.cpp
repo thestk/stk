@@ -1010,7 +1010,7 @@ void MidiOutCore :: openVirtualPort( std::string portName )
 void MidiOutCore :: sendMessage( std::vector<unsigned char> *message )
 {
   // We use the MIDISendSysex() function to asynchronously send sysex
-  // messages.  Otherwise, we use a single CoreMidi MIDIPacket.
+  // messages.  Otherwise, we use a single CoreMIDI MIDIPacket.
   unsigned int nBytes = message->size();
   if ( nBytes == 0 ) {
     errorString_ = "MidiOutCore::sendMessage: no data in message argument!";      

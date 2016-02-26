@@ -167,7 +167,7 @@ if test $realtime = yes; then
     api="$api -D__MACOSX_CORE__"
     AC_MSG_RESULT(using CoreAudio)
     AC_CHECK_HEADER(CoreAudio/CoreAudio.h, [], [AC_MSG_ERROR(CoreAudio header files not found!)] )
-    LIBS="$LIBS -framework CoreAudio -framework CoreFoundation -framework CoreMidi" ], )
+    LIBS="$LIBS -framework CoreAudio -framework CoreFoundation -framework CoreMIDI" ], )
 
     # If no audio api flags specified, use CoreAudio
     if [test "$api" == ""; ] then
@@ -176,7 +176,7 @@ if test $realtime = yes; then
       AC_CHECK_HEADER(CoreAudio/CoreAudio.h,
       [],
       [AC_MSG_ERROR(CoreAudio header files not found!)] )
-      AC_SUBST( LIBS, ["-framework CoreAudio -framework CoreFoundation -framework CoreMidi"] )
+      AC_SUBST( LIBS, ["-framework CoreAudio -framework CoreFoundation -framework CoreMIDI"] )
     fi
 
     AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR(RtAudio requires the pthread library!))
