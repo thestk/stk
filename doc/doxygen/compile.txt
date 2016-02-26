@@ -56,7 +56,7 @@ STK compiles with realtime support on the following flavors of the Unix operatin
   <TD>Macintosh OS X</TD>
   <TD>CoreAudio</TD>
   <TD>__MACOSX_CORE__</TD>
-  <TD><TT>pthread, CoreAudio, CoreMidi, CoreFoundation</TT></TD>
+  <TD><TT>pthread, CoreAudio, CoreMIDI, CoreFoundation</TT></TD>
 </TR>
 </TABLE>
 </CENTER>
