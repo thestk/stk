@@ -30,7 +30,7 @@
 */
 /***************************************************/
 
-#include "TubeBell.h"
+#include "../include/TubeBell.h"
 
 namespace stk {
 

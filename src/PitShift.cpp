@@ -9,7 +9,7 @@
 */
 /***************************************************/
 
-#include "PitShift.h"
+#include "../include/PitShift.h"
 #include <cmath>
 
 namespace stk {

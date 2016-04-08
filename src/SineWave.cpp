@@ -13,7 +13,7 @@
 */
 /***************************************************/
 
-#include "SineWave.h"
+#include "../include/SineWave.h"
 #include <cmath>
 
 namespace stk {

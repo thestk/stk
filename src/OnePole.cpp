@@ -10,7 +10,7 @@
 */
 /***************************************************/
 
-#include "OnePole.h"
+#include "../include/OnePole.h"
 
 namespace stk {
 

@@ -18,8 +18,8 @@
 */
 /***************************************************/
 
-#include "Moog.h"
-#include "SKINImsg.h"
+#include "../include/Moog.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

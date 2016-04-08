@@ -31,7 +31,7 @@
 */
 /***************************************************/
 
-#include "FileWvIn.h"
+#include "../include/FileWvIn.h"
 #include <cmath>
 
 namespace stk {

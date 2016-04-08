@@ -14,7 +14,7 @@
 */
 /***********************************************************************/
 
-#include "FreeVerb.h"
+#include "../include/FreeVerb.h"
 #include <cmath>
 #include <iostream>
 

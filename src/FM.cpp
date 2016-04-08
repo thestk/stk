@@ -23,8 +23,8 @@
 */
 /***************************************************/
 
-#include "FM.h"
-#include "SKINImsg.h"
+#include "../include/FM.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

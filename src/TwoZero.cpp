@@ -10,7 +10,7 @@
 */
 /***************************************************/
 
-#include "TwoZero.h"
+#include "../include/TwoZero.h"
 #include <cmath>
 
 namespace stk {

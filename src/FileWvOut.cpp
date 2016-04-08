@@ -21,7 +21,7 @@
 */
 /***************************************************/
 
-#include "FileWvOut.h"
+#include "../include/FileWvOut.h"
 
 namespace stk {
 

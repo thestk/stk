@@ -16,8 +16,8 @@
 */
 /***************************************************/
 
-#include "Whistle.h"
-#include "SKINImsg.h"
+#include "../include/Whistle.h"
+#include "../include/SKINImsg.h"
 #include <cmath>
 
 namespace stk {

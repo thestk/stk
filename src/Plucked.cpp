@@ -20,7 +20,7 @@
 */
 /***************************************************/
 
-#include "Plucked.h"
+#include "../include/Plucked.h"
 
 namespace stk {
 

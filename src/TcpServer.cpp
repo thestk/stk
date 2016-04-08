@@ -23,7 +23,7 @@
 */
 /***************************************************/
 
-#include "TcpServer.h"
+#include "../include/TcpServer.h"
 
 namespace stk {
 

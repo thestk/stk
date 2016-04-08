@@ -13,7 +13,7 @@
 */
 /***************************************************/
 
-#include "SingWave.h"
+#include "../include/SingWave.h"
 
 namespace stk {
  

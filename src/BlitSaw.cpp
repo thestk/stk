@@ -19,7 +19,7 @@
 */
 /***************************************************/
 
-#include "BlitSaw.h"
+#include "../include/BlitSaw.h"
 
 namespace stk {
  

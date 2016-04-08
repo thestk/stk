@@ -29,8 +29,8 @@
 */
 /***************************************************/
 
-#include "BandedWG.h"
-#include "SKINImsg.h"
+#include "../include/BandedWG.h"
+#include "../include/SKINImsg.h"
 #include <cmath>
 
 namespace stk {

@@ -28,8 +28,8 @@
 */
 /***************************************************/
 
-#include "ModalBar.h"
-#include "SKINImsg.h"
+#include "../include/ModalBar.h"
+#include "../include/SKINImsg.h"
 #include <cmath>
 
 namespace stk {

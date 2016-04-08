@@ -24,7 +24,7 @@
 */
 /***************************************************/
 
-#include "Iir.h"
+#include "../include/Iir.h"
 
 namespace stk {
 

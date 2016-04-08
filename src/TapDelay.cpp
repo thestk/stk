@@ -14,7 +14,7 @@
 */
 /***************************************************/
 
-#include "TapDelay.h"
+#include "../include/TapDelay.h"
 
 namespace stk {
 

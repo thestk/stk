@@ -26,8 +26,8 @@
 */
 /***************************************************/
 
-#include "Mandolin.h"
-#include "SKINImsg.h"
+#include "../include/Mandolin.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

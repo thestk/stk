@@ -10,7 +10,7 @@
 */
 /***************************************************/
 
-#include "BiQuad.h"
+#include "../include/BiQuad.h"
 #include <cmath>
 
 namespace stk {

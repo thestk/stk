@@ -30,7 +30,7 @@
 */
 /***************************************************/
 
-#include "BlitSquare.h"
+#include "../include/BlitSquare.h"
 
 namespace stk {
 

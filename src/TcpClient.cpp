@@ -23,7 +23,7 @@
 */
 /***************************************************/
 
-#include "TcpClient.h"
+#include "../include/TcpClient.h"
 #include <cstring>
 #include <sstream>
 

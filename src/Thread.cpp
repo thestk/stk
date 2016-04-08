@@ -20,7 +20,7 @@
 */
 /***************************************************/
 
-#include "Thread.h"
+#include "../include/Thread.h"
 
 namespace stk {
 

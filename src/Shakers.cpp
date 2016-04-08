@@ -48,8 +48,8 @@
 */
 /***************************************************/
 
-#include "Shakers.h"
-#include "SKINImsg.h"
+#include "../include/Shakers.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

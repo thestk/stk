@@ -13,7 +13,7 @@
 */
 /***************************************************/
 
-#include "ADSR.h"
+#include "../include/../include/ADSR.h"
 
 namespace stk {
 

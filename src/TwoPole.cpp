@@ -10,7 +10,7 @@
 */
 /***************************************************/
 
-#include "TwoPole.h"
+#include "../include/TwoPole.h"
 #include <cmath>
 
 namespace stk {

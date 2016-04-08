@@ -24,7 +24,7 @@
 */
 /***************************************************/
 
-#include "InetWvIn.h"
+#include "../include/InetWvIn.h"
 #include <sstream>
 
 namespace stk {

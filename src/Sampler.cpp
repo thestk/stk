@@ -9,7 +9,7 @@
 */
 /***************************************************/
 
-#include "Sampler.h"
+#include "../include/Sampler.h"
 
 namespace stk {
 

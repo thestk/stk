@@ -11,7 +11,7 @@
 */
 /***************************************************/
 
-#include "PoleZero.h"
+#include "../include/PoleZero.h"
 
 namespace stk {
 

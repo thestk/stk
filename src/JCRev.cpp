@@ -19,7 +19,7 @@
 */
 /***************************************************/
 
-#include "JCRev.h"
+#include "../include/JCRev.h"
 #include <cmath>
 
 namespace stk {

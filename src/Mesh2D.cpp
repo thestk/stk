@@ -24,8 +24,8 @@
 */
 /***************************************************/
 
-#include "Mesh2D.h"
-#include "SKINImsg.h"
+#include "../include/Mesh2D.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

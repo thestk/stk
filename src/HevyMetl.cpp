@@ -26,7 +26,7 @@
 */
 /***************************************************/
 
-#include "HevyMetl.h"
+#include "../include/HevyMetl.h"
 
 namespace stk {
 

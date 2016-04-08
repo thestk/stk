@@ -18,7 +18,7 @@
 */
 /***************************************************/
 
-#include "RtWvOut.h"
+#include "../include/RtWvOut.h"
 #include <cstring>
 
 namespace stk {

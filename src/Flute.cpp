@@ -22,8 +22,8 @@
 */
 /***************************************************/
 
-#include "Flute.h"
-#include "SKINImsg.h"
+#include "../include/Flute.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

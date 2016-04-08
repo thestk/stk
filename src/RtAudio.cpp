@@ -40,7 +40,7 @@
 
 // RtAudio: Version 4.1.2
 
-#include "RtAudio.h"
+#include "../include/RtAudio.h"
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -60,7 +60,7 @@ const unsigned int RtApi::SAMPLE_RATES[] = {
   #define MUTEX_LOCK(A)       EnterCriticalSection(A)
   #define MUTEX_UNLOCK(A)     LeaveCriticalSection(A)
 
-  #include "tchar.h"
+  #include "../include/tchar.h"
 
   static std::string convertCharPointerToStdString(const char *text)
   {
@@ -2683,10 +2683,10 @@ bool RtApiJack :: callbackEvent( unsigned long nframes )
 // on information found in
 // http://www.cs.wustl.edu/~schmidt/win32-cv-1.html.
 
-#include "asiosys.h"
-#include "asio.h"
-#include "iasiothiscallresolver.h"
-#include "asiodrivers.h"
+#include "../include/asiosys.h"
+#include "../include/asio.h"
+#include "../include/iasiothiscallresolver.h"
+#include "../include/asiodrivers.h"
 #include <cmath>
 
 static AsioDrivers drivers;

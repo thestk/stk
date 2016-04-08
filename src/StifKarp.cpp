@@ -21,8 +21,8 @@
 */
 /***************************************************/
 
-#include "StifKarp.h"
-#include "SKINImsg.h"
+#include "../include/StifKarp.h"
+#include "../include/SKINImsg.h"
 #include <cmath>
 
 namespace stk {

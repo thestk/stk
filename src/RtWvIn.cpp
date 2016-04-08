@@ -19,7 +19,7 @@
 */
 /***************************************************/
 
-#include "RtWvIn.h"
+#include "../include/RtWvIn.h"
 #include <cstring>
 
 namespace stk {

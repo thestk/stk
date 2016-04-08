@@ -50,7 +50,7 @@
 */
 /***************************************************/
 
-#include "Stk.h"
+#include "../include/Stk.h"
 #include <stdlib.h>
 
 namespace stk {

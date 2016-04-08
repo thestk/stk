@@ -31,7 +31,7 @@
 */
 /***************************************************/
 
-#include "FileRead.h"
+#include "../include/FileRead.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <cstring>

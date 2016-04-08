@@ -14,7 +14,7 @@
 */
 /***************************************************/
 
-#include "PRCRev.h"
+#include "../include/PRCRev.h"
 #include <cmath>
 
 namespace stk {

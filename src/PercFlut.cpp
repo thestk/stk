@@ -26,7 +26,7 @@
 */
 /***************************************************/
 
-#include "PercFlut.h"
+#include "../include/PercFlut.h"
 
 namespace stk {
 
