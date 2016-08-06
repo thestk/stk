@@ -167,19 +167,19 @@ long Skini :: parseString( std::string& line, Message& message )
     switch ( dataType ) {
 
     case SK_INT:
-      message.intValues[iValue] = atoi( tokens[iValue+3].c_str() );
+      message.intValues[iValue] = atoi( tokens[iToken].c_str() ); //rgh: use new index
       message.floatValues[iValue] = (StkFloat) message.intValues[iValue];
       ++iToken; //rgh: increment token index and value index (below)
       break;
 
     case SK_DBL:
-      message.floatValues[iValue] = atof( tokens[iValue+3].c_str() );
+      message.floatValues[iValue] = atof( tokens[iToken].c_str() ); //rgh: use new index
       message.intValues[iValue] = (long) message.floatValues[iValue];
-	  ++iToken; //rgh: increment token index and value index (below)
+      ++iToken; //rgh: increment token index and value index (below)
       break;
 
     case SK_STR: // Must be the last field.
-      message.remainder = tokens[iValue+3];
+      message.remainder = tokens[iToken]; //rgh: use new index
       return message.type;
 
     default: // MIDI extension message
