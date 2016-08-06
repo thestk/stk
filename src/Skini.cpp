@@ -153,10 +153,12 @@ long Skini :: parseString( std::string& line, Message& message )
 
   // Parse the remaining fields (maximum of 2 more).
   int iValue = 0;
+  unsigned int iToken = iValue + 3; //rgh: MIDI extension argument counts are different from regular MIDI
   long dataType = skini_msgs[iSkini].data2;
   while ( dataType != NOPE ) {
 
-    if ( tokens.size() <= (unsigned int) (iValue+3) ) {
+//    if ( tokens.size() <= (unsigned int) (iValue+3) ) { //rgh: test iToken rather than always testing iValue+3
+    if (tokens.size() <= iToken) {
       oStream_ <<  "Skini::parseString: inconsistency between type table and parsed line:\n   " << line;
       handleError( StkError::WARNING );
       return message.type = 0;
@@ -167,11 +169,13 @@ long Skini :: parseString( std::string& line, Message& message )
     case SK_INT:
       message.intValues[iValue] = atoi( tokens[iValue+3].c_str() );
       message.floatValues[iValue] = (StkFloat) message.intValues[iValue];
+      ++iToken; //rgh: increment token index and value index (below)
       break;
 
     case SK_DBL:
       message.floatValues[iValue] = atof( tokens[iValue+3].c_str() );
       message.intValues[iValue] = (long) message.floatValues[iValue];
+	  ++iToken; //rgh: increment token index and value index (below)
       break;
 
     case SK_STR: // Must be the last field.
@@ -181,7 +185,7 @@ long Skini :: parseString( std::string& line, Message& message )
     default: // MIDI extension message
       message.intValues[iValue] = dataType;
       message.floatValues[iValue] = (StkFloat) message.intValues[iValue];
-      iValue--;
+      //iValue--; //rgh: iValue must increment even when iToken does not; resetting iValue only works sometimes
     }
 
     if ( ++iValue == 1 )
