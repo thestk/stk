@@ -158,7 +158,8 @@ long Skini :: parseString( std::string& line, Message& message )
   while ( dataType != NOPE ) {
 
 //    if ( tokens.size() <= (unsigned int) (iValue+3) ) { //rgh: test iToken rather than always testing iValue+3
-    if (tokens.size() <= iToken) {
+//    if (tokens.size() <= iToken) { //rgh: iToken only tests it more tokens are to be consumed (SK_INT, SK_DBL, SK_STR)
+	  if ((tokens.size() <= iToken) && (dataType < 0))  { //Don't fail if remaining iValues come from skini_msgs[] rather than tokens[].
       oStream_ <<  "Skini::parseString: inconsistency between type table and parsed line:\n   " << line;
       handleError( StkError::WARNING );
       return message.type = 0;
