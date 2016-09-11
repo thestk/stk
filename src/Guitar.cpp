@@ -117,7 +117,7 @@ void Guitar :: setBodyFile( std::string bodyfile )
 void Guitar :: setPluckPosition( StkFloat position, int string )
 {
   if ( position < 0.0 || position > 1.0 ) {
-    std::cerr << "Guitar::setPluckPosition: position parameter out of range!";
+    oStream_ << "Guitar::setPluckPosition: position parameter out of range!";
     handleError( StkError::WARNING ); return;
   }
 
@@ -136,7 +136,7 @@ void Guitar :: setPluckPosition( StkFloat position, int string )
 void Guitar :: setLoopGain( StkFloat gain, int string )
 {
   if ( gain < 0.0 || gain > 1.0 ) {
-    std::cerr << "Guitar::setLoopGain: gain parameter out of range!";
+    oStream_ << "Guitar::setLoopGain: gain parameter out of range!";
     handleError( StkError::WARNING ); return;
   }
 
