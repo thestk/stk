@@ -56,7 +56,7 @@ void Resonate :: setResonance( StkFloat frequency, StkFloat radius )
   }
 
   if ( radius < 0.0 || radius >= 1.0 ) {
-    std::cerr << "Resonate::setResonance: radius parameter is out of range!";
+    oStream_ << "Resonate::setResonance: radius parameter is out of range!";
     handleError( StkError::WARNING ); return;
   }
 
