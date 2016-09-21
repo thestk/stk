@@ -113,8 +113,6 @@ int main(int argc, char *argv[])
     exit( 1 );
   }
 
-
-
   // Test RtAudio functionality for reporting latency.
   std::cout << "\nStream latency = " << adac.getStreamLatency() << " frames" << std::endl;
 
