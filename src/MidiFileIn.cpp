@@ -79,7 +79,8 @@ MidiFileIn :: MidiFileIn( std::string fileName )
   usingTimeCode_ = false;
   if ( *data & 0x8000 ) {
     // Determine ticks per second from time-code formats.
-    tickrate = (double) -(*data & 0x7F00);
+    signed char tmp = -(*data & 0xFF00)>>8;
+    tickrate = (double) tmp;
     // If frames per second value is 29, it really should be 29.97.
     if ( tickrate == 29.0 ) tickrate = 29.97;
     tickrate *= (*data & 0x00FF);
