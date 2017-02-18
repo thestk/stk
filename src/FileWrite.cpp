@@ -688,8 +688,9 @@ void FileWrite :: closeMatFile( void )
 
   SINT32 headsize, temp;
   fseek(fd_, 196, SEEK_SET);  // jump to header size
-  if (fread(&headsize, 4, 1, fd_) < 4) {
+  if (fread(&headsize, 4, 1, fd_) != 1) {
       oStream_ << "FileWrite: could not read MAT-file header size.";
+      handleError( StkError::WARNING );
       goto close_file;
   }
 
@@ -699,7 +700,7 @@ void FileWrite :: closeMatFile( void )
   // Write file size (minus some header info)
   fwrite(&headsize, 4, 1, fd_);
 
-  fseek(fd_, temp+196, SEEK_SET); // jumpt to data size (in bytes)
+  fseek(fd_, temp+196, SEEK_SET); // jump to data size (in bytes)
   temp = (SINT32) (frameCounter_ * 8 * channels_);
   fwrite(&temp, 4, 1, fd_);
 
