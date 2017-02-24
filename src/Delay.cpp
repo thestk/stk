@@ -42,7 +42,7 @@ Delay :: ~Delay()
 void Delay :: setMaximumDelay( unsigned long delay )
 {
   if ( delay < inputs_.size() ) return;
-  inputs_.resize( delay + 1 );
+  inputs_.resize( delay + 1, 1, 0.0 );
 }
 
 void Delay :: setDelay( unsigned long delay )
