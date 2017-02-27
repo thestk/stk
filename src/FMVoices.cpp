@@ -98,8 +98,12 @@ void FMVoices :: setFrequency( StkFloat frequency )
     i = currentVowel_ - 64;
     temp2 = 1.1;
   }
-  else if (currentVowel_ <= 128)	{
+  else if (currentVowel_ < 128)	{
     i = currentVowel_ - 96;
+    temp2 = 1.2;
+  }
+  else {
+    i = 31;
     temp2 = 1.2;
   }
 
