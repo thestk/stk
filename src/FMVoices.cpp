@@ -98,10 +98,11 @@ void FMVoices :: setFrequency( StkFloat frequency )
     i = currentVowel_ - 64;
     temp2 = 1.1;
   }
-  else if (currentVowel_ <= 128)	{
+  else if (currentVowel_ < 128)	{
     i = currentVowel_ - 96;
     temp2 = 1.2;
   }
+  else return;
 
   baseFrequency_ = frequency;
   temp = (temp2 * Phonemes::formantFrequency(i, 0) / baseFrequency_) + 0.5;
@@ -140,7 +141,7 @@ void FMVoices :: controlChange( int number, StkFloat value )
   if (number == __SK_Breath_) // 2
     gains_[3] = fmGains_[(int) ( normalizedValue * 99.9 )];
   else if (number == __SK_FootControl_)	{ // 4
-    currentVowel_ = (int) (normalizedValue * 128.0);
+    currentVowel_ = (int) (normalizedValue * 127.0);
     this->setFrequency(baseFrequency_);
   }
   else if (number == __SK_ModFrequency_) // 11
