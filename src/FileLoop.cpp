@@ -28,10 +28,11 @@ FileLoop :: FileLoop( unsigned long chunkThreshold, unsigned long chunkSize )
 }
 
 FileLoop :: FileLoop( std::string fileName, bool raw, bool doNormalize,
-                      unsigned long chunkThreshold, unsigned long chunkSize )
+                      unsigned long chunkThreshold, unsigned long chunkSize,
+                      bool doInt2FloatScaling )
   : FileWvIn( chunkThreshold, chunkSize ), phaseOffset_(0.0)
 {
-  this->openFile( fileName, raw, doNormalize );
+  this->openFile( fileName, raw, doNormalize, doInt2FloatScaling );
   Stk::addSampleRateAlert( this );
 }
 
@@ -40,7 +41,7 @@ FileLoop :: ~FileLoop( void )
   Stk::removeSampleRateAlert( this );
 }
 
-void FileLoop :: openFile( std::string fileName, bool raw, bool doNormalize )
+void FileLoop :: openFile( std::string fileName, bool raw, bool doNormalize, bool doInt2FloatScaling )
 {
   // Call close() in case another file is already open.
   this->closeFile();
@@ -53,8 +54,8 @@ void FileLoop :: openFile( std::string fileName, bool raw, bool doNormalize )
     chunking_ = true;
     chunkPointer_ = 0;
     data_.resize( chunkSize_ + 1, file_.channels() );
-    if ( doNormalize ) normalizing_ = true;
-    else normalizing_ = false;
+    if ( doInt2FloatScaling ) int2floatscaling_ = true;
+    else int2floatscaling_ = false;
   }
   else {
     chunking_ = false;
@@ -171,7 +172,7 @@ StkFloat FileLoop :: tick( unsigned int channel )
       }
 
       // Load more data.
-      file_.read( data_, chunkPointer_, normalizing_ );
+      file_.read( data_, chunkPointer_, int2floatscaling_ );
     }
 
     // Adjust index for the current buffer.

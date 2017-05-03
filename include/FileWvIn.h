@@ -29,6 +29,16 @@ namespace stk {
     chunkThreshold (in sample frames) will be read incrementally in
     chunks of \e chunkSize each (also in sample frames).
 
+    For file data read completely into local memory, the \e doNormalize
+    flag can be used to normalize all values with respect to the maximum
+    absolute value of the data.
+
+    If the file data format is fixed point, the flag \e doInt2FloatScaling
+    can be used to control whether the values are scaled with respect to
+    the corresponding fixed-point maximum. For example, if reading 16-bit
+    signed integers, the input values will be scaled by 1 / 32768.0. This
+    scaling will not happen for floating-point file data formats.
+
     When the file end is reached, subsequent calls to the tick()
     functions return zeros and isFinished() returns \e true.
 
@@ -51,7 +61,8 @@ public:
     unknown, or a read error occurs.
   */
   FileWvIn( std::string fileName, bool raw = false, bool doNormalize = true,
-            unsigned long chunkThreshold = 1000000, unsigned long chunkSize = 1024 );
+            unsigned long chunkThreshold = 1000000, unsigned long chunkSize = 1024,
+            bool doInt2FloatScaling = true );
 
   //! Class destructor.
   ~FileWvIn( void );
@@ -60,13 +71,14 @@ public:
   /*!
     Data from a previously opened file will be overwritten by this
     function.  An StkError will be thrown if the file is not found,
-    its format is unknown, or a read error occurs.  If the file data
-    is to be loaded incrementally from disk and normalization is
-    specified, a scaling will be applied with respect to fixed-point
-    limits.  If the data format is floating-point, no scaling is
-    performed.
+    its format is unknown, or a read error occurs.  If the file length
+    is less than the chunkThreshold limit and \e doNormalize is true,
+    the file data will be normalized with respect to the maximum absolute
+    value of the data. If the \e doInt2FloatScaling flag is true and the
+    input data is fixed-point, a scaling will be applied with respect to
+    the fixed-point limits.
   */
-  virtual void openFile( std::string fileName, bool raw = false, bool doNormalize = true );
+  virtual void openFile( std::string fileName, bool raw = false, bool doNormalize = true, bool doInt2FloatScaling = true );
 
   //! Close a file if one is open.
   virtual void closeFile( void );
@@ -167,7 +179,7 @@ protected:
   FileRead file_;
   bool finished_;
   bool interpolate_;
-  bool normalizing_;
+  bool int2floatscaling_;
   bool chunking_;
   StkFloat time_;
   StkFloat rate_;

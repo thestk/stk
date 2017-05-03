@@ -31,7 +31,8 @@ class FileLoop : protected FileWvIn
 
   //! Class constructor that opens a specified file.
   FileLoop( std::string fileName, bool raw = false, bool doNormalize = true,
-            unsigned long chunkThreshold = 1000000, unsigned long chunkSize = 1024 );
+            unsigned long chunkThreshold = 1000000, unsigned long chunkSize = 1024,
+            bool doInt2FloatScaling = true );
 
   //! Class destructor.
   ~FileLoop( void );
@@ -40,13 +41,14 @@ class FileLoop : protected FileWvIn
   /*!
     Data from a previously opened file will be overwritten by this
     function.  An StkError will be thrown if the file is not found,
-    its format is unknown, or a read error occurs.  If the file data
-    is to be loaded incrementally from disk and normalization is
-    specified, a scaling will be applied with respect to fixed-point
-    limits.  If the data format is floating-point, no scaling is
-    performed.
+    its format is unknown, or a read error occurs.  If the file length
+    is less than the chunkThreshold limit and \e doNormalize is true,
+    the file data will be normalized with respect to the maximum absolute
+    value of the data. If the \e doInt2FloatScaling flag is true and the
+    input data is fixed-point, a scaling will be applied with respect to
+    the fixed-point limits.
   */
-  void openFile( std::string fileName, bool raw = false, bool doNormalize = true );
+  void openFile( std::string fileName, bool raw = false, bool doNormalize = true, bool doInt2FloatScaling = true );
 
   //! Close a file if one is open.
   void closeFile( void ) { FileWvIn::closeFile(); };
