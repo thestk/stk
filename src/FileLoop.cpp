@@ -54,16 +54,19 @@ void FileLoop :: openFile( std::string fileName, bool raw, bool doNormalize, boo
     chunking_ = true;
     chunkPointer_ = 0;
     data_.resize( chunkSize_ + 1, file_.channels() );
-    if ( doInt2FloatScaling ) int2floatscaling_ = true;
-    else int2floatscaling_ = false;
   }
   else {
     chunking_ = false;
     data_.resize( file_.fileSize() + 1, file_.channels() );
   }
 
+  if ( doInt2FloatScaling )
+    int2floatscaling_ = true;
+  else
+    int2floatscaling_ = false;
+
   // Load all or part of the data.
-  file_.read( data_, 0, doNormalize );
+  file_.read( data_, 0, int2floatscaling_ );
 
   if ( chunking_ ) { // If chunking, save the first sample frame for later.
     firstFrame_.resize( 1, data_.channels() );
@@ -135,6 +138,8 @@ StkFloat FileLoop :: tick( unsigned int channel )
   }
 #endif
 
+  if ( finished_ ) return 0.0;
+
   // Check limits of time address ... if necessary, recalculate modulo
   // fileSize.
   while ( time_ < 0.0 )
@@ -196,7 +201,7 @@ StkFloat FileLoop :: tick( unsigned int channel )
 
 StkFrames& FileLoop :: tick( StkFrames& frames, unsigned int channel)
 {
-  if ( !file_.isOpen() ) {
+  if ( finished_ ) {
 #if defined(_STK_DEBUG_)
     oStream_ << "FileLoop::tick(): no file data is loaded!";
     handleError( StkError::DEBUG_PRINT );

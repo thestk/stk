@@ -44,7 +44,8 @@ FileWvIn :: FileWvIn( unsigned long chunkThreshold, unsigned long chunkSize )
 }
 
 FileWvIn :: FileWvIn( std::string fileName, bool raw, bool doNormalize,
-                      unsigned long chunkThreshold, unsigned long chunkSize, bool doInt2FloatScaling )
+                      unsigned long chunkThreshold, unsigned long chunkSize,
+                      bool doInt2FloatScaling )
   : finished_(true), interpolate_(false), time_(0.0), rate_(0.0),
     chunkThreshold_(chunkThreshold), chunkSize_(chunkSize)
 {
@@ -84,16 +85,19 @@ void FileWvIn :: openFile( std::string fileName, bool raw, bool doNormalize, boo
     chunking_ = true;
     chunkPointer_ = 0;
     data_.resize( chunkSize_, file_.channels() );
-    if ( doInt2FloatScaling ) int2floatscaling_ = true;
-    else int2floatscaling_ = false;
   }
   else {
     chunking_ = false;
     data_.resize( (size_t) file_.fileSize(), file_.channels() );
   }
 
+  if ( doInt2FloatScaling )
+    int2floatscaling_ = true;
+  else
+    int2floatscaling_ = false;
+
   // Load all or part of the data.
-  file_.read( data_, 0, doNormalize );
+  file_.read( data_, 0, int2floatscaling_ );
 
   // Resize our lastFrame container.
   lastFrame_.resize( 1, file_.channels() );
@@ -228,9 +232,9 @@ StkFloat FileWvIn :: tick( unsigned int channel )
 
 StkFrames& FileWvIn :: tick( StkFrames& frames, unsigned int channel)
 {
-  if ( !file_.isOpen() ) {
+  if ( finished_ ) {
 #if defined(_STK_DEBUG_)
-    oStream_ << "FileWvIn::tick(): no file data is loaded!";
+    oStream_ << "FileWvIn::tick(): end of file or no open file!";
     handleError( StkError::DEBUG_PRINT );
 #endif
     return frames;
@@ -258,7 +262,6 @@ StkFrames& FileWvIn :: tick( StkFrames& frames, unsigned int channel)
     }
   }
   return frames;
-
 }
 
 } // stk namespace

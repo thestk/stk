@@ -23,7 +23,7 @@
 using namespace stk;
 
 // Eewww ... global variables! :-)
-bool done;
+bool done = false;
 StkFrames frames;
 static void finish(int ignore){ done = true; }
 
@@ -45,9 +45,10 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
          double streamTime, RtAudioStreamStatus status, void *userData )
 {
   FileWvIn *input = (FileWvIn *) userData;
-  register StkFloat *samples = (StkFloat *) outputBuffer;
+  StkFloat *samples = (StkFloat *) outputBuffer;
 
   input->tick( frames );
+
   for ( unsigned int i=0; i<frames.size(); i++ ) {
     *samples++ = frames[i];
     if ( input->channelsOut() == 1 ) *samples++ = frames[i]; // play mono files in stereo

@@ -170,7 +170,7 @@ public:
     performed if _STK_DEBUG_ is defined during compilation, in which
     case an out-of-range value will trigger an StkError exception.
   */
-  virtual StkFrames& tick( StkFrames& frames,unsigned int channel = 0 );
+  virtual StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
 
 protected:
 
