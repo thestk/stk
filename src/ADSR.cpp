@@ -23,6 +23,7 @@ ADSR :: ADSR( void )
   value_ = 0.0;
   attackRate_ = 0.001;
   decayRate_ = 0.001;
+  decayTime_ = -1.0;
   releaseRate_ = 0.005;
   releaseTime_ = -1.0;
   sustainLevel_ = 0.5;
@@ -91,6 +92,8 @@ void ADSR :: setDecayRate( StkFloat rate )
   }
 
   decayRate_ = rate;
+  // Set to negative value so we don't update decay rate on sustain level change
+  decayTime_ = -1; 
 }
 
 void ADSR :: setSustainLevel( StkFloat level )
@@ -101,6 +104,11 @@ void ADSR :: setSustainLevel( StkFloat level )
   }
 
   sustainLevel_ = level;
+  // If already sustaining, switch back to decay so that new sustain level will be output
+  if (state_ == SUSTAIN) state_ = DECAY; 
+  // If user has asked for a specific decay time by calling setDecayTime(),
+  // decay rate must be updated based on the new sustain level
+  if (decayTime_ > 0.0) this->setDecayTime( decayTime_ );
 }
 
 void ADSR :: setReleaseRate( StkFloat rate )
@@ -132,7 +140,7 @@ void ADSR :: setDecayTime( StkFloat time )
     oStream_ << "ADSR::setDecayTime: negative or zero times not allowed!";
     handleError( StkError::WARNING ); return;
   }
-
+  if( decayTime_ != time ) decayTime_ = time;
   decayRate_ = (1.0 - sustainLevel_) / ( time * Stk::sampleRate() );
 }
 
