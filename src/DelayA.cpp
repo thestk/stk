@@ -18,7 +18,7 @@
 */
 /***************************************************/
 
-#include "DelayA.h"
+#include "../include/DelayA.h"
 
 namespace stk {
 

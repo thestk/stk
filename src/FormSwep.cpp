@@ -10,7 +10,7 @@
 */
 /***************************************************/
 
-#include "FormSwep.h"
+#include "../include/FormSwep.h"
 #include <cmath>
 
 namespace stk {

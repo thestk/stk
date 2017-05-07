@@ -11,7 +11,7 @@
 */
 /***************************************************/
 
-#include "Modal.h"
+#include "../include/Modal.h"
 #include <cstdlib>
 
 namespace stk {

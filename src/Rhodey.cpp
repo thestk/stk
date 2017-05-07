@@ -30,7 +30,7 @@
 */
 /***************************************************/
 
-#include "Rhodey.h"
+#include "../include/Rhodey.h"
 
 namespace stk {
 

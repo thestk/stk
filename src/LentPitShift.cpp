@@ -9,7 +9,7 @@
 */
 /***************************************************/
 
-#include "LentPitShift.h"
+#include "../include/LentPitShift.h"
 
 namespace stk {
 

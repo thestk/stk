@@ -14,7 +14,7 @@
 */
 /***************************************************/
 
-#include "NRev.h"
+#include "../include/NRev.h"
 #include <cmath>
 
 namespace stk {

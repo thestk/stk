@@ -17,8 +17,8 @@
 */
 /***************************************************/
 
-#include "Resonate.h"
-#include "SKINImsg.h"
+#include "../include/Resonate.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

@@ -28,10 +28,10 @@
 */
 /***************************************************/
 
-#include "Guitar.h"
-#include "FileWvIn.h"
-#include "Noise.h"
-#include "SKINImsg.h"
+#include "../include/Guitar.h"
+#include "../include/FileWvIn.h"
+#include "../include/Noise.h"
+#include "../include/SKINImsg.h"
 #include <cmath>
 
 namespace stk {

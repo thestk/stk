@@ -11,7 +11,7 @@
 */
 /***************************************************/
 
-#include "Mutex.h"
+#include "../include/Mutex.h"
 
 namespace stk {
 

@@ -21,7 +21,7 @@
 */
 /***************************************************/
 
-#include "Twang.h"
+#include "../include/Twang.h"
 
 namespace stk {
 

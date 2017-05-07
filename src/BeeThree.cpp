@@ -32,7 +32,7 @@
 */
 /***************************************************/
 
-#include "BeeThree.h"
+#include "../include/BeeThree.h"
 
 namespace stk {
 

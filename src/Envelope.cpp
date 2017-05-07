@@ -11,7 +11,7 @@
 */
 /***************************************************/
 
-#include "Envelope.h"
+#include "../include/Envelope.h"
 
 namespace stk {
 

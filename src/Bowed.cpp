@@ -24,8 +24,8 @@
 */
 /***************************************************/
 
-#include "Bowed.h"
-#include "SKINImsg.h"
+#include "../include/Bowed.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

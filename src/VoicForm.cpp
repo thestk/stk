@@ -25,9 +25,9 @@
 */
 /***************************************************/
 
-#include "VoicForm.h"
-#include "Phonemes.h"
-#include "SKINImsg.h"
+#include "../include/VoicForm.h"
+#include "../include/Phonemes.h"
+#include "../include/SKINImsg.h"
 #include <cstring>
 #include <cmath>
 

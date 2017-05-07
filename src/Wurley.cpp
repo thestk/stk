@@ -30,7 +30,7 @@
 */
 /***************************************************/
 
-#include "Wurley.h"
+#include "../include/Wurley.h"
 
 namespace stk {
 

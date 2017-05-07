@@ -21,7 +21,7 @@
 */
 /***************************************************/
 
-#include "Blit.h"
+#include "../include/Blit.h"
 
 namespace stk {
  

@@ -22,8 +22,8 @@
 */
 /***************************************************/
 
-#include "Clarinet.h"
-#include "SKINImsg.h"
+#include "../include/Clarinet.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

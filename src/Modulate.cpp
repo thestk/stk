@@ -10,7 +10,7 @@
 */
 /***************************************************/
 
-#include "Modulate.h"
+#include "../include/Modulate.h"
 
 namespace stk {
 

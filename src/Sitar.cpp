@@ -17,7 +17,7 @@
 */
 /***************************************************/
 
-#include "Sitar.h"
+#include "../include/Sitar.h"
 
 namespace stk {
 

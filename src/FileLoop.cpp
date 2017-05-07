@@ -16,7 +16,7 @@
 */
 /***************************************************/
 
-#include "FileLoop.h"
+#include "../include/FileLoop.h"
 #include <cmath>
 
 namespace stk {

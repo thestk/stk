@@ -20,8 +20,8 @@
 */
 /***************************************************/
 
-#include "Brass.h"
-#include "SKINImsg.h"
+#include "../include/Brass.h"
+#include "../include/SKINImsg.h"
 #include <cmath>
 
 namespace stk {

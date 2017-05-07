@@ -10,7 +10,7 @@
 */
 /***************************************************/
 
-#include "Phonemes.h"
+#include "../include/Phonemes.h"
 #include <iostream>
 
 namespace stk {

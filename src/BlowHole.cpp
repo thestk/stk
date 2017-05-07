@@ -33,8 +33,8 @@
 */
 /***************************************************/
 
-#include "BlowHole.h"
-#include "SKINImsg.h"
+#include "../include/BlowHole.h"
+#include "../include/SKINImsg.h"
 #include <cmath>
 
 namespace stk {

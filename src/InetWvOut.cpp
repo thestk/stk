@@ -21,9 +21,9 @@
 */
 /***************************************************/
 
-#include "InetWvOut.h"
-#include "TcpClient.h"
-#include "UdpSocket.h"
+#include "../include/InetWvOut.h"
+#include "../include/TcpClient.h"
+#include "../include/UdpSocket.h"
 #include <sstream>
 
 namespace stk {

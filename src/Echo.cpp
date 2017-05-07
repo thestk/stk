@@ -8,7 +8,7 @@
 */
 /***************************************************/
 
-#include "Echo.h"
+#include "../include/Echo.h"
 #include <iostream>
 
 namespace stk {

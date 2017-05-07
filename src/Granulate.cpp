@@ -15,8 +15,8 @@
 */
 /***************************************************/
 
-#include "Granulate.h"
-#include "FileRead.h"
+#include "../include/Granulate.h"
+#include "../include/FileRead.h"
 #include <cmath>
 
 namespace stk {

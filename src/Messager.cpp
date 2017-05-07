@@ -32,10 +32,10 @@
 */
 /***************************************************/
 
-#include "Messager.h"
+#include "../include/Messager.h"
 #include <iostream>
 #include <algorithm>
-#include "SKINImsg.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

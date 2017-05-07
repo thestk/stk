@@ -9,7 +9,7 @@
 */
 /***************************************************/
 
-#include "Socket.h"
+#include "../include/Socket.h"
 
 namespace stk {
 

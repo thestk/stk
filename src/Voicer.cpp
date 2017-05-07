@@ -23,7 +23,7 @@
 */
 /***************************************************/
 
-#include "Voicer.h"
+#include "../include/Voicer.h"
 #include <cmath>
 
 namespace stk {

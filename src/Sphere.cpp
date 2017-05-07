@@ -9,7 +9,7 @@
 */
 /***************************************************/
 
-#include "Sphere.h"
+#include "../include/Sphere.h"
 #include <cmath>
 
 namespace stk {

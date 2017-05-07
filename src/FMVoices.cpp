@@ -30,9 +30,9 @@
 */
 /***************************************************/
 
-#include "FMVoices.h"
-#include "SKINImsg.h"
-#include "Phonemes.h"
+#include "../include/FMVoices.h"
+#include "../include/SKINImsg.h"
+#include "../include/Phonemes.h"
 
 namespace stk {
 

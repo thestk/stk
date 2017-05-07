@@ -23,7 +23,7 @@
 */
 /***************************************************/
 
-#include "Asymp.h"
+#include "../include/Asymp.h"
 #include <cmath>
 
 namespace stk {

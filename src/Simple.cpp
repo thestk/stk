@@ -17,8 +17,8 @@
 */
 /***************************************************/
 
-#include "Simple.h"
-#include "SKINImsg.h"
+#include "../include/Simple.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 

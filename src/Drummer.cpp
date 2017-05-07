@@ -15,7 +15,7 @@
 */
 /***************************************************/
 
-#include "Drummer.h"
+#include "../include/Drummer.h"
 #include <cmath>
 
 namespace stk {

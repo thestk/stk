@@ -15,7 +15,7 @@
 */
 /**********************************************************************/
 
-#include "MidiFileIn.h"
+#include "../include/MidiFileIn.h"
 #include <cstring>
 #include <iostream>
 

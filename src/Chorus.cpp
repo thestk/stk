@@ -9,7 +9,7 @@
 */
 /***************************************************/
 
-#include "Chorus.h"
+#include "../include/Chorus.h"
 
 namespace stk {
 

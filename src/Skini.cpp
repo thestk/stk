@@ -23,8 +23,8 @@
 */
 /***************************************************/
 
-#include "Skini.h"
-#include "SKINItbl.h"
+#include "../include/Skini.h"
+#include "../include/SKINItbl.h"
 #include <cstdlib>
 #include <sstream>
 

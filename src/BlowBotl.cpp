@@ -16,8 +16,8 @@
 */
 /***************************************************/
 
-#include "BlowBotl.h"
-#include "SKINImsg.h"
+#include "../include/BlowBotl.h"
+#include "../include/SKINImsg.h"
 
 namespace stk {
 
