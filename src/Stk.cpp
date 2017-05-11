@@ -338,7 +338,10 @@ StkFrames& StkFrames::getChannel(unsigned int sourceChannel,StkFrames& destinati
 #endif
   int sourceHop = nChannels_;
   int destinationHop = destinationFrames.nChannels_;
-  for (int i  = sourceChannel, j= destinationChannel; i < nFrames_ * nChannels_; i+=sourceHop,j+=destinationHop) {
+  for (unsigned int i  = sourceChannel, j= destinationChannel;
+       i < nFrames_ * nChannels_;
+       i+=sourceHop,j+=destinationHop)
+  {
     destinationFrames[j] = data_[i];
   }
   return destinationFrames;
@@ -366,7 +369,10 @@ void StkFrames::setChannel(unsigned int destinationChannel, const stk::StkFrames
 #endif
   unsigned int sourceHop = sourceFrames.nChannels_;
   unsigned int destinationHop = nChannels_;
-  for (int i  = destinationChannel,j = sourceChannel ; i < nFrames_ * nChannels_; i+=destinationHop,j+=sourceHop) {
+  for (unsigned int i  = destinationChannel,j = sourceChannel;
+       i < nFrames_ * nChannels_;
+       i+=destinationHop,j+=sourceHop)
+  {
     data_[i] = sourceFrames[j];
   }
 }
