@@ -1,14 +1,14 @@
 This file contains instructions for integrating the STK in Xcode projects and solutions to common integration issues. 
 
-##Setup
+## Setup
 
-###If you have [Cocoapods](http://cocoapods.org/)
+### If you have [Cocoapods](http://cocoapods.org/)
 
 1. Add `pod 'STK', '~> 4.5'` to your Podfile.
 
 1. Run `pod install`
 
-###If you don't have Cocoapods
+### If you don't have Cocoapods
 
 1. Clone or [download][download_link] the STK into your project's directory.
 
@@ -21,7 +21,7 @@ This file contains instructions for integrating the STK in Xcode projects and so
 ![][header_search_paths_screenshot]
 
 
-##Usage
+## Usage
 
 1. Import the STK classes in the source files you require. 
   * E.g. `#import "SineWave.h"`
@@ -32,9 +32,9 @@ This file contains instructions for integrating the STK in Xcode projects and so
 You can also look at the [iOS Demo project](..projects/demo/iOS%20Demo) for a sample usage. 
 
 
-##Troubleshooting
+## Troubleshooting
 
-###'FileName.h' file not found
+### 'FileName.h' file not found
 
 If you get this error when `#import`ing an STK header, you have added the wrong header search path for the STK in your project's settings (see Step 4 in Setup)
 
@@ -49,19 +49,19 @@ If this problem doesn't go away:
 If that doesn't solve it:
 Install Cocoapods and use it to install the STK. It takes one minute and will make your life easier. Visit the [Cocoapods website](http://cocoapods.org/) for installation instructions. 
 
-###FileRead::open: could not open or find file (../../rawwaves/filename.raw)!
+### FileRead::open: could not open or find file (../../rawwaves/filename.raw)!
 
 If you use a class that makes use of raw waves (such as `Mandolin`, `Wurley`, or `Rhodey`) you need to make sure that the STK's raw wave files are copied into your bundle and that the STK knows where they are. You'll know you need to if you get this runtime error:
 `FileRead::open: could not open or find file (../../rawwaves/filename.raw)!`
 
-####If you're using Cocoapods
+#### If you're using Cocoapods
 
 Add this code before using a class that needs the raw waves: 
 ```objective-c
 stk::Stk::setRawwavePath([[[NSBundle mainBundle] pathForResource:@"rawwaves" ofType:@"bundle"] UTF8String]);
 ```
 
-####If you're not using Cocoapods
+#### If you're not using Cocoapods
 
 1. Open your project's settings, open the *Build Phases* tab. 
 1. In the *Copy Bundle Resources*, drag and drop **rawwaves.bundle** (it's located in **STK.xcodeproj**'s **Helpers** folder). 
@@ -73,7 +73,7 @@ stk::Stk::setRawwavePath([[rawwaveBundle resourcePath] UTF8String]);
 ```
 
 
-###rawwaves.bundle: No such file or directory
+### rawwaves.bundle: No such file or directory
 
 This means that **rawwaves.bundle** hasn't been copied to the build folder, so you'll need to do it manually:
 
@@ -83,7 +83,7 @@ Select the rawwaves scheme:
   
 Build it (⌘+B)  then build your project's main scheme. 
 
-###Apple Mach-O Linker Error
+### Apple Mach-O Linker Error
 
 This means that **STKLib.a** isn't being linked to your binary. Follow step 2 above in [Setup](#setup). 
 
