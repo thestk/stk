@@ -47,6 +47,11 @@
 #include <climits>
 #include <algorithm>
 
+#if defined(__FreeBSD__)
+#include <sys/soundcard.h>
+#define AFMT_FLOAT 0x00004000
+#endif
+
 // Static variable definitions.
 const unsigned int RtApi::MAX_SAMPLE_RATES = 14;
 const unsigned int RtApi::SAMPLE_RATES[] = {
