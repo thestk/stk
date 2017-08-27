@@ -126,14 +126,15 @@ esac
 if test $realtime = yes; then
   # Checks for package options and external software
   AC_MSG_CHECKING(for audio API)
+
+  AC_ARG_WITH(jack, [  --with-jack = choose JACK server support (mac and linux only)])
+  AS_IF([test "x$with_jack" == "xyes"], [
+api="$api -D__UNIX_JACK__"
+  AC_MSG_RESULT(using JACK)
+  AC_CHECK_LIB(jack, jack_client_open, , AC_MSG_ERROR(JACK support requires the jack library!))])
+
   case $host in
     *-*-linux*)
-    AC_ARG_WITH(jack, [  --with-jack = choose JACK server support (mac and linux only)])
-    AS_IF([test "x$with_jack" == "xyes"], [
-    api="$api -D__UNIX_JACK__"
-    AC_MSG_RESULT(using JACK)
-    AC_CHECK_LIB(jack, jack_client_open, , AC_MSG_ERROR(JACK support requires the jack library!))])
-
     # Look for ALSA flag
     AC_ARG_WITH(alsa, [  --with-alsa = choose native ALSA API support (linux only)])
     AS_IF([test "x$with_alsa" == "xyes"], [
@@ -159,12 +160,6 @@ if test $realtime = yes; then
     ;;
 
     *-apple*)
-    AC_ARG_WITH(jack, [  --with-jack = choose JACK server support (unix only)])
-    AS_IF([test "x$with_jack" == "xyes"], [
-    api="$api -D__UNIX_JACK__"
-    AC_MSG_RESULT(using JACK)
-    AC_CHECK_LIB(jack, jack_client_new, , AC_MSG_ERROR(JACK support requires the jack library!))])
-
     # Look for Core flag
     AC_ARG_WITH(core, [  --with-core = choose CoreAudio API support (mac only)])
     AS_IF([test "x$with_core" == "xyes"], [
