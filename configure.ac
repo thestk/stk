@@ -134,6 +134,22 @@ api="$api -D__UNIX_JACK__"
   AC_CHECK_LIB(jack, jack_client_open, , AC_MSG_ERROR(JACK support requires the jack library!))])
 
   case $host in
+    *-*-netbsd*)
+    AS_IF([test "$api" == ""], [
+      AC_MSG_RESULT(using OSS)
+      api="$api -D__LINUX_OSS__"
+      LIBS="$LIBS -lossaudio"
+      AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR(RtAudio requires the pthread library!))])
+    ;;
+
+    *-*-freebsd*)
+    AS_IF([test "$api" == ""], [
+      AC_MSG_RESULT(using OSS)
+      api="$api -D__LINUX_OSS__"
+      LIBS="$LIBS -lossaudio"
+      AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR(RtAudio requires the pthread library!))])
+    ;;
+
     *-*-linux*)
     # Look for ALSA flag
     AC_ARG_WITH(alsa, [  --with-alsa = choose native ALSA API support (linux only)])
