@@ -13,7 +13,7 @@ namespace stk {
     set of 32 static phoneme formant parameters
     and provide access to those values.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2016.
+    by Perry R. Cook and Gary P. Scavone, 1995--2017.
 */
 /***************************************************/
 

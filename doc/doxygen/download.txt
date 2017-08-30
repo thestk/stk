@@ -1,10 +1,18 @@
 /*! \page download Download, Release Notes, and Bug Fixes
 
-\section down Download Version 4.5.1 (22 February 2016):
+\section down Download Version 4.6.0 (31 August 2017):
 
-- <A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.5.1.tar.gz">Source distribution</A>
+- <A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.6.0.tar.gz">Source distribution</A>
 
 \section notes Release Notes:
+\subsection v4dot6dot0 Version 4.6.0
+- see github site for complete details (github.com/thestk/stk)
+- various build system updates
+- fixes in FileWvIn / FileLoop for normalisation and scaling, as well as file opening
+- bug fix for MAT-files in FileWrite
+- bug fix in MidiFileIn.cpp for timing and time-code formats
+- updated versions of RtAudio and RtMidi
+
 \subsection v4dot5dot1 Version 4.5.1
 - fix for FileWvIn / FileLoop classes to avoid keeping files open if not necessary
 - miscellaneous bug fixes, documented on GitHub site (github.com/thestk/stk)

@@ -15,7 +15,7 @@ namespace stk {
     (1986).  The output is an instantaneous
     reflection coefficient value.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2016.
+    by Perry R. Cook and Gary P. Scavone, 1995--2017.
 */
 /***************************************************/
 

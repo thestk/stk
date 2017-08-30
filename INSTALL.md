@@ -1,9 +1,9 @@
 % The Synthesis ToolKit in C++ (STK)
 % Perry R. Cook and Gary P. Scavone
-% 1995--2016
+% 1995--2017
 
 # The Synthesis ToolKit in C++ (STK)
-By Perry R. Cook and Gary P. Scavone, 1995--2016.
+By Perry R. Cook and Gary P. Scavone, 1995--2017.
 
 The Synthesis ToolKit in C++ can be used in a variety of ways, depending on your particular needs.  Some people simply choose the classes they need for a particular project and copy those to their project directory.  Others like to compile and link to a library of object files.  STK was not designed with one particular style of use in mind.
 
@@ -30,7 +30,7 @@ Several options can be passed to configure, including:
     --disable-realtime = only compile generic non-realtime classes
     --enable-debug = enable various debug output
     --with-alsa = choose native ALSA API support (default, linux only)
-    --with-oss = choose native OSS API support (linux only)
+    --with-oss = choose native OSS API support (unixes only)
     --with-jack = choose native JACK server API support (linux and macintosh OS-X)
     --with-core = choose OS-X Core Audio API (macintosh OS-X only)
     --with-asio = choose ASIO API support (windows only)

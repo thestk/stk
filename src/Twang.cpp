@@ -17,7 +17,7 @@
     use possibly subject to patents held by Stanford
     University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2016.
+    by Perry R. Cook and Gary P. Scavone, 1995--2017.
 */
 /***************************************************/
 

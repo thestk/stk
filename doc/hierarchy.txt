@@ -1,6 +1,6 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
 
-By Perry R. Cook and Gary P. Scavone, 1995--2016.
+By Perry R. Cook and Gary P. Scavone, 1995--2017.
 
 STK Classes - See the HTML documentation in the html directory for complete information.
 

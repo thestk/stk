@@ -5,7 +5,7 @@
     This class implements a chorus effect.  It takes a monophonic
     input signal and produces a stereo output signal.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2016.
+    by Perry R. Cook and Gary P. Scavone, 1995--2017.
 */
 /***************************************************/
 

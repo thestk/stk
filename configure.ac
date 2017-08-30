@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(STK, 4.5.1, gary@music.mcgill.ca, stk)
+AC_INIT(STK, 4.6.0, gary@music.mcgill.ca, stk)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR(src/Stk.cpp)
 AC_CONFIG_FILES(Makefile src/Makefile projects/demo/Makefile projects/effects/Makefile projects/ragamatic/Makefile projects/examples/Makefile projects/examples/libMakefile projects/eguitar/Makefile)
@@ -143,7 +143,7 @@ api="$api -D__UNIX_JACK__"
     AC_CHECK_LIB(asound, snd_pcm_open, , AC_MSG_ERROR(ALSA support requires the asound library!))])
 
     # Look for OSS flag
-    AC_ARG_WITH(oss, [  --with-oss = choose OSS API support (linux only)])
+    AC_ARG_WITH(oss, [  --with-oss = choose OSS API support (unixes only)])
     AS_IF([test "x$with_oss" == "xyes"], [
     api="$api -D__LINUX_OSS__ -D__LINUX_ALSA__"
     AC_MSG_RESULT(using OSS)
