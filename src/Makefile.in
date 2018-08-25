@@ -94,7 +94,7 @@ $(SHAREDLIB) : $(OBJECTS)
 
 install-headers:
 	install -d $(DESTDIR)$(PREFIX)$(INCLUDEDIR)/stk
-	cp -r ../include/*.h $(DESTDIR)$(PREFIX)$(INCLUDEDIR)/stk
+	cp -R ../include/*.h $(DESTDIR)$(PREFIX)$(INCLUDEDIR)/stk
 
 install: $(SHAREDLIB) install-headers
 	install -d $(DESTDIR)$(PREFIX)$(LIBDIR)
