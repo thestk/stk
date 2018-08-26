@@ -179,7 +179,7 @@ v4.1: (8 October 2002)
 - added Voicer, SingWave, and VoicForm classes
 - improvements/fixes to the banded waveguide instruments
 - demo program now uses Voicer, allowing polyphony
-- demo tcl/tk scripts changed to use SKINI PitchChange instead of PitchBend
+- demo Tcl/Tk scripts changed to use SKINI PitchChange instead of PitchBend
 - demo program response to PitchBend modified to octave up/down
 - several RtAudio fixes and improvements (OS X and Windows ASIO support added)
 - added nextOut() method to Delay classes

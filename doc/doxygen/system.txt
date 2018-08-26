@@ -17,9 +17,9 @@
 <UL>
 <LI>A C++ compiler is not installed by default with OS X.  It is necessary to download the Developer Kit from the Apple WWW site in order to compile STK or load it from the installation CD-ROM.</LI>
 <LI>If you experience frequent audio input/output "glitches", try increasing the RT_BUFFER_SIZE specified in Stk.h.</LI>
-<LI>The tcl/tk interpreter does not ship by default with OS X and must be downloaded from the internet.  The latest Tcl/Tk Aqua distribution (http://www.apple.com/downloads/macosx/unix_open_source/tcltk.html) has been successfully tested on 10.2 and 10.3 systems.  The default installation will place a link to the wish interpretor at /usr/bin/wish.
+<LI>The Tcl/Tk interpreter does not ship by default with OS X and must be downloaded from the internet.  The latest Tcl/Tk Aqua distribution (http://www.apple.com/downloads/macosx/unix_open_source/tcltk.html) has been successfully tested on 10.2 and 10.3 systems.  The default installation will place a link to the wish interpretor at /usr/bin/wish.
 
-It appears that socket support in Tcl/Tk uses the Nagle algorithm, which produces poor response between changes made in the tcl/tk script and the resulting audio updates.  Note that this is only a problem when using a socket connection from a Tcl/Tk script.</LI>
+It appears that socket support in Tcl/Tk uses the Nagle algorithm, which produces poor response between changes made in the Tcl/Tk script and the resulting audio updates.  Note that this is only a problem when using a socket connection from a Tcl/Tk script.</LI>
 
 </UL>
 

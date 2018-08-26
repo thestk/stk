@@ -173,7 +173,7 @@
 - Added Voicer, SingWave, and VoicForm classes.
 - Improvements/fixes to the banded waveguide instruments.
 - Demo program now uses Voicer, allowing polyphony.
-- Demo tcl/tk scripts changed to use SKINI PitchChange instead of PitchBend.
+- Demo Tcl/Tk scripts changed to use SKINI PitchChange instead of PitchBend.
 - Demo program response to PitchBend modified to octave up/down.
 - Several RtAudio fixes and improvements (OS X and Windows ASIO support added).
 - Added nextOut() method to Delay classes.
