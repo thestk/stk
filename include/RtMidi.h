@@ -120,7 +120,7 @@ class RtMidi
   //! MIDI API specifier arguments.
   enum Api {
     UNSPECIFIED,    /*!< Search for a working compiled API. */
-    MACOSX_CORE,    /*!< Macintosh OS-X Core Midi API. */
+    MACOSX_CORE,    /*!< Macintosh OS-X CoreMIDI API. */
     LINUX_ALSA,     /*!< The Advanced Linux Sound Architecture API. */
     UNIX_JACK,      /*!< The JACK Low-Latency MIDI Server API. */
     WINDOWS_MM,     /*!< The Microsoft Multimedia MIDI API. */
