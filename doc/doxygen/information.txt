@@ -40,7 +40,7 @@ greatly expanded the synthesis techniques available.  With the help of
 Bill Putnam, Perry also made a port of STK to Windows95.  Gary Scavone
 began using STK extensively in the summer of 1997 and completed a full
 port of STK to Linux early in 1998. He finished the fully compatable
-Windows port (using Direct Sound API) in June 1998.  Numerous
+Windows port (using DirectSound API) in June 1998.  Numerous
 improvements and extensions have been made since then.
 
 The Toolkit has been distributed continuously since 1996 via the <A

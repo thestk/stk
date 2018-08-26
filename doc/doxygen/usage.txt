@@ -59,7 +59,7 @@ Several options can be supplied to the <TT>configure</TT> script to customize th
 <LI><TT>--with-jack</TT> to choose native JACK API support (linux and Macintosh OS-X)</LI>
 <LI><TT>--with-core</TT> to choose CoreAudio API support (Macintosh OS-X)</LI>
 <LI><TT>--with-asio</TT> to choose ASIO Audio API support (Windows)</LI>
-<LI><TT>--with-ds</TT> to choose Windows Direct Sound Audio API support (Windows)</LI>
+<LI><TT>--with-ds</TT> to choose Windows DirectSound Audio API support (Windows)</LI>
 </UL>
 <P>
 Note that it is possible to specify as many of the "--with-" options as desired to compile multi-API support.  In addition, it is possible to specify the location of the STK rawwaves and the STK include path as follows:
