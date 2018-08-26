@@ -2,7 +2,7 @@ This file contains instructions for integrating the STK in Xcode projects and so
 
 ## Setup
 
-### If you have [CocoaPods](http://cocoapods.org/)
+### If you have [CocoaPods](https://cocoapods.org)
 
 1. Add `pod 'STK', '~> 4.5'` to your Podfile.
 
@@ -47,7 +47,7 @@ If this problem doesn't go away:
 1. Follow step 1 from **Setup**, add `stk/include` to the *Header Search Paths*.
 
 If that doesn't solve it:
-Install CocoaPods and use it to install the STK. It takes one minute and will make your life easier. Visit the [CocoaPods website](http://cocoapods.org/) for installation instructions. 
+Install CocoaPods and use it to install the STK. It takes one minute and will make your life easier. Visit the [CocoaPods website](https://cocoapods.org) for installation instructions. 
 
 ### FileRead::open: could not open or find file (../../rawwaves/filename.raw)!
 
