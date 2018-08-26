@@ -73,7 +73,7 @@ text message synthesis control format).
 
 # SYSTEM REQUIREMENTS
 
-See the individual README's (eg. README-linux) in the /doc directory
+See the individual README's (e.g. README-linux) in the /doc directory
 for platform specific information and system requirements.  In
 general, you will use the configure script to create Makefiles on unix
 platforms (and MinGW) or the VC++ workspace files to compile the
