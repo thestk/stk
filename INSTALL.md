@@ -32,7 +32,7 @@ Several options can be passed to configure, including:
     --with-alsa = choose native ALSA API support (default, linux only)
     --with-oss = choose native OSS API support (unixes only)
     --with-jack = choose native JACK server API support (linux and macintosh OS-X)
-    --with-core = choose OS-X Core Audio API (macintosh OS-X only)
+    --with-core = choose OS-X CoreAudio API (macintosh OS-X only)
     --with-asio = choose ASIO API support (windows only)
     --with-ds = choose DirectSound API support (windows only)
     --with-wasapi = choose Windows Audio Session API support (windows only)
