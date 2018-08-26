@@ -149,7 +149,7 @@
 \subsection v4dot1dot2 Version 4.1.2
 - Added Linux JACK support to RtAudio.
 - Added optional doNormalize argument to WvIn to allow specification of data normalization or not.
-- Added volume control to demo program and various tcl scripts.
+- Added volume control to demo program and various Tcl scripts.
 - Added support for dynamic rawwavePath() setting.
 - WaveLoop bug fix.
 - Fixed bug in ADSR::setReleaseTime() method.
