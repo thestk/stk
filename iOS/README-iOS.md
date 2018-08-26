@@ -2,13 +2,13 @@ This file contains instructions for integrating the STK in Xcode projects and so
 
 ## Setup
 
-### If you have [Cocoapods](http://cocoapods.org/)
+### If you have [CocoaPods](http://cocoapods.org/)
 
 1. Add `pod 'STK', '~> 4.5'` to your Podfile.
 
 1. Run `pod install`
 
-### If you don't have Cocoapods
+### If you don't have CocoaPods
 
 1. Clone or [download][download_link] the STK into your project's directory.
 
@@ -47,21 +47,21 @@ If this problem doesn't go away:
 1. Follow step 1 from **Setup**, add `stk/include` to the *Header Search Paths*.
 
 If that doesn't solve it:
-Install Cocoapods and use it to install the STK. It takes one minute and will make your life easier. Visit the [Cocoapods website](http://cocoapods.org/) for installation instructions. 
+Install CocoaPods and use it to install the STK. It takes one minute and will make your life easier. Visit the [CocoaPods website](http://cocoapods.org/) for installation instructions. 
 
 ### FileRead::open: could not open or find file (../../rawwaves/filename.raw)!
 
 If you use a class that makes use of raw waves (such as `Mandolin`, `Wurley`, or `Rhodey`) you need to make sure that the STK's raw wave files are copied into your bundle and that the STK knows where they are. You'll know you need to if you get this runtime error:
 `FileRead::open: could not open or find file (../../rawwaves/filename.raw)!`
 
-#### If you're using Cocoapods
+#### If you're using CocoaPods
 
 Add this code before using a class that needs the raw waves: 
 ```objective-c
 stk::Stk::setRawwavePath([[[NSBundle mainBundle] pathForResource:@"rawwaves" ofType:@"bundle"] UTF8String]);
 ```
 
-#### If you're not using Cocoapods
+#### If you're not using CocoaPods
 
 1. Open your project's settings, open the *Build Phases* tab. 
 1. In the *Copy Bundle Resources*, drag and drop **rawwaves.bundle** (it's located in **STK.xcodeproj**'s **Helpers** folder). 

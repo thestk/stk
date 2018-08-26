@@ -55,4 +55,4 @@ MinGW support is provided in the configure script.  In addition, Visual C++ 6.0 
 
 ##iOS
 
-You can integrate the STK in iOS projects either by using its iOS static library or Cocoapods. See the [iOS README file](iOS/README-iOS.md) for instructions. 
+You can integrate the STK in iOS projects either by using its iOS static library or CocoaPods. See the [iOS README file](iOS/README-iOS.md) for instructions. 
