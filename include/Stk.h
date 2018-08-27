@@ -563,7 +563,7 @@ const unsigned int RT_BUFFER_SIZE = 512;
 // below.  The global STK rawwave path variable can be dynamically set
 // with the Stk::setRawwavePath() function.  This value is
 // concatenated to the beginning of all references to rawwave files in
-// the various STK core classes (ex. Clarinet.cpp).  If you wish to
+// the various STK core classes (e.g. Clarinet.cpp).  If you wish to
 // move the rawwaves directory to a different location in your file
 // system, you will need to set this path definition appropriately.
 #if !defined(RAWWAVE_PATH)

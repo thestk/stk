@@ -6,7 +6,7 @@ Please read the file README for more general STK information.
 
 The configure script supports MinGW.  As well, STK is distributed with Visual C++ .NET project and workspace files (though these may no longer work with current versions of Visual Studio).  It no longer compiles with Visual C++ 6.0.
 
-With Windows XP/7, piping works as under unix.  Simply fire up the script files (ex. StkDemo.bat) by either double-clicking on them or from within a shell.
+With Windows XP/7, piping works as under unix.  Simply fire up the script files (e.g. StkDemo.bat) by either double-clicking on them or from within a shell.
 
 IMPORTANT VC++ NOTE: When compiling "release" versions of STK programs, link to the release multithreaded library.  When compiling "debug" versions, link to the debug multithreaded library.  Compiler errors will result otherwise.
 
