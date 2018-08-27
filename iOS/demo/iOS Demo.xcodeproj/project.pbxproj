@@ -68,7 +68,7 @@
 		B02FD56E18C521560009ECA9 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		B02FD56F18C521560009ECA9 /* ViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 		B0779A7E18D376A5004DA9B7 /* STK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = STK.xcodeproj; path = ../STK.xcodeproj; sourceTree = "<group>"; };
-		B0779A8918D37977004DA9B7 /* README.MD */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.MD; sourceTree = "<group>"; };
+		B0779A8918D37977004DA9B7 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,7 +99,7 @@
 		B02FD52918C520D60009ECA9 = {
 			isa = PBXGroup;
 			children = (
-				B0779A8918D37977004DA9B7 /* README.MD */,
+				B0779A8918D37977004DA9B7 /* README.md */,
 				B0779A7E18D376A5004DA9B7 /* STK.xcodeproj */,
 				B02FD53B18C520D60009ECA9 /* iOS Demo */,
 				B02FD55418C520D70009ECA9 /* iOS DemoTests */,
