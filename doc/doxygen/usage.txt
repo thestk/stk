@@ -57,9 +57,9 @@ Several options can be supplied to the <TT>configure</TT> script to customize th
 <LI><TT>--with-alsa</TT> to choose native ALSA API support (default, linux only)</LI>
 <LI><TT>--with-oss</TT> to choose native OSS audio API support (linux only, no native OSS MIDI support)</LI>
 <LI><TT>--with-jack</TT> to choose native JACK API support (linux and Macintosh OS-X)</LI>
-<LI><TT>--with-core</TT> to choose Core Audio API support (Macintosh OS-X)</LI>
+<LI><TT>--with-core</TT> to choose CoreAudio API support (Macintosh OS-X)</LI>
 <LI><TT>--with-asio</TT> to choose ASIO Audio API support (Windows)</LI>
-<LI><TT>--with-ds</TT> to choose Windows Direct Sound Audio API support (Windows)</LI>
+<LI><TT>--with-ds</TT> to choose Windows DirectSound Audio API support (Windows)</LI>
 </UL>
 <P>
 Note that it is possible to specify as many of the "--with-" options as desired to compile multi-API support.  In addition, it is possible to specify the location of the STK rawwaves and the STK include path as follows:
@@ -75,7 +75,7 @@ For those who wish to create their own system-specific <TT>Makefiles</TT>:
 <UL>
 <LI><B>Linux:</B> Realtime audio support is enabled with either the <TT>__LINUX_ALSA__</TT>, <TT>__UNIX_JACK__</TT>, and/or <TT>__LINUX_OSS__</TT> preprocessor definitions, which are used to select the underlying audio system API(s).  Because the ALSA library is now integrated into the standard Linux kernel, it is the default audio/MIDI API with STK versions 4.2 and higher.  The <TT>__LINUX_ALSASEQ__</TT> preprocessor definition must be included for MIDI support.  Note that native OSS MIDI support no longer exists in RtMidi.  If the <TT>__LINUX_OSS__</TT> preprocessor definition is specified, only OSS (version 4.0) audio support will be compiled and RtMidi will still be compiled using the ALSA API (assuming the <TT>__LINUX_ALSASEQ__</TT> definition is defined).  For this reason, STK now requires the <TT>asound</TT> library for realtime support.  Realtime programs must also link with the <TT>pthread</TT> library.  In addition, the <TT>__LITTLE_ENDIAN__</TT> preprocessor definition is necessary if compiling on a little-endian system.  See the README-Linux file for further system configuration information.</LI>
 
-<LI><B>Macintosh OS X:</B> Realtime support is enabled with the <TT>__MACOSX_CORE__</TT> and <TT>__UNIX_JACK__</TT> preprocessor definitions, which incorporate the CoreAudio audio/MIDI API and/or the JACK API.  Realtime programs must also link with the <TT>pthread</TT> library and the <TT>CoreAudio</TT>, <TT>CoreMIDI</TT>, and <TT>CoreFoundation</TT> frameworks (for Core Audio support) and/or the JACK library.  See the README-MacOSX file for further system configuration information.</LI>
+<LI><B>Macintosh OS X:</B> Realtime support is enabled with the <TT>__MACOSX_CORE__</TT> and <TT>__UNIX_JACK__</TT> preprocessor definitions, which incorporate the CoreAudio audio/MIDI API and/or the JACK API.  Realtime programs must also link with the <TT>pthread</TT> library and the <TT>CoreAudio</TT>, <TT>CoreMIDI</TT>, and <TT>CoreFoundation</TT> frameworks (for CoreAudio support) and/or the JACK library.  See the README-MacOSX file for further system configuration information.</LI>
 
 <LI><B>Generic (non-realtime):</B> Most STK classes are operating system <I>independent</I> and can be compiled using any current C++ compiler. STK assumes big-endian host byte order by default, so if your system is little-endian (i.e. Intel processor), you must provide the <TT>__LITTLE_ENDIAN__</TT> preprocessor definition to your compiler.  The <I><B>demo</B></I> project will compile without realtime support, allowing the use of SKINI scorefiles for input control and output to a variety of soundfile formats.  The following classes <I>cannot</I> be used without realtime support: RtAudio, RtWvIn, RtWvOut, RtDuplex, RtMidi, Socket, Thread, Mutex, TcpWvIn, TcpWvOut.  Because of this, it is not possible to compile the <I><B>effects</B></I>, <I><B>ragamatic</B></I>, and most of the <I><B>examples</B></I> projects for non-realtime use.</LI>
 </UL>
