@@ -10,7 +10,7 @@ It is necessary to install the OS X developer kit (or the command line tools) in
 
 Tcl/Tk on OS X:
 
-I think that tcl/tk interpreter is now included in the XCode package, since I haven't had to download it for several years now.
+I think that Tcl/Tk interpreter is now included in the Xcode package, since I haven't had to download it for several years now.
 
-It appears that socket support in Tcl/Tk on OS X uses the Nagle algorithm, which produces poor response between changes made in the tcl/tk script and the resulting audio updates.  Note that this is only a problem when using a socket connection from a Tcl/Tk script.
+It appears that socket support in Tcl/Tk on OS X uses the Nagle algorithm, which produces poor response between changes made in the Tcl/Tk script and the resulting audio updates.  Note that this is only a problem when using a socket connection from a Tcl/Tk script.
 

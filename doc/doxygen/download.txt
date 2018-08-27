@@ -149,7 +149,7 @@
 \subsection v4dot1dot2 Version 4.1.2
 - Added Linux JACK support to RtAudio.
 - Added optional doNormalize argument to WvIn to allow specification of data normalization or not.
-- Added volume control to demo program and various tcl scripts.
+- Added volume control to demo program and various Tcl scripts.
 - Added support for dynamic rawwavePath() setting.
 - WaveLoop bug fix.
 - Fixed bug in ADSR::setReleaseTime() method.
@@ -173,7 +173,7 @@
 - Added Voicer, SingWave, and VoicForm classes.
 - Improvements/fixes to the banded waveguide instruments.
 - Demo program now uses Voicer, allowing polyphony.
-- Demo tcl/tk scripts changed to use SKINI PitchChange instead of PitchBend.
+- Demo Tcl/Tk scripts changed to use SKINI PitchChange instead of PitchBend.
 - Demo program response to PitchBend modified to octave up/down.
 - Several RtAudio fixes and improvements (OS X and Windows ASIO support added).
 - Added nextOut() method to Delay classes.

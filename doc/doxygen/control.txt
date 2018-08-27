@@ -28,7 +28,7 @@ then uses the stk::Messager:popMessage() function to retrieve incoming
 control messages.  This function does not block, instead returning a
 message type of zero when no more messages are in the queue.  Many of
 the example programs included with the ToolKit distribution use a
-stk::Messager instance to accept control input from the accompanying tcl/tk
+stk::Messager instance to accept control input from the accompanying Tcl/Tk
 graphical user interfaces, from external MIDI devices, or from SKINI
 scorefiles.
 
