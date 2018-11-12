@@ -43,12 +43,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\</OutDir>
-    <IntDir>.\release\</IntDir>
+    <IntDir>.\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\</OutDir>
-    <IntDir>.\debug\</IntDir>
+    <IntDir>.\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -62,11 +62,10 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>..\..\include;..\..\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;__LITTLE_ENDIAN__;__WINDOWS_MM__;WIN32;_CONSOLE;__WINDOWS_DS__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-<!--       <PreprocessorDefinitions>NDEBUG;__WINDOWS_MM__;__WINDOWS_ASIO__;__LITTLE_ENDIAN__;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions> -->
-      <AssemblerListingLocation>.\release\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\release\demo.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\release\</ObjectFileName>
-      <ProgramDataBaseFileName>.\release\</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Release\demo.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Midl>
@@ -99,11 +98,10 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\include;..\..\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;__LITTLE_ENDIAN__;__WINDOWS_MM__;WIN32;_CONSOLE;__WINDOWS_DS__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-<!--       <PreprocessorDefinitions>_DEBUG;__WINDOWS_MM__;__WINDOWS_ASIO__;__LITTLE_ENDIAN__;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions> -->
-      <AssemblerListingLocation>.\debug\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\debug\demo.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\debug\</ObjectFileName>
-      <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Debug\demo.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
@@ -129,17 +127,14 @@
   <ItemGroup>
     <ClCompile Include="demo.cpp" />
     <ClCompile Include="utilities.cpp" />
-
     <ClCompile Include="..\..\src\include\asio.cpp" />
     <ClCompile Include="..\..\src\include\asiodrivers.cpp" />
     <ClCompile Include="..\..\src\include\asiolist.cpp" />
     <ClCompile Include="..\..\src\include\iasiothiscallresolver.cpp" />
-
     <ClCompile Include="..\..\src\RtAudio.cpp" />
     <ClCompile Include="..\..\src\RtMidi.cpp" />
     <ClCompile Include="..\..\src\RtWvIn.cpp" />
     <ClCompile Include="..\..\src\RtWvOut.cpp" />
-    
     <ClCompile Include="..\..\src\ADSR.cpp" />
     <ClCompile Include="..\..\src\Asymp.cpp" />
     <ClCompile Include="..\..\src\BandedWG.cpp" />
@@ -211,9 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utilities.h" />
-
     <ClInclude Include="..\..\include\RtAudio.h" />
-
     <ClInclude Include="..\..\include\ADSR.h" />
     <ClInclude Include="..\..\include\Asymp.h" />
     <ClInclude Include="..\..\include\BandedWG.h" />

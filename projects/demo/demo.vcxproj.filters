@@ -20,7 +20,6 @@
   <ItemGroup>
     <ClCompile Include="demo.cpp" />
     <ClCompile Include="utilities.cpp" />
-
     <ClCompile Include="..\..\src\RtAudio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,7 +32,6 @@
     <ClCompile Include="..\..\src\RtWvOut.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-
     <ClCompile Include="..\..\src\include\asio.cpp">
       <Filter>asio</Filter>
     </ClCompile>
@@ -46,7 +44,6 @@
     <ClCompile Include="..\..\src\include\iasiothiscallresolver.cpp">
       <Filter>asio</Filter>
     </ClCompile>
-
     <ClCompile Include="..\..\src\ADSR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -254,7 +251,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utilities.h" />
-    
     <ClInclude Include="..\..\src\include\RtAudio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -267,7 +263,6 @@
     <ClInclude Include="..\..\src\include\RtWvOut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-
     <ClInclude Include="..\..\src\include\ADSR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
