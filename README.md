@@ -63,7 +63,7 @@ against one of the fundamental design goals of the ToolKit - platform
 independence.
 
 For those instances where a simple GUI with sliders and buttons is
-helpful, we use Tcl/Tk (http://dev.scriptics.com) which is freely
+helpful, we use Tcl/Tk (https://www.tcl.tk/) which is freely
 distributed for all the supported ToolKit platforms. A number of
 Tcl/Tk GUI scripts are distributed with the ToolKit release.  For
 control, the Synthesis Toolkit uses raw MIDI (on supported platforms),
@@ -76,7 +76,7 @@ text message synthesis control format).
 See the individual README's (e.g. README-linux) in the /doc directory
 for platform specific information and system requirements.  In
 general, you will use the configure script to create Makefiles on unix
-platforms (and MinGW) or the VC++ workspace files to compile the
+platforms (and MinGW) or the VS2017 workspace files to compile the
 example programs.  To use the Tcl/Tk GUIs, you will need Tcl/Tk
 version 8.0 or higher.
 
@@ -104,10 +104,10 @@ Md2Skini program.
 Realtime audio input capabilities were added to STK with release 3.0,
 though the behavior of such is very hardware dependent.  Under Linux
 and Macintosh OS-X, audio input and output are possible with very low
-latency.  Using the Windoze DirectSound API, minimum dependable output
+latency.  Using the Windows DirectSound API, minimum dependable output
 sound latency seems to be around 20 milliseconds or so, while input
 sound latency is generally higher.  Performance with the ASIO audio
-API on Windoze provides much better performance.
+API on Windows provides much better performance.
 
 As mentioned above, it is possible to record the audio ouput of an STK
 program to .snd, .wav, .raw, .aif, and .mat (Matlab MAT-file) output

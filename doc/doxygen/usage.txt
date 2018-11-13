@@ -94,7 +94,7 @@ All STK programs in this distribution take input control data in the form of <A 
 <LI>Acquire realtime MIDI messages from a MIDI port on your computer.</LI>
 </OL>
 
-<A HREF="http://dev.scriptics.com">Tcl/Tk</A> graphical user interfaces (GUI) are provided with this distribution that can generate realtime SKINI messages.  Note that the Messager class allows multiple simultaneous socket client connections, together with MIDI and/or piped input.  The <I><B>Md2Skini</B></I> program (in the <I><B>demo</B></I> directory) is mostly obsolete but can be used to create SKINI scorefiles from realtime MIDI input.  
+<A HREF="https://www.tcl.tk/">Tcl/Tk</A> graphical user interfaces (GUI) are provided with this distribution that can generate realtime SKINI messages.  Note that the Messager class allows multiple simultaneous socket client connections, together with MIDI and/or piped input.  The <I><B>Md2Skini</B></I> program (in the <I><B>demo</B></I> directory) is mostly obsolete but can be used to create SKINI scorefiles from realtime MIDI input.  
 
 
 \section voices Demo: STK Instruments
@@ -178,7 +178,7 @@ from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I>
 
 \section tcl Realtime Control Input using Tcl/Tk Graphical User Interfaces:
 
-There are a number of <A HREF="http://dev.scriptics.com">Tcl/Tk</A> GUIs supplied with the STK projects.  These scripts require Tcl/Tk version 8.0 or later, which can be downloaded for free over the WWW.  On Unix and Windows2000/XP platforms, you can run the various executable scripts (e.g. StkDemo.bat) provided with each project to start everything up (you may need to symbolically link the wishXX executable to the name <I>wish</I>).  The Physical.bat script just implements the following command-line sequence:
+There are a number of <A HREF="https://www.tcl.tk/">Tcl/Tk</A> GUIs supplied with the STK projects.  These scripts require Tcl/Tk version 8.0 or later, which can be downloaded for free over the WWW.  On Unix and Windows2000/XP platforms, you can run the various executable scripts (e.g. StkDemo.bat) provided with each project to start everything up (you may need to symbolically link the wishXX executable to the name <I>wish</I>).  The Physical.bat script just implements the following command-line sequence:
 
 \code
 wish < tcl/Physical.tcl | stk-demo Clarinet -or -ip

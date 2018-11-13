@@ -33,7 +33,7 @@ The stk::Iir class implements the standard difference equation
  a[0]*y[n] = b[0]*x[n] + ... + b[nb]*x[n-nb] - a[1]*y[n-1] - ... - a[na]*y[n-na],
 \endcode
 
-where "b" values are numerator coefficients and "a" values are denominator coefficients.  Note that if the first denominator coefficient is not 1.0, the Iir class automatically normalizes all filter coefficients by that value.  The coefficient values are passed to the Iir class via a C++ <a href="http://www.roguewave.com/support/docs/sourcepro/stdlibref/vector.html">vector</a>, a container object provided by the C++ Standard Library.
+where "b" values are numerator coefficients and "a" values are denominator coefficients.  Note that if the first denominator coefficient is not 1.0, the Iir class automatically normalizes all filter coefficients by that value.  The coefficient values are passed to the Iir class via a C++ <a href="http://www.cplusplus.com/reference/vector/vector/">vector</a>, a container object provided by the C++ Standard Library.
 
 Most STK classes use more specific types of digital filters, such as the stk::OneZero, stk::OnePole, stk::TwoPole, or stk::BiQuad varieties.  These classes inherit from the stk::Filter abstract base class and provide specific functionality particular to their use, as well as functions to independently control individual coefficient values.
 

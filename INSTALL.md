@@ -51,7 +51,7 @@ If you wish to use a different compiler than that selected by configure, specify
 
 ## Windows
 
-MinGW support is provided in the configure script.  In addition, Visual C++ 6.0 project files are included for each of the example STK projects, though these may not work with more recent versions of Visual Studio.
+MinGW support is provided in the configure script.  In addition, Visual Studio 2017 project files are included for each of the example STK projects.
 
 ##iOS
 

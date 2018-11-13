@@ -20,14 +20,14 @@ Here's a link to a book that includes an chapter on STK.
 
 The Synthesis ToolKit in C++ (STK) is a set of open source audio signal processing and algorithmic synthesis classes written in the C++ programming language.  STK was designed to facilitate rapid development of music synthesis and audio processing software, with an emphasis on cross-platform functionality, realtime control, ease of use, and educational example code.  The Synthesis ToolKit is extremely portable (it's mostly platform-independent C and C++ code), and it's completely user-extensible (all source included, no unusual libraries, and no hidden drivers).  We like to think that this increases the chances that our programs will still work in another 5-10 years.  In fact, the ToolKit has been working continuously for nearly 20 years now.  STK currently runs with realtime support (audio and MIDI) on Linux, Macintosh OS X, and Windows computer platforms.  Generic, non-realtime support has been tested under NeXTStep, Sun, and other platforms and should work with any standard C++ compiler.
 
-The Synthesis ToolKit is free.  The only parts of the Synthesis ToolKit that are platform-dependent concern real-time audio and MIDI input and output, and that is taken care of with a few special classes.  The interface for MIDI input and the simple <A HREF="http://dev.scriptics.com">Tcl/Tk</A> graphical user interfaces (GUIs) provided is the same, so it's easy to experiment in real time using either the GUIs or MIDI.  The Synthesis ToolKit can generate simultaneous SND (AU), WAV, AIFF, and MAT-file output soundfile formats (as well as realtime sound output), so you can view your results using one of a large variety of sound/signal analysis tools already available (e.g. <A HREF="http://www-ccrma.stanford.edu/software/snd/">Snd</A>, Cool Edit, Matlab). 
+The Synthesis ToolKit is free.  The only parts of the Synthesis ToolKit that are platform-dependent concern real-time audio and MIDI input and output, and that is taken care of with a few special classes.  The interface for MIDI input and the simple <A HREF="https://www.tcl.tk/">Tcl/Tk</A> graphical user interfaces (GUIs) provided is the same, so it's easy to experiment in real time using either the GUIs or MIDI.  The Synthesis ToolKit can generate simultaneous SND (AU), WAV, AIFF, and MAT-file output soundfile formats (as well as realtime sound output), so you can view your results using one of a large variety of sound/signal analysis tools already available (e.g. <A HREF="http://www-ccrma.stanford.edu/software/snd/">Snd</A>, Cool Edit, Matlab). 
 
 
 <H4>What the <I>Synthesis ToolKit</I> is not.</H4>
 
 The Synthesis Toolkit is not one particular program.  Rather, it is a set of C++ classes that you can use to create your own programs.  A few example applications are provided to demonstrate some of the ways to use the classes.  If you have specific needs, you will probably have to either modify the example programs or write a new program altogether. Further, the example programs don't have a fancy GUI wrapper.  It is easy to embed STK classes inside a GUI environment but we have chosen to focus our energy on the audio signal processing issues.  Spending hundreds of hours making platform-dependent graphical user interfaces would go against one of the fundamental design goals of the ToolKit - platform independence.
 
-For those instances where a simple GUI with sliders and buttons is helpful, we use <A HREF="http://dev.scriptics.com">Tcl/Tk</A> (that is freely distributed for all the supported ToolKit platforms). A number of Tcl/Tk GUI scripts are distributed with the ToolKit release.  For control, the Synthesis Toolkit uses raw MIDI (on supported platforms), and SKINI (Synthesis ToolKit Instrument Network Interface, a MIDI-like text message synthesis control format).
+For those instances where a simple GUI with sliders and buttons is helpful, we use <A HREF="https://www.tcl.tk/">Tcl/Tk</A> (that is freely distributed for all the supported ToolKit platforms). A number of Tcl/Tk GUI scripts are distributed with the ToolKit release.  For control, the Synthesis Toolkit uses raw MIDI (on supported platforms), and SKINI (Synthesis ToolKit Instrument Network Interface, a MIDI-like text message synthesis control format).
 
 <H4>A brief history of the <I>Synthesis ToolKit in C++.</I></H4>
 
@@ -39,7 +39,7 @@ everything to C++ on SGI hardware, added real-time capabilities, and
 greatly expanded the synthesis techniques available.  With the help of
 Bill Putnam, Perry also made a port of STK to Windows95.  Gary Scavone
 began using STK extensively in the summer of 1997 and completed a full
-port of STK to Linux early in 1998. He finished the fully compatable
+port of STK to Linux early in 1998. He finished the fully compatible
 Windows port (using DirectSound API) in June 1998.  Numerous
 improvements and extensions have been made since then.
 
