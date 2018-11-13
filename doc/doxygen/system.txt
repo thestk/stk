@@ -3,7 +3,7 @@
 <B>General:</B>
 <UL>
 <LI>A MIDI interface to use MIDI input/output controls. (NOTE: This may be built into the soundcard on your computer.)</LI>
-<LI><A HREF="http://dev.scriptics.com">Tcl/Tk</A> version 8.0 or higher to use the simple Tcl/Tk GUIs provided with the STK distribution (available free over the WWW for all supported realtime platforms).</LI>
+<LI><A HREF="https://www.tcl.tk/">Tcl/Tk</A> version 8.0 or higher to use the simple Tcl/Tk GUIs provided with the STK distribution (available free over the WWW for all supported realtime platforms).</LI>
 </UL>
 
 <B>Linux (specific):</B>
@@ -23,7 +23,7 @@ It appears that socket support in Tcl/Tk uses the Nagle algorithm, which produce
 
 </UL>
 
-<B>Windows95/98/2000/XP/7 (specific):</B>
+<B>Windows95 and later (specific):</B>
 <UL>
 <LI>A soundcard to use realtime audio input/output capabilities.  In order to use the <I><B>effects</B></I> project, the soundcard and drivers must support full duplex mode.</LI>
 <LI><A HREF="http://www.microsoft.com/directx/">DirectX</A> 5.0 (or higher) runtime libraries.</LI>

@@ -46,7 +46,7 @@ This release of STK comes with four separate "project" directories:
 \section compiling Compiling:
 
 <UL>
-<LI><B>Windows95/98/2000/XP/7:</B> Realtime support is available using either DirectSound, ASIO or WASAPI audio drivers.  For DirectSound support, use the <TT>__WINDOWS_DS__</TT> preprocessor definition and link with the <TT>dsound.lib</TT>, <TT>winmm.lib</TT>, and <TT>Wsock32.lib</TT> libraries. For ASIO support, use the <TT>__WINDOWS_ASIO__</TT> preprocessor definition, include all the files in the <TT>src/asio/</TT> directory (i.e. <TT>asio.h,cpp</TT>, <TT>asiodrivers.h,cpp</TT>, ...), and link with the <TT>winmm.lib</TT>, and <TT>Wsock32.lib</TT> libraries.  For WASAPI support, use the <TT>__WINDOWS_WASAPI__</TT> preprocessor definition.  In addition, the <TT>__LITTLE_ENDIAN__</TT> and <TT>__WINDOWS_MM__</TT> preprocessor definitions are necessary for all Windows systems (RtMidi uses the Windows MultiMedia MIDI API).  Fairly old Visual C++ project files are provided in each project directory, though they may not work on newer versions of MSVS.  As well, the MinGW compiler is supported (see below).  It is important to link with the non-debug libraries when compiling "release" program versions and debug libraries when compiling "debug" program versions.</LI>
+<LI><B>Windows95 and later:</B> For specifics on creating Windows applications using Visual Studio, see README-Win.txt.</LI>
 
 <LI><B>Unix (and MinGW) Systems:</B> A GNU <TT>configure</TT> shell script is included in the distribution for unix-based systems.  From the top-level distribution directory, type <TT>'./configure'</TT> and the script will create <TT>Makefiles</TT> in each project directory specific to the characteristics of the host computer.  Then from within any given project directory (example <TT>demo</TT>), type <TT>'make'</TT> to compile the project.  In addition, an STK library can be compiled from within the <TT>src</TT> directory.
 
@@ -145,7 +145,7 @@ from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I>
 
 \section rt Demo: Realtime Use
 
-STK realtime audio and MIDI input/output and realtime SKINI control input via socketing support is provided for Linux, Mac OS-X, and Windows95/98/2000/XP operating systems.  STK realtime SKINI control input via piping is possible under Linux, Mac OS X, and Windows2000/XP only.
+STK realtime audio and MIDI input/output and realtime SKINI control input via socketing support is provided for Linux, Mac OS-X, and Windows95 and later operating systems.  STK realtime SKINI control input via piping is possible under Linux, Mac OS X, and Windows2000 and later only.
 <P>
 Control input and audio output options are typically specified as command-line arguments to STK programs.  For example, the <I><B>stk-demo</B></I> program is invoked as:
 
@@ -178,7 +178,7 @@ from the <I><B>demo</B></I> directory will play the scorefile <I>bookert.ski</I>
 
 \section tcl Realtime Control Input using Tcl/Tk Graphical User Interfaces:
 
-There are a number of <A HREF="https://www.tcl.tk/">Tcl/Tk</A> GUIs supplied with the STK projects.  These scripts require Tcl/Tk version 8.0 or later, which can be downloaded for free over the WWW.  On Unix and Windows2000/XP platforms, you can run the various executable scripts (e.g. StkDemo.bat) provided with each project to start everything up (you may need to symbolically link the wishXX executable to the name <I>wish</I>).  The Physical.bat script just implements the following command-line sequence:
+There are a number of <A HREF="https://www.tcl.tk/">Tcl/Tk</A> GUIs supplied with the STK projects.  These scripts require Tcl/Tk version 8.0 or later, which can be downloaded for free over the WWW.  On Unix and Windows2000 and later platforms, you can run the various executable scripts (e.g. StkDemo.bat) provided with each project to start everything up (you may need to symbolically link the wishXX executable to the name <I>wish</I>).  The Physical.bat script just implements the following command-line sequence:
 
 \code
 wish < tcl/Physical.tcl | stk-demo Clarinet -or -ip
