@@ -82,7 +82,7 @@
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <SubSystem>Console</SubSystem>
-      <OutputFile>.\demo.exe</OutputFile>
+      <OutputFile>.\stk-demo.exe</OutputFile>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;dsound.lib;winmm.lib;Wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -120,7 +120,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <OutputFile>.\demo.exe</OutputFile>
+      <OutputFile>.\stk-demo.exe</OutputFile>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;dsound.lib;winmm.lib;Wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
