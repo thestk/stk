@@ -41,6 +41,9 @@ class Modulate : public Generator
   //! Set the periodic (vibrato) gain.
   void setVibratoGain( StkFloat gain ) { vibratoGain_ = gain; };
 
+  //! Set the periodic (vibrato) rate or frequency in Hz.
+  void setRandomRate( StkFloat rate ) {  noiseRate_ = (unsigned int) ( rate * Stk::sampleRate() / 22050.0 ); };
+  
   //! Set the random modulation gain.
   void setRandomGain( StkFloat gain );
 
