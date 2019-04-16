@@ -10,6 +10,7 @@
 #include "BlowHole.h"
 #include "Saxofony.h"
 #include "Flute.h"
+#include "Recorder.h"
 #include "Brass.h"
 #include "BlowBotl.h"
 #include "Bowed.h"
@@ -37,7 +38,7 @@
 
 using namespace stk;
 
-#define NUM_INSTS 28
+#define NUM_INSTS 29
 
 // The order of the following list is important.  The location of a particular
 // instrument in the list should correspond to that instrument's ProgramChange
@@ -46,7 +47,7 @@ char insts[NUM_INSTS][10] = { "Clarinet", "BlowHole", "Saxofony", "Flute", "Bras
                               "BlowBotl", "Bowed", "Plucked", "StifKarp", "Sitar", "Mandolin",
                               "Rhodey", "Wurley", "TubeBell", "HevyMetl", "PercFlut",
                               "BeeThree", "FMVoices", "VoicForm", "Moog", "Simple", "Drummer",
-                              "BandedWG", "Shakers", "ModalBar", "Mesh2D", "Resonate", "Whistle" };
+                              "BandedWG", "Shakers", "ModalBar", "Mesh2D", "Resonate", "Whistle", "Recorder" };
 
 int voiceByNumber(int number, Instrmnt **instrument)
 {
@@ -82,6 +83,7 @@ int voiceByNumber(int number, Instrmnt **instrument)
   else if (number==25) *instrument = new Mesh2D(10, 10);
   else if (number==26) *instrument = new Resonate;
   else if (number==27) *instrument = new Whistle;
+  else if (number==28) *instrument = new Recorder;
 
   else {
     printf("\nUnknown instrument or program change requested!\n");

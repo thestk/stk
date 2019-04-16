@@ -10,13 +10,13 @@ vpath %.o $(OBJECT_PATH)
 OBJECTS	=	Stk.o Noise.o Envelope.o ADSR.o \
 					Modulate.o SingWave.o SineWave.o FileRead.o FileWrite.o \
 					FileWvIn.o FileLoop.o FileWvOut.o \
-					OneZero.o OnePole.o PoleZero.o TwoZero.o Fir.o \
+					OneZero.o OnePole.o PoleZero.o TwoZero.o Fir.o Iir.o \
 					BiQuad.o FormSwep.o Delay.o DelayL.o DelayA.o \
 					ReedTable.o JetTable.o BowTable.o \
 					JCRev.o \
 					Voicer.o Vector3D.o Sphere.o Twang.o \
 					\
-					Clarinet.o BlowHole.o Saxofony.o Flute.o Brass.o BlowBotl.o \
+					Clarinet.o BlowHole.o Saxofony.o Flute.o Brass.o BlowBotl.o Recorder.o \
 					Bowed.o Plucked.o StifKarp.o Sitar.o PluckTwo.o Mandolin.o Mesh2D.o \
 					FM.o Rhodey.o Wurley.o TubeBell.o HevyMetl.o PercFlut.o BeeThree.o FMVoices.o \
 					Sampler.o Moog.o Simple.o Drummer.o Shakers.o \

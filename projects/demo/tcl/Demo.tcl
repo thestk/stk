@@ -151,6 +151,8 @@ menu .menu.instrument -tearoff 0
     -value 2600 -command { patchChange $patchnum }
 .menu.instrument add radio -label "Police Whistle" -variable patchnum \
     -value 2700 -command { patchChange $patchnum }
+.menu.instrument add radio -label "Recorder" -variable patchnum \
+    -value 2800 -command { patchChange $patchnum }
 
 . configure -menu .menu
 
@@ -743,6 +745,23 @@ proc patchChange {value} {
             printWhatz "ControlChange    0.0  1 " 1  $cont1
             printWhatz "ControlChange    0.0  1 " 2  $cont2
             flush stdout
+        }
+        if {$program==28}	{ # Recorder
+            .pretty config -bitmap @$bitmappath/KFloot.xbm
+            .left.bPressure config -state normal -label "Breath Pressure"
+            .left.pitch config -state normal -label "MIDI Note Number"
+            .left.cont2 config -state normal -label "Softness"
+            .right.cont4 config -state normal -label "Breath Noise"
+            .right.cont11 config -state normal -label "Vibrato Rate"
+            .right.cont1 config -state normal -label "Vibrato Amount"
+            set cont1 10.0
+            set cont2 64.0
+            set cont4 40.0
+            set cont11 64.0
+            printWhatz "ControlChange    0.0  1 " 1  $cont1
+            printWhatz "ControlChange    0.0  1 " 2  $cont2
+            printWhatz "ControlChange    0.0  1 " 4  $cont4
+            printWhatz "ControlChange    0.0  1 " 11 $cont11
         }
         set oldpatch $value
     }

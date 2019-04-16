@@ -43,6 +43,8 @@ radiobutton .radios2.sitr -text "Sitar" -bg grey66 \
   -variable patchnum -value 9 -command { patchChange $patchnum }
 radiobutton .radios2.mand -text "Mandolin" -bg grey66 \
   -variable patchnum -value 10 -command { patchChange $patchnum }
+radiobutton .radios2.recdr -text "Recorder" -bg grey66 \
+  -variable patchnum -value 28 -command { patchChange $patchnum }
 
 pack .radios1.clar -side left -padx 5 -pady 10
 pack .radios1.hole -side left -padx 5 -pady 10
@@ -55,6 +57,7 @@ pack .radios2.pluk -side left -padx 5 -pady 10
 pack .radios2.karp -side left -padx 5 -pady 10
 pack .radios2.sitr -side left -padx 5 -pady 10
 pack .radios2.mand -side left -padx 5 -pady 10
+pack .radios2.recdr -side left -padx 5 -pady 10
 
 pack .radios1
 pack .radios2
@@ -169,178 +172,195 @@ proc noteOff {pitchVal pressVal} {
 proc patchChange {value} {
     global bitmappath cont1 cont2 cont4 cont11 pitch oldpatch
     puts [format "ProgramChange    0.0 1 %i" $value]
-        if {$value==0}	{ # Clarinet
-            .pretty config -bitmap @$bitmappath/Klar.xbm
-            .left.bPressure config -state normal -label "Breath Pressure"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state normal -label "Reed Stiffness"
-            .right.cont4 config -state normal -label "Breath Noise"
-            .right.cont11 config -state normal -label "Vibrato Rate"
-            .right.cont1 config -state normal -label "Vibrato Amount"
-            set cont1 20.0
-            set cont2 64.0
-            set cont4 20.0
-            set cont11 64.0
-            printWhatz "ControlChange    0.0  1 " 1  $cont1
-            printWhatz "ControlChange    0.0  1 " 2  $cont2
-            printWhatz "ControlChange    0.0  1 " 4  $cont4
-            printWhatz "ControlChange    0.0  1 " 11 $cont11
-        }
-        if {$value==1}	{ # BlowHole
-            .pretty config -bitmap @$bitmappath/Klar.xbm
-            .left.bPressure config -state normal -label "Breath Pressure"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state normal -label "Reed Stiffness"
-            .right.cont4 config -state normal -label "Breath Noise"
-            .right.cont11 config -state normal -label "Tonehole Openness"
-            .right.cont1 config -state normal -label "Register Vent Openness"
-            set cont1 0.0
-            set cont2 64.0
-            set cont4 20.0
-            set cont11 0.0
-            printWhatz "ControlChange    0.0  1 " 1  $cont1
-            printWhatz "ControlChange    0.0  1 " 2  $cont2
-            printWhatz "ControlChange    0.0  1 " 4  $cont4
-            printWhatz "ControlChange    0.0  1 " 11 $cont11
-        }
-        if {$value==2}	{ # Saxofony
-            .pretty config -bitmap @$bitmappath/prcFunny.xbm
-            .left.bPressure config -state normal -label "Breath Pressure"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state normal -label "Reed Stiffness"
-            .right.cont4 config -state normal -label "Breath Noise"
-            .right.cont11 config -state normal -label "Blow Position"
-            .right.cont1 config -state normal -label "Vibrato Amount"
-            set cont1 20.0
-            set cont2 64.0
-            set cont4 20.0
-            set cont11 26.0
-            printWhatz "ControlChange    0.0  1 " 1  $cont1
-            printWhatz "ControlChange    0.0  1 " 2  $cont2
-            printWhatz "ControlChange    0.0  1 " 4  $cont4
-            printWhatz "ControlChange    0.0  1 " 11 $cont11
-        }
-        if {$value==3}	{ # Flute
-            .pretty config -bitmap @$bitmappath/KFloot.xbm
-            .left.bPressure config -state normal -label "Breath Pressure"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state normal -label "Embouchure Adjustment"
-            .right.cont4 config -state normal -label "Breath Noise"
-            .right.cont11 config -state normal -label "Vibrato Rate"
-            .right.cont1 config -state normal -label "Vibrato Amount"
-            set cont1 20.0
-            set cont2 64.0
-            set cont4 20.0
-            set cont11 64.0
-            printWhatz "ControlChange    0.0  1 " 1  $cont1
-            printWhatz "ControlChange    0.0  1 " 2  $cont2
-            printWhatz "ControlChange    0.0  1 " 4  $cont4
-            printWhatz "ControlChange    0.0  1 " 11 $cont11
-        }
-        if {$value==4}	{ # Brass
-            .pretty config -bitmap @$bitmappath/KHose.xbm
-            .left.bPressure config -state normal -label "Breath Pressure"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state normal -label "Lip Adjustment"
-            .right.cont4 config -state normal -label "Slide Length"
-            .right.cont11 config -state normal -label "Vibrato Rate"
-            .right.cont1 config -state normal -label "Vibrato Amount"
-            set cont1 0.0
-            set cont2 64.0
-            set cont4 20.0
-            set cont11 64.0
-            set press 80.0
-            printWhatz "ControlChange    0.0  1 " 1  $cont1
-            printWhatz "ControlChange    0.0  1 " 2  $cont2
-            printWhatz "ControlChange    0.0  1 " 4  $cont4
-            printWhatz "ControlChange    0.0  1 " 11 $cont11
-            puts [format "NoteOn           0.0  1  %3.2f  %3.2f" $pitch $press]
-        }
-        if {$value==5}	{ # Bottle
-            .pretty config -bitmap @$bitmappath/prcFunny.xbm
-            .left.bPressure config -state normal -label "Breath Pressure"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state disabled -label "Disabled"
-            .right.cont4 config -state normal -label "Breath Noise"
-            .right.cont11 config -state normal -label "Vibrato Rate"
-            .right.cont1 config -state normal -label "Vibrato Amount"
-            set cont1 20.0
-            set cont4 20.0
-            set cont11 64.0
-            printWhatz "ControlChange    0.0  1 " 1  $cont1
-            printWhatz "ControlChange    0.0  1 " 4  $cont4
-            printWhatz "ControlChange    0.0  1 " 11 $cont11
-        }
-        if {$value==6}	{ # Bowed String
-            .pretty config -bitmap @$bitmappath/KFiddl.xbm
-            .left.bPressure config -state normal -label "Volume"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state normal -label "Bow Pressure"
-            .right.cont4 config -state normal -label "Bow Position"
-            .right.cont11 config -state normal -label "Vibrato Rate"
-            .right.cont1 config -state normal -label "Vibrato Amount"
-            set cont1 4.0
-            set cont2 64.0
-            set cont4 24.0
-            set cont11 64.0
-            printWhatz "ControlChange    0.0  1 " 1  $cont1
-            printWhatz "ControlChange    0.0  1 " 2  $cont2
-            printWhatz "ControlChange    0.0  1 " 4  $cont4
-            printWhatz "ControlChange    0.0  1 " 11 $cont11
-        }
-        if {$value==7}	{ # Yer Basic Pluck
-            .pretty config -bitmap @$bitmappath/KPluk.xbm
-            .left.bPressure config -state normal -label "Pluck Strength"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state disabled -label "Disabled"
-            .right.cont4 config -state disabled -label "Disabled"
-            .right.cont11 config -state disabled -label "Disabled"
-            .right.cont1 config -state disabled -label "Disabled"
-        }
-        if {$value==8}	{ # Stiff String
-            .pretty config -bitmap @$bitmappath/KPluk.xbm
-            .left.bPressure config -state normal -label "Pluck Strength"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state disabled -label "Disabled"
-            .right.cont4 config -state normal -label "Pickup Position"
-            .right.cont11 config -state normal -label "String Sustain"
-            .right.cont1 config -state normal -label "String Stretch"
-            set cont1 10.0
-            set cont4 64.0
-            set cont11 96.0
-            printWhatz "ControlChange    0.0  1 " 1  $cont1
-            printWhatz "ControlChange    0.0  1 " 4  $cont4
-            printWhatz "ControlChange    0.0  1 " 11 $cont11
-        }
-        if {$value==9}	{ # Sitar
-            .pretty config -bitmap @$bitmappath/KPluk.xbm
-            .left.bPressure config -state normal -label "Pluck Strength"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state disabled -label "Disabled"
-            .right.cont4 config -state disabled -label "Disabled"
-            .right.cont11 config -state disabled -label "Disabled"
-            .right.cont1 config -state disabled -label "Disabled"
-        }
-        if {$value==10}	{ # Mandolin
-            .pretty config -bitmap @$bitmappath/KPluk.xbm
-            .left.bPressure config -state normal -label "Microphone Position and Gain"
-            .left.pitch config -state normal -label "MIDI Note Number"
-            .left.cont2 config -state normal -label "Mandolin Body Size"
-            .right.cont4 config -state normal -label "Pick Position"
-            .right.cont11 config -state normal -label "String Sustain"
-            .right.cont1 config -state normal -label "String Detune"
-            set cont1 10.0
-            set cont2 64.0
-            set cont4 64.0
-            set cont11 96.0
-            set press 64.0
-            printWhatz "ControlChange    0.0  1 " 1  $cont1
-            printWhatz "ControlChange    0.0  1 " 2  $cont2
-            printWhatz "ControlChange    0.0  1 " 4  $cont4
-            printWhatz "ControlChange    0.0  1 " 11 $cont11
-            changePress $press
-        }
-        set oldpatch $value
+    if {$value==0}	{ # Clarinet
+        .pretty config -bitmap @$bitmappath/Klar.xbm
+        .left.bPressure config -state normal -label "Breath Pressure"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state normal -label "Reed Stiffness"
+        .right.cont4 config -state normal -label "Breath Noise"
+        .right.cont11 config -state normal -label "Vibrato Rate"
+        .right.cont1 config -state normal -label "Vibrato Amount"
+        set cont1 20.0
+        set cont2 64.0
+        set cont4 20.0
+        set cont11 64.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 2  $cont2
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+    }
+    if {$value==1}	{ # BlowHole
+        .pretty config -bitmap @$bitmappath/Klar.xbm
+        .left.bPressure config -state normal -label "Breath Pressure"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state normal -label "Reed Stiffness"
+        .right.cont4 config -state normal -label "Breath Noise"
+        .right.cont11 config -state normal -label "Tonehole Openness"
+        .right.cont1 config -state normal -label "Register Vent Openness"
+        set cont1 0.0
+        set cont2 64.0
+        set cont4 20.0
+        set cont11 0.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 2  $cont2
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+    }
+    if {$value==2}	{ # Saxofony
+        .pretty config -bitmap @$bitmappath/prcFunny.xbm
+        .left.bPressure config -state normal -label "Breath Pressure"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state normal -label "Reed Stiffness"
+        .right.cont4 config -state normal -label "Breath Noise"
+        .right.cont11 config -state normal -label "Blow Position"
+        .right.cont1 config -state normal -label "Vibrato Amount"
+        set cont1 20.0
+        set cont2 64.0
+        set cont4 20.0
+        set cont11 26.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 2  $cont2
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+    }
+    if {$value==3}	{ # Flute
+        .pretty config -bitmap @$bitmappath/KFloot.xbm
+        .left.bPressure config -state normal -label "Breath Pressure"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state normal -label "Embouchure Adjustment"
+        .right.cont4 config -state normal -label "Breath Noise"
+        .right.cont11 config -state normal -label "Vibrato Rate"
+        .right.cont1 config -state normal -label "Vibrato Amount"
+        set cont1 20.0
+        set cont2 64.0
+        set cont4 20.0
+        set cont11 64.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 2  $cont2
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+    }
+    if {$value==4}	{ # Brass
+        .pretty config -bitmap @$bitmappath/KHose.xbm
+        .left.bPressure config -state normal -label "Breath Pressure"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state normal -label "Lip Adjustment"
+        .right.cont4 config -state normal -label "Slide Length"
+        .right.cont11 config -state normal -label "Vibrato Rate"
+        .right.cont1 config -state normal -label "Vibrato Amount"
+        set cont1 0.0
+        set cont2 64.0
+        set cont4 20.0
+        set cont11 64.0
+        set press 80.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 2  $cont2
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+        puts [format "NoteOn           0.0  1  %3.2f  %3.2f" $pitch $press]
+    }
+    if {$value==5}	{ # Bottle
+        .pretty config -bitmap @$bitmappath/prcFunny.xbm
+        .left.bPressure config -state normal -label "Breath Pressure"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state disabled -label "Disabled"
+        .right.cont4 config -state normal -label "Breath Noise"
+        .right.cont11 config -state normal -label "Vibrato Rate"
+        .right.cont1 config -state normal -label "Vibrato Amount"
+        set cont1 20.0
+        set cont4 20.0
+        set cont11 64.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+    }
+    if {$value==6}	{ # Bowed String
+        .pretty config -bitmap @$bitmappath/KFiddl.xbm
+        .left.bPressure config -state normal -label "Volume"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state normal -label "Bow Pressure"
+        .right.cont4 config -state normal -label "Bow Position"
+        .right.cont11 config -state normal -label "Vibrato Rate"
+        .right.cont1 config -state normal -label "Vibrato Amount"
+        set cont1 4.0
+        set cont2 64.0
+        set cont4 24.0
+        set cont11 64.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 2  $cont2
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+    }
+    if {$value==7}	{ # Yer Basic Pluck
+        .pretty config -bitmap @$bitmappath/KPluk.xbm
+        .left.bPressure config -state normal -label "Pluck Strength"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state disabled -label "Disabled"
+        .right.cont4 config -state disabled -label "Disabled"
+        .right.cont11 config -state disabled -label "Disabled"
+        .right.cont1 config -state disabled -label "Disabled"
+    }
+    if {$value==8}	{ # Stiff String
+        .pretty config -bitmap @$bitmappath/KPluk.xbm
+        .left.bPressure config -state normal -label "Pluck Strength"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state disabled -label "Disabled"
+        .right.cont4 config -state normal -label "Pickup Position"
+        .right.cont11 config -state normal -label "String Sustain"
+        .right.cont1 config -state normal -label "String Stretch"
+        set cont1 10.0
+        set cont4 64.0
+        set cont11 96.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+    }
+    if {$value==9}	{ # Sitar
+        .pretty config -bitmap @$bitmappath/KPluk.xbm
+        .left.bPressure config -state normal -label "Pluck Strength"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state disabled -label "Disabled"
+        .right.cont4 config -state disabled -label "Disabled"
+        .right.cont11 config -state disabled -label "Disabled"
+        .right.cont1 config -state disabled -label "Disabled"
+    }
+    if {$value==10}	{ # Mandolin
+        .pretty config -bitmap @$bitmappath/KPluk.xbm
+        .left.bPressure config -state normal -label "Microphone Position and Gain"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state normal -label "Mandolin Body Size"
+        .right.cont4 config -state normal -label "Pick Position"
+        .right.cont11 config -state normal -label "String Sustain"
+        .right.cont1 config -state normal -label "String Detune"
+        set cont1 10.0
+        set cont2 64.0
+        set cont4 64.0
+        set cont11 96.0
+        set press 64.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 2  $cont2
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+        changePress $press
+    }
+    if {$value==28}	{ # Recorder
+        .pretty config -bitmap @$bitmappath/KFloot.xbm
+        .left.bPressure config -state normal -label "Breath Pressure"
+        .left.pitch config -state normal -label "MIDI Note Number"
+        .left.cont2 config -state normal -label "Softness"
+        .right.cont4 config -state normal -label "Breath Noise"
+        .right.cont11 config -state normal -label "Vibrato Rate"
+        .right.cont1 config -state normal -label "Vibrato Amount"
+        set cont1 10.0
+        set cont2 64.0
+        set cont4 40.0
+        set cont11 64.0
+        printWhatz "ControlChange    0.0  1 " 1  $cont1
+        printWhatz "ControlChange    0.0  1 " 2  $cont2
+        printWhatz "ControlChange    0.0  1 " 4  $cont4
+        printWhatz "ControlChange    0.0  1 " 11 $cont11
+    }
+    set oldpatch $value
 }
 
 proc printWhatz {tag value1 value2 } {

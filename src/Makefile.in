@@ -26,7 +26,7 @@ OBJECTS	=	Stk.o Generator.o Noise.o Blit.o BlitSaw.o BlitSquare.o Granulate.o \
 					Function.o ReedTable.o JetTable.o BowTable.o Cubic.o \
 					Voicer.o Vector3D.o Sphere.o Twang.o Guitar.o \
 					\
-					Instrmnt.o Clarinet.o BlowHole.o Saxofony.o Flute.o Brass.o BlowBotl.o \
+					Instrmnt.o Clarinet.o BlowHole.o Saxofony.o Flute.o Recorder.o Brass.o BlowBotl.o \
 					Bowed.o Plucked.o StifKarp.o Sitar.o Mandolin.o Mesh2D.o \
 					FM.o Rhodey.o Wurley.o TubeBell.o HevyMetl.o PercFlut.o BeeThree.o FMVoices.o \
 					Sampler.o Moog.o Simple.o Drummer.o Shakers.o \

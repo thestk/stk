@@ -89,7 +89,7 @@ void StifKarp :: setStretch( StkFloat stretch )
   StkFloat freq = lastFrequency_ * 2.0;
   StkFloat dFreq = ( (0.5 * Stk::sampleRate()) - freq ) * 0.25;
   StkFloat temp = 0.5 + (stretch * 0.5);
-  if ( temp > 0.9999 ) temp = 0.9999;
+  if ( temp > 0.99999 ) temp = 0.99999;
   for ( int i=0; i<4; i++ )	{
     coefficient = temp * temp;
     biquad_[i].setA2( coefficient );
@@ -131,7 +131,7 @@ void StifKarp :: pluck( StkFloat amplitude )
   }
 
   pluckAmplitude_ = amplitude;
-  for ( unsigned long i=0; i<length_; i++ ) {
+  for ( unsigned long i=0; i<lastLength_; i++ ) {
     // Fill delay with noise additively with current contents.
     delayLine_.tick( (delayLine_.lastOut() * 0.6) + 0.4 * noise_.tick() * pluckAmplitude_ );
     //delayLine_.tick( combDelay_.tick((delayLine_.lastOut() * 0.6) + 0.4 * noise->tick() * pluckAmplitude_) );
