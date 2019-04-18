@@ -1,11 +1,11 @@
-/*! \page download Download, Release Notes, and Bug Fixes
+/*! \page download Download and Release Notes
 
 \section down Download Version 4.6.1 (18 April 2019):
 
 - <A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.6.1.tar.gz">Source distribution</A>
 
 \section notes Release Notes:
-\subsection v4dot6dot0 Version 4.6.1
+\subsection v4dot6dot1 Version 4.6.1
 - see github site for complete details (github.com/thestk/stk)
 - various documentation updates
 - new Recorder (flute a la Verge) class (thanks to Mathias Bredholt)
