@@ -13,7 +13,7 @@
     delay setting.  The use of higher order Lagrange interpolators can
     typically improve (minimize) this attenuation characteristic.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2017.
+    by Perry R. Cook and Gary P. Scavone, 1995--2019.
 */
 /***************************************************/
 

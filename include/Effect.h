@@ -14,7 +14,7 @@ namespace stk {
     subclasses.  It is general enough to support both monophonic and
     polyphonic input/output classes.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2017.
+    by Perry R. Cook and Gary P. Scavone, 1995--2019.
 */
 /***************************************************/
 

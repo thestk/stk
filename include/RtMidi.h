@@ -8,7 +8,7 @@
     RtMidi WWW site: http://music.mcgill.ca/~gary/rtmidi/
 
     RtMidi: realtime MIDI i/o C++ classes
-    Copyright (c) 2003-2017 Gary P. Scavone
+    Copyright (c) 2003-2019 Gary P. Scavone
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation files
@@ -189,7 +189,7 @@ class RtMidi
     possible to open a virtual input port to which other MIDI software
     clients can connect.
 
-    by Gary P. Scavone, 2003-2017.
+    by Gary P. Scavone, 2003-2019.
 */
 /**********************************************************************/
 
@@ -350,7 +350,7 @@ class RtMidiIn : public RtMidi
     OS-X, Linux ALSA and JACK MIDI APIs, it is also possible to open a
     virtual port to which other MIDI software clients can connect.
 
-    by Gary P. Scavone, 2003-2017.
+    by Gary P. Scavone, 2003-2019.
 */
 /**********************************************************************/
 

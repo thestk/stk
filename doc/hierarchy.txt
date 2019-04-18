@@ -1,6 +1,6 @@
 STK: A ToolKit of Audio Synthesis Classes and Instruments in C++
 
-By Perry R. Cook and Gary P. Scavone, 1995--2017.
+By Perry R. Cook and Gary P. Scavone, 1995--2019.
 
 STK Classes - See the HTML documentation in the html directory for complete information.
 
@@ -49,7 +49,7 @@ Stk -|                  UdpSocket
      .- Instrmnt -|
                   |- Drummer
                   |
-                  |- Clarinet, BlowHole, Saxofony, Flute, Brass, BlowBotl, Bowed, Plucked, StifKarp, Sitar
+                  |- Clarinet, BlowHole, Saxofony, Flute, Brass, BlowBotl, Bowed, Plucked, StifKarp, Sitar, Recorder
                   |
                   |- Shakers
                   |
@@ -129,6 +129,7 @@ Clarinet.cpp     Pretty Good Clarinet           DelayL, ReedTabl, OneZero, Envel
 BlowHole.cpp     Clarinet w/ Tone & Vent Holes  DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop, PoleZero
 Saxofony.cpp     A Faux Saxophone               DelayL, ReedTabl, OneZero, Envelope, Noise, WaveLoop
 Flute.cpp        Pretty Good Flute              JetTabl, DelayL, OnePole, PoleZero, Noise, ADSR, WaveLoop
+Recorder.cpp     A More Physical Flute          DelayL, IIR, Noise, ADSR, SineWave
 BlowBotl.cpp     Blown Bottle                   JetTabl, BiQuad, PoleZero, Noise, ADSR, WaveLoop
 BandedWG.cpp     Banded Waveguide Meta-Object   Delay, BowTabl, ADSR, BiQuad
 Modal.cpp        N Resonances                   Envelope, WaveLoop, BiQuad, OnePole

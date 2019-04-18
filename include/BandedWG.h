@@ -35,7 +35,7 @@ namespace stk {
          - Glass Harmonica = 2
          - Tibetan Bowl = 3
 
-    by Georg Essl, 1999 - 2004.
+    by Georg Essl, 1999--2004.
     Modified for STK 4.0 by Gary Scavone.
 */
 /***************************************************/

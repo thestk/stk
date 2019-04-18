@@ -27,7 +27,7 @@ namespace stk {
        - Mesh Decay = 11
        - X-Y Input Position = 1
 
-    by Julius Smith, 2000 - 2002.
+    by Julius Smith, 2000--2002.
     Revised by Gary Scavone for STK, 2002.
 */
 /***************************************************/

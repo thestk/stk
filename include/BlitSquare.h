@@ -35,7 +35,7 @@ namespace stk {
     in the presence of significant aliasing.
 
     Based on initial code of Robin Davies, 2005.
-    Modified algorithm code by Gary Scavone, 2005 - 2006.
+    Modified algorithm code by Gary Scavone, 2005--2006.
 */
 /***************************************************/
 

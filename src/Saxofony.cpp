@@ -31,7 +31,7 @@
        - Vibrato Gain = 1
        - Breath Pressure = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2017.
+    by Perry R. Cook and Gary P. Scavone, 1995--2019.
 */
 /***************************************************/
 
