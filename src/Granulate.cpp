@@ -79,9 +79,8 @@ void Granulate :: setRandomFactor( StkFloat randomness )
 {
   if ( randomness < 0.0 ) gRandomFactor_ = 0.0;
   else if ( randomness > 1.0 ) gRandomFactor_ = 0.97;
-
-  gRandomFactor_ = 0.97 * randomness;
-};
+  else gRandomFactor_ = 0.97 * randomness;
+}
 
 void Granulate :: openFile( std::string fileName, bool typeRaw )
 {
