@@ -100,7 +100,7 @@ scale .left.bPressure -from 0 -to 128 -length 200 \
     -tickinterval 32 -showvalue true -bg grey66
 
 scale .left.pitch -from 0 -to 128 -length 200 \
-    -command {changePitch } -variable pitch \
+    -command {changePitch } -variable pitch -resolution 0.1 \
     -orient horizontal -label "MIDI Note Number" \
     -tickinterval 32 -showvalue true -bg grey66
 

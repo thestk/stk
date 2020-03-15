@@ -132,17 +132,20 @@ class Guitar : public Stk
   StkFrames lastFrame_;
 };
 
+// NOTE: It is not possible to implement the Smith coupled string model here because the Twang class does
+// not currently offer the chance to have access to a traveling-wave component. Thus, the coupling
+// implemented here is approximate.
 inline StkFloat Guitar :: tick( StkFloat input )
 {
   StkFloat temp, output = 0.0;
-  lastFrame_[0] /= strings_.size(); // evenly spread coupling across strings
+  lastFrame_[0] = couplingGain_ * couplingFilter_.tick( lastFrame_[0] ) / strings_.size();
   for ( unsigned int i=0; i<strings_.size(); i++ ) {
     if ( stringState_[i] ) {
       temp = input;
       // If pluckGain < 0.2, let string ring but don't pluck it.
       if ( filePointer_[i] < excitation_.frames() && pluckGains_[i] > 0.2 )
         temp += pluckGains_[i] * excitation_[filePointer_[i]++];
-      temp += couplingGain_ * couplingFilter_.tick( lastFrame_[0] ); // bridge coupling
+      temp += lastFrame_[0]; // bridge coupling
       output += strings_[i].tick( temp );
       // Check if string energy has decayed sufficiently to turn it off.
       if ( stringState_[i] == 1 ) {

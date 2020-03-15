@@ -12,7 +12,8 @@ namespace stk {
     This class implements a simple linear line envelope generator
     which is capable of ramping to an arbitrary target value by a
     specified \e rate.  It also responds to simple \e keyOn and \e
-    keyOff messages, ramping to 1.0 on keyOn and to 0.0 on keyOff.
+    keyOff messages, ramping to a specified target (default = 1.0) on
+    keyOn and to a specified target (default = 0.0) on keyOff.
 
     by Perry R. Cook and Gary P. Scavone, 1995--2019.
 */
@@ -31,11 +32,11 @@ class Envelope : public Generator
   //! Assignment operator.
   Envelope& operator= ( const Envelope& e );
 
-  //! Set target = 1.
-  void keyOn( void ) { this->setTarget( 1.0 ); };
+  //! Start ramping to specified target (default = 1).
+  void keyOn( StkFloat target = 1.0 ) { this->setTarget( target ); };
 
-  //! Set target = 0.
-  void keyOff( void ) { this->setTarget( 0.0 ); };
+  //! Start ramping to specified target (default = 0).
+  void keyOff(  StkFloat target = 0.0 ) { this->setTarget( target ); };
 
   //! Set the \e rate.
   /*!
@@ -46,7 +47,7 @@ class Envelope : public Generator
   //! Set the \e rate based on a positive time duration (seconds).
   /*!
     The \e rate is calculated such that the envelope will ramp from
-    a value of 0.0 to 1.0 in the specified time duration.
+    the current value to the current target in the specified time duration.
    */
   void setTime( StkFloat time );
 

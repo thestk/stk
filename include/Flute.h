@@ -123,11 +123,12 @@ inline StkFloat Flute :: tick( unsigned int )
   breathPressure += breathPressure * ( noiseGain_ * noise_.tick() + vibratoGain_ * vibrato_.tick() );
 
   StkFloat temp = -filter_.tick( boreDelay_.lastOut() );
-  temp = dcBlock_.tick( temp ); // Block DC on reflection.
+  //temp = dcBlock_.tick( temp ); // Block DC on reflection.
 
   pressureDiff = breathPressure - (jetReflection_ * temp);
   pressureDiff = jetDelay_.tick( pressureDiff );
-  pressureDiff = jetTable_.tick( pressureDiff ) + (endReflection_ * temp);
+  //pressureDiff = jetTable_.tick( pressureDiff ) + (endReflection_ * temp);
+  pressureDiff = dcBlock_.tick(jetTable_.tick( pressureDiff )) + (endReflection_ * temp); // moved the DC blocker to after the jet non-linearity (GPS, 29 Jan. 2020)
   lastFrame_[0] = (StkFloat) 0.3 * boreDelay_.tick( pressureDiff );
 
   lastFrame_[0] *= outputGain_;

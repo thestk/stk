@@ -19,6 +19,12 @@ array set stringNote {
     5 59
     6 64
 }
+array set powerNote {
+    1 40
+    2 47
+    3 52
+    4 59
+}
 #array set stringAmp { 1 64 2 64 3 64 4 64 5 64 6 64 }
 array set stringAmp {
     1 64
@@ -53,10 +59,12 @@ pack .message -padx 5 -pady 10
 
 # Configure "note on" buttons
 frame .top
-button .top.on -text Strum -bg grey66 -command strum
-button .top.off -text "All Off" -bg grey66 -command allOff
-button .top.exit -text "Quit" -bg grey66 -command quit
+button .top.on -text Strum -padx 5 -bg grey66 -command strum
+button .top.power -text "Power Chord" -padx 5 -bg grey66 -command powerchord
+button .top.off -text "All Off" -padx 5 -bg grey66 -command allOff
+button .top.exit -text "Quit" -padx 5 -bg grey66 -command quit
 pack .top.on -side left -padx 5
+pack .top.power -side left -padx 5 -padx 5
 pack .top.off -side left -padx 5 -pady 10
 pack .top.exit -side left -padx 5 -pady 10
 pack .top
@@ -117,9 +125,22 @@ proc quit {} {
 }
 
 proc strum {} {
-    global stringNote stringAmp
+    global stringAmp stringNote
     for {set n 1} {$n < 7} {incr n} {
         puts [format "NoteOn           %2.3f  %d  %3.2f  %3.2f" [expr rand()*0.04] $n $stringNote($n) $stringAmp($n)]
+    }
+    flush stdout
+}
+
+proc powerchord {} {
+    global stringNote powerNote stringAmp cont28 cont72
+    set cont72 80
+    set cont28 90
+    puts [format "ControlChange    0.0    0  72     %3.2f" $cont72]
+    puts [format "ControlChange    0.0    0  28     %3.2f" $cont28]
+    for {set n 1} {$n < 5} {incr n} {
+        set stringNote($n) $powerNote($n)
+        puts [format "NoteOn           %2.3f  %d  %3.2f  %3.2f" [expr rand()*0.01] $n $powerNote($n) $stringAmp($n)]
     }
     flush stdout
 }
@@ -167,32 +188,32 @@ proc setStringAmp {value} {
 frame .strings -bg grey88 -borderwidth 5 -relief groove
 scale .strings.s1 -from $stringMin(1) -to [expr $stringMin(1)+$stringRange] \
     -length 350 -orient horizontal -label "String 1: Note Number" \
-    -tickinterval 5 -showvalue true -variable $stringNote(1) \
+    -tickinterval 5 -showvalue true -variable stringNote(1) \
     -command {setNote 1}
 
 scale .strings.s2 -from $stringMin(2) -to [expr $stringMin(2)+$stringRange] \
     -length 350 -orient horizontal -label "String 2: Note Number" \
-    -tickinterval 5 -showvalue true -variable $stringNote(2) \
+    -tickinterval 5 -showvalue true -variable stringNote(2) \
     -command {setNote 2}
 
 scale .strings.s3 -from $stringMin(3) -to [expr $stringMin(3)+$stringRange] \
     -length 350 -orient horizontal -label "String 3: Note Number" \
-    -tickinterval 5 -showvalue true -variable $stringNote(3) \
+    -tickinterval 5 -showvalue true -variable stringNote(3) \
     -command {setNote 3}
 
 scale .strings.s4 -from $stringMin(4) -to [expr $stringMin(4)+$stringRange] \
     -length 350 -orient horizontal -label "String 4: Note Number" \
-    -tickinterval 5 -showvalue true -variable $stringNote(4) \
+    -tickinterval 5 -showvalue true -variable stringNote(4) \
     -command {setNote 4}
 
 scale .strings.s5 -from $stringMin(5) -to [expr $stringMin(5)+$stringRange] \
     -length 350 -orient horizontal -label "String 5: Note Number" \
-    -tickinterval 5 -showvalue true -variable $stringNote(5) \
+    -tickinterval 5 -showvalue true -variable stringNote(5) \
     -command {setNote 5}
 
 scale .strings.s6 -from $stringMin(6) -to [expr $stringMin(6)+$stringRange] \
     -length 350 -orient horizontal -label "String 6: Note Number" \
-    -tickinterval 5 -showvalue true -variable $stringNote(6) \
+    -tickinterval 5 -showvalue true -variable stringNote(6) \
     -command {setNote 6}
 
 button .strings.b1 -text Pluck -command { pluckOne 1 }
@@ -202,7 +223,6 @@ button .strings.b4 -text Pluck -command { pluckOne 4 }
 button .strings.b5 -text Pluck -command { pluckOne 5 }
 button .strings.b6 -text Pluck -command { pluckOne 6 }
 
-grid .strings -column 0 -row 0
 grid .strings.b1 -column 1 -row 0 -padx 5 -pady 5
 grid .strings.b2 -column 1 -row 1
 grid .strings.b3 -column 1 -row 2
@@ -218,9 +238,20 @@ grid .strings.s5 -column 0 -row 4 -padx 5 -pady 5
 grid .strings.s6 -column 0 -row 5 -padx 5 -pady 5
 
 set stringSelect "All"
-ttk::combobox .strings.combo \
-    -values [ list "All" "String 1" "String 2" "String 3" "String 4" "String 5" "String 6" ] \
-    -width 8 -textvariable stringSelect -justify center
+set values [ list "All" "String 1" "String 2" "String 3" "String 4" "String 5" "String 6" ]
+ttk::combobox .strings.combo -values $values \
+    -width 10 -state readonly -textvariable stringSelect -justify center 
+bind .strings.combo <<ComboboxSelected>> {
+    global stringAmp velocity
+    switch [%W get] {
+        "String 1" { set velocity $stringAmp(1) }
+        "String 2" { set velocity $stringAmp(2) }
+        "String 3" { set velocity $stringAmp(3) }
+        "String 4" { set velocity $stringAmp(4) }
+        "String 5" { set velocity $stringAmp(5) }
+        "String 6" { set velocity $stringAmp(6) }
+    }
+}
 
 scale .strings.velocity -from 0 -to 128 -length 350 \
     -orient horizontal -label "Note Velocity" \
@@ -229,7 +260,7 @@ scale .strings.velocity -from 0 -to 128 -length 350 \
 grid .strings.combo -column 1 -row 7
 grid .strings.velocity -column 0 -row 7 -padx 5 -pady 10
 
-pack .strings
+pack .strings -side right
 
 set cbpath .strings.combo
 
