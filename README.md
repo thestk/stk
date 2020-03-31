@@ -13,7 +13,7 @@ Please read the [Legal and Ethical notes](#legal-and-ethical) near the bottom of
 
 For compiling and installing STK, see the [INSTALL.md](INSTALL.md) file in this directory.
 
-##Contents
+## Contents
 
 * [Overview](#overview)
 * [System Requirements](#system-requirements)
