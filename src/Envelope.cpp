@@ -13,6 +13,7 @@
 /***************************************************/
 
 #include "Envelope.h"
+#include <cmath>
 
 namespace stk {
 
