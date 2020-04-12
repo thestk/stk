@@ -25,6 +25,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		834A47CB24435D350028575A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0779A7E18D376A5004DA9B7 /* STK.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B0EC337B18CB73480005787B;
+			remoteInfo = rawwaves;
+		};
 		B02FD55218C520D70009ECA9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B02FD52A18C520D60009ECA9 /* Project object */;
@@ -193,6 +200,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				834A47CC24435D350028575A /* PBXTargetDependency */,
 			);
 			name = "iOS Demo";
 			productName = "iOS Demo";
@@ -316,6 +324,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		834A47CC24435D350028575A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = rawwaves;
+			targetProxy = 834A47CB24435D350028575A /* PBXContainerItemProxy */;
+		};
 		B02FD55318C520D70009ECA9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B02FD53118C520D60009ECA9 /* iOS Demo */;

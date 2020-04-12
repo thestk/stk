@@ -21,6 +21,8 @@
 1. Open your project's settings, open the *Build Phases* tab. In the *Link Binary with Libraries* section, add **libSTK.a**.
 ![][linking_libSTK_screenshot]
 
+1. In the *Dependencies* section, add "rawwaves"
+
 1. In your project's settings, open the *Build Settings* tab. In the *Search Paths* section, double click on the field to the right of *Header Search Paths*, and add the path to the STK's **include** directory relative to your Xcode project's directory.
 ![][header_search_paths_screenshot]
 
@@ -32,6 +34,8 @@
 
 1. Change the extension of any Objective-C files that import STK files to **.mm**.
   * E.g. **ViewController.m** —> **ViewController.mm**
+
+1. If you use a class that makes use of raw wave files (such as `Mandolin`), make sure you call `Stk::setRawwavePath` beforehand in your code.
 
 See the [iOS Demo project](..projects/demo/iOS%20Demo) for a sample usage.
 
@@ -75,17 +79,6 @@ stk::Stk::setRawwavePath([[[NSBundle mainBundle] pathForResource:@"rawwaves" ofT
 NSBundle *rawwaveBundle = [NSBundle bundleWithURL:[[NSBundle mainBundle] URLForResource:@"rawwaves" withExtension:@"bundle"]];
 stk::Stk::setRawwavePath([[rawwaveBundle resourcePath] UTF8String]);
 ```
-
-
-### rawwaves.bundle: No such file or directory
-
-This means that **rawwaves.bundle** hasn't been copied to the build folder, so you'll need to do it manually:
-
-Select the rawwaves scheme:
-
-![][rawwaves_scheme_screenshot]
-
-Build it (⌘+B)  then build your project's main scheme.
 
 ### Apple Mach-O Linker Error
 
