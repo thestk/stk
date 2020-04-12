@@ -1,3 +1,8 @@
+ # To lint the spec:
+ # pod spec lint --skip-import-validation --allow-warnings
+ # To publish:
+ # pod trunk push STK.podspec --skip-import-validation --allow-warnings
+
 Pod::Spec.new do |spec|
   spec.name         = 'STK'
   spec.version      = '4.6.1'

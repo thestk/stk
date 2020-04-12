@@ -2,7 +2,7 @@
 
 This project briefly shows how to manually integrate the STK static library into an Xcode project. See the **README** file in the STK's `iOS` directory for precise instructions.
 
-Currently, this project does not output sound, it only shows how to generate audio samples from the STK classes within an iOS project, and how to control STK objects via UI controls.
+Currently, this project does not output sound, it only shows how to generate audio samples from the STK classes within an iOS project, and how to control STK objects via UI controls. These samples need to be fed into an audio engine for them to be heard. 
 
 Note the following:
 
