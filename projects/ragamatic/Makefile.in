@@ -25,6 +25,7 @@ DEFS     = @CPPFLAGS@
 DEFS    += @byte_order@
 CFLAGS   = @CXXFLAGS@
 CFLAGS  += -I$(INCLUDE) -I$(INCLUDE)/../src/include
+LDFLAGS  = @LDFLAGS@
 LIBRARY = @LIBS@
 
 REALTIME = @realtime@
