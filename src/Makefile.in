@@ -48,6 +48,7 @@ DEFS     = @CPPFLAGS@
 DEFS    += @byte_order@
 CFLAGS   = @CXXFLAGS@
 CFLAGS  += $(INCLUDE) -Iinclude -fPIC
+LDFLAGS  = @LDFLAGS@
 LIBS     = @LIBS@
 
 REALTIME = @realtime@
