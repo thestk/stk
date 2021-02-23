@@ -122,7 +122,7 @@ RtWvOut :: ~RtWvOut( void )
 {
   // Change status flag to signal callback to clear the buffer and close.
   status_ = EMPTYING;
-  while ( status_ != FINISHED || dac_.isStreamRunning() == true ) Stk::sleep( 100 );
+  while ( status_ != FINISHED && dac_.isStreamRunning() == true ) Stk::sleep( 100 );
   dac_.closeStream();
 }
 
