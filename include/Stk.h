@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <stdexcept>
 //#include <cstdlib>
 
 /*! \namespace stk
@@ -82,7 +83,7 @@ typedef double StkFloat;
   be sub-classes to take care of more specific error conditions ... or
   not.
 */
-class StkError
+class StkError : public std::exception
 {
 public:
   enum Type {
@@ -110,7 +111,7 @@ protected:
 public:
   //! The constructor.
   StkError(const std::string& message, Type type = StkError::UNSPECIFIED)
-    : message_(message), type_(type) {}
+    : std::exception(), message_(message), type_(type) {}
 
   //! The destructor.
   virtual ~StkError(void) {};
@@ -126,6 +127,8 @@ public:
 
   //! Returns the thrown error message as a C string.
   virtual const char *getMessageCString(void) { return message_.c_str(); }
+
+  virtual const char *what(void) const throw() { return message_.c_str(); }
 };
 
 
