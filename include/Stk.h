@@ -324,7 +324,7 @@ public:
     self.  No range checking is performed unless _STK_DEBUG_ is
     defined.
   */
-  void operator+= ( StkFrames& f );
+  StkFrames& operator+= ( StkFrames& f );
 
   //! Assignment by product operator into self.
   /*!
@@ -332,7 +332,16 @@ public:
     self.  No range checking is performed unless _STK_DEBUG_ is
     defined.
   */
-  void operator*= ( StkFrames& f );
+  StkFrames& operator*= ( StkFrames& f );
+
+  //! Scaling operator (StkFrame * StkFloat).
+  StkFrames operator* ( StkFloat v ) const;
+
+  //! Scaling operator (StkFloat * StkFrame)
+  friend StkFrames operator*(StkFloat v, const StkFrames& f);
+
+  //! Scaling operator (inline).
+  StkFrames& operator*= ( StkFloat v );
 
   //! Channel / frame subscript operator that returns a reference.
   /*!
@@ -511,7 +520,7 @@ inline StkFrames StkFrames::operator+(const StkFrames &f) const
   return sum;
 }
 
-inline void StkFrames :: operator+= ( StkFrames& f )
+inline StkFrames& StkFrames :: operator+= ( StkFrames& f )
 {
 #if defined(_STK_DEBUG_)
   if ( f.frames() != nFrames_ || f.channels() != nChannels_ ) {
@@ -525,9 +534,10 @@ inline void StkFrames :: operator+= ( StkFrames& f )
   StkFloat *dptr = data_;
   for ( unsigned int i=0; i<size_; i++ )
     *dptr++ += *fptr++;
+  return *this;
 }
 
-inline void StkFrames :: operator*= ( StkFrames& f )
+inline StkFrames& StkFrames :: operator*= ( StkFrames& f )
 {
 #if defined(_STK_DEBUG_)
   if ( f.frames() != nFrames_ || f.channels() != nChannels_ ) {
@@ -541,7 +551,39 @@ inline void StkFrames :: operator*= ( StkFrames& f )
   StkFloat *dptr = data_;
   for ( unsigned int i=0; i<size_; i++ )
     *dptr++ *= *fptr++;
+  return *this;
 }
+
+inline StkFrames StkFrames::operator*(StkFloat v) const
+{
+  StkFrames res((unsigned int)nFrames_, nChannels_);
+  StkFloat *resPtr = &res[0];
+  const StkFloat *dPtr = data_;
+  for (unsigned int i = 0; i < size_; i++) {
+    *resPtr++ = v * *dPtr++;
+  }
+  return res;
+}
+
+inline StkFrames operator*(StkFloat v, const StkFrames& f)
+{
+  StkFrames res((unsigned int)f.nFrames_, f.nChannels_);
+  StkFloat *resPtr = &res[0];
+  StkFloat *dPtr = f.data_;
+  for (unsigned int i = 0; i < f.size_; i++) {
+    *resPtr++ = v * *dPtr++;
+  }
+  return res;
+}
+
+inline StkFrames& StkFrames :: operator*= ( StkFloat v )
+{
+  StkFloat *dptr = data_;
+  for ( unsigned int i=0; i<size_; i++ )
+    *dptr++ *= v;
+  return *this;
+}
+
 
 // Here are a few other useful typedefs.
 typedef unsigned short UINT16;
