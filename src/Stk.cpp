@@ -229,7 +229,7 @@ void Stk :: handleError( std::string message, StkError::Type type )
 //
 
 StkFrames :: StkFrames( unsigned int nFrames, unsigned int nChannels )
-  : data_( 0 ), nFrames_( nFrames ), nChannels_( nChannels )
+  : data_( 0 ), nFrames_( nFrames ), nChannels_( nChannels ), ownData_(true)
 {
   size_ = nFrames_ * nChannels_;
   bufferSize_ = size_;
@@ -248,7 +248,7 @@ StkFrames :: StkFrames( unsigned int nFrames, unsigned int nChannels )
 }
 
 StkFrames :: StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels )
-  : data_( 0 ), nFrames_( nFrames ), nChannels_( nChannels )
+  : data_( 0 ), nFrames_( nFrames ), nChannels_( nChannels ), ownData_(true)
 {
   size_ = nFrames_ * nChannels_;
   bufferSize_ = size_;
@@ -266,13 +266,21 @@ StkFrames :: StkFrames( const StkFloat& value, unsigned int nFrames, unsigned in
   dataRate_ = Stk::sampleRate();
 }
 
+StkFrames :: StkFrames( StkFloat* data, unsigned int nFrames, unsigned int nChannels )
+  : data_( data ), nFrames_( nFrames ), nChannels_( nChannels ), ownData_(false)
+{
+  size_ = nFrames_ * nChannels_;
+  bufferSize_ = size_;
+  dataRate_ = Stk::sampleRate();
+}
+
 StkFrames :: ~StkFrames()
 {
-  if ( data_ ) free( data_ );
+  if ( data_ && ownData_ ) free( data_ );
 }
 
 StkFrames :: StkFrames( const StkFrames& f )
-  : data_(0), size_(0), bufferSize_(0)
+  : data_(0), size_(0), bufferSize_(0), ownData_(true)
 {
   resize( f.frames(), f.channels() );
   dataRate_ = Stk::sampleRate();
@@ -281,7 +289,7 @@ StkFrames :: StkFrames( const StkFrames& f )
 
 StkFrames& StkFrames :: operator= ( const StkFrames& f )
 {
-  if ( data_ ) free( data_ );
+  if ( data_ && ownData_ ) free( data_ );
   data_ = 0;
   size_ = 0;
   bufferSize_ = 0;
@@ -298,15 +306,19 @@ void StkFrames :: resize( size_t nFrames, unsigned int nChannels )
 
   size_ = nFrames_ * nChannels_;
   if ( size_ > bufferSize_ ) {
-    if ( data_ ) free( data_ );
+    if ( data_ && ownData_ ) free( data_ );
     data_ = (StkFloat *) malloc( size_ * sizeof( StkFloat ) );
 #if defined(_STK_DEBUG_)
     if ( data_ == NULL ) {
       std::string error = "StkFrames::resize: memory allocation error!";
       Stk::handleError( error, StkError::MEMORY_ALLOCATION );
     }
+    if ( ownData ) {
+      Stk::handleError( "Pointer to external data was lost after resize", StkError::WARNING );
+    }
 #endif
     bufferSize_ = size_;
+    ownData_ = true;
   }
 }
 
