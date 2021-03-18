@@ -313,7 +313,7 @@ void StkFrames :: resize( size_t nFrames, unsigned int nChannels )
       std::string error = "StkFrames::resize: memory allocation error!";
       Stk::handleError( error, StkError::MEMORY_ALLOCATION );
     }
-    if ( ownData_ ) {
+    if ( !ownData_ ) {
       Stk::handleError( "Pointer to external data was lost after resize", StkError::WARNING );
     }
 #endif
