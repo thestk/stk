@@ -21,7 +21,7 @@ OBJECTS	=	Stk.o Generator.o Noise.o Blit.o BlitSaw.o BlitSquare.o Granulate.o \
 					Envelope.o ADSR.o Asymp.o Modulate.o SineWave.o FileLoop.o SingWave.o \
 					FileRead.o FileWrite.o WvIn.o FileWvIn.o WvOut.o FileWvOut.o \
 					Filter.o Fir.o Iir.o OneZero.o OnePole.o PoleZero.o TwoZero.o TwoPole.o \
-					BiQuad.o FormSwep.o Delay.o DelayL.o DelayA.o \
+					BiQuad.o FormSwep.o Delay.o DelayL.o DelayA.o TapDelay.o\
 					\
 					Effect.o PRCRev.o JCRev.o NRev.o FreeVerb.o \
 					Chorus.o Echo.o PitShift.o LentPitShift.o \
