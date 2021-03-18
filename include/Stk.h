@@ -114,7 +114,7 @@ public:
     : std::exception(), message_(message), type_(type) {}
 
   //! The destructor.
-  virtual ~StkError(void) {};
+  virtual ~StkError(void) throw() {};
 
   //! Prints thrown error message to stderr.
   virtual void printMessage(void) { std::cerr << '\n' << message_ << "\n\n"; }
