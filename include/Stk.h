@@ -285,9 +285,6 @@ public:
   //! Overloaded constructor that initializes the frame data to the specified size with \c value.
   StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels );
 
-  //! Overloaded constructor that wraps the provided pointer to \c data.
-  StkFrames( StkFloat* data, unsigned int nFrames, unsigned int nChannels = 1 );
-
   //! The destructor.
   ~StkFrames();
 
@@ -443,7 +440,6 @@ private:
   unsigned int nChannels_;
   size_t size_;
   size_t bufferSize_;
-  bool ownData_;
 
 };
 
