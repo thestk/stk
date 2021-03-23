@@ -286,13 +286,13 @@ public:
   StkFrames( const StkFloat& value, unsigned int nFrames, unsigned int nChannels );
 
   //! The destructor.
-  ~StkFrames();
+  virtual ~StkFrames();
 
   // A copy constructor.
   StkFrames( const StkFrames& f );
 
   // Assignment operator that returns a reference to self.
-  StkFrames& operator= ( const StkFrames& f );
+  virtual StkFrames& operator= ( const StkFrames& f );
 
   //! Subscript operator that returns a reference to element \c n of self.
   /*!
@@ -384,7 +384,7 @@ public:
     size.  Further, no new memory is allocated when the new size is
     smaller or equal to a previously allocated size.
   */
-  void resize( size_t nFrames, unsigned int nChannels = 1 );
+  virtual void resize( size_t nFrames, unsigned int nChannels = 1 );
 
   //! Resize self to represent the specified number of channels and frames and perform element initialization.
   /*!
@@ -394,7 +394,7 @@ public:
     size.  Further, no new memory is allocated when the new size is
     smaller or equal to a previously allocated size.
   */
-  void resize( size_t nFrames, unsigned int nChannels, StkFloat value );
+  virtual void resize( size_t nFrames, unsigned int nChannels, StkFloat value );
 
   //! Retrieves a single channel
   /*!
@@ -432,7 +432,7 @@ public:
    */
   StkFloat dataRate( void ) const { return dataRate_; };
 
-private:
+protected:
 
   StkFloat *data_;
   StkFloat dataRate_;
