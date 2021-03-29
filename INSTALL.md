@@ -49,6 +49,6 @@ If you wish to use a different compiler than that selected by configure, specify
 
 MinGW support is provided in the configure script.  In addition, Visual Studio 2017 project files are included for each of the example STK projects.
 
-##iOS
+## iOS
 
 You can integrate the STK in iOS projects either by using its iOS static library or CocoaPods. See the [iOS README file](iOS/README-iOS.md) for instructions. 
