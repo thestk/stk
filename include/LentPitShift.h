@@ -142,7 +142,7 @@ inline void LentPitShift::process()
     dpt[delay_] = dt[delay_] * delay_ / cumDt[delay_];
 
     // Look for a minimum
-    if ( dpt[delay_-1]-dpt[delay_-2] < 0 && dpt[delay_]-dpt[delay_-1] > 0 ) {
+    if ( delay_ > 1 && dpt[delay_-1]-dpt[delay_-2] < 0 && dpt[delay_]-dpt[delay_-1] > 0 ) {
       // Check if the minimum is under the threshold
       if ( dpt[delay_-1] < threshold_ ){
         lastPeriod_ = delay_-1;
