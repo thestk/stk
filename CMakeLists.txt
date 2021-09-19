@@ -4,10 +4,10 @@ project(STK VERSION 4.6.1)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
-SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release" "Debug" "RelWithDebInfo" "MinSizeRel") 
 if(NOT CMAKE_BUILD_TYPE) 
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
 endif()
+SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release" "Debug" "RelWithDebInfo" "MinSizeRel") 
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
 ## TODO, compiler dependent?
@@ -25,11 +25,11 @@ option(REALTIME "Realtime support" ON)
 # option(ENABLE_JACK "Enable JACK" ON)
 option(ENABLE_ALSA "Enable ALSA API support (linux only)" ON)
 # option(ENABLE_OSS "Enable OSS API Support (unixes only)" ON)
-# option(ENABLE_ASIO "Enable ASIO API support (windows only)" ON)
-# option(ENABLE_DS "Enable DirectSound API support (windows only)" ON)
-# option(ENABLE_WASAPI "Enable Windows Audio Session API support (windows only)" ON)
+option(ENABLE_ASIO "Enable ASIO API support (windows only)" OFF)
+option(ENABLE_DS "Enable DirectSound API support (windows only)" ON)
+option(ENABLE_WASAPI "Enable Windows Audio Session API support (windows only)" OFF)
 # option(ENABLE_CORE "Enable CoreAudio API support (mac only)" ON)
-option(COMPILE_PROJECTS "Compile all the example projects" OFF)
+option(COMPILE_PROJECTS "Compile all the example projects" ON)
 
 include_directories("./include")
 file(GLOB STK_SRC "./src/*.cpp") # GLOB instead of GLOB_RECURSE as the asio depends on system
@@ -43,7 +43,7 @@ if(REALTIME)
   # find_package(JACK) # TODO NEED FindJACK.cmake
   # find_library(JACK_LIBRARY Jack)
   # message("${JACK_LIBRARY}")
-
+    message("${CMAKE_SYSTEM_NAME}")
     set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     set(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
@@ -63,17 +63,42 @@ if(REALTIME)
         endif()
     elseif(${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
         #==============    MAC OS    ================#
-        message("Machintosh!")
+        message("Machintosh DETECTED!")
         find_package(CoreAudio REQUIRED)
         include_directories(${COREAUDIO_INCLUDE_DIRS})
         target_compile_definitions(stk PUBLIC -D__MACOSX_CORE__)
         target_link_libraries(stk PUBLIC ${COREAUDIO_LIBRARY} ${COREAUDIO_FOUNDATION} ${COREAUDIO_MIDI})
     elseif(${CMAKE_SYSTEM_NAME} STREQUAL Windows)
-        # TODO: WINDOWS SUPPORT
+        # TODO: MORE SUPPORT (e.g., MSYS)?
+        # Tested under MSYS2 with Mingw64 toolchain
         #==============      WINDOWS      ================#
-        message("Windows!")
-        #   target_compile_definitions(stk PUBLIC __OS_WINDOWS__)
+        message("Windows DETECTED!")
+
+        target_link_libraries(stk PUBLIC winmm ole32 wsock32)
+        target_compile_definitions(stk PUBLIC -D__WINDOWS_MM__)
+
+        # TODO: ASIO NOT WORKING YET
+        if(ENABLE_ASIO)
+            message("ENALBING ASIO")
+            include_directories("./src/include")
+            target_sources(stk PUBLIC "${CMAKE_SOURCE_DIR}/src/include/asio.cpp" "${CMAKE_SOURCE_DIR}/src/include/asiodrivers.cpp"
+                                "${CMAKE_SOURCE_DIR}/src/include/asiolist.cpp" "${CMAKE_SOURCE_DIR}/src/include/iasiothiscallresolver.cpp")
+            target_compile_definitions(stk PUBLIC -D__WINDOWS_ASIO__)
+        endif()
+
+        if(ENABLE_WASAPI)
+            message("ENALBING WASAPI")
+            target_link_libraries(stk PUBLIC mfuuid mfplat wmcodecdspuuid ksuser)
+            target_compile_definitions(stk PUBLIC -D__WINDOWS_WASAPI__)
+        endif()
+        
+        if(ENABLE_DS)
+            message("ENALBING Directsound")
+            target_link_libraries(stk PUBLIC dsound)
+            target_compile_definitions(stk PUBLIC -D__WINDOWS_DS__)
+        endif()
     else()
+        message("CMAKE_SYSTEM_NAME:" ${CMAKE_SYSTEM_NAME})
         message(FATAL_ERROR "Unknown system type for realtime support.")
     endif()
 endif()
@@ -88,6 +113,7 @@ endif()
 # endif()
 
 if(COMPILE_PROJECTS)
+    message("COMPILE PROJECTS")
     add_subdirectory(projects/examples)
     add_subdirectory(projects/eguitar)
     add_subdirectory(projects/demo)
