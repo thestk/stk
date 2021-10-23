@@ -40,9 +40,17 @@ add_library(stk STATIC ${STK_SRC} )
 #========== Realtime Support ============#
 #========================================#
 if(REALTIME)
-  # find_package(JACK) # TODO NEED FindJACK.cmake
-  # find_library(JACK_LIBRARY Jack)
-  # message("${JACK_LIBRARY}")
+    if(ENABLE_JACK)
+        find_library(JACK_LIBRARY Jack) # find_package(JACK) # TODO: NEED FindJACK.cmake
+        if(JACK_LIBRARY)
+            message("Jack API found: ${JACK_LIBRARY}")
+            link_libraries(${JACK_LIBRARY})
+            add_definitions(-D__UNIX_JACK__)
+        else()
+            message(WARNING "JACK support requires the jack library!")
+        endif()
+    endif()
+
     message("${CMAKE_SYSTEM_NAME}")
     set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     set(THREADS_PREFER_PTHREAD_FLAG TRUE)
