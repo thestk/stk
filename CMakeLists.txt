@@ -38,7 +38,7 @@ file(GLOB STK_SRC "./src/*.cpp") # GLOB instead of GLOB_RECURSE as the asio depe
 #========================================#
 if(REALTIME)
     if(ENABLE_JACK)
-        find_library(JACK_LIBRARY Jack) # find_package(JACK) # TODO: NEED FindJACK.cmake
+        find_library(JACK_LIBRARY jack) # find_package(JACK) # TODO: NEED FindJACK.cmake
         if(JACK_LIBRARY)
             message("Jack API found: ${JACK_LIBRARY}")
             link_libraries(${JACK_LIBRARY})
