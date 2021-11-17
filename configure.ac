@@ -7,6 +7,10 @@ AC_CONFIG_FILES(Makefile src/Makefile projects/demo/Makefile projects/effects/Ma
 # Fill GXX with something before test.
 AC_SUBST( GXX, ["no"] )
 
+# standards version
+m4_include([m4/ax_cxx_compile_stdcxx.m4])
+AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
+
 # Checks for programs.
 AC_PROG_CXX(g++ CC c++ cxx)
 AC_PROG_RANLIB
