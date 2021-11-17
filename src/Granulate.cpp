@@ -11,7 +11,7 @@
     Chris Rolfe and Damian Keller, though there are likely to be a
     number of differences in the actual implementation.
 
-    by Gary Scavone, 2005--2019.
+    by Gary Scavone, 2005--2021.
 */
 /***************************************************/
 

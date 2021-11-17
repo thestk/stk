@@ -29,7 +29,7 @@ namespace stk {
        - Breath Pressure = 128
 
     by Mathias Bredholt, McGill University.
-    Formatted for STK by Gary Scavone, 2019.
+    Formatted for STK by Gary Scavone, 2021.
 */
 /***************************************************/
 

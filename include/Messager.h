@@ -46,7 +46,7 @@ namespace stk {
     This class is primarily for use in STK example programs but it is
     generic enough to work in many other contexts.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2019.
+    by Perry R. Cook and Gary P. Scavone, 1995--2021.
 */
 /***************************************************/
 

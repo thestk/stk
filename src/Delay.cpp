@@ -10,7 +10,7 @@
     A non-interpolating delay line is typically used in fixed
     delay-length applications, such as for reverberation.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2019.
+    by Perry R. Cook and Gary P. Scavone, 1995--2021.
 */
 /***************************************************/
 

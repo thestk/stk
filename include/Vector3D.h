@@ -12,7 +12,7 @@ namespace stk {
 
     This class implements a three-dimensional vector.
 
-    by Perry R. Cook, 1995--2019.
+    by Perry R. Cook, 1995--2021.
 */
 /***************************************************/
 

@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |spec|
   spec.name         = 'STK'
-  spec.version      = '4.6.1'
+  spec.version      = '4.6.2'
   spec.summary      = 'The Synthesis ToolKit in C++ is a set of open source audio signal processing and algorithmic synthesis classes.'
   spec.homepage     = 'https://ccrma.stanford.edu/software/stk/'
   spec.source       = { :git => 'https://github.com/thestk/stk.git', :tag => spec.version }

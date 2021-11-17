@@ -18,7 +18,7 @@ namespace stk {
 
     The "table" length, set in SineWave.h, is 2048 samples by default.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2019.
+    by Perry R. Cook and Gary P. Scavone, 1995--2021.
 */
 /***************************************************/
 

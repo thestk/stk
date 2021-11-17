@@ -22,7 +22,7 @@ namespace stk {
     Tempo changes are internally tracked by the class and reflected in
     the values returned by the function getTickSeconds().
 
-    by Gary P. Scavone, 2003--2019.
+    by Gary P. Scavone, 2003--2021.
 */
 /**********************************************************************/
 

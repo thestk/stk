@@ -14,7 +14,7 @@ namespace stk {
     C rand() function.  The quality of the rand()
     function varies from one OS to another.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2019.
+    by Perry R. Cook and Gary P. Scavone, 1995--2021.
 */
 /***************************************************/
 

@@ -12,7 +12,7 @@ namespace stk {
     This class provides common functionality for a variety of audio
     data input subclasses.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2019.
+    by Perry R. Cook and Gary P. Scavone, 1995--2021.
 */
 /***************************************************/
 
