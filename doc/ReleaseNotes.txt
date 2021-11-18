@@ -2,7 +2,7 @@ The Synthesis ToolKit in C++ (STK)
 
 By Perry R. Cook and Gary P. Scavone, 1995--2021.
 
-v.4.6.2 (16 November 2021)
+v.4.6.2 (17 November 2021)
 - see github site for complete details (github.com/thestk/stk)
 - bug fixes in LentPitShift and Granulate classes
 - Makefile fixes

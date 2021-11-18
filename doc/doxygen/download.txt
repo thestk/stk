@@ -1,6 +1,6 @@
 /*! \page download Download and Release Notes
 
-\section down Download Version 4.6.2 (16 November 2021):
+\section down Download Version 4.6.2 (17 November 2021):
 
 - <A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.6.2.tar.gz">Source distribution</A>
 

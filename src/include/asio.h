@@ -3,12 +3,14 @@
 
 /*
 	Steinberg Audio Stream I/O API
-	(c) 1997 - 2005, Steinberg Media Technologies GmbH
+	(c) 1997 - 2013, Steinberg Media Technologies GmbH
 
-	ASIO Interface Specification v 2.1
+	ASIO Interface Specification v 2.3
 
 	2005 - Added support for DSD sample data (in cooperation with Sony)
-
+	2012 - Added support for drop out detection
+		
+	
 
 	basic concept is an i/o synchronous double-buffer scheme:
 	
@@ -164,13 +166,13 @@ enum {
 // DSD operation and buffer layout
 // Definition by Steinberg/Sony Oxford.
 //
-// We have tried to treat DSD as PCM and so keep a consistant structure across
+// We have tried to treat DSD as PCM and so keep a consistent structure across
 // the ASIO interface.
 //
 // DSD's sample rate is normally referenced as a multiple of 44.1Khz, so
-// the standard sample rate is refered to as 64Fs (or 2.8224Mhz). We looked
+// the standard sample rate is referred to as 64Fs (or 2.8224Mhz). We looked
 // at making a special case for DSD and adding a field to the ASIOFuture that
-// would allow the user to select the Over Sampleing Rate (OSR) as a seperate
+// would allow the user to select the Over Sampleing Rate (OSR) as a separate
 // entity but decided in the end just to treat it as a simple value of
 // 2.8224Mhz and use the standard interface to set it.
 //
@@ -489,7 +491,7 @@ ASIOError ASIOInit(ASIODriverInfo *info);
 	  info: pointer to an ASIODriver structure:
 	    - asioVersion:
 			- on input, the host version. *** Note *** this is 0 for earlier asio
-			implementations, and the asioMessage callback is implemeted
+			implementations, and the asioMessage callback is implemented
 			only if asioVersion is 2 or greater. sorry but due to a design fault
 			the driver doesn't have access to the host version in ASIOInit :-(
 			added selector for host (engine) version in the asioMessage callback
@@ -502,7 +504,7 @@ ASIOError ASIOInit(ASIODriverInfo *info);
 	    - version: on return, the driver version (format is driver specific)
 	    - name: on return, a null-terminated string containing the driver's name
 		- error message: on return, should contain a user message describing
-		  the type of error that occured during ASIOInit(), if any.
+		  the type of error that occurred during ASIOInit(), if any.
 		- sysRef: platform specific
 	Returns:
 	  If neither input nor output is present ASE_NotPresent
@@ -607,9 +609,9 @@ ASIOError ASIOGetLatencies(long *inputLatency, long *outputLatency);
 	  is most commonly done, but should be avoided), the output latency
 	  becomes two blocks instead, resulting in a total i/o latency of at least
 	  3 blocks. As memory access is the main bottleneck in native dsp processing,
-	  and to acheive less latency, it is highly recommended to try to avoid
+	  and to achieve less latency, it is highly recommended to try to avoid
 	  copying (this is also why the driver is the owner of the buffers). To
-	  summarize, the minimum i/o latency can be acheived if the input buffer
+	  summarize, the minimum i/o latency can be achieved if the input buffer
 	  is processed by the host into the output buffer which will physically
 	  start to sound on the next time slice. Also note that the host expects
 	  the bufferSwitch() callback to be accessed for each time slice in order
@@ -624,7 +626,7 @@ ASIOError ASIOGetBufferSize(long *minSize, long *maxSize, long *preferredSize, l
 	  Returns min, max, and preferred buffer sizes for input/output
 	Parameter:
 	  minSize will hold the minimum buffer size
-	  maxSize will hold the maxium possible buffer size
+	  maxSize will hold the maximum possible buffer size
 	  preferredSize will hold the preferred buffer size (a size which
 	  best fits performance and hardware requirements)
 	  granularity will hold the granularity at which buffer sizes
@@ -694,11 +696,11 @@ ASIOError ASIOGetClockSources(ASIOClockSource *clocks, long *numSources);
 	  	- associatedInputChannel: the first channel of an associated
 	  	  input group, if any.
 	  	- associatedGroup: the group index of that channel.
-	  	  groups of channels are defined to seperate for
+	  	  groups of channels are defined to separate for
 	  	  instance analog, S/PDIF, AES/EBU, ADAT connectors etc,
-	  	  when present simultaniously. Note that associated channel
+	  	  when present simultaneously. Note that associated channel
 	  	  is enumerated according to numInputs/numOutputs, means it
-	  	  is independant from a group (see also ASIOGetChannelInfo())
+	  	  is independent from a group (see also ASIOGetChannelInfo())
 	  	  inputs are associated to a clock if the physical connection
 	  	  transfers both data and clock (like S/PDIF, AES/EBU, or
 	  	  ADAT inputs). if there is no input channel associated with
@@ -774,7 +776,7 @@ typedef struct ASIOChannelInfo
 
 ASIOError ASIOGetChannelInfo(ASIOChannelInfo *info);
 /* Purpose:
-	  retreive information about the nature of a channel
+	  retrieve information about the nature of a channel
 	Parameter:
 	  info: pointer to a ASIOChannelInfo structure with
 	  	- channel: on input, the channel index of the channel in question.
@@ -784,7 +786,7 @@ ASIOError ASIOGetChannelInfo(ASIOChannelInfo *info);
 		  belongs to. For drivers which support different types of
 		  channels, like analog, S/PDIF, AES/EBU, ADAT etc interfaces,
 		  there should be a reasonable grouping of these types. Groups
-		  are always independant form a channel index, that is, a channel
+		  are always independent form a channel index, that is, a channel
 		  index always counts from 0 to numInputs/numOutputs regardless
 		  of the group it may belong to.
 		  There will always be at least one group (group 0). Please
@@ -888,9 +890,9 @@ ASIOError ASIOFuture(long selector, void *params);
 	  selector: operation Code as to be defined. zero is reserved for
 	  testing purposes.
 	  params: depends on the selector; usually pointer to a structure
-	  for passing and retreiving any type and amount of parameters.
+	  for passing and retrieving any type and amount of parameters.
 	Returns:
-	  the return value is also selector dependant. if the selector
+	  the return value is also selector dependent. if the selector
 	  is unknown, ASE_InvalidParameter should be returned to prevent
 	  further calls with this selector. on success, ASE_SUCCESS
 	  must be returned (note: ASE_OK is *not* sufficient!)
@@ -916,13 +918,19 @@ enum
 	kAsioCanInputMeter,
 	kAsioCanOutputGain,
 	kAsioCanOutputMeter,
-
+	kAsioOptionalOne,
+	
 	//	DSD support
 	//	The following extensions are required to allow switching
 	//	and control of the DSD subsystem.
 	kAsioSetIoFormat			= 0x23111961,		/* ASIOIoFormat * in params.			*/
 	kAsioGetIoFormat			= 0x23111983,		/* ASIOIoFormat * in params.			*/
 	kAsioCanDoIoFormat			= 0x23112004,		/* ASIOIoFormat * in params.			*/
+	
+	// Extension for drop out detection
+	kAsioCanReportOverload			= 0x24042012,	/* return ASE_SUCCESS if driver can detect and report overloads */
+	
+	kAsioGetInternalBufferSamples	= 0x25042012	/* ASIOInternalBufferInfo * in params. Deliver size of driver internal buffering, return ASE_SUCCESS if supported */
 };
 
 typedef struct ASIOInputMonitor
@@ -1003,6 +1011,14 @@ typedef struct ASIOIoFormat_s
 	char				future[512-sizeof(ASIOIoFormatType)];
 } ASIOIoFormat;
 
+// Extension for drop detection
+// Note: Refers to buffering that goes beyond the double buffer e.g. used by USB driver designs
+typedef struct ASIOInternalBufferInfo
+{
+	long inputSamples;			// size of driver's internal input buffering which is included in getLatencies
+	long outputSamples;			// size of driver's internal output buffering which is included in getLatencies
+} ASIOInternalBufferInfo;
+
 
 ASIOError ASIOOutputReady(void);
 /* Purpose:
@@ -1027,14 +1043,14 @@ ASIOError ASIOOutputReady(void);
 		None
 	Returns:
 	  only if the above mentioned scenario is given, and a reduction
-	  of output latency can be acheived by this mechanism, should
+	  of output latency can be achieved by this mechanism, should
 	  ASE_OK be returned. otherwise (and usually), ASE_NotPresent
 	  should be returned in order to prevent further calls to this
 	  function. note that the host may want to determine if it is
 	  to use this when the system is not yet fully initialized, so
 	  ASE_OK should always be returned if the mechanism makes sense.	  
 	Notes:
-	  please remeber to adjust ASIOGetLatencies() according to
+	  please remember to adjust ASIOGetLatencies() according to
 	  whether ASIOOutputReady() was ever called or not, if your
 	  driver supports this scenario.
 	  also note that the engine may fail to call ASIO_OutputReady()
