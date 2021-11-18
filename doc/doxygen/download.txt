@@ -5,7 +5,7 @@
 - <A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.6.2.tar.gz">Source distribution</A>
 
 \section notes Release Notes:
-\subsection v4dot6dot1 Version 4.6.2
+\subsection v4dot6dot2 Version 4.6.2
 - see github site for complete details (github.com/thestk/stk)
 - bug fixes in LentPitShift and Granulate classes
 - Makefile fixes
