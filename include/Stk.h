@@ -622,7 +622,7 @@ const StkFloat ONE_OVER_128 = 0.0078125;
 #if defined(__WINDOWS_DS__) || defined(__WINDOWS_ASIO__) || defined(__WINDOWS_MM__)
   #define __OS_WINDOWS__
   #define __STK_REALTIME__
-#elif defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) || defined(__UNIX_JACK__)
+#elif defined(__LINUX_OSS__) || defined(__LINUX_ALSA__) || defined(__UNIX_JACK__) || defined(__LINUX_PULSE__)
   #define __OS_LINUX__
   #define __STK_REALTIME__
 #elif defined(__IRIX_AL__)
