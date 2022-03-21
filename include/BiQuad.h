@@ -74,6 +74,46 @@ public:
   */
   void setNotch( StkFloat frequency, StkFloat radius );
 
+  //! Set the filter coefficients for a low-pass at \e frequency (in Hz) with factor \e Q.
+  /*!
+    This method determines the filter coefficients corresponding to
+    a low-pass filter with cutoff placed at \e frequency and
+    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+  */
+  void setLowPass( StkFloat frequency, StkFloat Q );
+
+  //! Set the filter coefficients for a high-pass at \e frequency (in Hz) with factor \e Q.
+  /*!
+    This method determines the filter coefficients corresponding to
+    a high-pass filter with cutoff placed at \e frequency and
+    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+  */
+  void setHighPass( StkFloat frequency, StkFloat Q );
+
+  //! Set the filter coefficients for a band-pass at \e frequency (in Hz) with factor \e Q.
+  /*!
+    This method determines the filter coefficients corresponding to
+    a band-pass filter with center placed at \e frequency and
+    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+  */
+  void setBandPass( StkFloat frequency, StkFloat Q );
+
+  //! Set the filter coefficients for a band-reject at \e frequency (in Hz) with factor \e Q.
+  /*!
+    This method determines the filter coefficients corresponding to
+    a band-reject filter with center placed at \e frequency and
+    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+  */
+  void setBandReject( StkFloat frequency, StkFloat Q );
+
+  //! Set the filter coefficients for an all-pass at \e frequency (in Hz) with factor \e Q.
+  /*!
+    This method determines the filter coefficients corresponding to
+    an all-pass filter with center placed at \e frequency and
+    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+  */
+  void setAllPass( StkFloat frequency, StkFloat Q );
+
   //! Sets the filter zeroes for equal resonance gain.
   /*!
     When using the filter as a resonator, zeroes places at z = 1, z
@@ -114,6 +154,14 @@ public:
  protected:
 
   virtual void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
+  
+  // Helper function to update the three intermediate values for the predefined filter types
+  // along with the feedback filter coefficients. Performs the debug check for frequency and Q-factor arguments.
+  void setCommonFilterValues( StkFloat frequency, StkFloat Q );
+
+  StkFloat K_;
+  StkFloat kSqr_;
+  StkFloat denom_;
 };
 
 inline StkFloat BiQuad :: tick( StkFloat input )
