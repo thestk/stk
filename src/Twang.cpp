@@ -90,6 +90,11 @@ void Twang :: setLoopGain( StkFloat loopGain )
   loopFilter_.setGain( gain );
 }
 
+void Twang :: setLoopFilter( std::vector<StkFloat> coefficients )
+{
+  loopFilter_.setCoefficients( coefficients, true );
+}
+
 void Twang :: setPluckPosition( StkFloat position )
 {
   if ( position < 0.0 || position > 1.0 ) {

@@ -83,6 +83,15 @@ void ModalBar :: setStrikePosition( StkFloat position )
   this->setModeGain(2, 0.11 * temp);
 }
 
+void ModalBar :: setModulationDepth( StkFloat mDepth )
+{
+  if ( mDepth < 0.0 || mDepth > 1.0 ) {
+    oStream_ << "ModalBar::setModulationDepth: parameter is out of range!";
+    handleError( StkError::WARNING ); return;
+  }
+  vibratoGain_ = mDepth * 0.3;
+}
+
 void ModalBar :: setPreset( int preset )
 {
   // Presets:

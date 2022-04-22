@@ -53,7 +53,7 @@ public:
   //! Select a bar preset (currently modulo 9).
   void setPreset( int preset );
 
-  //! Set the modulation (vibrato) depth.
+  //! Set the modulation (vibrato) depth (0.0 - 1.0).
   void setModulationDepth( StkFloat mDepth );
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
