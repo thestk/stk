@@ -13,10 +13,15 @@ namespace stk {
     Methods are provided for creating a resonance or notch in the
     frequency response while maintaining a constant filter gain.
 
+    Formulae used calculate coefficients for lowpass, highpass,
+    bandpass, bandreject and allpass are found on pg. 55 of
+    Udo Zölzer's "DAFX - Digital Audio Effects" (2011 2nd ed).   
+
     by Perry R. Cook and Gary P. Scavone, 1995--2021.
 */
 /***************************************************/
 
+const StkFloat RECIP_SQRT_2 = static_cast<StkFloat>( M_SQRT1_2 );  
 class BiQuad : public Filter
 {
 public:
@@ -74,52 +79,72 @@ public:
   */
   void setNotch( StkFloat frequency, StkFloat radius );
 
-  //! Set the filter coefficients for a low-pass at \e frequency (in Hz) with factor \e Q.
+  //! Set the filter coefficients for a low-pass with cutoff frequency \e fc (in Hz) and Q-factor \e Q.
   /*!
-    This method determines the filter coefficients corresponding to
-    a low-pass filter with cutoff placed at \e frequency and
-    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+    This method determines the filter coefficients corresponding to a 
+    low-pass filter with cutoff placed at \e fc, where sloping behaviour 
+    and resonance are determined by \e Q. The default value for \e Q is 
+    1/sqrt(2), resulting in a gradual attenuation of frequencies higher than
+    \e fc without added resonance. Values greater than this will more 
+    aggressively attenuate frequencies above \e fc while also adding a 
+    resonance at \e fc. Values less than this will result in a more gradual
+    attenuation of frequencies above \e fc, but will also attenuate 
+    frequencies below \e fc as well. Both \e fc and \e Q must be positive.
   */
-  void setLowPass( StkFloat frequency, StkFloat Q );
+  void setLowPass( StkFloat fc, StkFloat Q=RECIP_SQRT_2 );
 
-  //! Set the filter coefficients for a high-pass at \e frequency (in Hz) with factor \e Q.
+  //! Set the filter coefficients for a high-pass with cutoff frequency \e fc (in Hz) and Q-factor \e Q.
   /*!
-    This method determines the filter coefficients corresponding to
-    a high-pass filter with cutoff placed at \e frequency and
-    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+    This method determines the filter coefficients corresponding to a high-pass 
+    filter with cutoff placed at \e fc, where sloping behaviour and resonance 
+    are determined by \e Q. The default value for \e Q is 1/sqrt(2), resulting 
+    in a gradual attenuation of frequencies lower than \e fc without added 
+    resonance. Values greater than this will more aggressively attenuate 
+    frequencies below \e fc while also adding a resonance at \e fc. Values less 
+    than this will result in a more gradual attenuation of frequencies below 
+    \e fc, but will also attenuate frequencies above \e fc as well. 
+    Both \e fc and \e Q must be positive.
   */
-  void setHighPass( StkFloat frequency, StkFloat Q );
+  void setHighPass( StkFloat fc, StkFloat Q=RECIP_SQRT_2 );
 
-  //! Set the filter coefficients for a band-pass at \e frequency (in Hz) with factor \e Q.
+  //! Set the filter coefficients for a band-pass centered at \e fc (in Hz) with Q-factor \e Q.
   /*!
-    This method determines the filter coefficients corresponding to
-    a band-pass filter with center placed at \e frequency and
-    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+    This method determines the filter coefficients corresponding to a band-pass
+    filter with pass-band centered at \e fc, where band width and slope a 
+    determined by \e Q. Values for \e Q that are less than 1.0 will attenuate
+    frequencies above and below \e fc more gradually, resulting in a convex 
+    slope and a wider band. Values for \e Q greater than 1.0 will attenuate 
+    frequencies above and below \e fc more aggressively, resulting in a 
+    concave slope and a narrower band. Both \e fc and \e Q must be positive.
   */
-  void setBandPass( StkFloat frequency, StkFloat Q );
+  void setBandPass( StkFloat fc, StkFloat Q );
 
-  //! Set the filter coefficients for a band-reject at \e frequency (in Hz) with factor \e Q.
+  //! Set the filter coefficients for a band-reject centered at \e fc (in Hz) with Q-factor \e Q.
   /*!
-    This method determines the filter coefficients corresponding to
-    a band-reject filter with center placed at \e frequency and
-    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+    This method determines the filter coefficients corresponding to a 
+    band-reject filter with stop-band centered at \e fc, where band width 
+    and slope are determined by \e Q. Values for \e Q that are less than 1.0 
+    will yield a wider band with greater attenuation of \e fc. Values for \e Q
+    greater than 1.0 will yield a narrower band with less attenuation of \e fc. 
+    Both \e fc and \e Q must be positive.
   */
-  void setBandReject( StkFloat frequency, StkFloat Q );
+  void setBandReject( StkFloat fc, StkFloat Q );
 
-  //! Set the filter coefficients for an all-pass at \e frequency (in Hz) with factor \e Q.
+  //! Set the filter coefficients for an all-pass centered at \e fc (in Hz) with Q-factor \e Q.
   /*!
     This method determines the filter coefficients corresponding to
-    an all-pass filter with center placed at \e frequency and
-    Q-factor set by \e Q. Both \e frequency and \e Q must be positive.
+    an all-pass filter whose phase response crosses -pi radians at \e fc.
+    High values for \e Q will result in a more instantaenous shift in phase 
+    response at \e fc. Lower values will result in a more gradual shift in
+    phase response around \e fc. Both \e fc and \e Q must be positive.
   */
-  void setAllPass( StkFloat frequency, StkFloat Q );
+  void setAllPass( StkFloat fc, StkFloat Q );
 
   //! Sets the filter zeroes for equal resonance gain.
   /*!
     When using the filter as a resonator, zeroes places at z = 1, z
     = -1 will result in a constant gain at resonance of 1 / (1 - R),
     where R is the pole radius setting.
-
   */
   void setEqualGainZeroes( void );
 
@@ -156,8 +181,8 @@ public:
   virtual void sampleRateChanged( StkFloat newRate, StkFloat oldRate );
   
   // Helper function to update the three intermediate values for the predefined filter types
-  // along with the feedback filter coefficients. Performs the debug check for frequency and Q-factor arguments.
-  void setCommonFilterValues( StkFloat frequency, StkFloat Q );
+  // along with the feedback filter coefficients. Performs the debug check for fc and Q-factor arguments.
+  void setCommonFilterValues( StkFloat fc, StkFloat Q );
 
   StkFloat K_;
   StkFloat kSqr_;

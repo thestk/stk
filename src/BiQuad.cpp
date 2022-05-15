@@ -98,49 +98,53 @@ void BiQuad :: setNotch( StkFloat frequency, StkFloat radius )
 #endif
 
   // This method does not attempt to normalize the filter gain.
-  b_[2] = radius * radius;
+  b_[0] = 1.0; 
   b_[1] = (StkFloat) -2.0 * radius * cos( TWO_PI * (double) frequency / Stk::sampleRate() );
+  b_[2] = radius * radius;
+  
+  a_[1] = 0.0; 
+  a_[2] = 0.0;
 }
 
-void BiQuad :: setLowPass( StkFloat frequency, StkFloat Q )
+void BiQuad :: setLowPass( StkFloat fc, StkFloat Q )
 {
-  setCommonFilterValues(frequency, Q);
+  setCommonFilterValues(fc, Q);
 
   b_[0] = kSqr_ * Q * denom_;
   b_[1] = 2 * b_[0];
   b_[2] = b_[0];
 }
 
-void BiQuad :: setHighPass( StkFloat frequency, StkFloat Q )
+void BiQuad :: setHighPass( StkFloat fc, StkFloat Q )
 {
-  setCommonFilterValues(frequency, Q);
+  setCommonFilterValues(fc, Q);
 
   b_[0] = Q * denom_;
   b_[1] = -2 * b_[0];
   b_[2] = b_[0];
 }
 
-void BiQuad :: setBandPass( StkFloat frequency, StkFloat Q )
+void BiQuad :: setBandPass( StkFloat fc, StkFloat Q )
 {
-  setCommonFilterValues(frequency, Q);
+  setCommonFilterValues(fc, Q);
 
   b_[0] = K_ * denom_;
   b_[1] = 0.0;
   b_[2] = -b_[0];
 }
 
-void BiQuad :: setBandReject( StkFloat frequency, StkFloat Q )
+void BiQuad :: setBandReject( StkFloat fc, StkFloat Q )
 {
-  setCommonFilterValues(frequency, Q);
+  setCommonFilterValues(fc, Q);
 
   b_[0] = Q * (kSqr_ + 1) * denom_;
   b_[1] = 2 * Q * (kSqr_ - 1) * denom_;
   b_[2] = b_[0];
 }
 
-void BiQuad :: setAllPass( StkFloat frequency, StkFloat Q )
+void BiQuad :: setAllPass( StkFloat fc, StkFloat Q )
 {
-  setCommonFilterValues(frequency, Q);
+  setCommonFilterValues(fc, Q);
 
   b_[0] = a_[2];
   b_[1] = a_[1];
@@ -154,11 +158,11 @@ void BiQuad :: setEqualGainZeroes( void )
   b_[2] = -1.0;
 }
 
-void BiQuad :: setCommonFilterValues( StkFloat frequency, StkFloat Q)
+void BiQuad :: setCommonFilterValues( StkFloat fc, StkFloat Q)
 {
 #if defined(_STK_DEBUG_)
-  if ( frequency < 0.0 ) {
-    oStream_ << "BiQuad::updateKValues: frequency argument (" << frequency << ") is negative!";
+  if ( fc < 0.0 ) {
+    oStream_ << "BiQuad::updateKValues: fc argument (" << fc << ") is negative!";
     handleError( StkError::WARNING ); return;
   }
    if ( Q < 0.0 ) {
@@ -167,7 +171,7 @@ void BiQuad :: setCommonFilterValues( StkFloat frequency, StkFloat Q)
   }
 #endif
 
-  K_ = tan(PI * frequency / Stk::sampleRate());
+  K_ = tan(PI * fc / Stk::sampleRate());
   kSqr_ = K_ * K_;
   denom_ = 1 / (kSqr_ * Q + K_ + Q);
 
