@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1) ##TODO: which version is better
 
 project(STK VERSION 4.6.1)
+set (CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
