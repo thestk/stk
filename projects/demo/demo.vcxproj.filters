@@ -248,257 +248,260 @@
     <ClCompile Include="..\..\src\Wurley.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Recorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Iir.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utilities.h" />
-    <ClInclude Include="..\..\src\include\RtAudio.h">
+    <ClInclude Include="..\..\include\RtAudio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\RtMidi.h">
+    <ClInclude Include="..\..\include\ADSR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\RtWvIn.h">
+    <ClInclude Include="..\..\include\Asymp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\RtWvOut.h">
+    <ClInclude Include="..\..\include\BandedWG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\ADSR.h">
+    <ClInclude Include="..\..\include\BeeThree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Asymp.h">
+    <ClInclude Include="..\..\include\BiQuad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\BandedWG.h">
+    <ClInclude Include="..\..\include\BlowBotl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\BeeThree.h">
+    <ClInclude Include="..\..\include\BlowHole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\BiQuad.h">
+    <ClInclude Include="..\..\include\Bowed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\BlowBotl.h">
+    <ClInclude Include="..\..\include\BowTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\BlowHole.h">
+    <ClInclude Include="..\..\include\Brass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Bowed.h">
+    <ClInclude Include="..\..\include\Clarinet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\BowTable.h">
+    <ClInclude Include="..\..\include\Delay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Brass.h">
+    <ClInclude Include="..\..\include\DelayA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Clarinet.h">
+    <ClInclude Include="..\..\include\DelayL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Delay.h">
+    <ClInclude Include="..\..\include\Drummer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\DelayA.h">
+    <ClInclude Include="..\..\include\Effect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\DelayL.h">
+    <ClInclude Include="..\..\include\Envelope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Drummer.h">
+    <ClInclude Include="..\..\include\FileLoop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Effect.h">
+    <ClInclude Include="..\..\include\FileRead.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Envelope.h">
+    <ClInclude Include="..\..\include\FileWrite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\FileLoop.h">
+    <ClInclude Include="..\..\include\FileWvIn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\FileRead.h">
+    <ClInclude Include="..\..\include\FileWvOut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\FileWrite.h">
+    <ClInclude Include="..\..\include\Filter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\FileWvIn.h">
+    <ClInclude Include="..\..\include\Fir.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\FileWvOut.h">
+    <ClInclude Include="..\..\include\Flute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Filter.h">
+    <ClInclude Include="..\..\include\FM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Fir.h">
+    <ClInclude Include="..\..\include\FMVoices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Flute.h">
+    <ClInclude Include="..\..\include\FormSwep.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\FM.h">
+    <ClInclude Include="..\..\include\Function.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\FMVoices.h">
+    <ClInclude Include="..\..\include\Generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\FormSwep.h">
+    <ClInclude Include="..\..\include\HevyMetl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Function.h">
+    <ClInclude Include="..\..\include\Instrmnt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Generator.h">
+    <ClInclude Include="..\..\include\JCRev.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\HevyMetl.h">
+    <ClInclude Include="..\..\include\JetTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Instrmnt.h">
+    <ClInclude Include="..\..\include\Mandolin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\JCRev.h">
+    <ClInclude Include="..\..\include\Mesh2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\JetTable.h">
+    <ClInclude Include="..\..\include\Messager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Mandolin.h">
+    <ClInclude Include="..\..\include\Modal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Mesh2D.h">
+    <ClInclude Include="..\..\include\ModalBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Messager.h">
+    <ClInclude Include="..\..\include\Modulate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Modal.h">
+    <ClInclude Include="..\..\include\Moog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\ModalBar.h">
+    <ClInclude Include="..\..\include\Mutex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Modulate.h">
+    <ClInclude Include="..\..\include\Noise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Moog.h">
+    <ClInclude Include="..\..\include\NRev.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Mutex.h">
+    <ClInclude Include="..\..\include\OnePole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Noise.h">
+    <ClInclude Include="..\..\include\OneZero.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\NRev.h">
+    <ClInclude Include="..\..\include\PercFlut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\OnePole.h">
+    <ClInclude Include="..\..\include\Phonemes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\OneZero.h">
+    <ClInclude Include="..\..\include\Plucked.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\PercFlut.h">
+    <ClInclude Include="..\..\include\PoleZero.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Phonemes.h">
+    <ClInclude Include="..\..\include\PRCRev.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Plucked.h">
+    <ClInclude Include="..\..\include\ReedTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\PoleZero.h">
+    <ClInclude Include="..\..\include\Resonate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\PRCRev.h">
+    <ClInclude Include="..\..\include\Rhodey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\ReedTable.h">
+    <ClInclude Include="..\..\include\RtMidi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Resonate.h">
+    <ClInclude Include="..\..\include\RtWvIn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Rhodey.h">
+    <ClInclude Include="..\..\include\RtWvOut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Sampler.h">
+    <ClInclude Include="..\..\include\Sampler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Saxofony.h">
+    <ClInclude Include="..\..\include\Saxofony.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Shakers.h">
+    <ClInclude Include="..\..\include\Shakers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Simple.h">
+    <ClInclude Include="..\..\include\Simple.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\SineWave.h">
+    <ClInclude Include="..\..\include\SineWave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\SingWave.h">
+    <ClInclude Include="..\..\include\SingWave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Sitar.h">
+    <ClInclude Include="..\..\include\Sitar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\SKINI.h">
+    <ClInclude Include="..\..\include\SKINI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Socket.h">
+    <ClInclude Include="..\..\include\Socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Sphere.h">
+    <ClInclude Include="..\..\include\Sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\StifKarp.h">
+    <ClInclude Include="..\..\include\StifKarp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Stk.h">
+    <ClInclude Include="..\..\include\Stk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\TcpServer.h">
+    <ClInclude Include="..\..\include\TcpServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Thread.h">
+    <ClInclude Include="..\..\include\Thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\TubeBell.h">
+    <ClInclude Include="..\..\include\TubeBell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Twang.h">
+    <ClInclude Include="..\..\include\Twang.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\TwoPole.h">
+    <ClInclude Include="..\..\include\TwoPole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\TwoZero.h">
+    <ClInclude Include="..\..\include\TwoZero.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Vector3D.h">
+    <ClInclude Include="..\..\include\Vector3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Voicer.h">
+    <ClInclude Include="..\..\include\Voicer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Whistle.h">
+    <ClInclude Include="..\..\include\Whistle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\Wurley.h">
+    <ClInclude Include="..\..\include\Wurley.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\WvIn.h">
+    <ClInclude Include="..\..\include\WvIn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\WvOut.h">
+    <ClInclude Include="..\..\include\WvOut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="notes.txt" />
   </ItemGroup>
 </Project>
