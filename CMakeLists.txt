@@ -30,6 +30,7 @@ option(ENABLE_DS "Enable DirectSound API support (windows only)" ON)
 option(ENABLE_WASAPI "Enable Windows Audio Session API support (windows only)" OFF)
 # option(ENABLE_CORE "Enable CoreAudio API support (mac only)" ON)
 option(COMPILE_PROJECTS "Compile all the example projects" ON)
+option(INSTALL_HEADERS "Install headers" ON)
 
 include_directories("./include")
 file(GLOB STK_SRC "./src/*.cpp") # GLOB instead of GLOB_RECURSE as the asio depends on system
@@ -114,16 +115,26 @@ if(NOT IS_BIG_ENDIAN)
   add_definitions(-D__LITTLE_ENDIAN__)
 endif()
 
+if(INSTALL_HEADERS)
+    file(GLOB STK_HEADERS "include/*.h")
+    install(FILES ${STK_HEADERS} DESTINATION include/stk)
+endif()
 #========================================#
 #========== Build the Library ===========#
 #========================================#
 if(BUILD_STATIC)
     add_library(stk STATIC ${STK_SRC} )
+    target_include_directories(stk PRIVATE include PUBLIC $<INSTALL_INTERFACE:include>)
+    set_target_properties(stk PROPERTIES PUBLIC_HEADER "${LIBSTK_HEADERS}")
+    list(APPEND STK_TARGETS stk)
 endif()
 
 if(BUILD_SHARED)
     add_library(stk_SHARED SHARED ${STK_SRC})
     set_target_properties(stk_SHARED PROPERTIES OUTPUT_NAME stk) # rename the shared library name
+    target_include_directories(stk_SHARED PRIVATE include PUBLIC $<INSTALL_INTERFACE:include>)
+    set_target_properties(stk_SHARED PROPERTIES PUBLIC_HEADER "${LIBSTK_HEADERS}")
+    list(APPEND STK_TARGETS stk_SHARED)
 endif()
 
 #========================================#
@@ -137,3 +148,15 @@ if(COMPILE_PROJECTS)
     add_subdirectory(projects/effects)
     add_subdirectory(projects/ragamatic)
 endif()
+
+#========================================#
+#========= Install ======================#
+#========================================#
+
+install(TARGETS ${STK_TARGETS} EXPORT stk-config
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION bin
+	PUBLIC_HEADER DESTINATION include/stk)
+
+install(EXPORT stk-config DESTINATION lib/cmake/stk)
