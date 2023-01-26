@@ -114,7 +114,7 @@ TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
 if(NOT IS_BIG_ENDIAN)
   add_definitions(-D__LITTLE_ENDIAN__)
 endif()
-
+add_definitions(-D_USE_MATH_DEFINES)
 if(INSTALL_HEADERS)
     file(GLOB STK_HEADERS "include/*.h")
     install(FILES ${STK_HEADERS} DESTINATION include/stk)
