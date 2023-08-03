@@ -25,7 +25,7 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
          double streamTime, RtAudioStreamStatus status, void *userData )
 {
   TickData *data = (TickData *) userData;
-  register StkFloat *samples = (StkFloat *) outputBuffer;
+  StkFloat *samples = (StkFloat *) outputBuffer;
 
   for ( unsigned int i=0; i<nBufferFrames; i++ ) {
     *samples++ = data->instrument->tick();

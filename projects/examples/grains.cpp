@@ -15,7 +15,7 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
          double streamTime, RtAudioStreamStatus status, void *dataPointer )
 {
   Granulate *grani = (Granulate *) dataPointer;
-  register StkFloat *samples = (StkFloat *) outputBuffer;
+  StkFloat *samples = (StkFloat *) outputBuffer;
   const StkFrames& lastframe = grani->lastFrame();
   unsigned int nChannels = lastframe.channels();
 

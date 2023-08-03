@@ -40,8 +40,8 @@ struct TickData {
 // depending on the desired scheduling scheme.
 void processMessage( TickData* data )
 {
-  register StkFloat value1 = data->message.floatValues[0];
-  register StkFloat value2 = data->message.floatValues[1];
+  StkFloat value1 = data->message.floatValues[0];
+  StkFloat value2 = data->message.floatValues[1];
 
   switch( data->message.type ) {
 
@@ -82,7 +82,7 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
          double streamTime, RtAudioStreamStatus status, void *dataPointer )
 {
   TickData *data = (TickData *) dataPointer;
-  register StkFloat *samples = (StkFloat *) outputBuffer;
+  StkFloat *samples = (StkFloat *) outputBuffer;
   int counter, nTicks = (int) nBufferFrames;
 
   while ( nTicks > 0 && !data->done ) {
