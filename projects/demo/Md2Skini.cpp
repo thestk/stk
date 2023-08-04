@@ -40,10 +40,10 @@ void midiCallback( double deltatime, std::vector< unsigned char > *bytes, void *
   // Parse the MIDI bytes ... only keep MIDI channel messages.
   if ( bytes->at(0) > 239 ) return;
 
-  register long type = bytes->at(0) & 0xF0;
-  register int channel = bytes->at(0) & 0x0F;
-  register long databyte1 = bytes->at(1);
-  register long databyte2 = 0;
+  long type = bytes->at(0) & 0xF0;
+  int channel = bytes->at(0) & 0x0F;
+  long databyte1 = bytes->at(1);
+  long databyte2 = 0;
   if ( ( type != 0xC0 ) && ( type != 0xD0 ) ) {
     if ( bytes->size() < 3 ) return;
     databyte2 = bytes->at(2);

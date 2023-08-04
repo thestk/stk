@@ -172,8 +172,8 @@ void BlowHole :: startBlowing( StkFloat amplitude, StkFloat rate )
 
 void BlowHole :: stopBlowing( StkFloat rate )
 {
-  if ( rate <= 0.0 ) {
-    oStream_ << "BlowHole::stopBlowing: argument is less than or equal to zero!";
+  if ( rate < 0.0 ) {
+    oStream_ << "BlowHole::stopBlowing: argument is less than zero!";
     handleError( StkError::WARNING ); return;
   }
 

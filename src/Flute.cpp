@@ -110,8 +110,8 @@ void Flute :: startBlowing( StkFloat amplitude, StkFloat rate )
 
 void Flute :: stopBlowing( StkFloat rate )
 {
-  if ( rate <= 0.0 ) {
-    oStream_ << "Flute::stopBlowing: argument is less than or equal to zero!";
+  if ( rate < 0.0 ) {
+    oStream_ << "Flute::stopBlowing: argument is less than zero!";
     handleError( StkError::WARNING ); return;
   }
 

@@ -70,24 +70,28 @@ void RtWvIn :: fillBuffer( void *buffer, unsigned int nFrames )
   }
 }
 
-RtWvIn :: RtWvIn( unsigned int nChannels, StkFloat sampleRate, int device, int bufferFrames, int nBuffers )
+RtWvIn :: RtWvIn( unsigned int nChannels, StkFloat sampleRate, int deviceIndex, int bufferFrames, int nBuffers )
   : stopped_( true ), readIndex_( 0 ), writeIndex_( 0 ), framesFilled_( 0 )
 {
+  std::vector<unsigned int> deviceIds = adc_.getDeviceIds();
+  if ( deviceIds.size() < 1 )
+    handleError( "RtWvIn: No audio devices found!", StkError::AUDIO_SYSTEM );
+
   // We'll let RtAudio deal with channel and sample rate limitations.
   RtAudio::StreamParameters parameters;
-  if ( device == 0 )
+  if ( deviceIndex == 0 )
     parameters.deviceId = adc_.getDefaultInputDevice();
-  else
-    parameters.deviceId = device - 1;
+  else {
+    if ( deviceIndex >= deviceIds.size() )
+      handleError( "RtWvIn: Device index is invalid.", StkError::AUDIO_SYSTEM );
+    parameters.deviceId = deviceIds[deviceIndex-1];
+  }
   parameters.nChannels = nChannels;
   unsigned int size = bufferFrames;
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
 
-  try {
-    adc_.openStream( NULL, &parameters, format, (unsigned int)Stk::sampleRate(), &size, &read, (void *)this );
-  }
-  catch ( RtAudioError &error ) {
-    handleError( error.what(), StkError::AUDIO_SYSTEM );
+  if ( adc_.openStream( NULL, &parameters, format, (unsigned int)Stk::sampleRate(), &size, &read, (void *)this ) ) {
+    handleError( adc_.getErrorText(), StkError::AUDIO_SYSTEM );
   }
 
   data_.resize( size * nBuffers, nChannels );

@@ -86,8 +86,8 @@ void Clarinet :: startBlowing( StkFloat amplitude, StkFloat rate )
 
 void Clarinet :: stopBlowing( StkFloat rate )
 {
-  if ( rate <= 0.0 ) {
-    oStream_ << "Clarinet::stopBlowing: argument is less than or equal to zero!";
+  if ( rate < 0.0 ) {
+    oStream_ << "Clarinet::stopBlowing: argument is less than zero!";
     handleError( StkError::WARNING ); return;
   }
 

@@ -33,14 +33,14 @@ class RtWvOut : public WvOut
 
   //! Default constructor.
   /*!
-    The default \e device argument value (zero) will select the
+    The default \e deviceIndex argument value (zero) will select the
     default output device on your system.  The first device enumerated
     by the underlying audio API is specified with a value of one.  The
     default buffer size of RT_BUFFER_SIZE is defined in Stk.h.  An
     StkError will be thrown if an error occurs duing instantiation.
   */
   RtWvOut( unsigned int nChannels = 1, StkFloat sampleRate = Stk::sampleRate(),
-           int device = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 20 );
+           int deviceIndex = 0, int bufferFrames = RT_BUFFER_SIZE, int nBuffers = 20 );
 
   //! Class destructor.
   ~RtWvOut();

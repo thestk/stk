@@ -121,8 +121,8 @@ void Saxofony :: startBlowing( StkFloat amplitude, StkFloat rate )
 
 void Saxofony :: stopBlowing( StkFloat rate )
 {
-  if ( rate <= 0.0 ) {
-    oStream_ << "Saxofony::stopBlowing: argument is less than or equal to zero!";
+  if ( rate < 0.0 ) {
+    oStream_ << "Saxofony::stopBlowing: argument is less than zero!";
     handleError( StkError::WARNING ); return;
   }
 
