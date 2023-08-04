@@ -9,7 +9,7 @@
 
   where <name> is the string used in the SKINI stream.
 
-  by Perry R. Cook, 1995--2021.
+  by Perry R. Cook, 1995--2023.
 */
 /*********************************************************/
 

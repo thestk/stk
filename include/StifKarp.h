@@ -29,7 +29,7 @@ namespace stk {
        - String Sustain = 11
        - String Stretch = 1
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2021.
+    by Perry R. Cook and Gary P. Scavone, 1995--2023.
 */
 /***************************************************/
 

@@ -17,7 +17,7 @@ namespace stk {
     bandpass, bandreject and allpass are found on pg. 55 of
     Udo Zölzer's "DAFX - Digital Audio Effects" (2011 2nd ed).   
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2021.
+    by Perry R. Cook and Gary P. Scavone, 1995--2023.
 */
 /***************************************************/
 

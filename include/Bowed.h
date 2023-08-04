@@ -32,7 +32,7 @@ namespace stk {
        - Frequency = 101
        - Volume = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2021.
+    by Perry R. Cook and Gary P. Scavone, 1995--2023.
     Contributions by Esteban Maestre, 2011.
 */
 /***************************************************/

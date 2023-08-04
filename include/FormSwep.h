@@ -13,7 +13,7 @@ namespace stk {
     over time from one frequency setting to another.  It provides
     methods for controlling the sweep rate and target frequency.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2021.
+    by Perry R. Cook and Gary P. Scavone, 1995--2023.
 */
 /***************************************************/
 

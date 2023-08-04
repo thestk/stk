@@ -15,7 +15,7 @@
     one-pole lowpass filters have been added inside
     the feedback comb filters.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2021.
+    by Perry R. Cook and Gary P. Scavone, 1995--2023.
 */
 /***************************************************/
 

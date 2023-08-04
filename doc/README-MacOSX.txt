@@ -1,6 +1,6 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995--2021.
+By Perry R. Cook and Gary P. Scavone, 1995--2023.
 
 Please read the file README and INSTALL for more general STK information.
 
@@ -10,7 +10,7 @@ It is necessary to install the OS X developer kit (or the command line tools) in
 
 Tcl/Tk on OS X:
 
-I think that Tcl/Tk interpreter is now included in the Xcode package, since I haven't had to download it for several years now.
+The Tcl/Tk interpreter included in the Xcode package seems outdated. Try getting tcl-tk through HomeBrew for an updated version.
 
 It appears that socket support in Tcl/Tk on OS X uses the Nagle algorithm, which produces poor response between changes made in the Tcl/Tk script and the resulting audio updates.  Note that this is only a problem when using a socket connection from a Tcl/Tk script.
 

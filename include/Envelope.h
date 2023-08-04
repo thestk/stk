@@ -15,7 +15,7 @@ namespace stk {
     keyOff messages, ramping to a specified target (default = 1.0) on
     keyOn and to a specified target (default = 0.0) on keyOff.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2021.
+    by Perry R. Cook and Gary P. Scavone, 1995--2023.
 */
 /***************************************************/
 

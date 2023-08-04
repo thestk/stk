@@ -12,7 +12,7 @@ namespace stk {
   This class provides a common interface for
   all STK instruments.
 
-  by Perry R. Cook and Gary P. Scavone, 1995--2021.
+  by Perry R. Cook and Gary P. Scavone, 1995--2023.
 */
 /***************************************************/
 

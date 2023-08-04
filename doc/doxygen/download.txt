@@ -1,10 +1,16 @@
 /*! \page download Download and Release Notes
 
-\section down Download Version 4.6.2 (17 November 2021):
+\section down Download Version 5.0.0 (4 August 2023):
 
-- <A HREF="http://ccrma.stanford.edu/software/stk/release/stk-4.6.2.tar.gz">Source distribution</A>
+- <A HREF="http://ccrma.stanford.edu/software/stk/release/stk-5.0.0.tar.gz">Source distribution</A>
 
 \section notes Release Notes:
+\subsection v5dot0dot0 Version 5.0.0
+- see github site for complete details (github.com/thestk/stk)
+- new filter design functionality in BiQuad (thanks to Navin Kumar!)
+- update to PitShift to use a single delay line
+- various updates for new RtAudio API
+
 \subsection v4dot6dot2 Version 4.6.2
 - see github site for complete details (github.com/thestk/stk)
 - bug fixes in LentPitShift and Granulate classes

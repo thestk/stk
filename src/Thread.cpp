@@ -16,7 +16,7 @@
 
     THREAD_RETURN THREAD_TYPE thread_function(void *ptr)
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2021.
+    by Perry R. Cook and Gary P. Scavone, 1995--2023.
 */
 /***************************************************/
 

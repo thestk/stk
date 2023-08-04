@@ -27,7 +27,7 @@
     such variable is found, the sample rate is
     assumed to be 44100 Hz.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2021.
+    by Perry R. Cook and Gary P. Scavone, 1995--2023.
 */
 /***************************************************/
 

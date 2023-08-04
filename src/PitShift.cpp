@@ -5,7 +5,7 @@
     This class implements a simple pitch shifter
     using a delay line.
 
-    by Perry R. Cook and Gary P. Scavone, 1995--2021.
+    by Perry R. Cook and Gary P. Scavone, 1995--2023.
 */
 /***************************************************/
 

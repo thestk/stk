@@ -1,6 +1,12 @@
 The Synthesis ToolKit in C++ (STK)
 
-By Perry R. Cook and Gary P. Scavone, 1995--2021.
+By Perry R. Cook and Gary P. Scavone, 1995--2023.
+
+v.5.0.0 (4 August 2023)
+- see github site for complete details (github.com/thestk/stk)
+- new filter design functionality in BiQuad (thanks to Navin Kumar!)
+- update to PitShift to use a single delay line
+- various updates for new RtAudio API
 
 v.4.6.2 (17 November 2021)
 - see github site for complete details (github.com/thestk/stk)
