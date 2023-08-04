@@ -3,7 +3,7 @@
     \brief STK simple pitch shifter effect class.
 
     This class implements a simple pitch shifter
-    using delay lines.
+    using a delay line.
 
     by Perry R. Cook and Gary P. Scavone, 1995--2021.
 */
@@ -21,18 +21,15 @@ PitShift :: PitShift( void )
   delay_[0] = 12;
   delay_[1] = maxDelay / 2;
 
-  delayLine_[0].setMaximumDelay( maxDelay );
-  delayLine_[0].setDelay( delay_[0] );
-  delayLine_[1].setMaximumDelay( maxDelay );
-  delayLine_[1].setDelay( delay_[1] );
+  delayLine_.setMaximumDelay( maxDelay );
+  delayLine_.setDelay( delay_[0] );
   effectMix_ = 0.5;
   rate_ = 1.0;
 }
 
 void PitShift :: clear()
 {
-  delayLine_[0].clear();
-  delayLine_[1].clear();
+  delayLine_.clear();
   lastFrame_[0] = 0.0;
 }
 

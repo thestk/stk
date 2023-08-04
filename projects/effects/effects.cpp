@@ -228,7 +228,7 @@ int main( int argc, char *argv[] )
   // If you want to change the default sample rate (set in Stk.h), do
   // it before instantiating any objects!  If the sample rate is
   // specified in the command line, it will override this setting.
-  Stk::setSampleRate( 44100.0 );
+  Stk::setSampleRate( 48000.0 );
 
   // Parse the command-line arguments.
   unsigned int port = 2001;
@@ -253,11 +253,8 @@ int main( int argc, char *argv[] )
   iparameters.deviceId = adac.getDefaultInputDevice();
   iparameters.nChannels = 1;
   unsigned int bufferFrames = RT_BUFFER_SIZE;
-  try {
-    adac.openStream( &oparameters, &iparameters, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
-  }
-  catch ( RtAudioError& error ) {
-    error.printMessage();
+  if ( adac.openStream( &oparameters, &iparameters, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data ) ) {
+    std::cout << adac.getErrorText() << std::endl;
     goto cleanup;
   }
 
@@ -267,11 +264,8 @@ int main( int argc, char *argv[] )
 	(void) signal( SIGINT, finish );
 
   // If realtime output, set our callback function and start the dac.
-  try {
-    adac.startStream();
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
+  if ( adac.startStream() ) {
+    std::cout << adac.getErrorText() << std::endl;
     goto cleanup;
   }
 
@@ -282,12 +276,7 @@ int main( int argc, char *argv[] )
   }
 
   // Shut down the output stream.
-  try {
-    adac.closeStream();
-  }
-  catch ( RtAudioError& error ) {
-    error.printMessage();
-  }
+  adac.closeStream();
 
  cleanup:
 

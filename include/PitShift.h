@@ -11,7 +11,7 @@ namespace stk {
     \brief STK simple pitch shifter effect class.
 
     This class implements a simple pitch shifter
-    using delay lines.
+    using a delay line.
 
     by Perry R. Cook and Gary P. Scavone, 1995--2021.
 */
@@ -61,7 +61,7 @@ class PitShift : public Effect
 
  protected:
 
-  DelayL delayLine_[2];
+  DelayL delayLine_;
   StkFloat delay_[2];
   StkFloat env_[2];
   StkFloat rate_;
@@ -83,16 +83,15 @@ inline StkFloat PitShift :: tick( StkFloat input )
   while ( delay_[1] < 12 ) delay_[1] += delayLength_;
 
   // Set the new delay line lengths.
-  delayLine_[0].setDelay( delay_[0] );
-  delayLine_[1].setDelay( delay_[1] );
+  delayLine_.setDelay( delay_[0] );
 
   // Calculate a triangular envelope.
   env_[1] = fabs( ( delay_[0] - halfLength_ + 12 ) * ( 1.0 / (halfLength_ + 12 ) ) );
   env_[0] = 1.0 - env_[1];
 
   // Delay input and apply envelope.
-  lastFrame_[0] =  env_[0] * delayLine_[0].tick( input );
-  lastFrame_[0] += env_[1] * delayLine_[1].tick( input );
+  lastFrame_[0] = env_[1] * delayLine_.tapOut( delay_[1] );
+  lastFrame_[0] =  +env_[0] * delayLine_.tick( input );
 
   // Compute effect mix and output.
   lastFrame_[0] *= effectMix_;
