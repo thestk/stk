@@ -203,7 +203,6 @@ int main( int argc, char *argv[] )
   int i;
 
 #if defined(__STK_REALTIME__)
-  //RtAudio dac( RtAudio::UNSPECIFIED );
   RtAudio *dac = 0;
 #endif
 

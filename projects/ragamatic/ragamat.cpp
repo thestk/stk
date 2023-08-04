@@ -291,11 +291,8 @@ int main( int argc, char *argv[] )
   parameters.deviceId = dac.getDefaultOutputDevice();
   parameters.nChannels = 2;
   unsigned int bufferFrames = RT_BUFFER_SIZE;
-  try {
-    dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
-  }
-  catch ( RtAudioError& error ) {
-    error.printMessage();
+  if ( dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data ) ) {
+    std::cout << dac.getErrorText() << std::endl;
     goto cleanup;
   }
 
@@ -314,11 +311,8 @@ int main( int argc, char *argv[] )
 	(void) signal( SIGINT, finish );
 
   // If realtime output, set our callback function and start the dac.
-  try {
-    dac.startStream();
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
+  if ( dac.startStream() ) {
+    std::cout << dac.getErrorText() << std::endl;
     goto cleanup;
   }
 
@@ -329,15 +323,9 @@ int main( int argc, char *argv[] )
   }
 
   // Shut down the output stream.
-  try {
-    dac.closeStream();
-  }
-  catch ( RtAudioError& error ) {
-    error.printMessage();
-  }
+  dac.closeStream();
 
  cleanup:
 
   return 0;
-
 }

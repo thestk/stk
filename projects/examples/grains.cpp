@@ -79,22 +79,15 @@ int main( int argc, char *argv[] )
   parameters.nChannels = grani.channelsOut();
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
   unsigned int bufferFrames = RT_BUFFER_SIZE;
-  try {
-    dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&grani );
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
+  if ( dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&grani ) ) {
+    std::cout << dac.getErrorText() << std::endl;
     goto cleanup;
   }
 
-  try {
-    dac.startStream();
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
+  if ( dac.startStream() ) {
+    std::cout << dac.getErrorText() << std::endl;
     goto cleanup;
   }
-
 
   // Block waiting here.
   char keyhit;
@@ -102,12 +95,7 @@ int main( int argc, char *argv[] )
   std::cin.get( keyhit );
 
   // Shut down the callback and output stream.
-  try {
-    dac.closeStream();
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
-  }
+  dac.closeStream();
 
  cleanup:
 

@@ -130,11 +130,8 @@ int main( int argc, char *argv[] )
   parameters.nChannels = 1;
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
   unsigned int bufferFrames = RT_BUFFER_SIZE;
-  try {
-    dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
+  if ( dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data ) ) {
+    std::cout << dac.getErrorText() << std::endl;
     goto cleanup;
   }
 
@@ -149,11 +146,8 @@ int main( int argc, char *argv[] )
   if ( data.messager.setScoreFile( argv[1] ) == false )
     goto cleanup;
 
-  try {
-    dac.startStream();
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
+  if ( dac.startStream() ) {
+    std::cout << dac.getErrorText() << std::endl;
     goto cleanup;
   }
 
@@ -162,12 +156,7 @@ int main( int argc, char *argv[] )
     Stk::sleep( 100 );
   
   // Shut down the output stream.
-  try {
-    dac.closeStream();
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
-  }
+  dac.closeStream();
 
  cleanup:
   delete data.instrument;

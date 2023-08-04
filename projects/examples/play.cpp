@@ -99,11 +99,8 @@ int main(int argc, char *argv[])
   parameters.nChannels = ( channels == 1 ) ? 2 : channels; //  Play mono files as stereo.
   RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
   unsigned int bufferFrames = RT_BUFFER_SIZE;
-  try {
-    dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&input );
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
+  if ( dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&input ) ) {
+    std::cout << dac.getErrorText() << std::endl;
     goto cleanup;
   }
 
@@ -113,11 +110,8 @@ int main(int argc, char *argv[])
   // Resize the StkFrames object appropriately.
   frames.resize( bufferFrames, channels );
 
-  try {
-    dac.startStream();
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
+  if ( dac.startStream() ) {
+    std::cout << dac.getErrorText() << std::endl;
     goto cleanup;
   }
 
@@ -127,12 +121,7 @@ int main(int argc, char *argv[])
   
   // By returning a non-zero value in the callback above, the stream
   // is automatically stopped.  But we should still close it.
-  try {
-    dac.closeStream();
-  }
-  catch ( RtAudioError &error ) {
-    error.printMessage();
-  }
+  dac.closeStream();
 
  cleanup:
   return 0;

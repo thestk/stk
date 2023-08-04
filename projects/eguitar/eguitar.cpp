@@ -265,7 +265,7 @@ int main( int argc, char *argv[] )
   int i;
 
 #if defined(__STK_REALTIME__)
-  RtAudio dac;
+  RtAudio *dac = 0;
 #endif
 
   // If you want to change the default sample rate (set in Stk.h), do
@@ -294,16 +294,14 @@ int main( int argc, char *argv[] )
   // If realtime output, allocate the dac here.
 #if defined(__STK_REALTIME__)
   if ( data.realtime ) {
+    dac = (RtAudio *) new RtAudio( RtAudio::UNSPECIFIED );
     RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
     RtAudio::StreamParameters parameters;
-    parameters.deviceId = dac.getDefaultOutputDevice();
+    parameters.deviceId = dac->getDefaultOutputDevice();
     parameters.nChannels = data.channels;
     unsigned int bufferFrames = RT_BUFFER_SIZE;
-    try {
-      dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
-    }
-    catch ( RtAudioError& error ) {
-      error.printMessage();
+    if ( dac->openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data ) ) {
+      std::cout << dac->getErrorText() << std::endl;
       goto cleanup;
     }
   }
@@ -335,11 +333,8 @@ int main( int argc, char *argv[] )
   // If realtime output, set our callback function and start the dac.
 #if defined(__STK_REALTIME__)
   if ( data.realtime ) {
-    try {
-      dac.startStream();
-    }
-    catch ( RtAudioError &error ) {
-      error.printMessage();
+    if ( dac->startStream() ) {
+      std::cout << dac->getErrorText() << std::endl;
       goto cleanup;
     }
   }
@@ -359,14 +354,8 @@ int main( int argc, char *argv[] )
 
   // Shut down the output stream.
 #if defined(__STK_REALTIME__)
-  if ( data.realtime ) {
-    try {
-      dac.closeStream();
-    }
-    catch ( RtAudioError& error ) {
-      error.printMessage();
-    }
-  }
+  if ( data.realtime )
+    dac->closeStream();
 #endif
 
  cleanup:
@@ -374,6 +363,7 @@ int main( int argc, char *argv[] )
   for ( i=0; i<(int)data.nWvOuts; i++ ) delete data.wvout[i];
   free( data.wvout );
   delete data.guitar;
+  delete dac;
 
 	std::cout << "\nStk eguitar finished ... goodbye.\n\n";
   return 0;
