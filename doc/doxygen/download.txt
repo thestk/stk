@@ -1,10 +1,15 @@
 /*! \page download Download and Release Notes
 
-\section down Download Version 5.0.0 (4 August 2023):
+\section down Download Version 5.0.1 (10 August 2023):
 
-- <A HREF="http://ccrma.stanford.edu/software/stk/release/stk-5.0.0.tar.gz">Source distribution</A>
+- <A HREF="http://ccrma.stanford.edu/software/stk/release/stk-5.0.1.tar.gz">Source distribution</A>
 
 \section notes Release Notes:
+\subsection v5dot0dot1 Version 5.0.1
+- see github site for complete details (github.com/thestk/stk)
+- cmake updates
+- fix for demo msvc project in Windows
+
 \subsection v5dot0dot0 Version 5.0.0
 - see github site for complete details (github.com/thestk/stk)
 - new filter design functionality in BiQuad (thanks to Navin Kumar!)

@@ -2,6 +2,11 @@ The Synthesis ToolKit in C++ (STK)
 
 By Perry R. Cook and Gary P. Scavone, 1995--2023.
 
+v.5.0.1 (10 August 2023)
+- see github site for complete details (github.com/thestk/stk)
+- cmake updates
+- fix for demo msvc project in Windows
+
 v.5.0.0 (4 August 2023)
 - see github site for complete details (github.com/thestk/stk)
 - new filter design functionality in BiQuad (thanks to Navin Kumar!)
