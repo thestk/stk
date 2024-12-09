@@ -9,9 +9,9 @@
     Control Change Numbers: 
        - Stick Hardness = 2
        - Stick Position = 4
-       - Vibrato Gain = 8
+       - Vibrato Gain = 1
        - Vibrato Frequency = 11
-       - Direct Stick Mix = 1
+       - Direct Stick Mix = 8
        - Volume = 128
        - Modal Presets = 16
          - Marimba = 0
@@ -173,9 +173,9 @@ void ModalBar :: controlChange( int number, StkFloat value )
   else if (number == __SK_ProphesyRibbon_) // 16
 		this->setPreset((int) value);
   else if (number == __SK_Balance_) // 8
-    vibratoGain_ = normalizedValue * 0.3;
-  else if (number == __SK_ModWheel_) // 1
     directGain_ = normalizedValue;
+  else if (number == __SK_ModWheel_) // 1
+    vibratoGain_ = normalizedValue * 0.3;
   else if (number == __SK_ModFrequency_) // 11
     vibrato_.setFrequency( normalizedValue * 12.0 );
   else if (number == __SK_AfterTouch_Cont_)	// 128
