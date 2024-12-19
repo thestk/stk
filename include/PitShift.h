@@ -17,7 +17,7 @@ namespace stk {
 */
 /***************************************************/
 
-const int maxDelay = 5024;
+  const int maxDelay = 5000; //5024;
 
 class PitShift : public Effect
 {
@@ -64,6 +64,7 @@ class PitShift : public Effect
   DelayL delayLine_;
   StkFloat delay_[2];
   StkFloat env_[2];
+  StkFrames window_;
   StkFloat rate_;
   unsigned long delayLength_;
   unsigned long halfLength_;
@@ -73,25 +74,29 @@ class PitShift : public Effect
 inline StkFloat PitShift :: tick( StkFloat input )
 {
   // Calculate the two delay length values, keeping them within the
-  // range 12 to maxDelay-12.
+  // range 0 to delayLength.
   delay_[0] += rate_;
-  while ( delay_[0] > maxDelay-12 ) delay_[0] -= delayLength_;
-  while ( delay_[0] < 12 ) delay_[0] += delayLength_;
+  while ( delay_[0] >= delayLength_ ) delay_[0] -= delayLength_;
+  while ( delay_[0] < 0 ) delay_[0] += delayLength_;
 
   delay_[1] = delay_[0] + halfLength_;
-  while ( delay_[1] > maxDelay-12 ) delay_[1] -= delayLength_;
-  while ( delay_[1] < 12 ) delay_[1] += delayLength_;
+  while ( delay_[1] >= delayLength_ ) delay_[1] -= delayLength_;
+  while ( delay_[1] < 0 ) delay_[1] += delayLength_;
 
   // Set the new delay line lengths.
   delayLine_.setDelay( delay_[0] );
 
   // Calculate a triangular envelope.
-  env_[1] = fabs( ( delay_[0] - halfLength_ + 12 ) * ( 1.0 / (halfLength_ + 12 ) ) );
-  env_[0] = 1.0 - env_[1];
+  //env_[1] = fabs( ( delay_[0] - halfLength_ ) * ( 1.0 / (halfLength_ ) ) );
+  //env_[0] = 1.0 - env_[1];
+
+  // Or use the precomputed hanning window.
+  env_[1] = window_[delay_[0]];
+  env_[0] = window_[delay_[1]];
 
   // Delay input and apply envelope.
   lastFrame_[0] = env_[1] * delayLine_.tapOut( delay_[1] );
-  lastFrame_[0] =  +env_[0] * delayLine_.tick( input );
+  lastFrame_[0] += env_[0] * delayLine_.tick( input );
 
   // Compute effect mix and output.
   lastFrame_[0] *= effectMix_;

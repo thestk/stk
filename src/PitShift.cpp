@@ -16,15 +16,20 @@ namespace stk {
 
 PitShift :: PitShift( void )
 {
-  delayLength_ = maxDelay - 24;
+  delayLength_ = maxDelay;
   halfLength_ = delayLength_ / 2;
-  delay_[0] = 12;
-  delay_[1] = maxDelay / 2;
+  delay_[0] = 0;
+  delay_[1] = delayLength_ / 2;
 
   delayLine_.setMaximumDelay( maxDelay );
   delayLine_.setDelay( delay_[0] );
   effectMix_ = 0.5;
   rate_ = 1.0;
+
+  window_.resize( delayLength_, 1 );
+  StkFloat temp = TWO_PI / delayLength_;
+  for ( unsigned long i=0; i<=window_.size(); i++ )
+    window_[i] = (cos( i * temp ) + 1.0) / 2.0;
 }
 
 void PitShift :: clear()

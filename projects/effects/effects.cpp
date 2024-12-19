@@ -219,16 +219,16 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
 
 int main( int argc, char *argv[] )
 {
+  // If you want to change the default sample rate (set in Stk.h), do
+  // it before instantiating any objects!  If the sample rate is
+  // specified in the command line, it will override this setting.
+  Stk::setSampleRate( 48000.0 );
+
   TickData data;
   RtAudio adac;
   int i;
 
   if ( argc < 2 || argc > 6 ) usage();
-
-  // If you want to change the default sample rate (set in Stk.h), do
-  // it before instantiating any objects!  If the sample rate is
-  // specified in the command line, it will override this setting.
-  Stk::setSampleRate( 48000.0 );
 
   // Parse the command-line arguments.
   unsigned int port = 2001;
